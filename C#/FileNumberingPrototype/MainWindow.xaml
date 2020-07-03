@@ -1,0 +1,78 @@
+﻿<Window x:Class="FileNumberingPrototype.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileNumberingPrototype"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="1125.816">
+    <Grid>
+        <Button Content="USER" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="71" Height="71"
+                Background ="Black" TextElement.Foreground ="Beige"
+                Click = "UserOnClick" />
+        <TextBox Name="e_ProjectCode" HorizontalAlignment="Left" Height="54" Margin="10,152,0,0" TextWrapping="Wrap" Text="Project Code" VerticalAlignment="Top" Width="99"
+                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <ComboBox Name ="cb_VolumeSystem"  HorizontalAlignment="Left" Margin="185,266,0,0" VerticalAlignment="Top" Width="142" Height="54"
+                  IsEditable="True" FontSize="22" SelectionChanged="Cb_VolumeSystem_SelectionChanged" />
+        <Label Content="AAA" HorizontalAlignment="Left" Margin="17,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+               FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="93,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="AAA" HorizontalAlignment="Left" Margin="114,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="185,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="00" HorizontalAlignment="Left" Margin="206,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="271,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="00" HorizontalAlignment="Left" Margin="292,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="368,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="AA" HorizontalAlignment="Left" Margin="389,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="465,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="A" HorizontalAlignment="Left" Margin="486,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="562,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="0000" HorizontalAlignment="Left" Margin="583,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="659,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="A0" HorizontalAlignment="Left" Margin="680,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="751,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="A0" HorizontalAlignment="Left" Margin="772,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="-" HorizontalAlignment="Left" Margin="843,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+        <Label Content="A0" HorizontalAlignment="Left" Margin="864,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
+            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+            FontSize="18"/>
+
+
+
+    </Grid>
+</Window>
