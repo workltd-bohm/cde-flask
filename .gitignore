@@ -130,3 +130,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/C#/FileNumberingPrototype/input/input.xlsx
+/C#/FileNumberingPrototype/input/SV-MW-XX-XX-FN-A-0001_Filenaming-Generator.xlsx
+/C#/FileNumberingPrototype/input/~$input.xlsx
+/C#/FileNumberingPrototype/input/~$SV-MW-XX-XX-FN-A-0001_Filenaming-Generator.xlsx

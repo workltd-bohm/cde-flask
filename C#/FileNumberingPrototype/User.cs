@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FileNumberingPrototype
 {
-    class User
+    public class User
     {
         public  string                              Name        { get; set; }  
         public  bool                                IsAdmin     { get; set; } 
@@ -18,9 +18,9 @@ namespace FileNumberingPrototype
         {
             IsAdmin = isadmin;
             Name = "Unknown";
-            Project = new KeyValuePair<string, string>();
-            Company = new KeyValuePair<string, string>();
-            Role    = new KeyValuePair<string, string>();
+            Project = new KeyValuePair<string, string>("SV", "Skyscraper V");
+            Company = new KeyValuePair<string, string>("WRK", "Work Limited");
+            Role    = new KeyValuePair<string, string>("A",  "Architect");            
         }
         
         
