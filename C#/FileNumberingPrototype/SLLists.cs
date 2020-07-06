@@ -51,7 +51,7 @@ namespace FileNumberingPrototype
 
         private void InitializeLevel()
         {
-           
+           Level = new List<KeyValuePair<string, string>>();
         }
 
         private void InitializeType()

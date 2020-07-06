@@ -22,10 +22,14 @@ namespace FileNumberingPrototype
     /// </summary>
     public partial class MainWindow : System.Windows.Window
     {
+        //Global Dialog Properties
+        public SLLists slLists { get; set;}
+
+
         public MainWindow()
         {
             InitializeComponent();                   
-            SLLists slLists = new SLLists();
+            slLists = new SLLists();
 
             cb_VolumeSystem.ItemsSource = slLists.VolumeSystem;
 
@@ -41,8 +45,8 @@ namespace FileNumberingPrototype
         {
            // MessageBox.Show("Content Dialog");
 
-            //string path = Utility.GetFilePathXlsx("Get The Excel File");
-           string path = "E:\\triangle\\work\\work_ltd\\SupperLeggera\\development\\main\\super_leggera\\C#\\FileNumberingPrototype\\input\\Test5.xls";
+            string path = Utility.GetFilePathXlsx("Get The Excel File");
+           //string path = "E:\\triangle\\work\\work_ltd\\SupperLeggera\\development\\main\\super_leggera\\C#\\FileNumberingPrototype\\input\\Test5.xls";
             //string path = "..\\..\\input\\Test5.xls";
             // MessageBox.Show(path);
 
@@ -54,30 +58,39 @@ namespace FileNumberingPrototype
             int rowCount = excelRange.Rows.Count;
             int colCount = excelRange.Columns.Count;
 
-            string finalstring = "";
+            //For Every row (we know the structure fill the lists)
             
-                for (int i = 1; i <= rowCount; i++)
+                for (int i = 1; i <= colCount; i+=2)
                 {
-                    for (int j = 1; j <= colCount; j++)
+                    for (int j = 1; j <= rowCount; j++)
                     {
-                        Range range = (ws.Cells[i, j] as Range);
-                        string cellValue = range.Value.ToString();
- 
-                        //do anything
-                        finalstring += cellValue + "\n";
+                        if(i == 1)
+                        {
+                            Range range1 = (ws.Cells[j, i] as Range);
+
+                            string cellValue1 = range1.Value.ToString();
+                            Range range2 = (ws.Cells[j, i+1 ] as Range);
+                            string cellValue2 = range2.Value.ToString();
+                            slLists.Level.Add(new KeyValuePair<string, string>( cellValue1, cellValue2 ));
+                        }                           
+                        
+                        
                     }
                 }
               
-            /*if(ws.Cells[i,j].Value2 !=null)
+            string test = "";
+
+            foreach (KeyValuePair<string, string> level in slLists.Level)
             {
-                MessageBox.Show(ws.Cells[i,j].Value2);
-            }*/
+                test += level.Key + "," + level.Value;
+                
+            }            
 
             wb.Close(false, null, null);
             excel.Quit();
 
-
-            MessageBox.Show(finalstring);
+            MessageBox.Show(test);
+          
 
         }
 

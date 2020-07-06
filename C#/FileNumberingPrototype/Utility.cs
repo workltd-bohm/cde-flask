@@ -11,28 +11,19 @@ namespace FileNumberingPrototype
     public static class Utility
     {
         public static string GetFilePathXlsx(string title)
-        {
-            Stream myStream;
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+        {            
+            OpenFileDialog  openFileDialog = new OpenFileDialog();
 
-            saveFileDialog1.Title = title;
-            saveFileDialog1.Filter              = "Excel Files | *.xls";
-            saveFileDialog1.DefaultExt          = "xls";
-            saveFileDialog1.RestoreDirectory    = true;
-            //test
-          
+            openFileDialog.Title = title;
+            openFileDialog.Filter              = "Excel Files | *.xlsx";
+            openFileDialog.DefaultExt          = "xlsx";
+            openFileDialog.RestoreDirectory    = true;
+            //test         
+            
 
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                if ((myStream = saveFileDialog1.OpenFile()) != null)
-                {
-                   
-                    myStream.Close();
-                   
-                    return saveFileDialog1.FileName;
-                }
-                else
-                    return "";
+                return openFileDialog.FileName;
             }
             else
                 return "";
