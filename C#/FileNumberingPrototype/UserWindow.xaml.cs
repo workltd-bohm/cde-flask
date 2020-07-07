@@ -19,9 +19,18 @@ namespace FileNumberingPrototype
     /// </summary>
     public partial class UserWindow : Window
     {
-        public UserWindow()
+        public User user { get; set;}
+
+
+        public UserWindow(SLLists sll)
         {
             InitializeComponent();
+
+            if(sll.Role != null)
+            {
+                cb_Role.ItemsSource     = sll.Role; 
+            }                
+
         }
     }
 }

@@ -20,6 +20,8 @@ namespace FileNumberingPrototype
         public List<KeyValuePair<string, string>>   Uniclass2015    { get; set;}
         public List<KeyValuePair<string, string>>   Name            { get; set;}
 
+        public List<KeyValuePair<string, string>>   Role            { get; set;}
+
         public SLLists()
         {
             InitializeSLLists();
@@ -36,52 +38,55 @@ namespace FileNumberingPrototype
             InitializeUniclass2015    ();
             InitializeName            ();
 
+            InitializeRole    ();
            
+        }
+
+        private void InitializeRole()
+        {
+            Role = new List<KeyValuePair<string, string>>();
         }
 
         private void InitializeVolumeSystem()
         {
             VolumeSystem = new List<KeyValuePair<string, string>>();
-
-            VolumeSystem.Add(new KeyValuePair<string, string>("ZZ", "Multiple volumes/systems"));
-            VolumeSystem.Add(new KeyValuePair<string, string>("XX", "No volume/system"));
-            VolumeSystem.Add(new KeyValuePair<string, string>("B1", "Building"));
-            VolumeSystem.Add(new KeyValuePair<string, string>("S1", "Anthea Hamilton Garden"));
         }
 
         private void InitializeLevel()
         {
-           
+           Level = new List<KeyValuePair<string, string>>();
         }
 
         private void InitializeType()
         {
-           
+           Type = new List<KeyValuePair<string, string>>();
         }
+        
 
         private void InitializeFileNumber()
         {
-            
+            FileNumber = new List<KeyValuePair<int, string>>();
         }
+        
 
         private void InitializeStatus()
         {
-            
+             Status = new List<KeyValuePair<string, string>>();  
         }
 
         private void InitializeRevision()
         {
-            
+           Revision = new List<KeyValuePair<string, string>>(); 
         }
 
         private void InitializeUniclass2015()
         {
-            
+            Uniclass2015 = new List<KeyValuePair<string, string>>();
         }
 
         private void InitializeName()
         {
-            
+            Name = new List<KeyValuePair<string, string>>();
         }
     }
 }

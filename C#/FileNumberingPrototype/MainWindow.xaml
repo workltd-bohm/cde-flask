@@ -5,74 +5,87 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileNumberingPrototype"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1125.816">
-    <Grid>
-        <Button Content="USER" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="71" Height="71"
-                Background ="Black" TextElement.Foreground ="Beige"
+        Title="MainWindow" Height="606" Width="644.489">
+    <Grid Margin="10">
+        <Button Grid.Row="0" Content="USER" HorizontalAlignment="Left" Margin="40,10,0,0" VerticalAlignment="Top" Width="71" Height="71"
+                Background ="#FF343434" TextElement.Foreground ="Beige"
                 Click = "UserOnClick" />
-        <TextBox Name="e_ProjectCode" HorizontalAlignment="Left" Height="54" Margin="10,152,0,0" TextWrapping="Wrap" Text="Project Code" VerticalAlignment="Top" Width="99"
-                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <ComboBox Name ="cb_VolumeSystem"  HorizontalAlignment="Left" Margin="185,266,0,0" VerticalAlignment="Top" Width="142" Height="54"
-                  IsEditable="True" FontSize="22" SelectionChanged="Cb_VolumeSystem_SelectionChanged" />
-        <Label Content="AAA" HorizontalAlignment="Left" Margin="17,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-               FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="93,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="AAA" HorizontalAlignment="Left" Margin="114,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="185,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="00" HorizontalAlignment="Left" Margin="206,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="271,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="00" HorizontalAlignment="Left" Margin="292,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="368,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="AA" HorizontalAlignment="Left" Margin="389,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="465,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="A" HorizontalAlignment="Left" Margin="486,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="562,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="0000" HorizontalAlignment="Left" Margin="583,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="659,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="A0" HorizontalAlignment="Left" Margin="680,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="751,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="A0" HorizontalAlignment="Left" Margin="772,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="-" HorizontalAlignment="Left" Margin="843,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="16"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
-        <Label Content="A0" HorizontalAlignment="Left" Margin="864,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="71"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-            FontSize="18"/>
+        <Button Grid.Row="0" Content="CONTENT" HorizontalAlignment="Left" Margin="131,37,0,0" VerticalAlignment="Top" Width="71" Height="44"
+                Background ="#FF343434" TextElement.Foreground ="Beige"
+                Click = "ContentOnClick" />
 
 
+
+        <ComboBox Name ="cb_VolumeSystem"  HorizontalAlignment="Left" Margin="304,180,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                  FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+        <ComboBox Name ="cb_Level"  HorizontalAlignment="Left" Margin="304,210,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                  FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+        <ComboBox Name ="cb_Type"  HorizontalAlignment="Left" Margin="304,240,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                    FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+        <ComboBox Name ="cb_FileNumber"  HorizontalAlignment="Left" Margin="304,300,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                    FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+        <ComboBox Name ="cb_Status"  HorizontalAlignment="Left" Margin="304,330,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                    FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+        <ComboBox Name ="cb_Revision"  HorizontalAlignment="Left" Margin="304,360,0,0" VerticalAlignment="Top" Width="250" Height="22"
+                    FontSize="12" SelectionChanged="Cb_SelectionChanged" IsEditable="True" />
+
+
+        <Label Name ="l_ProjectCode"  Content="AAA" HorizontalAlignment="Left" Margin="10,118,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+               HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+               FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_CompanyCode" Content="AAA" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_VolumeSystem" Content="00" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Level" Content="00" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Type" Content="AA" HorizontalAlignment="Left" Margin="10,238,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_RoleCode" Content="A" HorizontalAlignment="Left" Margin="10,268,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_FileNumber" Content="0000" HorizontalAlignment="Left" Margin="10,298,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Status" Content="A0" HorizontalAlignment="Left" Margin="10,328,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Revision" Content="A0" HorizontalAlignment="Left" Margin="10,358,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Name" Content="A0" HorizontalAlignment="Left" Margin="10,418,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Extension" Content="A0" HorizontalAlignment="Left" Margin="10,448,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Name ="l_Uniclass2015" Content="A0" HorizontalAlignment="Left" Margin="10,388,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+            HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
+            FontSize="14" FontWeight="Bold"/>
+        <Label Content="Project Code" HorizontalAlignment="Left" Margin="125,120,0,0" VerticalAlignment="Top" Width="95" HorizontalContentAlignment="Left" />
+        <Label Content="Company Code" HorizontalAlignment="Left" Margin="125,150,0,0" VerticalAlignment="Top" Width="95" HorizontalContentAlignment="Left" />
+        <Label Content="Project Volume or System" HorizontalAlignment="Left" Margin="125,180,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Project Level" HorizontalAlignment="Left" Margin="125,210,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Type of Information" HorizontalAlignment="Left" Margin="125,240,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Role Code" HorizontalAlignment="Left" Margin="125,270,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="File Number" HorizontalAlignment="Left" Margin="125,300,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Status" HorizontalAlignment="Left" Margin="125,330,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Revision" HorizontalAlignment="Left" Margin="125,360,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Uniclass 2015" HorizontalAlignment="Left" Margin="125,390,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="Name" HorizontalAlignment="Left" Margin="125,420,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="File Extension" HorizontalAlignment="Left" Margin="125,450,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
+        <Label Content="NEW FINAL NAME: " HorizontalAlignment="Left" Margin="0,492,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" FontWeight="Bold" />
+        <TextBox HorizontalAlignment="Left" Height="22" Margin="304,420,0,0" TextWrapping="Wrap" Text="Default" VerticalAlignment="Top" Width="250"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="28,484,0,0" VerticalAlignment="Top" Width="562"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="535" Margin="120,10,0,0" VerticalAlignment="Top" Width="1"/>
+        <Button Grid.Row="0" Content="FILE" HorizontalAlignment="Left" Margin="211,60,0,0" VerticalAlignment="Top" Width="379" Height="21"
+            Background ="#FF343434" TextElement.Foreground ="Beige"
+            Click = "ContentOnClick" />
+        <Label Content="Original :" HorizontalAlignment="Left" Margin="7,521,0,0" VerticalAlignment="Top" Width="113" HorizontalContentAlignment="Right" Foreground="#FF9C9C9C" />
 
     </Grid>
 </Window>
