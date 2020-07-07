@@ -16,6 +16,10 @@ CORS(app, resources={r"/*": {"Access-Control-Allow-Origin": "*"}})
 def hello():
     return render_template("index.html", dot=".", text="This is a text from Python code!!!")
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template("dashboard.html")
+
 # @app.route('/data/<path:sen_path>', methods = ['POST'])
 # def data(sen_path):
 #     print('Data posting path: %s' %request.path)
