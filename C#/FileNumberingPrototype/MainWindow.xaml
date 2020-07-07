@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileNumberingPrototype"
         mc:Ignorable="d"
-        Title="MainWindow" Height="606" Width="644.489">
+        Title="MainWindow" Height="642" Width="644.489">
     <Grid Margin="10">
         <Button Grid.Row="0" Content="USER" HorizontalAlignment="Left" Margin="40,10,0,0" VerticalAlignment="Top" Width="71" Height="71"
                 Background ="#FF343434" TextElement.Foreground ="Beige"
@@ -60,7 +60,7 @@
         <Label Name ="l_Name" Content="A0" HorizontalAlignment="Left" Margin="10,418,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
             HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
             FontSize="14" FontWeight="Bold"/>
-        <Label Name ="l_Extension" Content="A0" HorizontalAlignment="Left" Margin="10,448,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
+        <Label Name ="l_Extension" Content=".pdf" HorizontalAlignment="Left" Margin="10,448,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
             HorizontalContentAlignment="Right" VerticalContentAlignment="Center"
             FontSize="14" FontWeight="Bold"/>
         <Label Name ="l_Uniclass2015" Content="A0" HorizontalAlignment="Left" Margin="10,388,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.079,0.423" Width="110"
@@ -79,13 +79,18 @@
         <Label Content="Name" HorizontalAlignment="Left" Margin="125,420,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
         <Label Content="File Extension" HorizontalAlignment="Left" Margin="125,450,0,0" VerticalAlignment="Top" Width="146" HorizontalContentAlignment="Left" />
         <Label Content="NEW FINAL NAME: " HorizontalAlignment="Left" Margin="0,492,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" FontWeight="Bold" />
-        <TextBox HorizontalAlignment="Left" Height="22" Margin="304,420,0,0" TextWrapping="Wrap" Text="Default" VerticalAlignment="Top" Width="250"/>
+        <TextBox Name="e_Name" HorizontalAlignment="Left" Height="22" Margin="304,420,0,0" TextWrapping="Wrap" Text="Default" VerticalAlignment="Top" Width="250"
+                 TextChanged="NameChanged"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="28,484,0,0" VerticalAlignment="Top" Width="562"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="535" Margin="120,10,0,0" VerticalAlignment="Top" Width="1"/>
         <Button Grid.Row="0" Content="FILE" HorizontalAlignment="Left" Margin="211,60,0,0" VerticalAlignment="Top" Width="379" Height="21"
             Background ="#FF343434" TextElement.Foreground ="Beige"
-            Click = "ContentOnClick" />
+            Click = "FileOnClick" />
         <Label Content="Original :" HorizontalAlignment="Left" Margin="7,521,0,0" VerticalAlignment="Top" Width="113" HorizontalContentAlignment="Right" Foreground="#FF9C9C9C" />
+        <Label Name="l_NewFinalName" Content="" HorizontalAlignment="Left" Margin="130,492,0,0" VerticalAlignment="Top" Width="424" HorizontalContentAlignment="Left" FontWeight="Bold" />
+        <Label Name="l_OriginalName" Content="" HorizontalAlignment="Left" Margin="130,520,0,0" VerticalAlignment="Top" Width="424" HorizontalContentAlignment="Left" FontWeight="Bold" Foreground="#FF9C9C9C" />
+        <Button Content="Update" HorizontalAlignment="Left" Margin="554,498,0,0" VerticalAlignment="Top" Width="52" Height="49" Click="UpdateClick"/>
+        <Button Content="Rename + Close" HorizontalAlignment="Left" Margin="10,561,0,0" VerticalAlignment="Top" Width="606" Click="RenameCloseClick"/>
 
     </Grid>
 </Window>

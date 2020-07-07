@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace FileNumberingPrototype
 {
-    class UserFile
+    public class UserFile
     {
         public  string                              OriginalName        { get; set; }  
-        public  bool                                NewName             { get; set; } 
+        public  string                                NewName             { get; set; } 
         public  DateTime                            LastUploaded        { get; set; } 
         public  User                                LastUser            { get; set; } 
+
+        public  string                              OriginalNameFullPath{ get; set; } 
+        public  string                              NewNameFullPath{ get; set; } 
+
+        public  string                              DirPath{ get; set; } 
 
         public UserFile(string originalName)
         {

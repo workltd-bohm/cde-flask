@@ -23,21 +23,58 @@ namespace FileNumberingPrototype
     public partial class MainWindow : System.Windows.Window
     {
         //Global Dialog Properties
-        public SLLists slLists { get; set;}
+        public SLLists      slLists     { get; set;}
+        public User         user        { get; set;}
+        public UserFile     userFile    { get; set;}
 
 
         public MainWindow()
         {
-            InitializeComponent();                   
-            slLists = new SLLists();   
+            InitializeComponent(); 
+            
+            slLists = new SLLists();  
+            user = new User(true);            
             
         }
 
         private void UserOnClick(object sender, RoutedEventArgs e)
         {
-            UserWindow userWindow = new UserWindow(slLists); 
-            userWindow.Show();
+            UserWindow userWindow = new UserWindow(slLists, user); 
+            userWindow.ShowDialog();   
+            
+            
+                            
+                user = userWindow.internaluser;   
+            
+                l_ProjectCode.Content   = user.Project.Key;
+                l_CompanyCode.Content   = user.Company.Key;
+                l_RoleCode.Content      =   user.Role.Key;
+
         }
+
+        private void FileOnClick(object sender, RoutedEventArgs e)
+        {
+            string path = Utility.GetFilePath("Get Any File", out string FileName, out string Extension);
+
+            if(path == "")
+            {
+                MessageBox.Show("NOTHING SELECTED");
+                return;
+            }
+
+            l_OriginalName.Content = FileName + Extension;
+            l_Extension.Content = Extension;
+
+            userFile = new UserFile(FileName);
+
+            userFile.OriginalName = FileName;
+            userFile.OriginalNameFullPath = path;
+
+            userFile.DirPath = System.IO.Path.GetDirectoryName(path) + "\\";      
+
+                
+        }
+
 
         private void ContentOnClick(object sender, RoutedEventArgs e)
         {
@@ -120,6 +157,11 @@ namespace FileNumberingPrototype
 
         }
 
+        private void NameChanged(object sender, TextChangedEventArgs e)
+        {
+            l_Name.Content = e_Name.Text;
+        }
+        
         //Every time a selection change we will update its value
         //We are wasteful a bit - calling this regardless of which box changed....but it does matter
         private void Cb_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -166,9 +208,45 @@ namespace FileNumberingPrototype
                     l_Revision.Content = resRevision.Key;
             }
 
+            l_NewFinalName.Content  =       l_ProjectCode   .Content    +   "-" +
+                                            l_CompanyCode   .Content    +   "-" +
+                                            l_VolumeSystem  .Content    +   "-" +
+                                            l_Level         .Content    +   "-" +
+                                            l_Type          .Content    +   "-" +
+                                            l_RoleCode      .Content    +   "-" +
+                                            l_FileNumber    .Content    +   "-" +
+                                            l_Status        .Content    +   "-" +
+                                            l_Revision      .Content    +   "-" +
+                                            l_Name          .Content    +   "-" +
+                                            l_Extension.Content ;
 
             
         }
 
+        private void UpdateClick(object sender, RoutedEventArgs e)
+        {
+            l_NewFinalName.Content  =       l_ProjectCode   .Content    +   "-" +
+                                            l_CompanyCode   .Content    +   "-" +
+                                            l_VolumeSystem  .Content    +   "-" +
+                                            l_Level         .Content    +   "-" +
+                                            l_Type          .Content    +   "-" +
+                                            l_RoleCode      .Content    +   "-" +
+                                            l_FileNumber    .Content    +   "-" +
+                                            l_Status        .Content    +   "-" +
+                                            l_Revision      .Content    +   "-" +
+                                            l_Name          .Content    +   
+                                            l_Extension.Content ;
+
+            userFile.NewName = (string)l_NewFinalName.Content ;
+            userFile.NewNameFullPath = userFile.DirPath + userFile.NewName;            
+        }
+
+        private void RenameCloseClick(object sender, RoutedEventArgs e)
+        {
+            System.IO.File.Move(userFile.OriginalNameFullPath, userFile.NewNameFullPath);
+
+            this.Close();
+
+        }
     }
 }
