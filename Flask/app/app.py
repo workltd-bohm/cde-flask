@@ -12,9 +12,34 @@ from flask_cors import CORS, cross_origin
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/*": {"Access-Control-Allow-Origin": "*"}})
 
+
 @app.route('/')
 def hello():
     return render_template("index.html", dot=".", text="This is a text from Python code!!!")
+
+
+@app.route('/login')
+def login():
+    return render_template("login.html")
+
+
+@app.route('/login_data', methods=['POST'])
+def login_data():
+    print('Data posting path: %s' % request.path)
+    # print('POST data: %s ' % request.get_data())
+    json_data = json.loads(request.get_data())
+    print('POST data: %s ' % json_data)
+    return "LOGGED IN"
+
+
+@app.route('/sign_in_data', methods=['POST'])
+def sign_in_data():
+    print('Data posting path: %s' % request.path)
+    # print('POST data: %s ' % request.get_data())
+    json_data = json.loads(request.get_data())
+    print('POST data: %s ' % json_data)
+    return "SIGNED IN"
+
 
 @app.route('/dashboard')
 def dashboard():
