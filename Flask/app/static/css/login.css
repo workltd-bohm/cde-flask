@@ -6,7 +6,7 @@ body{
 .container{
   /*border:1px solid white;*/
   width: 600px;
-  height: 350px;
+  height: 365px;
   position: absolute;
   top:50%;
   left:50%;
@@ -116,7 +116,7 @@ body{
   width: 60px;
   position: absolute;
   right:30px;
-  bottom: 30px;
+  bottom: 50px;
   cursor: pointer;
 }
 
@@ -138,4 +138,13 @@ body{
 
 .hide{
   display: none;
+}
+
+.msg_placeholder{
+  position: absolute;
+  margin: auto;
+  width: 100%;
+  border: 0px solid green;
+  bottom: 0px;
+  text-align: center;
 }

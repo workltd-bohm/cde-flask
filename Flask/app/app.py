@@ -32,8 +32,8 @@ def login_data():
     return "LOGGED IN"
 
 
-@app.route('/sign_in_data', methods=['POST'])
-def sign_in_data():
+@app.route('/signup_data', methods=['POST'])
+def signup_data():
     print('Data posting path: %s' % request.path)
     # print('POST data: %s ' % request.get_data())
     json_data = json.loads(request.get_data())

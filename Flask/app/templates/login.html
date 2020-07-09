@@ -2,9 +2,8 @@
 <html>
 <head>
 	<title>Animated Login Form</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<!--	<script src="{{ url_for('static', filename='js/main.js') }}"></script>-->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100" rel="stylesheet" type="text/css">
 
 </head>
@@ -38,19 +37,21 @@
         </div>
         <p>
           <a href="#">forgot password?</a></p>
-        <button>LOG IN</button>
+        <button id="login_button">LOG IN</button>
       </div>
 
       <div class="signup hide">
         <h2>SIGN UP</h2>
         <div class="inputbox">
-          <input type="text" id="s_fullname" placeholder="  FULLNAME">
+          <input type="text" id="s_username" placeholder="  USERNAME">
           <input type="text" id="s_email" placeholder="  EMAIL">
           <input type="password" id="s_password" placeholder="  PASSWORD">
         </div>
-        <button>SIGN UP</button>
+        <button id="signup_button">SIGN UP</button>
       </div>
-
+      <div class="msg_placeholder">
+        <p id="msg_placeholder"></p>
+      </div>
     </div>
     <!-- frontbox -->
   </div>
