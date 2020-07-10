@@ -9,8 +9,13 @@ import datetime as dt
 from flask import Flask, json, request, Response, render_template
 from flask_cors import CORS, cross_origin
 
+import db.db_comminication as db
+from db.db_file_adapter import DBFileAdapter
+
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/*": {"Access-Control-Allow-Origin": "*"}})
+
+db_adapter = DBFileAdapter()
 
 
 @app.route('/')
@@ -29,7 +34,17 @@ def login_data():
     # print('POST data: %s ' % request.get_data())
     json_data = json.loads(request.get_data())
     print('POST data: %s ' % json_data)
-    return "LOGGED IN"
+    user = db.get_user(db_adapter, json_data)
+    print(user)
+    resp = Response()
+    if user:
+        resp.status_code = 200
+        resp.data = "LOGGED IN"
+    else:
+        resp.status_code = 200
+        resp.data = "Username/password combination not matched in the data base!"
+
+    return resp
 
 
 @app.route('/signup_data', methods=['POST'])

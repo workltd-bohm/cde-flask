@@ -75,7 +75,7 @@ function login_post(data) {
     $.post( "/login_data", JSON.stringify(data))
         .done(function( data ) {
             console.log( "Data Loaded: " + data );
-            $msg_placeholder.text(data);
+            $msg_placeholder.text(data).css('color', 'red');
         });
 };
 
@@ -83,7 +83,7 @@ function signup_post(data) {
     $.post( "/signup_data", JSON.stringify(data))
         .done(function( data ) {
             console.log( "Data Loaded: " + data );
-            $msg_placeholder.text(data);
+            $msg_placeholder.text(data).css('color', 'red');
         });
 };
 
