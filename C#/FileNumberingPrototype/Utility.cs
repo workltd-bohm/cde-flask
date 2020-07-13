@@ -10,6 +10,9 @@ namespace FileNumberingPrototype
 {
     public static class Utility
     {
+
+        
+
         public static string GetFilePathXlsx(string title)
         {            
             OpenFileDialog  openFileDialog = new OpenFileDialog();
@@ -27,6 +30,32 @@ namespace FileNumberingPrototype
             }
             else
                 return "";
+        }
+
+        public static string GetFilePath(string title, out string FileName, out string Extension)
+        {            
+            OpenFileDialog  openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = title;
+            openFileDialog.Filter              = "All files (*.*)|*.*";          
+            openFileDialog.RestoreDirectory    = true;
+            //test         
+            
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                Extension = Path.GetExtension(openFileDialog.FileName);
+                FileName = Path.GetFileName(openFileDialog.FileName);
+
+                return openFileDialog.FileName;
+            }
+            else
+            {
+                Extension = "";
+                FileName = "";
+                return "";
+            }
+                
         }
     }
 }
