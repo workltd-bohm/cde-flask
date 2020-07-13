@@ -6,11 +6,13 @@ import random
 import requests
 import datetime as dt
 
-from flask import Flask, json, request, Response, render_template
+from flask import Flask, json, request, Response, render_template, session, redirect, url_for
 from flask_cors import CORS, cross_origin
 
 import db.db_comminication as db
 from db.db_file_adapter import DBFileAdapter
+from model.user import User
+import model.messages as msg
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/*": {"Access-Control-Allow-Origin": "*"}})
@@ -19,8 +21,18 @@ db_adapter = DBFileAdapter()
 
 
 @app.route('/')
-def hello():
-    return render_template("index.html", dot=".", text="This is a text from Python code!!!")
+@app.route('/dashboard')
+def index():
+    print('Data posting path: %s' % request.path)
+    if session.get('logged_in'):
+        # col = db.Users
+        messages = session['username']
+        id = session['id']
+        email = session['email']
+        # credits = col.find_one({'email': email}, {'_id': 0})['credits']
+        return render_template("dashboard.html", username=messages, id=id, email=email)
+    else:
+        return redirect('/login')
 
 
 @app.route('/login')
@@ -35,16 +47,19 @@ def login_data():
     json_data = json.loads(request.get_data())
     print('POST data: %s ' % json_data)
     user = db.get_user(db_adapter, json_data)
-    print(user)
-    resp = Response()
-    if user:
-        resp.status_code = 200
-        resp.data = "LOGGED IN"
-    else:
-        resp.status_code = 200
-        resp.data = "Username/password combination not matched in the data base!"
 
-    return resp
+    resp = Response()
+    if user['message'] == msg.LOGGED_IN:
+        session['username'] = user['username']
+        session['email'] = user['email']
+        session['password'] = user['password']
+        session['id'] = user['id']
+        session['logged_in'] = True
+        return redirect(url_for('index'))
+    else:
+        resp.status_code = 404
+        resp.data = str(user).replace("'", "\"")
+        return resp
 
 
 @app.route('/signup_data', methods=['POST'])
@@ -53,12 +68,31 @@ def signup_data():
     # print('POST data: %s ' % request.get_data())
     json_data = json.loads(request.get_data())
     print('POST data: %s ' % json_data)
-    return "SIGNED IN"
+    user = User()
+    user.create_user(json_data)
+    signed = db.set_user(db_adapter, user)
+    print(signed)
+    resp = Response()
+    if signed['message'] == msg.SIGNED_IN:
+        session['username'] = signed['username']
+        session['email'] = signed['email']
+        session['password'] = signed['password']
+        session['id'] = signed['id']
+        session['logged_in'] = True
+        return redirect(url_for('index'))
+    else:
+        resp.status_code = 404
+        resp.data = str(signed).replace("'", "\"")
+        return resp
 
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template("dashboard.html")
+@app.route('/dashboard_new', methods=['POST', 'GET'])
+def dashboard_new():
+    print('Data posting path: %s' % request.path)
+    # print(request.get_data())
+    # json_data = json.loads(request.get_data())
+    # print('POST data: %s ' % json_data)
+    return render_template("dashboard.html")#, data=json_data)
 
 # @app.route('/data/<path:sen_path>', methods = ['POST'])
 # def data(sen_path):
@@ -85,6 +119,7 @@ def dashboard():
 
 
 if __name__ == '__main__':
+    app.secret_key = "key"
     # Bind to PORT if defined, otherwise default to 5000.
     app.run(host='0.0.0.0', port=5656, debug=True)#, use_reloader=False)
 
