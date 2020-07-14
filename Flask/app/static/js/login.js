@@ -74,12 +74,12 @@ $signup_pass.on('input',function(e) {
 function login_post(data) {
     $.post( "/login_data", JSON.stringify(data))
         .done(function( data ) {
-                location.href = '/dashboard';
+                location.href = '/';
         })
         .fail(function($jqXHR, textStatus, errorThrown){
             if($jqXHR.status == 404) {
-                console.log( errorThrown + ": " + JSON.parse($jqXHR.responseText).message );
-                $msg_placeholder.text(JSON.parse($jqXHR.responseText).message).css('color', 'red').css('font-size', '12px');
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
             }
         });
 };
@@ -87,12 +87,12 @@ function login_post(data) {
 function signup_post(data) {
     $.post( "/signup_data", JSON.stringify(data))
         .done(function( data ) {
-            location.href = '/dashboard';
+            location.href = '/';
         })
         .fail(function($jqXHR, textStatus, errorThrown){
             if($jqXHR.status == 404) {
-                console.log( errorThrown + ": " + JSON.parse($jqXHR.responseText).message );
-                $msg_placeholder.text(JSON.parse($jqXHR.responseText).message).css('color', 'red').css('font-size', '12px');
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
             }
         });
 };

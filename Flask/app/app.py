@@ -8,35 +8,45 @@ import datetime as dt
 
 from flask import Flask, json, request, Response, render_template, session, redirect, url_for
 from flask_cors import CORS, cross_origin
+from pymongo import *
 
 import db.db_comminication as db
 from db.db_file_adapter import DBFileAdapter
+from db.db_mongo_adapter import DBMongoAdapter
 from model.user import User
 import model.messages as msg
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/*": {"Access-Control-Allow-Origin": "*"}})
 
-db_adapter = DBFileAdapter()
-
+# db_adapter = DBFileAdapter()
+db_adapter = DBMongoAdapter()
+if db.connect(db_adapter):
+    print("Data base connected!")
+else:
+    print("No connection with the data base!")
 
 @app.route('/')
-@app.route('/dashboard')
+# @app.route('/dashboard')
 def index():
     print('Data posting path: %s' % request.path)
-    if session.get('logged_in'):
-        # col = db.Users
-        messages = session['username']
-        id = session['id']
-        email = session['email']
-        # credits = col.find_one({'email': email}, {'_id': 0})['credits']
-        return render_template("dashboard.html", username=messages, id=id, email=email)
+    if session.get('user'):
+        username = session['user']['username']
+        id = session['user']['id']
+        email = session['user']['email']
+        return render_template("dashboard.html", username=username, id=id, email=email)
     else:
         return redirect('/login')
 
 
 @app.route('/login')
 def login():
+    return render_template("login.html")
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
     return render_template("login.html")
 
 
@@ -48,17 +58,13 @@ def login_data():
     print('POST data: %s ' % json_data)
     user = db.get_user(db_adapter, json_data)
 
-    resp = Response()
-    if user['message'] == msg.LOGGED_IN:
-        session['username'] = user['username']
-        session['email'] = user['email']
-        session['password'] = user['password']
-        session['id'] = user['id']
-        session['logged_in'] = True
+    if user is not None:
+        session['user'] = user.to_json()
         return redirect(url_for('index'))
     else:
+        resp = Response()
         resp.status_code = 404
-        resp.data = str(user).replace("'", "\"")
+        resp.data = str(msg.INVALID_USER_PASS).replace("'", "\"")
         return resp
 
 
@@ -70,24 +76,21 @@ def signup_data():
     print('POST data: %s ' % json_data)
     user = User()
     user.create_user(json_data)
-    signed = db.set_user(db_adapter, user)
-    print(signed)
-    resp = Response()
-    if signed['message'] == msg.SIGNED_IN:
-        session['username'] = signed['username']
-        session['email'] = signed['email']
-        session['password'] = signed['password']
-        session['id'] = signed['id']
-        session['logged_in'] = True
+    user = db.set_user(db_adapter, user)
+    print(user)
+
+    if user is not None:
+        session['user'] = user.to_json()
         return redirect(url_for('index'))
     else:
+        resp = Response()
         resp.status_code = 404
-        resp.data = str(signed).replace("'", "\"")
+        resp.data = str(msg.USER_ALREADY_IN).replace("'", "\"")
         return resp
 
 
-@app.route('/dashboard_new', methods=['POST', 'GET'])
-def dashboard_new():
+@app.route('/dashboard', methods=['POST', 'GET'])
+def dashboard():
     print('Data posting path: %s' % request.path)
     # print(request.get_data())
     # json_data = json.loads(request.get_data())
