@@ -74,21 +74,30 @@ $signup_pass.on('input',function(e) {
 function login_post(data) {
     $.post( "/login_data", JSON.stringify(data))
         .done(function( data ) {
-            console.log( "Data Loaded: " + data );
-            $msg_placeholder.text(data).css('color', 'red');
+                location.href = '/';
+        })
+        .fail(function($jqXHR, textStatus, errorThrown){
+            if($jqXHR.status == 404) {
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
+            }
         });
 };
 
 function signup_post(data) {
     $.post( "/signup_data", JSON.stringify(data))
         .done(function( data ) {
-            console.log( "Data Loaded: " + data );
-            $msg_placeholder.text(data).css('color', 'red');
+            location.href = '/';
+        })
+        .fail(function($jqXHR, textStatus, errorThrown){
+            if($jqXHR.status == 404) {
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
+            }
         });
 };
 
 function check_fields_login(email, pass){
-    console.log("ovde");
     isChecked = true;
     if(pass === "")  {
         $login_pass.css('border', '1px solid red');

@@ -1,14 +1,1 @@
-[
-    {
-        "id": "123",
-        "username": "ime1",
-        "email": "email1@company.com",
-        "password": "pass1"
-    },
-    {
-        "id": "321",
-        "username": "ime2",
-        "email": "email2@company.com",
-        "password": "pass2"
-    }
- ]
+[{"id": "8df0c6b5-c52b-11ea-a15a-50e085759747", "username": "toma", "email": "toma.dimcic@gmail.com", "password": "aaa"}, {"id": "c1a9e9fe-c5c0-11ea-97ba-50e085759747", "username": "qqq", "email": "dfh", "password": "zsr"}, {"id": "e4ee66be-c5c0-11ea-9266-50e085759747", "username": "qqq", "email": "zdrg", "password": "zsr"}, {"id": "12c14c31-c5c1-11ea-a6f9-50e085759747", "username": "qqq", "email": "sd", "password": "zsr"}, {"id": "a7af07d4-c5f0-11ea-b3c5-50e085759747", "username": "art", "email": "arg", "password": "aserf"}, {"id": "11476675-c5f1-11ea-860e-50e085759747", "username": "art", "email": "dfg", "password": "aserf"}]

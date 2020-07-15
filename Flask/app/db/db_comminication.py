@@ -1,5 +1,5 @@
-def connect(db):
-    return db.connect() #returns adapter
+def connect(db_adapter):
+    return db_adapter.connect()
 
 
 def get_table(db_adapter, name):
