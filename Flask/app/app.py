@@ -34,20 +34,27 @@ def index():
         username = session['user']['username']
         id = session['user']['id']
         email = session['user']['email']
-        return render_template("dashboard.html", username=username, id=id, email=email)
+        menu = render_template("menu/menu.html")
+        dashboard = render_template("dashboard/dashboard.html")
+        return render_template("index.html",
+                               username=username,
+                               id=id,
+                               email=email,
+                               menu=menu,
+                               dashboard=dashboard)
     else:
         return redirect('/login')
 
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    return render_template("login/login.html")
 
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return render_template("login.html")
+    return render_template("login/login.html")
 
 
 @app.route('/login_data', methods=['POST'])
@@ -89,13 +96,13 @@ def signup_data():
         return resp
 
 
-@app.route('/dashboard', methods=['POST', 'GET'])
-def dashboard():
-    print('Data posting path: %s' % request.path)
-    # print(request.get_data())
-    # json_data = json.loads(request.get_data())
-    # print('POST data: %s ' % json_data)
-    return render_template("dashboard.html")#, data=json_data)
+# @app.route('/dashboard', methods=['POST', 'GET'])
+# def dashboard():
+#     print('Data posting path: %s' % request.path)
+#     # print(request.get_data())
+#     # json_data = json.loads(request.get_data())
+#     # print('POST data: %s ' % json_data)
+#     return render_template("dashboard.html")#, data=json_data)
 
 # @app.route('/data/<path:sen_path>', methods = ['POST'])
 # def data(sen_path):
