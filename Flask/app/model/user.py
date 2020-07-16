@@ -5,6 +5,7 @@ class User:
         self._email = ""
         self._password = ""
         self._id = ""
+        self._role = ""
 
     def create_user(self, json_data):
         self._username = json_data['username']
