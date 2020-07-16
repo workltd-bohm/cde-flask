@@ -1,7 +1,7 @@
 from pymongo import *
 from pymongo.errors import ConnectionFailure
 import uuid
-from model.user import User
+from app.model.user import User
 
 
 class DBMongoAdapter:

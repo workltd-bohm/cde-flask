@@ -8,7 +8,7 @@ class Basic:
     # from db.db_file_adapter import DBFileAdapter
     # DB = DBFileAdapter()
 
-    from db.db_mongo_adapter import DBMongoAdapter
+    from app.db.db_mongo_adapter import DBMongoAdapter
     DB = DBMongoAdapter()
 
     SECRET_KEY = "key"
