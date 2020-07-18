@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu/menu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 
     <script src="{{ url_for('static', filename='js/common/jquery-3.5.1.min.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/common/d3.v3.min.js') }}" charset="utf-8"></script>
 </head>
     <body>
-      {{ menu|safe }}
-      {{ dashboard|safe }}
+      <table id="index">
+        <tr>
+          <td id="index-menu">{{ menu|safe }}</td>
+          <td id="index-dashboard">{{ dashboard|safe }}</td>
+          <td id="index-activity">{{ activity|safe }}</td>
+        </tr>
+      </table>
     </body>
 </html>
