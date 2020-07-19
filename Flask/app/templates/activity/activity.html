@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/activity/activity.css') }}">
+<div id="activtiy">
+  <!--          <div class="notes"><p>Welcome to the new Dashboard!</p></div>-->
+  <a href="#activtiy-off">
+    <i class="activtiy-icons back">&#xE314;</i>
+  </a>
+  <a href="#activtiy">
+    <div class="logo">
+      <span></span>
+      <p>{{ activity_name }}</p>
+    </div>
+    <p class="activtiy-pmenu">ACTIVITY</p>
+  </a>
+  <hr>
+  <ul class="activtiy-menu">
+      <li><i class="activtiy-icons">account_circle</i><p>{{ username }}</p></li>
+    <li><i class="activtiy-icons">dashboard</i><p>Home</p></li>
+      <li><i class="activtiy-icons">&#xE8CC;</i><p>Marketplace</p></li>
+    <li><i class="activtiy-icons">&#xE87A;</i><p>Tasks</p></li>
+    <li><i class="activtiy-icons">&#xE8B8;</i><p>Settings</p></li>
+    <li><i class="activtiy-icons">&#xE8B6;</i><p>Search</p></li>
+  </ul>
+</div>
