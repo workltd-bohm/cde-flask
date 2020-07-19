@@ -1,9 +1,16 @@
-html > body, body > table, body > table > tr > td {
+html, body, table {
   margin: 0;
+  padding: 0;
   background-color: #A8A8A8;
   font-family: 'Roboto', sans-serif;
   background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);
   overflow: auto;
+  border-spacing: 0;
+}
+
+td {
+  margin: 0;
+  padding: 0;
 }
 
 #index {
@@ -13,12 +20,12 @@ html > body, body > table, body > table > tr > td {
 }
 
 #index-menu {
-  width: 20%;
+  width: 10%;
   vertical-align: top;
 }
 
 #index-dashboard {
-  width: 60%;
+  width: 70%;
   vertical-align: top;
 }
 
