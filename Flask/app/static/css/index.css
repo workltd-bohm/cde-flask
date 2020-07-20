@@ -20,18 +20,21 @@ td {
 }
 
 #index-menu {
-  width: 10%;
+  width: 15%;
   vertical-align: top;
+  z-index: 100;
 }
 
 #index-dashboard {
   width: 70%;
   vertical-align: top;
+  z-index: 0;
 }
 
 #index-activity {
-  width: 20%;
+  width: 15;
   vertical-align: top;
+  z-index: 99;
 }
 
 a:link, a:visited {
