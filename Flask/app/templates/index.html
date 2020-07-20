@@ -1,60 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Animated Login Form</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<!--	<script src="{{ url_for('static', filename='js/main.js') }}"></script>-->
-	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 
+    <script src="{{ url_for('static', filename='js/common/jquery-3.5.1.min.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/common/d3.v3.min.js') }}" charset="utf-8"></script>
 </head>
-<body>
-
-  <div class="container">
-    <div class="backbox">
-      <div class="loginMsg">
-        <div class="textcontent">
-          <p class="title">Don't have an account?</p>
-          <p>Sign up to save all your graph.</p>
-          <button id="switch1">Sign Up</button>
-        </div>
-      </div>
-      <div class="signupMsg visibility">
-        <div class="textcontent">
-          <p class="title">Have an account?</p>
-          <p>Log in to see all your collection.</p>
-          <button id="switch2">LOG IN</button>
-        </div>
-      </div>
-    </div>
-    <!-- backbox -->
-
-    <div class="frontbox">
-      <div class="login">
-        <h2>LOG IN</h2>
-        <div class="inputbox">
-          <input type="text" name="email" placeholder="  EMAIL">
-          <input type="password" name="password" placeholder="  PASSWORD">
-        </div>
-        <p>FORGET PASSWORD?</p>
-        <button>LOG IN</button>
-      </div>
-
-      <div class="signup hide">
-        <h2>SIGN UP</h2>
-        <div class="inputbox">
-          <input type="text" name="fullname" placeholder="  FULLNAME">
-          <input type="text" name="email" placeholder="  EMAIL">
-          <input type="password" name="password" placeholder="  PASSWORD">
-        </div>
-        <button>SIGN UP</button>
-      </div>
-
-    </div>
-    <!-- frontbox -->
-  </div>
-
-  <script type="text/javascript" src="js/login.js"></script>
-</body>
-
+    <body>
+      <table id="index">
+        <tr>
+          <td id="index-menu">{{ menu|safe }}</td>
+          <td id="index-dashboard">{{ dashboard|safe }}</td>
+          <td id="index-activity">{{ activity|safe }}</td>
+        </tr>
+      </table>
+    </body>
 </html>

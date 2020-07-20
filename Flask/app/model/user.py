@@ -5,6 +5,10 @@ class User:
         self._email = ""
         self._password = ""
         self._id = ""
+        self._picture = ""
+        self._company_code = ""
+        self._company_name = ""
+        self._company_role = ""
 
     def create_user(self, json_data):
         self._username = json_data['username']
@@ -43,5 +47,42 @@ class User:
     def password(self, value):
         self._password = value
 
+    @property
+    def picture(self):
+        return self._picture
+
+    @picture.setter
+    def picture(self, value):
+        self._picture = value
+
+    @property
+    def company_code(self):
+        return self._company_code
+
+    @company_code.setter
+    def company_code(self, value):
+        self._company_code = value
+
+    @property
+    def company_name(self):
+        return self._company_name
+
+    @company_name.setter
+    def company_name(self, value):
+        self._company_name = value
+
+    @property
+    def company_role(self):
+        return self._company_role
+
+    @company_role.setter
+    def company_role(self, value):
+        self._company_role = value
+
     def to_json(self):
-        return {'id': self._id, 'username': self._username, 'email': self._email, 'password': self._password}
+        return {
+                    'id': self._id,
+                    'username': self._username,
+                    'email': self._email,
+                    'password': self._password
+                }

@@ -1,7 +1,7 @@
 from pymongo import *
 from pymongo.errors import ConnectionFailure
 import uuid
-from model.user import User
+from app.model.user import User
 
 
 class DBMongoAdapter:
@@ -11,8 +11,8 @@ class DBMongoAdapter:
 
     def connect(self):
         try:
-            client = MongoClient('localhost:27017')
-            self._db = client.slDB
+            self._client = MongoClient('localhost:27017')
+            self._db = self._client.slDB
         except ConnectionFailure(message='', error_labels=None):
             return False
         return True
@@ -25,6 +25,7 @@ class DBMongoAdapter:
             user = User()
             user.create_user(result)
             user.id = result['id']
+        self._close_connection()
         return user
 
     def set_user(self, user):
@@ -35,4 +36,8 @@ class DBMongoAdapter:
             user.id = str(uuid.uuid1())
             col.insert_one(user.to_json())
             modified_user = user
+        self._close_connection()
         return modified_user
+
+    def _close_connection(self):
+        self._client.close()
