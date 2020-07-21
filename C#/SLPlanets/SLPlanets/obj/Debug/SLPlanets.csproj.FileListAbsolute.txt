@@ -1,0 +1,13 @@
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csprojAssemblyReference.cache
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.CoreCompileInputs.cache
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.MainForm.resources
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.GenerateResource.cache
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\SLPlanets.dll
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\SLPlanets.pdb
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\RhinoWindows.dll
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\Eto.Wpf.dll
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\Mindscape.Raygun4Net.dll
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\bin\Eto.Wpf.pdb
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.CopyComplete
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.dll
+D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.pdb
