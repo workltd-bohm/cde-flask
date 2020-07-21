@@ -1,12 +1,23 @@
 #SVG {
-    width: 100%;
+    width: 110%;
     height: 100%;
+    margin-left: -10%;
 }
 
-#Star {
+g > circle.object {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
-    fill : url(#planetShadow);
+    fill : rgb(84, 91, 126);
     stroke: rgba(50,50,50,0.5);
     stroke-width: 10px;
-    box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+}
+
+g > circle.shader {
+    fill : url(#planetShadow);
+    stroke: 0;
+    stroke-width: 0;
+}
+
+#Touch {
+    fill : rgba(0, 0, 0, 0.0);
+    stroke-width: 0;
 }
