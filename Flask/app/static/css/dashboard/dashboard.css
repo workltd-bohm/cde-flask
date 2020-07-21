@@ -6,7 +6,7 @@
 
 g > circle.object {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
-    fill : rgb(84, 91, 126);
+    fill : url("#slika-zemlja");
     stroke: rgba(50,50,50,0.5);
     stroke-width: 10px;
 }

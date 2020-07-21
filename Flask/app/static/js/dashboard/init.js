@@ -1,6 +1,9 @@
 const ORBIT_MIN_ZOOM = 1
 const ORBIT_MAX_ZOOM = 2;
 const ORBIT_ANIM_MOVE = 200;
+const ORBIT_ROT_CICLE = 0.66;
+const ORBIT_ROT_SCALE = 0.001;
+const ORBIT_SPEED_SCALE = 10;
 
 const PADDING = 300;
 
@@ -58,6 +61,9 @@ function WindowResize(){
         width_h : dash_w/2,
         height_h : dash_h/2,
         padding : PADDING,
+        speed_scale : ORBIT_SPEED_SCALE,
+        rotate_scale : ORBIT_ROT_SCALE,
+        rotate : 0,
         start : Date.now()
     };
 
@@ -90,7 +96,7 @@ $( document ).ready(function() {
 
     var globDrag = d3.behavior.drag()
         //.on("drag", Move);
-        .on("drag", Rotate); 
+        //.on("drag", Rotate); 
     var globZoom = d3.behavior.zoom()
         .scaleExtent([ORBIT_MIN_ZOOM,ORBIT_MAX_ZOOM])
         .on("zoom", Zoom);
@@ -117,8 +123,23 @@ $( document ).ready(function() {
         .attr("fx", "50%")
         .attr("fy", "50%");
     planetShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0.1)");
-    planetShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.3)");
-    planetShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.5)");
+    planetShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.5)");
+    planetShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.8)");
+
+    var planetZemlja = SWGDefs.append("pattern")
+            //.attr("patternUnits","userSpaceOnUse")
+            .attr("id", "slika-zemlja")
+            .attr("x", "0%")
+            .attr("y", "-150%")
+            .attr("width", "300%")
+            .attr("height", "400%")
+            .attr("viewBox","0 0 1 1")
+            .append("image")
+            .attr("x", -ORBIT_ROT_CICLE)
+            .attr("y", "0")
+            .attr("width", "1")
+            .attr("height", "1")
+            .attr("xlink:href", IMG_PATH);
 
     // -------------------------------------------------------
 
@@ -178,7 +199,7 @@ $( document ).ready(function() {
         var dif_x = g_root.x - d3.event.x;
         var dif_y = g_root.y - d3.event.y;
         var deg = Math.atan2(dif_y, dif_x);
-        g_root.degree += Math.sin((g_root.degree-(deg))/180*Math.PI)*5;
+        //g_root.degree += Math.sin((g_root.degree-(deg))/180*Math.PI)*5;
     }
     function Zoom() {
         projection.translate(d3.event.translate);
@@ -197,6 +218,10 @@ $( document ).ready(function() {
         var offsetY =  g_root.scale*(g_root.y - g_project.height_h) ;
         g_root.width = g_project.width_h + offsetX ;
         g_root.height = g_project.height_h + offsetY ;
+        //.log(parseFloat(planetZemlja.attr("x")));
+        g_project.rotate += ORBIT_ROT_SCALE/100*g_project.speed_scale;
+        if(g_project.rotate > 0) g_project.rotate = -ORBIT_ROT_CICLE;
+        planetZemlja.attr("x", g_project.rotate);
         g_root.children.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
