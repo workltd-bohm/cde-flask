@@ -1,3 +1,5 @@
+@import url("../common/colors.css");
+
 #cont {
   height: 100%;
 }
@@ -18,7 +20,7 @@
 }
 
 #menu-fixed {
-  background-color: #102238;
+  background-color: var(--side-menu);
   width: 50%;
   z-index: 2;
   height: 100%;
