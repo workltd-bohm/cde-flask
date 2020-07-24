@@ -60,6 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conduit.cs" />
+    <Compile Include="IC\IC.cs" />
+    <Compile Include="IC\ICDir.cs" />
+    <Compile Include="IC\ICFile.cs" />
+    <Compile Include="IC\ICHistory.cs" />
+    <Compile Include="IC\ICProject.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,9 +73,13 @@
     </Compile>
     <Compile Include="Planet.cs" />
     <Compile Include="PlanetarySystem.cs" />
+    <Compile Include="User\Company.cs" />
+    <Compile Include="User\Modification.cs" />
+    <Compile Include="User\Share.cs" />
     <Compile Include="SLPlanetsCommand.cs" />
     <Compile Include="SLPlanetsPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EmbeddedResources\plugin-utility.ico" />
@@ -78,6 +87,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

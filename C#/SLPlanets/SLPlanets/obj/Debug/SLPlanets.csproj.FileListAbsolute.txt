@@ -11,3 +11,16 @@ D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SL
 D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.CopyComplete
 D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.dll
 D:\triangle\work\work_ltd\Superleggera\Development\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.pdb
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\SLPlanets.dll
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\SLPlanets.pdb
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\RhinoWindows.dll
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\Eto.Wpf.dll
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\Mindscape.Raygun4Net.dll
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\bin\Eto.Wpf.pdb
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csprojAssemblyReference.cache
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.MainForm.resources
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.GenerateResource.cache
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.CoreCompileInputs.cache
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.csproj.CopyComplete
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.dll
+E:\triangle\work\work_ltd\SupperLeggera\development\main\super_leggera\C#\SLPlanets\SLPlanets\obj\Debug\SLPlanets.pdb
