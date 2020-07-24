@@ -1,13 +1,5 @@
 @import url("../common/colors.css");
 
-#activtiy {
-  width: 50%;
-  z-index: 2;
-  height: 100%;
-  background-color: var(--side-menu);
-  position: fixed;
-  transition: all 0.3s;
-  box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
-  text-align: center;
-  overflow: auto;
+#Activtiy {
+  float: right;
 }
