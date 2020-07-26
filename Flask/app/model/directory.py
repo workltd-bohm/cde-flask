@@ -1,6 +1,10 @@
-class Directory:
+from .information_container import IC
 
-    def __init__(self, dir_id, name, parent_directory, files):
+
+class Directory(IC):
+
+    def __init__(self, dir_id, name, parent_directory, directory_history, files):
+        super.__init__(dir_id, name, parent_directory, directory_history, files)
         self._dir_id = dir_id
         self._name = name
         self._parent_directory = parent_directory

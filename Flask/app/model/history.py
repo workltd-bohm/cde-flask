@@ -1,4 +1,4 @@
-class FileHistory:
+class History:
 
     def __init__(self, created_time, modified_time, user):
         self._created_time = created_time

@@ -8,6 +8,30 @@ class Role(Enum):
     OWNER = 3
 
 
+class CompanyRole(Enum):
+    ARCHITECT = 'A'
+    BUILDING_SURVEYOR = 'B'
+    CIVIL_ENGINEER = 'C'
+    DRAINAGE_HIGHWAY = 'D'
+    ELECTRICAL_ENGINEER = 'E'
+    FACILITIES_MANAGER = 'F'
+    GEOGRAPHICAL_LAN_SURVEYOR = 'G'
+    HEATING_VENTILATOR_DESIGNER = 'H'
+    INTERIOR_DESIGNER = 'I'
+    CLIENT = 'K'
+    LANDSCAPE_ARCHITECT = 'L'
+    MECHANICAL_ENGINEER = 'M'
+    PUBLIC_HEALTH_ENGINEER = 'P'
+    QUANTITY_SURVEYOR = 'Q'
+    STRUCTURAL_ENGINEER = 'S'
+    TOWN_PLANNER = 'T'
+    CONTRACTOR = 'C'
+    SUBCONTRACTOR = 'X'
+    SPECIALIST_DESIGNER = 'Y'
+    GENERAL = 'Z'
+    # ...
+
+
 class UserRoles:
 
     def __init__(self, user_id, project_id, role):
