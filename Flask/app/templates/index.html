@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/menu/menu.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/activity/activity.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/dashboard.css') }}">
 
     <script src="{{ url_for('static', filename='js/common/jquery-3.5.1.min.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/common/d3.v3.min.js') }}" charset="utf-8"></script>
@@ -14,11 +15,12 @@
     <body>
       <table id="index">
         <tr>
-          <td id="index-menu">{{ menu|safe }}</td>
-          <td id="index-dashboard">{{ dashboard|safe }}</td>
-          <td id="index-activity">{{ activity|safe }}</td>
+          {{ menu|safe }}
+          {{ dashboard|safe }}
+          {{ activity|safe }}
         </tr>
       </table>
     </body>
 </html>
 <script src="{{ url_for('static', filename='js/menu/menu.js') }}" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/dashboard/init.js') }}" charset="utf-8"></script>
