@@ -29,7 +29,7 @@ td {
   /* width: 15%; */
   height: 100%;
   vertical-align: top;
-  z-index: 100;
+  z-index: 5;
 }
 
 #index-dashboard {
@@ -43,7 +43,10 @@ td {
   /* width: 15%; */
   height: 100%;
   vertical-align: top;
-  z-index: 99;
+  z-index: 5;
+  -webkit-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.19), -8px 0px 10px rgba(0, 0, 0, 0.23);
+  -moz-box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.19), -8px 0px 10px rgba(0, 0, 0, 0.23);
+  box-shadow: -10px 0px 10px rgba(0, 0, 0, 0.19), -8px 0px 10px rgba(0, 0, 0, 0.23);
 }
 
 a:link, a:visited {
