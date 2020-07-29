@@ -28,7 +28,7 @@ def json_to_obj(json_file):
                          json_file['parent'],
                          json_file['history'],
                          json_file['path'],
-                         [json_to_obj(x).to_json() for x in json_file['sub_folders']])
+                         [json_to_obj(x) for x in json_file['sub_folders']])
     else:
         root = File(json_file['ic_id'],
                     json_file['name'],
@@ -49,7 +49,7 @@ def path_to_obj(path):
                          parent,
                          [],
                          path,
-                         [path_to_obj(path + '/' + x).to_json() for x in os.listdir(path)
+                         [path_to_obj(path + '/' + x) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
         root = File(path, name, parent, [], path, p.suffix)

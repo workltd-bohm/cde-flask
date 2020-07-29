@@ -63,7 +63,7 @@ class IC:
             'parent': self._parent,
             'history': self._history,
             'path': self._path,
-            'sub_folders': self._sub_folders
+            'sub_folders': [x.to_json() for x in self._sub_folders]
         }
 
     @staticmethod
