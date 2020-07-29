@@ -129,6 +129,19 @@ planetShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0
 planetShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.5)");
 planetShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,1)");
 
+var fShadow = SWGDefs.append("filter")
+	.attr("id", "shadow")
+	.attr("x", "-20%")
+	.attr("y", "-20%")
+	.attr("width", "140%")
+	.attr("height", "140%");
+fShadow.append("feGaussianBlur")
+	.attr("stdDeviation", "1 1")
+	.attr("result", "shadow");
+fShadow.append("feOffset")
+	.attr("dx", "2")
+    .attr("dy", "2");
+
 var planetZemlja = SWGDefs.append("pattern")
         //.attr("patternUnits","userSpaceOnUse")
         .attr("id", "slika-zemlja")
@@ -164,20 +177,25 @@ function CreateSun(data) {
         .each(function(d){AddChildren(d3.select(this), d, null);});
 }
 
-function AddChildren(obj, data, parent, level=1){
+function AddChildren(obj, data, parent, level=1, number=1){
     data.values.this = obj;
     data.values.parent = (parent != null) ? d3.select("#obj-"+parent.id) : null;
     data.values.back = parent;
     data.box = {...g_box};
+    data.values.number = number;
 
     data.values.this.attr("id", "obj-"+data.id);
     data.values.this.attr("parent", (parent != null) ? "obj-"+parent.id : "null");
 
     if(level > 1) {
+        data.values.centar = false;
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform","rotate("+(data.id*45)+"), translate("+(g_globusRadius*1.7)+", 0), rotate("+(-data.id*45)+")");
+            .attr("transform","rotate("+(data.id*data.values.number)+"), translate("+(g_globusRadius*1.7)+", 0), rotate("+(-data.id*data.values.number)+")");
+    }
+    else{
+        data.values.centar = true;
     }
 
     data.values.children = data.values.this.append("g").attr("class", "child");
@@ -188,11 +206,30 @@ function AddChildren(obj, data, parent, level=1){
         .attr("class", "object")
         .attr("r", g_globusRadius/level);
 
+    data.values.text_s = data.values.this.append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .attr("fill","rgb(0,0,0)")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(2/level)+")")
+        .attr("font-size", "28px")
+        .style("filter", "url(#shadow)")
+        .attr("text-anchor","middle")
+        .html("obj-"+data.id);
+
+    data.values.text = data.values.this.append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .attr("fill","rgba(250,250,250,255)")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(2/level)+")")
+        .attr("font-size", "28px")
+        .attr("text-anchor","middle")
+        .html("obj-"+data.id);
+
     if(level > 1)  {
         data.values.shader = obj.append("circle")
             .attr("class", "shader")
             .attr("r", g_globusRadius/level)
-            .attr("transform","rotate("+(data.id*45)+")");
+            .attr("transform","rotate("+(data.id*data.values.number)+")");
 
         data.values.select = data.values.this.append("circle")
             .attr("class","select")
@@ -214,8 +251,8 @@ function AddChildren(obj, data, parent, level=1){
             .on("mouseup",function(d){
                 if(data.box.position.x == d3.event.x && data.box.position.y == d3.event.y) {
                     g_project.zoom = false;
-                    var vec_x = Math.cos((g_root.deg+data.id*45)/180*Math.PI);
-                    var vec_y = Math.sin((g_root.deg+data.id*45)/180*Math.PI);
+                    var vec_x = Math.cos((g_root.deg+data.id*data.values.number)/180*Math.PI);
+                    var vec_y = Math.sin((g_root.deg+data.id*data.values.number)/180*Math.PI);
                     g_root.scale_old = g_root.scale;
                     g_root.scale *= 2;
                     g_root.x -= vec_x*g_globusRadius*1.7*g_root.scale;
@@ -226,6 +263,14 @@ function AddChildren(obj, data, parent, level=1){
                         .ease("linear")
                         .duration(ORBIT_ANIM_MOVE)
                         .style("opacity", 0)
+                    data.values.back.values.text_s.transition()
+                        .ease("linear")
+                        .duration(ORBIT_ANIM_MOVE)
+                        .style("opacity", 0)
+                    data.values.back.values.text.transition()
+                        .ease("linear")
+                        .duration(ORBIT_ANIM_MOVE)
+                        .style("opacity", 0)
                     data.values.shader.transition()
                         .ease("linear")
                         .duration(ORBIT_ANIM_MOVE)
@@ -233,7 +278,15 @@ function AddChildren(obj, data, parent, level=1){
                     data.values.picture.transition()
                         .ease("linear")
                         .duration(ORBIT_ANIM_MOVE)
-                        .attr("transform","rotate("+(-g_root.deg)+")");
+                        .attr("transform","rotate("+(-g_root.deg)+")")
+                    // data.values.text_s.transition()
+                    //     .ease("linear")
+                    //     .duration(ORBIT_ANIM_MOVE)
+                    //     .attr("fill", "rgba(0,0,0,0)")
+                    data.values.text.transition()
+                        .ease("linear")
+                        .duration(ORBIT_ANIM_MOVE)
+                        .style("opacity", 0)
                     data.values.parent.select("g.child").selectAll("g").each(function(d){
                         if(d3.select(this).attr("id") && data.values.this.attr("id") != d3.select(this).attr("id")) {
                             //console.log(data.values.this.attr("id") , d3.select(this).attr("id"));
@@ -245,10 +298,9 @@ function AddChildren(obj, data, parent, level=1){
                         if(data.values.this.attr("id") == d3.select(this).attr("id")){
                             d3.select(this).transition()
                                 .ease("linear")
-                                .duration(ORBIT_ANIM_MOVE*5)
+                                .duration(ORBIT_ANIM_MOVE*2)
                                 .each("end", function(){
                                     g_project.skip = data.values.parent;
-                                    console.log("end");
                                 })
                         }
                     });
@@ -256,11 +308,12 @@ function AddChildren(obj, data, parent, level=1){
             });
     }
 
+    number = data.children.length > 1 ? 360/data.children.length : 1;
     data.values.children.selectAll("g")
         .data(data.children)
         .enter()
         .append("g")
-        .each(function(d){AddChildren(d3.select(this), d, data, level+1);});
+        .each(function(d){AddChildren(d3.select(this), d, data, level+1, number);});
 }
 
 // -------------------------------------------------------
@@ -310,7 +363,7 @@ function AnimateUniverse() {
     planetZemlja.attr("x", g_project.rotate);
     g_root.obj.transition()
         .ease("linear")
-        .duration((g_project.warp) ? 0 : ORBIT_ANIM_MOVE)
+        .duration((g_project.warp) ? function(){g_project.warp = false; return 0;} : ORBIT_ANIM_MOVE)
         .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
         .transition()
         .each(function(){
@@ -319,9 +372,6 @@ function AnimateUniverse() {
                 CreateSun(g_data);
                 g_project.skip = false;
                 g_project.warp = true;
-            }
-            else{
-                g_project.warp = false;
             }
         });
         //.each("end", function(){d3.selectAll(".putanja").attr("stroke-width", 1/g_root.scale);});
@@ -336,6 +386,18 @@ function AnimatePlanet(data) {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("transform","rotate("+(g_root.deg)+")");
+
+    if (!data.values.centar) {
+        data.values.text_s.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(-g_root.deg)+")");
+
+        data.values.text.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(-g_root.deg)+")");
+    }
 }
 
 $( document ).ready(function() {
@@ -365,9 +427,9 @@ $( document ).ready(function() {
         AnimateUniverse();
         //g_root.children.selectAll("g.star").each(AnimateSun);
         g_root.children.selectAll("g").each(AnimatePlanet);
-    });
-});
 
-$( window ).resize(function() {
-    WindowResize();
+        if ($(DASHBOARD).width() != g_project.width || $(DASHBOARD).height() != g_project.height){
+            WindowResize();
+        }
+    });
 });
