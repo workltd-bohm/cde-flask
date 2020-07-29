@@ -1,11 +1,12 @@
 class IC:
 
-    def __init__(self, ic_id, name, parent, history, files=None):
+    def __init__(self, ic_id, name, parent, history, path, sub_folders):
         self._ic_id = ic_id
         self._name = name
         self._parent = parent
         self._history = history
-        self._files = files
+        self._path = path
+        self._sub_folders = sub_folders
 
     @property
     def ic_id(self):
@@ -40,9 +41,36 @@ class IC:
         self._history = value
 
     @property
-    def files(self):
-        return self._files
+    def path(self):
+        return self._path
 
-    @files.setter
-    def files(self, value):
-        self._files = value
+    @path.setter
+    def path(self, value):
+        self._path = value
+
+    @property
+    def sub_folders(self):
+        return self._sub_folders
+
+    @sub_folders.setter
+    def sub_folders(self, value):
+        self._sub_folders = value
+
+    def to_json(self):
+        return {
+            'ic_id': self._ic_id,
+            'name': self._name,
+            'parent': self._parent,
+            'history': self._history,
+            'path': self._path,
+            'sub_folders': self._sub_folders
+        }
+
+    @staticmethod
+    def json_to_obj(json_file):
+        return IC(json_file['ic_id'],
+                  json_file['name'],
+                  json_file['parent'],
+                  json_file['history'],
+                  json_file['path'],
+                  json_file['sub_folders'])
