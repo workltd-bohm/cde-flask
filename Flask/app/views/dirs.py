@@ -45,12 +45,12 @@ def path_to_obj(path):
     parent = str(p.parent)
     if os.path.isdir(path):
         root = Directory(str(path),
-                                  name,
-                                  parent,
-                                  [],
-                                  path,
-                                  [path_to_obj(path + '/' + x).to_json() for x in os.listdir(path)
-                                   if not x.endswith(".pyc") and "__pycache__" not in x])
+                         name,
+                         parent,
+                         [],
+                         path,
+                         [path_to_obj(path + '/' + x).to_json() for x in os.listdir(path)
+                          if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
         root = File(path, name, parent, [], path, p.suffix)
     return root
