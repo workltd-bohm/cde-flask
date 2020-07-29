@@ -12,3 +12,11 @@ def get_user(db_adapter, identifier):
 
 def set_user(db_adapter, user):
     return db_adapter.set_user(user)
+
+
+def upload_project(db_adapter, project):
+    return db_adapter.upload_folder_structure(project)
+
+
+def get_project(db_adapter, project_name):
+    return db_adapter.get_project(project_name)

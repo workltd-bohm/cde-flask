@@ -2,6 +2,7 @@ from pymongo import *
 from pymongo.errors import ConnectionFailure
 import uuid
 from app.model.user import User
+from app.model.project import Project
 
 
 class DBMongoAdapter:
@@ -41,3 +42,20 @@ class DBMongoAdapter:
 
     def _close_connection(self):
         self._client.close()
+
+    def upload_folder_structure(self, project):
+        col = self._db.Projects
+        project_query = {'project_name': project.name}
+        project_uploaded = False
+        if col.find_one(project_query, {'_id': 0}) is None:
+            project_id = col.insert_one(project.to_json()).inserted_id
+            project_uploaded = True
+        self._close_connection()
+        return project_uploaded
+
+    def get_project(self, project_name):
+        col = self._db.Projects
+        project_query = {'project_name': project_name}
+        result = col.find_one(project_query, {'_id': 0})
+        self._close_connection()
+        return result

@@ -33,7 +33,7 @@ class Project:
         return {
             'project_id': self._project_id,
             'project_name': self._name,
-            'root_ic': self._root_ic
+            'root_ic': self._root_ic.to_json()
         }
 
     @staticmethod
