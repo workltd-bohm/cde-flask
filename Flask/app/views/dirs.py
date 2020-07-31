@@ -1,8 +1,35 @@
 import os
 import json
+from bson.binary import Binary
+
 from pathlib import Path
 from app import *
 from app.model.project import Project
+
+
+@app.route('/upload_file')
+def upload_file():
+    print('Data posting path: %s' % request.path)
+    project = None
+    if db.connect(db_adapter):
+        result = db.get_project(db_adapter, "test-project")
+        if result:
+            project = Project(result['project_id'], result['project_name'], json_to_obj(result['root_ic']))
+        else:
+            print("not_found")
+    file_obj = File("app/templates/activity/activity.html", "activity", "app\\templates\\activity", [],
+                'app/templates/activity/activity.html', '.html', '')
+    if db.connect(db_adapter) and project:
+        with open('app/templates/activity/activity.html', "rb") as f:
+            encoded = Binary(f.read())
+        result = db.upload_file(db_adapter, project, file_obj, encoded)
+        if result:
+            print(result)
+        else:
+            print("not_uploaded")
+    else:
+        print(str(msg.DB_FAILURE))
+    return redirect('/')
 
 
 @app.route('/get_project')
@@ -26,7 +53,7 @@ def get_project():
 def upload_project():
     print('Data posting path: %s' % request.path)
     root_obj = path_to_obj('app')
-    project = Project("123", "test-project", root_obj)
+    project = Project("default", "test-project", root_obj)
     print(project.to_json())
     if db.connect(db_adapter):
         uploaded = db.upload_project(db_adapter, project)

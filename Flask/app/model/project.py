@@ -4,6 +4,7 @@ class Project:
         self._project_id = project_id
         self._name = name
         self._root_ic = root_ic
+        self._replaced = False
 
     @property
     def project_id(self):
@@ -28,6 +29,22 @@ class Project:
     @root_ic.setter
     def root_ic(self, value):
         self._root_ic = value
+
+    def update_file(self, file, ic=None):
+        if not ic:
+            ic = self._root_ic
+        if not hasattr(ic, 'type'):
+            for x in ic.sub_folders:
+                self.update_file(file, x)
+                if self._replaced:
+                    break
+        else:
+            if ic.name == file.name and ic.type == file.type:
+                ic.stored_id = file.stored_id
+                print(ic.to_json())
+                self._replaced = True
+
+        return self, self._replaced
 
     def to_json(self):
         return {

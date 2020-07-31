@@ -20,3 +20,7 @@ def upload_project(db_adapter, project):
 
 def get_project(db_adapter, project_name):
     return db_adapter.get_project(project_name)
+
+
+def upload_file(db_adapter, project, file_obj, file):
+    return db_adapter.upload_file(project, file_obj, file)

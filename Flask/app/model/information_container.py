@@ -73,4 +73,4 @@ class IC:
                   json_file['parent'],
                   json_file['history'],
                   json_file['path'],
-                  json_file['sub_folders'])
+                  [x.to_json() for x in json_file['sub_folders']])

@@ -49,6 +49,8 @@ class DBMongoAdapter:
         project_uploaded = False
         if col.find_one(project_query, {'_id': 0}) is None:
             project_id = col.insert_one(project.to_json()).inserted_id
+            col.update_one({'project_id': 'default'},
+                           {'$set': {'project_id': str(project_id)}})
             project_uploaded = True
         self._close_connection()
         return project_uploaded
@@ -59,3 +61,29 @@ class DBMongoAdapter:
         result = col.find_one(project_query, {'_id': 0})
         self._close_connection()
         return result
+
+    def upload_file(self, project, file_obj, file):
+        col = self._db.Projects
+        col_file = self._db.Projects.Files
+        project_query = {'project_id': project.project_id, 'stored_id': file_obj.stored_id}
+        project_uploaded = False
+        if file_obj.stored_id == "" or col.find_one(project_query, {'_id': 0}) is None:
+            file_obj.stored_id = str(col_file.insert_one({"filename": file_obj.name,
+                                                          "file": file,
+                                                          "description": "test"})
+                                     .inserted_id)
+            # print(file_obj.to_json())
+            project.update_file(file_obj)
+            # print(project.to_json())
+            col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            project_uploaded = True
+        self._close_connection()
+        return project_uploaded
+
+    def get_file(self, file):
+        col = self._db.Projects.Files
+        project_query = {'file_id': file.ic_id}
+        stored_file = col.find_one(project_query, {'_id': 0})
+        self._close_connection()
+        return stored_file
+
