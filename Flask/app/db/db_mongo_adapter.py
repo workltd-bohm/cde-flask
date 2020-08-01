@@ -84,20 +84,26 @@ class DBMongoAdapter:
         col = self._db.Projects
         col_file = self._db.Projects.Files
         project_query = {'project_name': project_name}
-        print(project_query)
         project_json = col.find_one(project_query, {'_id': 0})
         project = None
         if project_json:
             project = Project.json_to_obj(project_json)
-            file_obj.stored_id = str(col_file.insert_one({"filename": file_obj.name,
-                                                          "file": file,
-                                                          "description": file_obj.description})
-                                     .inserted_id)
-            if project.upload_file(file_obj, project.root_ic):
-                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            file_query = {'file_name': file_obj.name, "parent": file_obj.parent}
+            file_json = col_file.find_one(file_query, {'_id': 0})
+            if file_json is None:
+                file_obj.stored_id = str(col_file.insert_one({"file_name": file_obj.name,
+                                                              "parent": file_obj.parent,
+                                                              "file": file,
+                                                              "description": file_obj.description})
+                                         .inserted_id)
+                if project.upload_file(file_obj, project.root_ic):
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                else:
+                    project = None
+                    print("dir with the specific path not found")
             else:
                 project = None
-                print("dir with the specific path not found")
+                print("File already exists in the given path")
         else:
             print("project with the specific ID not found")
         self._close_connection()
