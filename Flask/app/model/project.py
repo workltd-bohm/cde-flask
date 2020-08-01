@@ -1,3 +1,8 @@
+from .information_container import IC
+from .directory import Directory
+from .file import File
+
+
 class Project:
 
     def __init__(self, project_id, name, root_ic):
@@ -33,7 +38,7 @@ class Project:
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic
-        if not hasattr(ic, 'type'):
+        if not ic.is_directory:
             for x in ic.sub_folders:
                 self.update_file(file, x)
                 if self._replaced:
@@ -46,6 +51,19 @@ class Project:
 
         return self, self._replaced
 
+    def upload_file(self, file, ic=None):
+        if ic.is_directory:
+            if ic.path == file.parent:
+                ic.sub_folders.append(file)
+                self._replaced = True
+            else:
+                for x in ic.sub_folders:
+                    self.upload_file(file, x)
+                    if self._replaced:
+                        break
+
+        return self, self._replaced
+
     def to_json(self):
         return {
             'project_id': self._project_id,
@@ -54,5 +72,27 @@ class Project:
         }
 
     @staticmethod
+    def json_folders_to_obj(json_file):
+        if json_file['is_directory']:
+            root = Directory(json_file['ic_id'],
+                             json_file['name'],
+                             json_file['parent'],
+                             json_file['history'],
+                             json_file['path'],
+                             [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
+        else:
+            root = File(json_file['ic_id'],
+                        json_file['name'],
+                        json_file['parent'],
+                        json_file['history'],
+                        json_file['path'],
+                        json_file['type'],
+                        json_file['stored_id'],
+                        json_file['description'])
+        return root
+
+    @staticmethod
     def json_to_obj(json_file):
-        return Project(json_file['project_id'], json_file['project_name'], json_file['root_ic'])
+        root = Project.json_folders_to_obj(json_file['root_ic'])
+
+        return Project(json_file['project_id'], json_file['project_name'], root)

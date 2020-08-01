@@ -7,24 +7,37 @@ from app import *
 from app.model.project import Project
 
 
+test_json_request = {
+    'project_id': '5f25580d49e1b44fef634b56',
+    'project_name': 'test-project',
+    'dir_path': 'app/templates/activity',
+    'file_name': 'activity111.html',
+    'user': '',
+    'file': '',
+    'description': 'test description'
+}
+
+
 @app.route('/upload_file')
 def upload_file():
     print('Data posting path: %s' % request.path)
+    request_json = test_json_request  # json.loads(request.data)
+    print('POST data: %s ' % request_json)
     project = None
+    file_obj = File(request_json['dir_path'] + '/' + request_json['file_name'],
+                    request_json['file_name'].split('.')[0],
+                    request_json['dir_path'],
+                    [],
+                    request_json['dir_path'] + '/' + request_json['file_name'],
+                    request_json['file_name'].split('.')[1],
+                    '',
+                    request_json['description'])
     if db.connect(db_adapter):
-        result = db.get_project(db_adapter, "test-project")
-        if result:
-            project = Project(result['project_id'], result['project_name'], json_to_obj(result['root_ic']))
-        else:
-            print("not_found")
-    file_obj = File("app/templates/activity/activity.html", "activity", "app\\templates\\activity", [],
-                'app/templates/activity/activity.html', '.html', '')
-    if db.connect(db_adapter) and project:
         with open('app/templates/activity/activity.html', "rb") as f:
-            encoded = Binary(f.read())
-        result = db.upload_file(db_adapter, project, file_obj, encoded)
+            encoded = Binary(f.read())  # request_json['file']
+        result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         if result:
-            print(result)
+            print("successful - file uploaded")
         else:
             print("not_uploaded")
     else:
@@ -40,7 +53,7 @@ def get_project():
         result = db.get_project(db_adapter, "test-project")
         if result:
             print(result)
-            project = Project(result['project_id'], result['project_name'], json_to_obj(result['root_ic']))
+            project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
             print((project.to_json()))
         else:
             print("not_found")
@@ -79,26 +92,8 @@ def set_dir():
     obj = path_to_obj('app')
     print(obj.to_json())
 
-    print(json_to_obj(obj.to_json()).to_json())
+    print(Project.json_folders_to_obj(obj.to_json()).to_json())
     return redirect('/')
-
-
-def json_to_obj(json_file):
-    if 'type' not in json_file:
-        root = Directory(json_file['ic_id'],
-                         json_file['name'],
-                         json_file['parent'],
-                         json_file['history'],
-                         json_file['path'],
-                         [json_to_obj(x) for x in json_file['sub_folders']])
-    else:
-        root = File(json_file['ic_id'],
-                    json_file['name'],
-                    json_file['parent'],
-                    json_file['history'],
-                    json_file['path'],
-                    json_file['type'])
-    return root
 
 
 def path_to_obj(path):

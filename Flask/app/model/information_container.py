@@ -7,6 +7,7 @@ class IC:
         self._history = history
         self._path = path
         self._sub_folders = sub_folders
+        self._is_directory = True
 
     @property
     def ic_id(self):
@@ -49,6 +50,10 @@ class IC:
         self._path = value
 
     @property
+    def is_directory(self):
+        return self._is_directory
+
+    @property
     def sub_folders(self):
         return self._sub_folders
 
@@ -63,6 +68,7 @@ class IC:
             'parent': self._parent,
             'history': self._history,
             'path': self._path,
+            'is_directory': self._is_directory,
             'sub_folders': [x.to_json() for x in self._sub_folders]
         }
 

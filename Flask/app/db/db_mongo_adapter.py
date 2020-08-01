@@ -62,15 +62,15 @@ class DBMongoAdapter:
         self._close_connection()
         return result
 
-    def upload_file(self, project, file_obj, file):
+    def update_file(self, project, file_obj, file):
         col = self._db.Projects
         col_file = self._db.Projects.Files
         project_query = {'project_id': project.project_id, 'stored_id': file_obj.stored_id}
         project_uploaded = False
-        if file_obj.stored_id == "" or col.find_one(project_query, {'_id': 0}) is None:
+        if col.find_one(project_query, {'_id': 0}) is None:
             file_obj.stored_id = str(col_file.insert_one({"filename": file_obj.name,
                                                           "file": file,
-                                                          "description": "test"})
+                                                          "description": file_obj.description})
                                      .inserted_id)
             # print(file_obj.to_json())
             project.update_file(file_obj)
@@ -79,6 +79,29 @@ class DBMongoAdapter:
             project_uploaded = True
         self._close_connection()
         return project_uploaded
+
+    def upload_file(self, project_name, file_obj, file):
+        col = self._db.Projects
+        col_file = self._db.Projects.Files
+        project_query = {'project_name': project_name}
+        print(project_query)
+        project_json = col.find_one(project_query, {'_id': 0})
+        project = None
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            file_obj.stored_id = str(col_file.insert_one({"filename": file_obj.name,
+                                                          "file": file,
+                                                          "description": file_obj.description})
+                                     .inserted_id)
+            if project.upload_file(file_obj, project.root_ic):
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            else:
+                project = None
+                print("dir with the specific path not found")
+        else:
+            print("project with the specific ID not found")
+        self._close_connection()
+        return project
 
     def get_file(self, file):
         col = self._db.Projects.Files

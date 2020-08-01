@@ -3,10 +3,12 @@ from .information_container import IC
 
 class File(IC):
 
-    def __init__(self, file_id, name, directory, file_history, path, type, stored_id=""):
+    def __init__(self, file_id, name, directory, file_history, path, type, stored_id="", description=''):
         super().__init__(file_id, name, directory, file_history, path, None)
         self._type = type
         self._stored_id = stored_id
+        self._description = description
+        self._is_directory = False
 
     @property
     def type(self):
@@ -24,6 +26,14 @@ class File(IC):
     def stored_id(self, value):
         self._stored_id = value
 
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
+
     def to_json(self):
         return {
             'ic_id': self._ic_id,
@@ -32,7 +42,9 @@ class File(IC):
             'history': self._history,
             'path': self._path,
             'type': self._type,
-            'stored_id': self._stored_id
+            'stored_id': self._stored_id,
+            'description': self._description,
+            'is_directory': self._is_directory
         }
 
     @staticmethod
@@ -43,6 +55,7 @@ class File(IC):
                     json_file['history'],
                     json_file['path'],
                     json_file['type'],
-                    json_file['stored_id'])
+                    json_file['stored_id'],
+                    json_file['description'])
 
 
