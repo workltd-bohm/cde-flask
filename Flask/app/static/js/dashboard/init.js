@@ -8,7 +8,7 @@ const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;
 
 const SUN_MIN_SIZE = 100;
-const SUN_SIZE_COEF = 3;
+const SUN_SIZE_COEF = 4;
 const SUN_SCROLL_X_COEF = 2.5;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 
@@ -18,6 +18,9 @@ const PLANET_MIN_MAX_COEF = 0.5;
 const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.7;
 const PLANET_SCROLL_COEF = 1.1;
+const PLANET_SCROLL_TEXT = 1.9;
+
+const PATH_SUN_RATIO = 4;
 
 const PADDING = 300;
 
@@ -26,23 +29,21 @@ const DASHBOARD = $("#index-dashboard");
 var SVG = d3.select("#SVG");
 
 var g_data = [{
-    id: 0,
-    box : [],
-    values : {},
-    children : [
-        {id: 1, box : [], values : {}, children : []},
-        {id: 2, box : [], values : {}, children : []},
-        {id: 3, box : [], values : {}, children : []},
-        {id: 4, box : [], values : {}, children : []},
-        {id: 5, box : [], values : {}, children : []},
-        {id: 6, box : [], values : {}, children : []},
-        {id: 7, box : [], values : {}, children : []},
-        {id: 8, box : [], values : {}, children : []},
-        {id: 9, box : [], values : {}, children : []},
-        {id: 10, box : [], values : {}, children : []},
-        {id: 11, box : [], values : {}, children : []},
-        {id: 12, box : [], values : {}, children : []},
-        {id: 13, box : [], values : {}, children : []},
+    ic_id: 0,
+    sub_folders : [
+        {ic_id: 1},
+        {ic_id: 2},
+        {ic_id: 3},
+        {ic_id: 4},
+        {ic_id: 5},
+        {ic_id: 6},
+        {ic_id: 7},
+        {ic_id: 8},
+        {ic_id: 9},
+        {ic_id: 10},
+        {ic_id: 11},
+        {ic_id: 12},
+        {ic_id: 13},
     ]
 }];
 
@@ -57,7 +58,7 @@ var g_project = g_project = {
         rotate : 0,
         dragging : false,
         skip: false,
-        history : [g_data[0].children[0]],
+        history : [],
         start : Date.now()
     };
 
