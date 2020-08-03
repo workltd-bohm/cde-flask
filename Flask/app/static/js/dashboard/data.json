@@ -4,7 +4,7 @@
    "root_ic":{
       "ic_id":"app",
       "name":"app",
-      "parent":".",
+      "parent":"app",
       "history":[
 
       ],

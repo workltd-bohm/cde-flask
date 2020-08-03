@@ -71,14 +71,15 @@ function AddSun(obj, data){
     data.values.this = obj;
     data.values.rotation = 1;
     data.values.centar = true;
+    data.id = data.ic_id.replace(/[\/.]/g, "-");
+    //data.par_id = parent.ic_id.replace(/\//g,"-");
 
     if(data.sub_folders && data.sub_folders.length > PLANET_MAX_NUMBER) {
         g_root.slider = true;
         g_root.cy_max = -(data.sub_folders.length-1)*g_globusRadius*PLANET_SCROLL_COEF+g_project.height_h*PLANET_MIN_MAX_COEF;
     }
 
-    data.values.this.attr("id", "obj-"+data.name);
-    data.values.this.attr("parent", (parent != null) ? "obj-"+parent.name : "null");
+    data.values.this.attr("id", "obj-"+data.id);
 
     if (g_root.slider) {
         data.values.this.transition()
@@ -89,7 +90,7 @@ function AddSun(obj, data){
 
     data.values.children = data.values.this.append("g").attr("class", "child");
 
-    var draw = data.values.this.append("g").attr("target", "target-"+data.name);
+    var draw = data.values.this.append("g").attr("target", "target-"+data.id);
 
     data.values.picture = draw.append("circle")
         .attr("class", "object")
@@ -130,14 +131,16 @@ function AddChildren(obj, data, parent, position=0){
     data.box = {...g_box};
     data.values = {};
     data.values.this = obj;
-    data.values.parent = (parent != null) ? d3.select("#obj-"+parent.name) : null;
+    data.id = data.ic_id.replace(/[\/.]/g,"-");
+    data.par_id = parent.ic_id.replace(/[\/.]/g,"-");
     data.values.back = parent;
     data.values.position = position;
+    data.values.parent = (parent != null) ? d3.select("#obj-"+data.par_id) : null;
 
     data.values.rotation = data.values.back.sub_folders.length > 1 ? position*360/data.values.back.sub_folders.length : 1;
 
-    data.values.this.attr("id", "obj-"+data.name);
-    data.values.this.attr("parent", (parent != null) ? "obj-"+parent.name : "null");
+    data.values.this.attr("id", "obj-"+data.id);
+    data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
     data.values.centar = false;
     if(g_root.slider) {
@@ -153,7 +156,7 @@ function AddChildren(obj, data, parent, position=0){
             .attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_globusRadius*PLANET_ORBIT_COEF)+", 0), rotate("+(-data.values.rotation)+")");
     }
 
-    var draw = data.values.this.append("g").attr("target", "target-"+data.name);
+    var draw = data.values.this.append("g").attr("target", "target-"+data.id);
 
     data.values.picture = draw.append("circle")
         .attr("class", "object")
@@ -232,7 +235,7 @@ function SunFadeout(data){
     }
 
     //console.log(data.values.parent.select("#target-"+data.values.back.name).selectAll("circle"));
-    data.values.back.values.this.select("g[target='target-"+data.values.back.name+"']").transition()
+    data.values.back.values.this.select("g[target='target-"+data.values.back.id+"']").transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
@@ -383,10 +386,6 @@ function DashboardCreate(data) {
 
     WindowResize();
 
-    // -------------------------------------------------------
-
-    // -------------------------------------------------------
-
     g_root.obj = SVG.append("g")
         .attr("id","Universe")
         .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"),"+"scale("+(g_root.scale)+")")
@@ -410,10 +409,3 @@ function DashboardCreate(data) {
         }
     });
 }
-
-$( document ).ready(function(){
-    $.getJSON(PROJECT_PATH, function(data){
-        DashboardCreate([data.root_ic]);
-        PathCreation([data.root_ic]);
-    });
-});

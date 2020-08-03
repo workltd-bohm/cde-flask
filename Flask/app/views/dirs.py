@@ -86,11 +86,12 @@ def get_project():
             print(result)
             project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
             print((project.to_json()))
+            return (project.to_json())
         else:
             print("not_found")
     else:
-        print(str(msg.DB_FAILURE))
-    return redirect('/')
+        print (str(msg.DB_FAILURE))
+    return ""
 
 
 @app.route('/upload_project')
