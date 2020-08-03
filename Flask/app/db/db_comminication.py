@@ -24,3 +24,11 @@ def get_project(db_adapter, project_name):
 
 def upload_file(db_adapter, project, file_obj, file):
     return db_adapter.upload_file(project, file_obj, file)
+
+
+def get_file(db_adapter, file_id, file_name):
+    return db_adapter.get_file(file_id, file_name)
+
+
+def clear_db(db_adapter):
+    return db_adapter.clear_db()

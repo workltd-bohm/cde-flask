@@ -17,6 +17,37 @@ test_json_request = {
     'description': 'test description'
 }
 
+test_json_request_file = {
+    'file_id': '5f27f55735126f9600e0a7dd',
+    'file_name': 'activity111.html',
+}
+
+
+@app.route('/clear_db')
+def clear_db():
+    print('Data posting path: %s' % request.path)
+    if db.connect(db_adapter):
+        db.clear_db(db_adapter)
+    else:
+        print(str(msg.DB_FAILURE))
+    return redirect('/')
+
+
+@app.route('/get_file')
+def get_file():
+    print('Data posting path: %s' % request.path)
+    request_json = test_json_request_file  # json.loads(request.data)
+    print('POST data: %s ' % request_json)
+    if db.connect(db_adapter):
+        result = db.get_file(db_adapter, request_json['file_id'], request_json['file_name'])
+        if result:
+            print(result['file'].decode("utf-8"))
+        else:
+            print("not_found")
+    else:
+        print(str(msg.DB_FAILURE))
+    return redirect('/')
+
 
 @app.route('/upload_file')
 def upload_file():
@@ -29,7 +60,7 @@ def upload_file():
                     request_json['dir_path'],
                     [],
                     request_json['dir_path'] + '/' + request_json['file_name'],
-                    request_json['file_name'].split('.')[1],
+                    "." + request_json['file_name'].split('.')[1],
                     '',
                     request_json['description'])
     if db.connect(db_adapter):
