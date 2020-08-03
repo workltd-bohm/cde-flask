@@ -5,6 +5,6 @@ from app import *
 def dashboard():
     print('Data posting path: %s' % request.path)
     if session.get('user'):
-        pass
+        return redirect('/')
     else:
         return redirect('/login')
