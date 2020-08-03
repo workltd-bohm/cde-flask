@@ -13,7 +13,8 @@ function WindowResize(){
     if (g_project.width_h < frame) {
         frame = g_project.width_h
     }
-    g_globusRadius = frame/3;
+    g_globusRadius = frame/SUN_SIZE_COEF;
+    if(g_globusRadius < SUN_MIN_SIZE) g_globusRadius = SUN_MIN_SIZE;
 
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
@@ -41,57 +42,12 @@ var globZoom = d3.behavior.zoom()
 
 // -------------------------------------------------------
 
-var SVG = d3.select("#SVG");
-var SWGDefs = SVG.append("defs");
 
-// -------------------------------------------------------
-
-var planetShadow = SWGDefs.append("radialGradient")
-    .attr("id", "planetShadow")
-    .attr("r", 0.7)
-    .attr("cx", "15%")
-    .attr("cy", "50%")
-    .attr("fx", "15%")
-    .attr("fy", "50%");
-planetShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0.1)");
-planetShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.5)");
-planetShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,1)");
-
-var fShadow = SWGDefs.append("filter")
-	.attr("id", "shadow")
-	.attr("x", "-20%")
-	.attr("y", "-20%")
-	.attr("width", "140%")
-	.attr("height", "140%");
-fShadow.append("feGaussianBlur")
-	.attr("stdDeviation", "1 1")
-	.attr("result", "shadow");
-fShadow.append("feOffset")
-	.attr("dx", "2")
-    .attr("dy", "2");
-
-var planetZemlja = SWGDefs.append("pattern")
-        //.attr("patternUnits","userSpaceOnUse")
-        .attr("id", "slika-zemlja")
-        .attr("x", "0%")
-        .attr("y", "-150%")
-        .attr("width", "300%")
-        .attr("height", "400%")
-        .attr("viewBox","0 0 1 1")
-        .append("image")
-        .attr("x", -ORBIT_ROT_CICLE)
-        .attr("y", "0")
-        .attr("width", "1")
-        .attr("height", "1")
-        .attr("xlink:href", IMG_PATH);
-
-// -------------------------------------------------------
-
-function CreateSun(data) {
+function CreateSpace(data) {
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
-    g_root.cy_min = g_root.cy = -g_project.height_h*0.7/g_root.scale;
+    g_root.cy_min = g_root.cy = -g_project.height_h*PLANET_MIN_MAX_COEF/g_root.scale;
     g_root.cy_max = g_root.cy_min;
     g_root.deg = g_root.rad = g_root.rad_diff = 0;
     g_root.zoom = true;
@@ -101,73 +57,48 @@ function CreateSun(data) {
         .data(data)
         .enter()
         .append("g")
+        .attr("class","sun")
         .style("opacity", 0)
         .transition()
         .delay(1)
         .style("opacity", 100)
-        .each(function(d){AddChildren(d3.select(this), d, null);});
+        .each(function(d){AddSun(d3.select(this), d);});
 }
 
-function AddChildren(obj, data, parent, position=0, level=1){
+function AddSun(obj, data){
     data.values.this = obj;
-    data.values.parent = (parent != null) ? d3.select("#obj-"+parent.id) : null;
-    data.values.back = parent;
     data.box = {...g_box};
-    data.values.position = position;
-    if(parent != null){
-        data.values.rotation = data.values.back.children.length > 1 ? position*360/data.values.back.children.length : 1;
-    }
-    else{
-        data.values.rotation = 1;
-    }
+    data.values.rotation = 1;
+    data.values.centar = true;
 
     if(data.children.length > PLANET_MAX_NUMBER) {
         g_root.slider = true;
-        g_root.cy_max = -(data.children.length-1)*g_globusRadius*1.1+g_project.height_h*0.7;
+        g_root.cy_max = -(data.children.length-1)*g_globusRadius*PLANET_SCROLL_COEF+g_project.height_h*PLANET_MIN_MAX_COEF;
     }
 
     data.values.this.attr("id", "obj-"+data.id);
     data.values.this.attr("parent", (parent != null) ? "obj-"+parent.id : "null");
 
-    if(level > 1) {
-        data.values.centar = false;
-        if(g_root.slider) {
-            data.values.this.transition()
-                .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "translate("+(g_globusRadius*1.7)+", "+(data.values.position*g_globusRadius*1.1)+")");
-        }
-        else {
-            data.values.this.transition()
-                .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
-                .attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_globusRadius*1.7)+", 0), rotate("+(-data.values.rotation)+")");
-        }
-        
-    }
-    else{
-        data.values.centar = true;
-        if (g_root.slider) {
-            data.values.this.transition()
-                .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "translate("+(-g_globusRadius*1.7)+", 0)");
-        }
+    if (g_root.slider) {
+        data.values.this.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate("+(-g_globusRadius*SUN_SCROLL_X_COEF)+", 0)");//, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
 
     data.values.children = data.values.this.append("g").attr("class", "child");
 
-    var obj = data.values.this.append("g").attr("target", "target-"+data.id);
+    var draw = data.values.this.append("g").attr("target", "target-"+data.id);
 
-    data.values.picture = obj.append("circle")
+    data.values.picture = draw.append("circle")
         .attr("class", "object")
-        .attr("r", g_globusRadius/level);
+        .attr("r", g_globusRadius);
 
     data.values.text_s = data.values.this.append("text")
         .attr("x",0)
         .attr("y",0)
         .attr("fill","rgb(0,0,0)")
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(2/level)+")")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale(2)")
         .attr("font-size", "28px")
         .style("filter", "url(#shadow)")
         .attr("text-anchor","middle")
@@ -177,105 +108,164 @@ function AddChildren(obj, data, parent, position=0, level=1){
         .attr("x",0)
         .attr("y",0)
         .attr("fill","rgba(250,250,250,255)")
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(2/level)+")")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale(2)")
         .attr("font-size", "28px")
         .attr("text-anchor","middle")
         .html("obj-"+data.id);
-
-    if(level > 1)  {
-        data.values.shader = obj.append("circle")
-            .attr("class", "shader")
-            .attr("r", g_globusRadius/level)
-            .attr("transform","rotate("+(data.values.rotation)+")");
-
-        data.values.select = data.values.this.append("circle")
-            .attr("class","select")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("r", g_globusRadius/level)
-            .attr("fill", "rgba(0,0,0,0)")
-            .attr("stroke", "none")
-            .on("mouseenter",function(d){
-                data.values.select.attr("fill","rgba(255,255,255,0.3)");
-            })
-            .on("mouseleave",function(d){
-                data.values.select.attr("fill","rgba(0,0,0,0)");
-            })
-            .on("mousedown",function(d){
-                data.box.position.x = d3.event.x;
-                data.box.position.y = d3.event.y;
-            })
-            .on("mouseup",function(d){
-                if(data.box.position.x == d3.event.x && data.box.position.y == d3.event.y) {
-                    g_root.zoom = false;
-                    g_root.scale_old = g_root.scale;
-                    g_root.scale *= 2;
-                    if (!g_root.slider) {
-                        var vec_x = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
-                        var vec_y = Math.sin((g_root.deg+data.values.rotation)/180*Math.PI);
-                        g_root.x -= vec_x*g_globusRadius*1.7*g_root.scale;
-                        g_root.y -= vec_y*g_globusRadius*1.7*g_root.scale;
-                    }
-                    else {
-                        var vec_y = data.values.position*g_globusRadius*1.1;
-                        g_root.y -= (vec_y+g_root.cy)*g_root.scale;
-                    }
-
-                    //console.log(data.values.parent.select("#target-"+data.values.back.id).selectAll("circle"));
-                    data.values.parent.select("g[target='target-"+data.values.back.id+"']").transition()
-                        .ease("linear")
-                        .duration(ORBIT_ANIM_MOVE)
-                        .style("opacity", 0)
-                    data.values.back.values.text_s.transition()
-                        .ease("linear")
-                        .duration(ORBIT_ANIM_MOVE)
-                        .style("opacity", 0)
-                    data.values.back.values.text.transition()
-                        .ease("linear")
-                        .duration(ORBIT_ANIM_MOVE)
-                        .style("opacity", 0)
-                    data.values.shader.transition()
-                        .ease("linear")
-                        .duration(ORBIT_ANIM_MOVE)
-                        .style("opacity", 0)
-                    data.values.picture.transition()
-                        .ease("linear")
-                        .duration(ORBIT_ANIM_MOVE)
-                        .attr("transform","rotate("+(-g_root.deg)+")")
-                    // data.values.text_s.transition()
-                    //     .ease("linear")
-                    //     .duration(ORBIT_ANIM_MOVE)
-                    //     .attr("fill", "rgba(0,0,0,0)")
-                    // data.values.text.transition()
-                    //     .ease("linear")
-                    //     .duration(ORBIT_ANIM_MOVE)
-                    //     .style("opacity", 0)
-                    data.values.back.values.children.selectAll("g").each(function(d){
-                        if(d3.select(this).attr("id") && data.values.this.attr("id") != d3.select(this).attr("id")) {
-                            //console.log(data.values.this.attr("id") , d3.select(this).attr("id"));
-                            d3.select(this).transition()
-                                .ease("linear")
-                                .duration(ORBIT_ANIM_MOVE)
-                                .style("opacity", 0)
-                        }
-                        if(data.values.this.attr("id") == d3.select(this).attr("id")){
-                            d3.select(this).transition()
-                                .ease("linear")
-                                .duration(ORBIT_ANIM_MOVE*3)
-                                .each("end", function(){
-                                    g_project.skip = data.values.parent;
-                                })
-                        }
-                    });
-                }
-            });
-    }
 
     data.values.children.selectAll("g")
         .data(data.children)
         .enter()
         .append("g")
-        .each(function(d, i){AddChildren(d3.select(this), d, data, i, level+1);});
+        .attr("class","planet")
+        .each(function(d, i){AddChildren(d3.select(this), d, data, i);});
+}
+
+function AddChildren(obj, data, parent, position=0){
+    data.values.this = obj;
+    data.values.parent = (parent != null) ? d3.select("#obj-"+parent.id) : null;
+    data.values.back = parent;
+    data.box = {...g_box};
+    data.values.position = position;
+
+    data.values.rotation = data.values.back.children.length > 1 ? position*360/data.values.back.children.length : 1;
+
+    data.values.this.attr("id", "obj-"+data.id);
+    data.values.this.attr("parent", (parent != null) ? "obj-"+parent.id : "null");
+
+    data.values.centar = false;
+    if(g_root.slider) {
+        data.values.this.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate("+(g_globusRadius*PLANET_ORBIT_COEF)+", "+(data.values.position*g_globusRadius*PLANET_SCROLL_COEF)+")");
+    }
+    else {
+        data.values.this.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_globusRadius*PLANET_ORBIT_COEF)+", 0), rotate("+(-data.values.rotation)+")");
+    }
+
+    var draw = data.values.this.append("g").attr("target", "target-"+data.id);
+
+    data.values.picture = draw.append("circle")
+        .attr("class", "object")
+        .attr("r", g_globusRadius/PLANET_SUN_RATIO);
+
+    data.values.text_s = data.values.this.append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .attr("fill","rgb(0,0,0)")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale(1)")
+        .attr("font-size", "28px")
+        .style("filter", "url(#shadow)")
+        .attr("text-anchor","middle")
+        .html("obj-"+data.id);
+
+    data.values.text = data.values.this.append("text")
+        .attr("x",0)
+        .attr("y",0)
+        .attr("fill","rgba(250,250,250,255)")
+        .attr("transform","rotate("+(-g_root.deg)+"), scale(1)")
+        .attr("font-size", "28px")
+        .attr("text-anchor","middle")
+        .html("obj-"+data.id);
+
+    data.values.shader = draw.append("circle")
+        .attr("class", "shader")
+        .attr("r", g_globusRadius/PLANET_SUN_RATIO)
+        .attr("transform","rotate("+((g_root.slider)?0:data.values.rotation)+")");
+
+    data.values.select = data.values.this.append("circle")
+        .attr("class","select")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", g_globusRadius/PLANET_SUN_RATIO)
+        .attr("fill", "rgba(0,0,0,0)")
+        .attr("stroke", "none")
+        .on("mouseenter",function(d){
+            data.values.select.attr("fill","rgba(255,255,255,0.3)");
+        })
+        .on("mouseleave",function(d){
+            data.values.select.attr("fill","rgba(0,0,0,0)");
+        })
+        .on("mousedown",function(d){
+            data.box.position.x = d3.event.x;
+            data.box.position.y = d3.event.y;
+        })
+        .on("mouseup",function(d){
+            if(data.box.position.x == d3.event.x && data.box.position.y == d3.event.y) {
+                g_root.zoom = false;
+                g_root.scale_old = g_root.scale;
+                g_root.scale *= PLANET_SUN_RATIO;
+                if (!g_root.slider) {
+                    var vec_x = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
+                    var vec_y = Math.sin((g_root.deg+data.values.rotation)/180*Math.PI);
+                    g_root.x -= vec_x*g_globusRadius*PLANET_ORBIT_COEF*g_root.scale;
+                    g_root.y -= vec_y*g_globusRadius*PLANET_ORBIT_COEF*g_root.scale;
+                }
+                else {
+                    var vec_x = g_globusRadius*PLANET_ORBIT_COEF-g_globusRadius*SUN_SCROLL_X_COEF;
+                    var vec_y = data.values.position*g_globusRadius*PLANET_SCROLL_COEF;
+                    g_root.x -= vec_x*g_root.scale;
+                    g_root.y -= (vec_y+g_root.cy)*g_root.scale;
+                }
+
+                //console.log(data.values.parent.select("#target-"+data.values.back.id).selectAll("circle"));
+                data.values.back.values.this.select("g[target='target-"+data.values.back.id+"']").transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .style("opacity", 0)
+                data.values.back.values.text_s.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .style("opacity", 0)
+                data.values.back.values.text.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .style("opacity", 0)
+                data.values.shader.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .style("opacity", 0)
+                data.values.picture.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform","rotate("+(-g_root.deg)+")")
+                // data.values.text_s.transition()
+                //     .ease("linear")
+                //     .duration(ORBIT_ANIM_MOVE)
+                //     .attr("fill", "rgba(0,0,0,0)")
+                // data.values.text.transition()
+                //     .ease("linear")
+                //     .duration(ORBIT_ANIM_MOVE)
+                //     .style("opacity", 0)
+                data.values.back.values.children.selectAll("g.planet").each(function(d){
+                    if(d3.select(this).attr("id") && data.values.this.attr("id") != d3.select(this).attr("id")) {
+                        //console.log(data.values.this.attr("id") , d3.select(this).attr("id"));
+                        d3.select(this).transition()
+                            .ease("linear")
+                            .duration(ORBIT_ANIM_MOVE)
+                            .style("opacity", 0)
+                    }
+                    if(data.values.this.attr("id") == d3.select(this).attr("id")){
+                        d3.select(this).transition()
+                            .ease("linear")
+                            .duration(ORBIT_ANIM_RESET)
+                            .each("end", function(){
+                                g_project.skip = data.values.parent;
+                            })
+                    }
+                });
+            }
+        });
+
+    // data.values.children.selectAll("g")
+    //     .data(data.children)
+    //     .enter()
+    //     .append("g")
+    //     .each(function(d, i){AddChildren(d3.select(this), d, data, i, level+1);});
 }
 
 // -------------------------------------------------------
@@ -324,6 +314,7 @@ function Zoom() {
 
 
 function AnimateUniverse() {
+    g_root.children.selectAll("g.sun").each(AnimateSun);
     // g_root.scale = g_root.scale_old;
     // globZoom.scale(g_root.scale_old);
     // var offsetX =  g_root.scale*(g_root.x - g_project.width_h) ;
@@ -342,7 +333,7 @@ function AnimateUniverse() {
         .each(function(){
             if(g_project.skip != false){
                 g_project.skip.remove()
-                CreateSun(g_data);
+                CreateSpace(g_data);
                 g_project.skip = false;
                 g_project.warp = true;
             }
@@ -351,7 +342,8 @@ function AnimateUniverse() {
 }
 
 function AnimateSun(data) {
-
+    //data.values.children.selectAll("g.planet").each(AnimatePlanet);
+    AnimatePlanet(data);
 }
 
 function AnimatePlanet(data) {
@@ -359,26 +351,26 @@ function AnimatePlanet(data) {
         if(1){
             data.values.children.transition()
                 .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
+                .duration(ORBIT_ANIM_MOVE_SCROLL)
                 .attr("transform","translate(0,"+(g_root.cy)+")");
         }
     }
     else {
         data.values.children.transition()
-        .ease("linear")
-        .duration(ORBIT_ANIM_MOVE)
-        .attr("transform","rotate("+(g_root.deg)+")");
-        if (!data.values.centar) {
-            data.values.text_s.transition()
-                .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
-                .attr("transform","rotate("+(-g_root.deg)+")");
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(g_root.deg)+")");
 
+        data.values.children.selectAll("g.planet").each(function(data){
+            data.values.text_s.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(-g_root.deg)+")");
             data.values.text.transition()
-                .ease("linear")
-                .duration(ORBIT_ANIM_MOVE)
-                .attr("transform","rotate("+(-g_root.deg)+")");
-        }
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","rotate("+(-g_root.deg)+")");
+        });
     }
 }
 
@@ -403,12 +395,10 @@ $( document ).ready(function() {
         .attr("id", "Touch")
         .attr("r", g_globusRadius*4);
 
-    CreateSun(g_data);
+    CreateSpace(g_data);
 
     d3.timer(function(elapsed) {
         AnimateUniverse();
-        //g_root.children.selectAll("g.star").each(AnimateSun);
-        g_root.children.selectAll("g").each(AnimatePlanet);
 
         if ($(DASHBOARD).width() != g_project.width || $(DASHBOARD).height() != g_project.height){
             WindowResize();
