@@ -1,16 +1,19 @@
 const ORBIT_MIN_ZOOM = 1;
 const ORBIT_MAX_ZOOM = 1.2;
+
 const ORBIT_ANIM_MOVE = 200;
-const ORBIT_ANIM_MOVE_SCROLL = 50;
+const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
+
 const ORBIT_ROT_CICLE = 0.66;
 const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;
 
 const SUN_MIN_SIZE = 100;
 const SUN_SIZE_COEF = 4;
-const SUN_SCROLL_X_COEF = 2.5;
+const SUN_SCROLL_X_COEF = 6;
 const SUN_SCROLL_SIZE_COEF = 0.3;
+const SUN_SCROLL_ZOOM = 2;
 
 const PLANET_SUN_RATIO = 2;
 const PLANET_MAX_NUMBER = 10;
@@ -19,14 +22,31 @@ const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.7;
 const PLANET_SCROLL_COEF = 1.1;
 const PLANET_SCROLL_TEXT = 1.9;
+const PLANET_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
 const PATH_SUN_RATIO = 4;
+const PATH_ORBIT_COEF = 1.1;
+const PATH_TEXT_PADDING = 3;
+const PATH_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
-const PADDING = 300;
+const TEXT_SUN_SIZE = "28px";
+const TEXT_SUN_SCALE = 2;
+const TEXT_SUN_COLOR = "rgba(250,250,250,255)";
+
+const TEXT_PLANET_SIZE = "28px";
+const TEXT_PLANET_SUN_RATIO = 2;
+const TEXT_PLANET_COLOR = "rgba(250,250,250,255)";
+
+const TEXT_PATH_SIZE = "14px";
+const TEXT_PATH_COLOR = "rgba(250,250,250,255)";
+
+// ----------------------------------------------------
 
 const DASHBOARD = $("#index-dashboard");
 
-var SVG = d3.select("#SVG");
+const SVG = d3.select("#SVG");
+
+// ----------------------------------------------------
 
 var g_data = [{
     ic_id: 0,
@@ -58,11 +78,13 @@ var g_project = g_project = {
         rotate : 0,
         dragging : false,
         skip: false,
-        history : [],
+        history : null,
+        history_num : 0,
         start : Date.now()
     };
 
 var g_globusRadius = 0;
+var g_pathRadius = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},

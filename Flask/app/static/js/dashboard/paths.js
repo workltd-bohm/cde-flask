@@ -2,39 +2,43 @@
 function DrawPath(obj, data){
     data.path = {};
     data.path.this = obj;
+    data.path.back = g_project.history;
+    data.path.index = g_project.history_num++;
+
+    data.path.this.attr("transform","translate("+((g_pathRadius/PATH_SUN_RATIO)*PATH_ORBIT_COEF*PATH_TEXT_PADDING)+", 0)");
 
     var draw = data.path.this.append("g").attr("class", "draw");
 
     data.path.picture = draw.append("circle")
         .attr("class", "object")
-        .attr("r", g_globusRadius/PATH_SUN_RATIO);
+        .attr("r", g_pathRadius/PATH_SUN_RATIO);
 
-    data.path.text_s = data.path.this.append("text")
+    data.path.text_s = draw.append("text")
         .attr("x",0)
         .attr("y",0)
         .attr("fill","rgb(0,0,0)")
-        .attr("font-size", "14px")
+        .attr("font-size", TEXT_PATH_SIZE)
         .style("filter", "url(#shadow)")
         .attr("text-anchor","middle")
         .html(data.name);
 
-    data.path.text = data.path.this.append("text")
+    data.path.text = draw.append("text")
         .attr("x",0)
         .attr("y",0)
-        .attr("fill","rgba(250,250,250,255)")
-        .attr("font-size", "14px")
+        .attr("fill", TEXT_PATH_COLOR)
+        .attr("font-size", TEXT_PATH_SIZE)
         .attr("text-anchor","middle")
         .html(data.name);
 
-    data.path.select = data.path.this.append("circle")
+    data.path.select = draw.append("circle")
         .attr("class","select")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_globusRadius/PATH_SUN_RATIO)
+        .attr("r", g_pathRadius/PATH_SUN_RATIO)
         .attr("fill", "rgba(0,0,0,0)")
         .attr("stroke", "none")
         .on("mouseenter",function(d){
-            data.path.select.attr("fill","rgba(255,255,255,0.3)");
+            data.path.select.attr("fill", PATH_SELECT_COLOR);
         })
         .on("mouseleave",function(d){
             data.path.select.attr("fill","rgba(0,0,0,0)");
@@ -46,20 +50,33 @@ function DrawPath(obj, data){
         .on("mouseup",function(d){
             if(data.box.position.x == d3.event.x && data.box.position.y == d3.event.y) {
                 d3.selectAll("g.sun").remove();
+                g_project.history = data.path.back;
+                data.path.this.selectAll("g").remove();
                 CreateSpace([data]);
             }
         });
+
+    data.path.child = data.path.this.append("g").attr("class", "next");
+    g_project.history = data.path.child
+}
+
+function AddPath(data){
+    if(!g_project.history){
+        g_project.history = g_project.path.append("g")
+            .attr("class","paths")
+    }
+    DrawPath(g_project.history, data);
 }
 
 function PathCreation(data){
     g_project.path = SVG.append("g")
         .attr("id","Path")
-        .attr("transform","translate("+(g_globusRadius/PATH_SUN_RATIO*2)+","+(g_globusRadius/PATH_SUN_RATIO*1.5)+")")
+        .attr("transform","translate(0,"+(g_pathRadius/PATH_SUN_RATIO*PATH_ORBIT_COEF)+")")
 
-    g_project.path.selectAll("g")
-        .data(data)
-        .enter()
-        .append("g")
-        .attr("class","path")
-        .each(function(d){DrawPath(d3.select(this), d);});
+    // g_project.path.selectAll("g")
+    //     .data(data)
+    //     .enter()
+    //     .append("g")
+    //     .attr("class","path")
+    //     .each(function(d){DrawPath(d3.select(this), d);});
 }
