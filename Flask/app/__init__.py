@@ -16,4 +16,5 @@ from app.views import login
 from app.views import main
 from app.views import dashboard
 from app.views import dirs
+from app.views.popups import popups
 

@@ -49,12 +49,11 @@ def get_file():
     return redirect('/')
 
 
-@app.route('/upload_file')
+@app.route('/upload_file', methods=['POST'])
 def upload_file():
     print('Data posting path: %s' % request.path)
-    request_json = test_json_request  # json.loads(request.data)
-    print('POST data: %s ' % request_json)
-    project = None
+    print(json.loads(request.get_data()))
+    request_json = json.loads(request.get_data())  # test_json_request
     file_obj = File(request_json['dir_path'] + '/' + request_json['file_name'],
                     request_json['file_name'].split('.')[0],
                     request_json['dir_path'],
@@ -69,8 +68,10 @@ def upload_file():
         result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         if result:
             print("successful - file uploaded")
+            return 'successful - file uploaded'
         else:
             print("not_uploaded")
+            return 'not successful - file not uploaded'
     else:
         print(str(msg.DB_FAILURE))
     return redirect('/')
