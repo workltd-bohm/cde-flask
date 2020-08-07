@@ -18,9 +18,9 @@ td {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #A8A8A8;
+  background-color: #121212;
   font-family: 'Roboto', sans-serif;
-  background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);
+  /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
   overflow: auto;
   border-spacing: 0;
 }

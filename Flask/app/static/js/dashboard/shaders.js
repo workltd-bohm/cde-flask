@@ -28,7 +28,7 @@ fShadow.append("feOffset")
 
 var planetZemlja = SWGDefs.append("pattern")
         //.attr("patternUnits","userSpaceOnUse")
-        .attr("id", "slika-zemlja")
+        //.attr("id", "slika-zemlja")
         .attr("x", "0%")
         .attr("y", "-150%")
         .attr("width", "300%")
