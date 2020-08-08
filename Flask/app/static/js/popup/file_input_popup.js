@@ -193,24 +193,34 @@ function updateNewName(){
 
 var upload_btn = $("#upload_btn");
 upload_btn.click(function(){
-    console.log(fileList);
-    var data = {project_id: '5f25580d49e1b44fef634b56',
-            project_name: 'test-project',
-            original_name: originalName,
-            dir_path: dir_path.value,
-            file_name: new_name.value,
-            user: {'email': user_json.email, 'id': user_json.id, 'username': user_json.username},
-            description: 'test description'};
+    var $myForm = $('#formId');
+    console.log($myForm[0].checkValidity());
 
-    data  = jsonConcat(data, fileProperties);
+    if(! $myForm[0].checkValidity()) {
+      // If the form is invalid, submit it. The form won't actually submit;
+      // this will just cause the browser to display the native HTML5 error messages.
+//      $myForm.find(':upload_btn').click();
+      $myForm[0].reportValidity()
+    }else{
+        console.log(fileList);
+        var data = {project_id: '5f25580d49e1b44fef634b56',
+                project_name: 'test-project',
+                original_name: originalName,
+                dir_path: dir_path.value,
+                file_name: new_name.value,
+                user: {'email': user_json.email, 'id': user_json.id, 'username': user_json.username},
+                description: 'test description'};
 
-    var objArr = [];
-    objArr.push(data);
+        data  = jsonConcat(data, fileProperties);
 
-    var fd = new FormData();
-    fd.append('data', JSON.stringify(objArr) );
-    fd.append('file', fileList)
-    file_post(fd);
+        var objArr = [];
+        objArr.push(data);
+
+        var fd = new FormData();
+        fd.append('data', JSON.stringify(objArr) );
+        fd.append('file', fileList)
+        file_post(fd);
+    }
  });
 
 function jsonConcat(o1, o2) {
