@@ -3,12 +3,12 @@
 <div class="modal-content", id="modal-content">
   <span class="close">&times;</span>
   <p>Upload file</p>
-  <label class="file">
-    <input type="file" id="file" name="file" aria-label="File browser example">
-    <span class="file-custom"></span>
-  </label>
+  <form id="formId" enctype="multipart/form-data" onsubmit="return submit();">
+    <label class="file">
+      <input type="file" id="file" name="file" aria-label="File browser example">
+      <span class="file-custom"></span>
+    </label>
   <br>
-  <form>
     <div class="form__group field">
       <input type="input" class="form__field" name="dir_path" id='dir_path' value="app/test_files" required />
       <label for="dir_path" class="form__label">Directory path</label>

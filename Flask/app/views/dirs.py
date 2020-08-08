@@ -10,6 +10,7 @@ from app.model.project import Project
 test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',
     'project_name': 'test-project',
+    'original_name': 'original_name',
     'dir_path': 'app/templates/activity',
     'file_name': 'activity111.html',
     'user': '',
@@ -18,8 +19,8 @@ test_json_request = {
 }
 
 test_json_request_file = {
-    'file_id': '5f27f55735126f9600e0a7dd',
-    'file_name': 'activity111.html',
+    'file_id': '5f2e7166bc71e9ecb31305ba',
+    'file_name': 'SV-WRK-XX-XX-MI-W-3201-B1-P01.01-test',
 }
 
 
@@ -41,7 +42,7 @@ def get_file():
     if db.connect(db_adapter):
         result = db.get_file(db_adapter, request_json['file_id'], request_json['file_name'])
         if result:
-            print(result['file'].decode("utf-8"))
+            print(result['file'])
         else:
             print("not_found")
     else:
@@ -52,19 +53,40 @@ def get_file():
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     print('Data posting path: %s' % request.path)
-    print(json.loads(request.get_data()))
-    request_json = json.loads(request.get_data())  # test_json_request
+    # print(json.loads(request.get_data()))
+    if 'file' not in request.files:
+        print('No file part')
+        # return redirect(request.url)
+    file = request.files['file'].read()
+    print(file)
+    request_json = json.loads(request.form['data'])[0]  # test_json_request
+    print(request_json)
     file_obj = File(request_json['dir_path'] + '/' + request_json['file_name'],
-                    request_json['file_name'].split('.')[0],
+                    '.'.join(request_json['file_name'].split('.')[:-1]),
+                    request_json['original_name'],
                     request_json['dir_path'],
                     [],
                     request_json['dir_path'] + '/' + request_json['file_name'],
-                    "." + request_json['file_name'].split('.')[1],
+                    "." + request_json['file_name'].split('.')[-1],
                     '',
                     request_json['description'])
+    try:
+        file_obj.project_code = request_json['project_code']
+        file_obj.company_code = request_json['company_code']
+        file_obj.project_volume_or_system = request_json['project_volume_or_system']
+        file_obj.project_level = request_json['project_level']
+        file_obj.type_of_information = request_json['type_of_information']
+        file_obj.role_code = request_json['role_code']
+        file_obj.file_number = request_json['file_number']
+        file_obj.status = request_json['status']
+        file_obj.revision = request_json['revision']
+    except Exception:
+        pass
+    print(file_obj.to_json())
     if db.connect(db_adapter):
-        with open('app/templates/activity/activity.html', "rb") as f:
-            encoded = Binary(f.read())  # request_json['file']
+        # with open('app/templates/activity/activity.html', "rb") as f:
+        #     encoded = Binary(f.read())  # request_json['file']
+        encoded = file
         result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         if result:
             print("successful - file uploaded")
@@ -84,9 +106,9 @@ def get_project():
     if db.connect(db_adapter):
         result = db.get_project(db_adapter, "test-project")
         if result:
-            print(result)
+            # print(result)
             project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
-            print((project.to_json()))
+            # print((project.to_json()))
             return (project.to_json())
         else:
             print("not_found")
@@ -142,7 +164,7 @@ def path_to_obj(path):
                          [path_to_obj(path + '/' + x) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(path, name, parent, [], path, p.suffix)
+        root = File(path, name, name, parent, [], path, p.suffix)
     return root
 
 
