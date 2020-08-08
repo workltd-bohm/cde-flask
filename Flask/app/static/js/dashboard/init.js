@@ -15,13 +15,13 @@ const SUN_SCROLL_X_COEF = 6;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 2;
 
-const PLANET_SUN_RATIO = 2;
+const PLANET_SUN_RATIO = 1.75;
 const PLANET_MAX_NUMBER = 10;
 const PLANET_MIN_MAX_COEF = 0.5;
 const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.7;
-const PLANET_SCROLL_COEF = 1.1;
-const PLANET_SCROLL_TEXT = 1.9;
+const PLANET_SCROLL_COEF = 1.3;
+const PLANET_SCROLL_TEXT = 1.1;
 const PLANET_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
 const PATH_SUN_RATIO = 4;
@@ -29,15 +29,15 @@ const PATH_ORBIT_COEF = 1.1;
 const PATH_TEXT_PADDING = 3;
 const PATH_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
-const TEXT_SUN_SIZE = "28px";
+const TEXT_SUN_SIZE = "20px";
 const TEXT_SUN_SCALE = 2;
-const TEXT_SUN_COLOR = "rgba(250,250,250,255)";
+const TEXT_SUN_COLOR = "rgba(200,200,200,255)";
 
-const TEXT_PLANET_SIZE = "28px";
+const TEXT_PLANET_SIZE = "18px";
 const TEXT_PLANET_SUN_RATIO = 2;
 const TEXT_PLANET_COLOR = "rgba(250,250,250,255)";
 
-const TEXT_PATH_SIZE = "14px";
+const TEXT_PATH_SIZE = "12px";
 const TEXT_PATH_COLOR = "rgba(250,250,250,255)";
 
 // ----------------------------------------------------
