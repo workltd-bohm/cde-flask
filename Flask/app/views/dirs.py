@@ -99,6 +99,28 @@ def upload_file():
     return redirect('/')
 
 
+@app.route('/create_dir', methods=['POST'])
+def create_dir():
+    print('Data posting path: %s' % request.path)
+    request_data = json.loads(request.get_data())
+    folder = IC(request_data['parent'] + '/' + request_data['folder_name'],
+             request_data['folder_name'],
+             request_data['parent'],
+             [],
+             request_data['parent'] + '/' + request_data['folder_name'],
+             [])
+    if db.connect(db_adapter):
+        result = db.create_folder(db_adapter, request_data['project_name'], folder)
+        if result:
+            print("successful - folder created")
+            return 'successful - folder created'
+        else:
+            print("not_created")
+            return 'not successful - folder not created'
+
+    return redirect('/')
+
+
 @app.route('/get_project')
 def get_project():
     print('Data posting path: %s' % request.path)

@@ -14,12 +14,14 @@ def index():
         dashboard = render_template("dashboard/dashboard.html")
         activity = render_template("activity/activity.html", activity_name="BLANK")
         file_input_popup = render_template("popup/file_input_popup.html", project="BLANK")
+        new_folder_popup = render_template("popup/new_folder_popup.html", project="BLANK")
         return render_template("index.html",
                                email=email,
                                menu=menu,
                                dashboard=dashboard,
                                activity=activity,
                                file_input_popup=file_input_popup,
+                               new_folder_popup=new_folder_popup,
                                user=user)
     else:
         return redirect('/login')

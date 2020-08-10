@@ -51,18 +51,17 @@ class Project:
 
         return self, self._replaced
 
-    def upload_file(self, file, ic=None):
+    def add_ic(self, ic_new, ic=None):
         if ic.is_directory:
-            if ic.path == file.parent:
-                ic.sub_folders.append(file)
+            if ic.path == ic_new.parent:
+                ic.sub_folders.append(ic_new)
                 self._replaced = True
             else:
                 for x in ic.sub_folders:
-                    self.upload_file(file, x)
+                    self.add_ic(ic_new, x)
                     if self._replaced:
                         break
-
-        return self, self._replaced
+        return self._replaced
 
     def to_json(self):
         return {

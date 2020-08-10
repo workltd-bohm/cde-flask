@@ -102,7 +102,7 @@ class DBMongoAdapter:
                                          .inserted_id)
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                if project.upload_file(file_obj, project.root_ic):
+                if project.add_ic(file_obj, project.root_ic):
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
                 else:
                     project = None
@@ -114,6 +114,21 @@ class DBMongoAdapter:
             print("project with the specific ID not found")
         self._close_connection()
         return project
+
+    def create_folder(self, project_name, folder):
+        col = self._db.Projects
+        project_query = {'project_name': project_name}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+
+            if project.add_ic(folder, project.root_ic):
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+        else:
+            print("project with the specific ID not found")
+            return False
+        self._close_connection()
+        return True
 
     def get_file(self, file_id, file_name):
         col = self._db.Projects.Files

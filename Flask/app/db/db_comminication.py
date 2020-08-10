@@ -26,6 +26,10 @@ def upload_file(db_adapter, project, file_obj, file):
     return db_adapter.upload_file(project, file_obj, file)
 
 
+def create_folder(db_adapter, project_name, folder):
+    return db_adapter.create_folder(project_name, folder)
+
+
 def get_file(db_adapter, file_id, file_name):
     return db_adapter.get_file(file_id, file_name)
 

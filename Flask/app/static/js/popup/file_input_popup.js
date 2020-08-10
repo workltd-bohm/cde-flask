@@ -238,7 +238,13 @@ function jsonConcat(o1, o2) {
       contentType: false,
       type: 'POST',
       success: function(data){
-        alert(data);
+        span.click();
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        x.innerHTML = data;
+
+        // After 3 seconds, remove the show class from DIV
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
       }
     });
 };
