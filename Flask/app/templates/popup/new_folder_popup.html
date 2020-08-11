@@ -5,7 +5,11 @@
   <p>Create new folder</p>
   <form id="newFolderFormId" enctype="multipart/form-data" onsubmit="return submit();">
     <div class="form__group field">
-      <input type="input" class="form__field" name="parent_path" id='parent_path' value="app/test_files" readonly />
+      <input type="input" class="form__field" name="project_name_create" id='project_name_create' value="test-project" required />
+      <label for="project_name_create" class="form__label">Project name</label>
+    </div>
+    <div class="form__group field">
+      <input type="input" class="form__field" name="parent_path" id='parent_path' value="app/test_files" required />
       <label for="parent_path" class="form__label">Parent folder</label>
     </div>
     <br>

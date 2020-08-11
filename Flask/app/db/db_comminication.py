@@ -18,8 +18,12 @@ def upload_project(db_adapter, project):
     return db_adapter.upload_folder_structure(project)
 
 
-def get_project(db_adapter, project_name):
-    return db_adapter.get_project(project_name)
+def get_all_projects(db_adapter):
+    return db_adapter.get_all_projects()
+
+
+def get_project(db_adapter, project_name, user):
+    return db_adapter.get_project(project_name, user)
 
 
 def upload_file(db_adapter, project, file_obj, file):

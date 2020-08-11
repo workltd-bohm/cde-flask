@@ -15,6 +15,8 @@ def index():
         activity = render_template("activity/activity.html", activity_name="BLANK")
         file_input_popup = render_template("popup/file_input_popup.html", project="BLANK")
         new_folder_popup = render_template("popup/new_folder_popup.html", project="BLANK")
+        new_project_popup = render_template("popup/new_project_popup.html", project="BLANK")
+        choose_project_popup = render_template("popup/choose_project_popup.html", project="BLANK")
         return render_template("index.html",
                                email=email,
                                menu=menu,
@@ -22,6 +24,8 @@ def index():
                                activity=activity,
                                file_input_popup=file_input_popup,
                                new_folder_popup=new_folder_popup,
+                               new_project_popup=new_project_popup,
+                               choose_project_popup=choose_project_popup,
                                user=user)
     else:
         return redirect('/login')

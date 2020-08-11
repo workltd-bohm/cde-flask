@@ -35,12 +35,11 @@ upload_btn.click(function(){
     }else{
         var parent_path = document.getElementById('parent_path');
         var folder_name = document.getElementById('folder_name');
+        var project_name_create = document.getElementById('project_name_create')
         var data = {project_id: '5f25580d49e1b44fef634b56',
-                project_name: 'test-project',
+                project_name: project_name_create.value,
                 parent: parent_path.value,
                 folder_name: folder_name.value};
-
-        data  = jsonConcat(data);
 
         folder_post(data);
     }
@@ -61,6 +60,7 @@ function folder_post(data) {
 
         // After 3 seconds, remove the show class from DIV
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        location.reload();
       }
     });
 };

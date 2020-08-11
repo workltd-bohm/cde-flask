@@ -23,6 +23,11 @@ test_json_request_file = {
     'file_name': 'SV-WRK-XX-XX-MI-W-3201-B1-P01.01-test',
 }
 
+test_json_request_project = {
+    'project_name': 'test-project',
+    'user': '',
+}
+
 
 @app.route('/clear_db')
 def clear_db():
@@ -104,11 +109,11 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
     folder = IC(request_data['parent'] + '/' + request_data['folder_name'],
-             request_data['folder_name'],
-             request_data['parent'],
-             [],
-             request_data['parent'] + '/' + request_data['folder_name'],
-             [])
+                request_data['folder_name'],
+                request_data['parent'],
+                [],
+                request_data['parent'] + '/' + request_data['folder_name'],
+                [])
     if db.connect(db_adapter):
         result = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
@@ -117,26 +122,85 @@ def create_dir():
         else:
             print("not_created")
             return 'not successful - folder not created'
+    else:
+        print(str(msg.DB_FAILURE))
 
     return redirect('/')
+
+
+@app.route('/select_project', methods=['POST'])
+def select_project():
+    print('Data posting path: %s' % request.path)
+    request_data = json.loads(request.get_data())
+    test_json_request_project['project_name'] = request_data['project_name']
+
+    return redirect('/')
+
+
+@app.route('/get_all_projects')
+def get_all_projects():
+    print('Data posting path: %s' % request.path)
+
+    if db.connect(db_adapter):
+        result = db.get_all_projects(db_adapter)
+        response = {'projects':[]}
+        if result:
+            print(result)
+            for project in result:
+                response['projects'].append(project['project_name'])
+            print(response)
+            return json.dumps(response)
+        else:
+            print("not_found")
+    else:
+        print(str(msg.DB_FAILURE))
+    return ""
 
 
 @app.route('/get_project')
 def get_project():
     print('Data posting path: %s' % request.path)
+    request_data = test_json_request_project  # json.loads(request.get_data())
+    project_name = request_data['project_name']
+    user = request_data['user']
 
     if db.connect(db_adapter):
-        result = db.get_project(db_adapter, "test-project")
+        result = db.get_project(db_adapter, project_name, user)
         if result:
             # print(result)
             project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
             # print((project.to_json()))
-            return (project.to_json())
+            return project.to_json()
         else:
             print("not_found")
     else:
-        print (str(msg.DB_FAILURE))
+        print(str(msg.DB_FAILURE))
     return ""
+
+
+@app.route('/create_project', methods=['POST'])
+def create_project():
+    print('Data posting path: %s' % request.path)
+    request_data = json.loads(request.get_data())
+    root_obj = IC(request_data['project_name'],
+                  request_data['project_name'],
+                  '.',
+                  [],
+                  request_data['project_name'],
+                  [])
+    project = Project("default", request_data['project_name'], root_obj)
+    print(project.to_json())
+    if db.connect(db_adapter):
+        uploaded = db.upload_project(db_adapter, project)
+        if uploaded:
+            print("successful - project created")
+            return "successful - project created"
+        else:
+            print("not_successful - name already exists in the DB")
+            return "not_successful - name already exists in the DB"
+    else:
+        print(str(msg.DB_FAILURE))
+    return redirect('/')
 
 
 @app.route('/upload_project')

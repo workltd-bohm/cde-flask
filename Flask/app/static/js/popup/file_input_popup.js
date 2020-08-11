@@ -194,7 +194,6 @@ function updateNewName(){
 var upload_btn = $("#upload_btn");
 upload_btn.click(function(){
     var $myForm = $('#formId');
-    console.log($myForm[0].checkValidity());
 
     if(! $myForm[0].checkValidity()) {
       // If the form is invalid, submit it. The form won't actually submit;
@@ -202,9 +201,9 @@ upload_btn.click(function(){
 //      $myForm.find(':upload_btn').click();
       $myForm[0].reportValidity()
     }else{
-        console.log(fileList);
+        var projectNameFile = document.getElementById('project_name_file');
         var data = {project_id: '5f25580d49e1b44fef634b56',
-                project_name: 'test-project',
+                project_name: projectNameFile.value,
                 original_name: originalName,
                 dir_path: dir_path.value,
                 file_name: new_name.value,
@@ -245,6 +244,7 @@ function jsonConcat(o1, o2) {
 
         // After 3 seconds, remove the show class from DIV
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        location.reload();
       }
     });
 };

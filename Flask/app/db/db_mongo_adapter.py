@@ -55,7 +55,15 @@ class DBMongoAdapter:
         self._close_connection()
         return project_uploaded
 
-    def get_project(self, project_name):
+    def get_all_projects(self):
+        col = self._db.Projects
+        project_query = {}
+        result = col.find()
+        print(result)
+        self._close_connection()
+        return result
+
+    def get_project(self, project_name, user):
         col = self._db.Projects
         project_query = {'project_name': project_name}
         result = col.find_one(project_query, {'_id': 0})
