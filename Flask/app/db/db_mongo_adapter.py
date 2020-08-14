@@ -44,14 +44,26 @@ class DBMongoAdapter:
     def _close_connection(self):
         self._client.close()
 
-    def upload_folder_structure(self, project):
+    def upload_folder_structure(self, project, user):
         col = self._db.Projects
+        col_roles = self._db.Roles
         project_query = {'project_name': project.name}
         message = msg.PROJECT_ALREADY_EXISTS
         if col.find_one(project_query, {'_id': 0}) is None:
             project_id = col.insert_one(project.to_json()).inserted_id
             col.update_one({'project_id': 'default'},
                            {'$set': {'project_id': str(project_id)}})
+            role_query = {'project_id': project_id}
+            role = col_roles.find_one(role_query, {'_id': 0})
+            if not role:
+                role = {}
+                role['project_id'] = project_id
+                role['user'] = [user]
+                col_roles.insert_one(role)
+            else:
+                role['user'].append(user)
+                col_roles.update_one({'project_id': project_id}, {'$set': role})
+
             message = msg.PROJECT_SUCCESSFULLY_ADDED
         self._close_connection()
         return message

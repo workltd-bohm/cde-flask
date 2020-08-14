@@ -14,8 +14,8 @@ def set_user(db_adapter, user):
     return db_adapter.set_user(user)
 
 
-def upload_project(db_adapter, project):
-    return db_adapter.upload_folder_structure(project)
+def upload_project(db_adapter, project, user):
+    return db_adapter.upload_folder_structure(project, user)
 
 
 def get_all_projects(db_adapter):

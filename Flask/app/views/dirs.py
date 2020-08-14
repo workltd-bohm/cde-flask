@@ -5,6 +5,7 @@ import uuid
 from pathlib import Path
 from app import *
 from app.model.project import Project
+from app.model.role import Role
 
 
 test_json_request = {
@@ -179,6 +180,8 @@ def get_project():
 def create_project():
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
+    request_data['user']['role'] = Role.OWNER.name
+    user = request_data['user']
     root_obj = IC(str(uuid.uuid1()),
                   request_data['project_name'],
                   '.',
@@ -186,9 +189,9 @@ def create_project():
                   request_data['project_name'],
                   [])
     project = Project("default", request_data['project_name'], root_obj)
-    print(project.to_json())
+    # print(project.to_json())
     if db.connect(db_adapter):
-        result = db.upload_project(db_adapter, project)
+        result = db.upload_project(db_adapter, project, user)
         if result:
             print(result)
             return result
@@ -202,9 +205,9 @@ def upload_project():
     print('Data posting path: %s' % request.path)
     root_obj = path_to_obj('app', '.')
     project = Project("default", "test-project", root_obj)
-    print(project.to_json())
+    user = {'id': '17b16930-c5f6-11ea-99bc-50e085759747', 'role': 'OWNER'}
     if db.connect(db_adapter):
-        result = db.upload_project(db_adapter, project)
+        result = db.upload_project(db_adapter, project, user)
         if result:
             print(result)
     else:
