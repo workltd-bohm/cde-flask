@@ -1,6 +1,7 @@
 from .information_container import IC
 from .directory import Directory
 from .file import File
+import app.model.messages as msg
 
 
 class Project:
@@ -9,7 +10,8 @@ class Project:
         self._project_id = project_id
         self._name = name
         self._root_ic = root_ic
-        self._replaced = False
+        self._added = False
+        self._message = ""
 
     @property
     def project_id(self):
@@ -41,27 +43,61 @@ class Project:
         if not ic.is_directory:
             for x in ic.sub_folders:
                 self.update_file(file, x)
-                if self._replaced:
+                if self._added:
                     break
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
                 print(ic.to_json())
-                self._replaced = True
+                self._added = True
 
-        return self, self._replaced
+        return self, self._added
+
+    def rename_ic(self, request_data, ic=None):
+        if ic.path == request_data['path'] + '/' + request_data['old_name']:
+            name = ic.name
+            new_name = request_data['new_name']
+            if not ic.is_directory:
+                name = ic.name + ic.type
+            if name == request_data['old_name']:
+                ic.name = new_name
+                ic.path = request_data['path'] + '/' + request_data['new_name']
+                # ic.parent = request_data['path']
+                self._message = msg.IC_SUCCESSFULLY_RENAMED
+                self._added = True
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.rename_ic(request_data, x)
+                    if self._added:
+                        break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
 
     def add_ic(self, ic_new, ic=None):
         if ic.is_directory:
-            if ic.path == ic_new.parent:
-                ic.sub_folders.append(ic_new)
-                self._replaced = True
+            new_path = ic_new.parent
+            if not ic_new.is_directory:
+                new_path = '/'.join(ic_new.path.split('/')[:-1])
+            if ic.path == new_path:
+                already_exists = False
+                for sub_f in ic.sub_folders:
+                    if sub_f.name == ic_new.name:
+                        already_exists = True
+                        self._message = msg.IC_ALREADY_EXISTS
+                if not already_exists:
+                    ic.sub_folders.append(ic_new)
+                    self._message = msg.IC_SUCCESSFULLY_ADDED
+                self._added = True
             else:
                 for x in ic.sub_folders:
                     self.add_ic(ic_new, x)
-                    if self._replaced:
+                    if self._added:
                         break
-        return self._replaced
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
 
     def to_json(self):
         return {
@@ -82,6 +118,7 @@ class Project:
         else:
             root = File(json_file['ic_id'],
                         json_file['name'],
+                        json_file['original_name'],
                         json_file['parent'],
                         json_file['history'],
                         json_file['path'],

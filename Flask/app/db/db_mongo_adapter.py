@@ -3,6 +3,7 @@ from pymongo.errors import ConnectionFailure
 import uuid
 from app.model.user import User
 from app.model.project import Project
+import app.model.messages as msg
 
 
 class DBMongoAdapter:
@@ -46,14 +47,14 @@ class DBMongoAdapter:
     def upload_folder_structure(self, project):
         col = self._db.Projects
         project_query = {'project_name': project.name}
-        project_uploaded = False
+        message = msg.PROJECT_ALREADY_EXISTS
         if col.find_one(project_query, {'_id': 0}) is None:
             project_id = col.insert_one(project.to_json()).inserted_id
             col.update_one({'project_id': 'default'},
                            {'$set': {'project_id': str(project_id)}})
-            project_uploaded = True
+            message = msg.PROJECT_SUCCESSFULLY_ADDED
         self._close_connection()
-        return project_uploaded
+        return message
 
     def get_all_projects(self):
         col = self._db.Projects
@@ -96,7 +97,6 @@ class DBMongoAdapter:
         col_file = self._db.Projects.Files
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
-        project = None
         if project_json:
             project = Project.json_to_obj(project_json)
             file_query = {'file_name': file_obj.name+file_obj.type, "parent": file_obj.parent}
@@ -110,18 +110,18 @@ class DBMongoAdapter:
                                          .inserted_id)
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                if project.add_ic(file_obj, project.root_ic):
+                add = project.add_ic(file_obj, project.root_ic)
+                if add == msg.IC_SUCCESSFULLY_ADDED:
+                    print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
-                else:
-                    project = None
-                    print("dir with the specific path not found")
             else:
-                project = None
-                print("File already exists in the given path")
+                print(msg.IC_ALREADY_EXISTS)
+                return msg.IC_ALREADY_EXISTS
         else:
-            print("project with the specific ID not found")
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
         self._close_connection()
-        return project
+        return add
 
     def create_folder(self, project_name, folder):
         col = self._db.Projects
@@ -130,13 +130,45 @@ class DBMongoAdapter:
         if project_json:
             project = Project.json_to_obj(project_json)
 
-            if project.add_ic(folder, project.root_ic):
+            add = project.add_ic(folder, project.root_ic)
+            if add == msg.IC_SUCCESSFULLY_ADDED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
         else:
-            print("project with the specific ID not found")
-            return False
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
         self._close_connection()
-        return True
+        return add
+
+    def rename_ic(self, request_data):
+        col = self._db.Projects
+        col_file = self._db.Projects.Files
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+
+            add = project.rename_ic(request_data, project.root_ic)
+            if add == msg.IC_SUCCESSFULLY_RENAMED:
+                file_updated = True
+                if not request_data['is_directory']:
+                    file_updated = False
+                    file_query = {'file_name': request_data['old_name']}
+                    file_json = col_file.find_one(file_query, {'_id': 0})
+                    if file_json:
+                        col_file.update_one({'file_name': request_data['old_name']},
+                                            {'$set': {'file_name': str(request_data['new_name'])}})
+                        file_updated = True
+                    else:
+                        print(msg.STORED_FILE_NOT_FOUND)
+                        return msg.STORED_FILE_NOT_FOUND
+                if file_updated:
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+        else:
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return add
 
     def get_file(self, file_id, file_name):
         col = self._db.Projects.Files

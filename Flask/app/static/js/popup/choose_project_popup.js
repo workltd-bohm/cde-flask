@@ -81,13 +81,13 @@ function choose_post(data) {
       type: 'POST',
       success: function(data){
         choose_project_span.click();
-        var x = document.getElementById("snackbar");
-        x.className = "show";
-        x.innerHTML = data;
-
-        // After 3 seconds, remove the show class from DIV
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-        location.reload();
+//        var x = document.getElementById("snackbar");
+//        x.className = "show";
+//        x.innerHTML = data;
+//
+//        // After 3 seconds, remove the show class from DIV
+//        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        setTimeout(function(){ location.reload(); }, 1000);
       }
     });
 };

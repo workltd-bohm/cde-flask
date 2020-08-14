@@ -17,6 +17,7 @@ def index():
         new_folder_popup = render_template("popup/new_folder_popup.html", project="BLANK")
         new_project_popup = render_template("popup/new_project_popup.html", project="BLANK")
         choose_project_popup = render_template("popup/choose_project_popup.html", project="BLANK")
+        rename_popup = render_template("popup/rename_popup.html", project="BLANK")
         return render_template("index.html",
                                email=email,
                                menu=menu,
@@ -26,6 +27,7 @@ def index():
                                new_folder_popup=new_folder_popup,
                                new_project_popup=new_project_popup,
                                choose_project_popup=choose_project_popup,
+                               rename_popup=rename_popup,
                                user=user)
     else:
         return redirect('/login')

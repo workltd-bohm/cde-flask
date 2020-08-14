@@ -1,6 +1,6 @@
 import os
 import json
-from bson.binary import Binary
+import uuid
 
 from pathlib import Path
 from app import *
@@ -63,10 +63,10 @@ def upload_file():
         print('No file part')
         # return redirect(request.url)
     file = request.files['file'].read()
-    print(file)
+    # print(file)
     request_json = json.loads(request.form['data'])[0]  # test_json_request
     print(request_json)
-    file_obj = File(request_json['dir_path'] + '/' + request_json['file_name'],
+    file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['file_name'].split('.')[:-1]),
                     request_json['original_name'],
                     request_json['dir_path'],
@@ -94,11 +94,11 @@ def upload_file():
         encoded = file
         result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         if result:
-            print("successful - file uploaded")
-            return 'successful - file uploaded'
-        else:
-            print("not_uploaded")
-            return 'not successful - file not uploaded'
+            print(result)
+            return result
+        # else:
+        #     print("not_uploaded")
+        #     return 'not successful - file not uploaded'
     else:
         print(str(msg.DB_FAILURE))
     return redirect('/')
@@ -108,7 +108,7 @@ def upload_file():
 def create_dir():
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
-    folder = IC(request_data['parent'] + '/' + request_data['folder_name'],
+    folder = IC(str(uuid.uuid1()),
                 request_data['folder_name'],
                 request_data['parent'],
                 [],
@@ -117,11 +117,8 @@ def create_dir():
     if db.connect(db_adapter):
         result = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
-            print("successful - folder created")
-            return 'successful - folder created'
-        else:
-            print("not_created")
-            return 'not successful - folder not created'
+            print(result)
+            return result
     else:
         print(str(msg.DB_FAILURE))
 
@@ -182,7 +179,7 @@ def get_project():
 def create_project():
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
-    root_obj = IC(request_data['project_name'],
+    root_obj = IC(str(uuid.uuid1()),
                   request_data['project_name'],
                   '.',
                   [],
@@ -191,13 +188,10 @@ def create_project():
     project = Project("default", request_data['project_name'], root_obj)
     print(project.to_json())
     if db.connect(db_adapter):
-        uploaded = db.upload_project(db_adapter, project)
-        if uploaded:
-            print("successful - project created")
-            return "successful - project created"
-        else:
-            print("not_successful - name already exists in the DB")
-            return "not_successful - name already exists in the DB"
+        result = db.upload_project(db_adapter, project)
+        if result:
+            print(result)
+            return result
     else:
         print(str(msg.DB_FAILURE))
     return redirect('/')
@@ -206,13 +200,28 @@ def create_project():
 @app.route('/upload_project')
 def upload_project():
     print('Data posting path: %s' % request.path)
-    root_obj = path_to_obj('app')
+    root_obj = path_to_obj('app', '.')
     project = Project("default", "test-project", root_obj)
     print(project.to_json())
     if db.connect(db_adapter):
-        uploaded = db.upload_project(db_adapter, project)
-        if uploaded:
-            print("successful - project uploaded")
+        result = db.upload_project(db_adapter, project)
+        if result:
+            print(result)
+    else:
+        print(str(msg.DB_FAILURE))
+    return redirect('/')
+
+
+@app.route('/rename_ic', methods=['POST'])
+def rename_ic():
+    print('Data posting path: %s' % request.path)
+    print(json.loads(request.get_data()))
+    request_data = json.loads(request.get_data())
+    if db.connect(db_adapter):
+        result = db.rename_ic(db_adapter, request_data)
+        if result:
+            print(result)
+            return result
         else:
             print("not_successful - name already exists in the DB")
     else:
@@ -237,20 +246,21 @@ def set_dir():
     return redirect('/')
 
 
-def path_to_obj(path):
+def path_to_obj(path, parent_id):
     p = Path(path)
     name = p.stem
-    parent = str(p.parent)
+    parent = parent_id
     if os.path.isdir(path):
-        root = Directory(str(path),
+        new_id = str(uuid.uuid1())
+        root = Directory(new_id,
                          name,
                          parent,
                          [],
                          path,
-                         [path_to_obj(path + '/' + x) for x in os.listdir(path)
+                         [path_to_obj(path + '/' + x, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(path, name, name, parent, [], path, p.suffix)
+        root = File(str(uuid.uuid1()), name, name, parent, [], path, p.suffix, '', '')
     return root
 
 

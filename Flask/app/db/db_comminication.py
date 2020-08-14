@@ -34,6 +34,10 @@ def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
 
 
+def rename_ic(db_adapter, request_data):
+    return db_adapter.rename_ic(request_data)
+
+
 def get_file(db_adapter, file_id, file_name):
     return db_adapter.get_file(file_id, file_name)
 
