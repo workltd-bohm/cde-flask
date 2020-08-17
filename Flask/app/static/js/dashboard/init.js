@@ -5,6 +5,9 @@ const ORBIT_ANIM_MOVE = 200;
 const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
 
+const ORBIT_DUB_CLK_DIF = 200;
+
+const ORBIT_PATTERN = false;
 const ORBIT_ROT_CICLE = 0.66;
 const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;
@@ -15,13 +18,16 @@ const SUN_SCROLL_X_COEF = 6;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 2;
 
+const PLANET_MAX_NUMBER_MIN = 9;
+const PLANET_MAX_NUMBER_MAX = 20;
+
 const PLANET_SUN_RATIO = 1.75;
-const PLANET_MAX_NUMBER = 10;
 const PLANET_MIN_MAX_COEF = 0.5;
 const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.7;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
+const PLANET_SCROLL_ZOOM = 2;
 const PLANET_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
 const PATH_SUN_RATIO = 4;
@@ -48,25 +54,6 @@ const SVG = d3.select("#SVG");
 
 // ----------------------------------------------------
 
-var g_data = [{
-    ic_id: 0,
-    sub_folders : [
-        {ic_id: 1},
-        {ic_id: 2},
-        {ic_id: 3},
-        {ic_id: 4},
-        {ic_id: 5},
-        {ic_id: 6},
-        {ic_id: 7},
-        {ic_id: 8},
-        {ic_id: 9},
-        {ic_id: 10},
-        {ic_id: 11},
-        {ic_id: 12},
-        {ic_id: 13},
-    ]
-}];
-
 var g_project = g_project = {
         width : 0,
         height : 0,
@@ -80,11 +67,16 @@ var g_project = g_project = {
         skip: false,
         history : null,
         history_num : 0,
+        clck_start : 0,
+        clck_stop : 0,
         start : Date.now()
     };
 
-var g_globusRadius = 0;
-var g_pathRadius = 0;
+var g_TouchRadius = 0;
+var g_SunRadius = 0;
+var g_PlanetRadius = 0;
+var g_PlanetRadius_old = 0;
+var g_PathRadius = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},

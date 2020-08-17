@@ -48,7 +48,7 @@
 
 /*This is the OPENED Menu*/
 .menu-fixed.opend {
-  width: 12%;
+  width: 15%;
   /*background: #000;*/
   transition: all 0.3s ease-out;
 }
@@ -178,7 +178,7 @@
   width: 100%;
 }
 .menu-fixed .menu li {
-  padding: 15px; /*padding around the icons*/
+  padding: 5px; /*padding around the icons*/
   width: 40%;
   margin: auto;
   border-bottom: none; /*1px solid rgba(255, 0, 0, 0.1); /*a line between the icons*/
