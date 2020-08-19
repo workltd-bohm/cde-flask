@@ -14,17 +14,27 @@ g_GradientShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(
 g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,1)");
 
 var g_FilterShadow = SWGDefs.append("filter")
-	.attr("id", "filter_shadow")
-	.attr("x", "-20%")
-	.attr("y", "-20%")
-	.attr("width", "140%")
-	.attr("height", "140%");
+    .attr("id", "filter_shadow")
+    .attr("x", "-20%")
+    .attr("y", "-20%")
+    .attr("width", "140%")
+    .attr("height", "140%");
 g_FilterShadow.append("feGaussianBlur")
-	.attr("stdDeviation", "1 1")
-	.attr("result", "shadow");
+    .attr("stdDeviation", "1 1")
+    .attr("result", "shadow");
 g_FilterShadow.append("feOffset")
-	.attr("dx", "2")
-    .attr("dy", "2");
+    .attr("dx", "3")
+    .attr("dy", "3");
+
+var g_FilterBlur = SWGDefs.append("filter")
+    .attr("id", "filter_blur")
+    .attr("x", "-20%")
+    .attr("y", "-20%")
+    .attr("width", "140%")
+    .attr("height", "140%");
+g_FilterBlur.append("feGaussianBlur")
+    .attr("stdDeviation", "10 10")
+    .attr("result", "blur");
 
 var g_PatternSun = SWGDefs.append("pattern")
         .attr("id", "patern_sun")

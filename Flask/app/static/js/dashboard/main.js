@@ -1,7 +1,6 @@
 
 // -------------------------------------------------------
 
-
 function CreateSpace(data) {
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
@@ -19,10 +18,10 @@ function CreateSpace(data) {
         .enter()
         .append("g")
         .attr("class","star")
-        .style("opacity", 0)
-        .transition()
-        .delay(1)
-        .style("opacity", 100)
+        .style("opacity", 0) // must - old not deleted yet
+        .transition() // must - old not deleted yet
+        .delay(1) // must - old not deleted yet
+        .style("opacity", 100) // must - old not deleted yet
         .each(function(d){AddSun(d3.select(this), d);});
 }
 
@@ -31,7 +30,7 @@ function AddSun(obj, data){
     data.values = {};
     data.values.this = obj;
     data.values.rotation = 1;
-    data.values.centar = true;
+
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");
 
@@ -59,31 +58,13 @@ function AddSun(obj, data){
 
     data.values.children = data.values.this.append("g").attr("class", "child");
 
-    var draw = data.values.this.append("g").attr("class", "object");
+    data.values.object = data.values.this.append("g").attr("class", "object");
 
-    data.values.picture = draw.append("circle")
+    data.values.picture = data.values.object.append("circle")
         .attr("class", "pattern")
         .attr("r", g_SunRadius);
 
-    data.values.text = draw.append("g")
-        .attr("class", "text")
-    data.values.text.append("text")
-        .attr("x",0)
-        .attr("y",0)
-        .attr("fill","rgb(0,0,0)")
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(TEXT_SUN_SCALE)+")")
-        .attr("font-size", TEXT_SUN_SIZE)
-        .style("filter", "url(#shadow)")
-        .attr("text-anchor","middle")
-        .html(data.name);
-    data.values.text.append("text")
-        .attr("x",0)
-        .attr("y",0)
-        .attr("fill", TEXT_SUN_COLOR)
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(TEXT_SUN_SCALE)+")")
-        .attr("font-size", TEXT_SUN_SIZE)
-        .attr("text-anchor","middle")
-        .html(data.name);
+    AddText(data);
 
     if(data.sub_folders){
         data.values.children.selectAll("g")
@@ -93,7 +74,23 @@ function AddSun(obj, data){
             .attr("class","planet")
             .each(function(d, i){AddChildren(d3.select(this), d, data, i);});
     }
-    
+
+    data.values.select = data.values.this.append("circle")
+        .attr("class","select")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", g_SunRadius)
+        .on("mousedown",function(d){
+            ClickStart(function(data){
+                // TODO: action menu
+                OverlayCreate(data);
+            }, data);
+        })
+        .on("mouseup",function(d){
+            ClickStop(function(data){
+                // NONE
+            }, data);
+        });
 }
 
 function AddChildren(obj, data, parent, position=0){
@@ -111,7 +108,6 @@ function AddChildren(obj, data, parent, position=0){
     data.values.this.attr("id", "obj-"+data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
-    data.values.centar = false;
     if(g_root.slider) {
         data.values.this.transition()
             .ease("linear")
@@ -125,68 +121,56 @@ function AddChildren(obj, data, parent, position=0){
             .attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_SunRadius*PLANET_ORBIT_COEF)+", 0), rotate("+(-data.values.rotation)+")");
     }
 
-    var draw = data.values.this.append("g").attr("class", "object");
+    data.values.object = data.values.this.append("g").attr("class", "object");
 
-    data.values.picture = draw.append("circle")
+    data.values.picture = data.values.object.append("circle")
         .attr("class", "pattern")
         .attr("r", g_PlanetRadius);
 
-    data.values.shader = draw.append("circle")
+    data.values.shader = data.values.object.append("circle")
         .attr("class", "shader")
         .attr("r", g_PlanetRadius)
         .attr("transform","rotate("+((g_root.slider)?0:data.values.rotation)+")");
 
-    data.values.text = draw.append("g")
+    AddText(data);
+    if(g_root.slider) {
+        data.values.text.selectAll("text")
+            .attr("text-anchor","left")
+            .attr("transform","translate("+(g_SunRadius/PLANET_SCROLL_TEXT)+")");
+    }
+
+    data.values.select = data.values.this.append("circle")
+        .attr("class","select")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", g_PlanetRadius)
+        .on("mousedown",function(d){
+            ClickStart(function(data){
+                // TODO: action menu
+            }, data);
+        })
+        .on("mouseup",function(d){
+            ClickStop(SunFadeout, data);
+        });
+}
+
+// -------------------------------------------------------
+
+function AddText(data, fix=false) {
+    data.values.text = data.values.object.append("g")
         .attr("class", "text")
     data.values.text.append("text")
         .attr("class", "text_back")
         .attr("x",0)
         .attr("y",0)
-        .attr("fill","rgb(0,0,0)")
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(TEXT_SUN_SCALE/TEXT_PLANET_SUN_RATIO)+")")
-        .attr("font-size", TEXT_PLANET_SIZE)
-        .style("filter", "url(#filter_shadow)")
-        .attr("text-anchor","middle")
+        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         .html(data.name);
     data.values.text.append("text")
         .attr("class", "text_front")
         .attr("x",0)
         .attr("y",0)
-        .attr("fill", TEXT_PLANET_COLOR)
-        .attr("transform","rotate("+(-g_root.deg)+"), scale("+(TEXT_SUN_SCALE/TEXT_PLANET_SUN_RATIO)+")")
-        .attr("font-size", TEXT_PLANET_SIZE)
-        .attr("text-anchor","middle")
+        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         .html(data.name);
-    if(g_root.slider) {
-        data.values.text.selectAll("text").attr("text-anchor","left")
-            .attr("transform","translate("+(g_SunRadius/PLANET_SCROLL_TEXT)+")");
-    }
-
-    //if(data.sub_folders && data.sub_folders.length > 0){
-        data.values.select = data.values.this.append("circle")
-            .attr("class","select")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("r", g_PlanetRadius)
-            .attr("fill", "rgba(0,0,0,0)")
-            .attr("stroke", "none")
-            .on("mouseenter",function(d){
-                data.values.select.attr("fill", PLANET_SELECT_COLOR);
-            })
-            .on("mouseleave",function(d){
-                data.values.select.attr("fill","rgba(0,0,0,0)");
-            })
-            .on("mousedown",function(d){
-                data.box.position.x = d3.event.x;
-                data.box.position.y = d3.event.y;
-                ClickStart(function(data){
-                    // TODO: action menu
-                }, data);
-            })
-            .on("mouseup",function(d){
-                ClickStop(SunFadeout, data);
-            });
-    //}
 }
 
 function SunFadeout(data){
@@ -207,8 +191,6 @@ function SunFadeout(data){
         g_root.y -= (vec_y+g_root.cy)*g_root.scale;
     }
 
-    //console.log(data.values.parent.select("#target-"+data.values.back.name).selectAll("circle"));
-    // data.values.back.values.this.select("g[target='target-"+data.values.back.id+"']").transition()
     data.values.back.values.picture.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -225,22 +207,18 @@ function SunFadeout(data){
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
-    data.values.text.transition()
+    if(g_root.slider) data.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("text-anchor","middle")
         .attr("transform","translate("+(-g_SunRadius/PLANET_SCROLL_TEXT)+")");
     data.values.back.values.children.selectAll("g.planet").each(function(d){
-        // console.log(data.values.this[0] == d.values.this[0]);
-        // if(d3.select(this).attr("id") && data.values.this.attr("id") != d3.select(this).attr("id")) {
         if(data.values.this[0] != d.values.this[0]) {
-            //console.log(data.values.this , d3.select(this));
             d3.select(this).transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
                 .style("opacity", 0)
         }
-        // if(data.values.this.attr("id") == d3.select(this).attr("id")){
         else {
             d3.select(this).transition()
                 .ease("linear")
@@ -257,13 +235,6 @@ function SunFadeout(data){
 
 function AnimateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
-    // g_root.scale = g_root.scale_old;
-    // globZoom.scale(g_root.scale_old);
-    // var offsetX =  g_root.scale*(g_root.x - g_project.width_h) ;
-    // var offsetY =  g_root.scale*(g_root.y - g_project.height_h) ;
-    // g_root.width = g_project.width_h + offsetX ;
-    // g_root.height = g_project.height_h + offsetY ;
-    //.log(parseFloat(g_PatternPlanet.attr("x")));
 
     if(ORBIT_PATTERN){
         g_project.rotate += ORBIT_ROT_SCALE/100*g_project.speed_scale;
@@ -277,7 +248,6 @@ function AnimateUniverse() {
             .duration(1)
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
         if(!g_project.warp) {
-            //console.log(g_project.skip.values.back)
             AddPath(g_project.skip.values.back);
             g_project.skip.values.parent.remove()
             CreateSpace([g_project.skip]);
@@ -295,7 +265,6 @@ function AnimateUniverse() {
 }
 
 function AnimateStar(data) {
-    //data.values.children.selectAll("g.planet").each(AnimatePlanet);
     AnimatePlanet(data);
 }
 
@@ -323,6 +292,8 @@ function AnimatePlanet(data) {
     }
 }
 
+// -------------------------------------------------------
+
 function DashboardCreate(data) {
 
     WindowResize();
@@ -347,3 +318,5 @@ function DashboardCreate(data) {
         }
     });
 }
+
+// -------------------------------------------------------

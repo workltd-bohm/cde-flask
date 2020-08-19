@@ -5,7 +5,7 @@ const ORBIT_ANIM_MOVE = 200;
 const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
 
-const ORBIT_DUB_CLK_DIF = 200;
+const ORBIT_DUB_CLK_DIF = 50;
 
 const ORBIT_PATTERN = false;
 const ORBIT_ROT_CICLE = 0.66;
@@ -28,23 +28,14 @@ const PLANET_ORBIT_COEF = 1.7;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
 const PLANET_SCROLL_ZOOM = 2;
-const PLANET_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
 const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
 const PATH_TEXT_PADDING = 3;
-const PATH_SELECT_COLOR = "rgba(255,255,255,0.3)";
 
-const TEXT_SUN_SIZE = "20px";
 const TEXT_SUN_SCALE = 2;
-const TEXT_SUN_COLOR = "rgba(200,200,200,255)";
-
-const TEXT_PLANET_SIZE = "18px";
 const TEXT_PLANET_SUN_RATIO = 2;
-const TEXT_PLANET_COLOR = "rgba(250,250,250,255)";
 
-const TEXT_PATH_SIZE = "12px";
-const TEXT_PATH_COLOR = "rgba(250,250,250,255)";
 
 // ----------------------------------------------------
 
@@ -112,3 +103,5 @@ var g_root = {
     zoom : false,
     slider : false,
 }
+
+// -------------------------------------------------------
