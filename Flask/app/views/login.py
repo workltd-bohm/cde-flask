@@ -26,14 +26,14 @@ def login_data():
             return redirect(url_for('index'))
         else:
             resp = Response()
-            resp.status_code = 404
-            resp.data = str(msg.INVALID_USER_PASS).replace("'", "\"")
+            resp.status_code = msg.INVALID_USER_PASS['code']
+            resp.data = str(msg.INVALID_USER_PASS['message']).replace("'", "\"")
             return resp
     else:
         print(str(msg.DB_FAILURE))
         resp = Response()
-        resp.status_code = 404
-        resp.data = str(msg.DB_FAILURE).replace("'", "\"")
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
         return resp
 
 
@@ -55,12 +55,12 @@ def signup_data():
             return redirect(url_for('index'))
         else:
             resp = Response()
-            resp.status_code = 404
-            resp.data = str(msg.USER_ALREADY_IN).replace("'", "\"")
+            resp.status_code = msg.USER_ALREADY_IN['code']
+            resp.data = str(msg.USER_ALREADY_IN['message']).replace("'", "\"")
             return resp
     else:
         print(str(msg.DB_FAILURE))
         resp = Response()
-        resp.status_code = 404
-        resp.data = str(msg.DB_FAILURE).replace("'", "\"")
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
         return resp

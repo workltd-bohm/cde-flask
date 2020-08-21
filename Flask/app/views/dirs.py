@@ -37,6 +37,10 @@ def clear_db():
         db.clear_db(db_adapter)
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
@@ -53,6 +57,10 @@ def get_file():
             print("not_found")
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
@@ -95,13 +103,17 @@ def upload_file():
         encoded = file
         result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         if result:
-            print(result)
-            return result
-        # else:
-        #     print("not_uploaded")
-        #     return 'not successful - file not uploaded'
+            print(result["message"])
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
@@ -118,10 +130,17 @@ def create_dir():
     if db.connect(db_adapter):
         result = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
-            print(result)
-            return result
+            print(result["message"])
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
 
     return redirect('/')
 
@@ -152,6 +171,10 @@ def get_all_projects():
             print("not_found")
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return ""
 
 
@@ -173,6 +196,10 @@ def get_project():
             print("not_found")
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return ""
 
 
@@ -193,10 +220,17 @@ def create_project():
     if db.connect(db_adapter):
         result = db.upload_project(db_adapter, project, user)
         if result:
-            print(result)
-            return result
+            print(result["message"])
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
@@ -212,6 +246,10 @@ def upload_project():
             print(result)
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
@@ -223,12 +261,19 @@ def rename_ic():
     if db.connect(db_adapter):
         result = db.rename_ic(db_adapter, request_data)
         if result:
-            print(result)
-            return result
+            print(result["message"])
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
         else:
             print("not_successful - name already exists in the DB")
     else:
         print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
     return redirect('/')
 
 
