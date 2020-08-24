@@ -33,6 +33,9 @@ const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
 const PATH_TEXT_PADDING = 3;
 
+const OVERLAY_SUN_RATIO = 4;
+const OVERLAY_MARG = 2;
+
 const TEXT_SUN_SCALE = 2;
 const TEXT_PLANET_SUN_RATIO = 2;
 
@@ -60,6 +63,7 @@ var g_project = g_project = {
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
+        overlay : false,
         start : Date.now()
     };
 
@@ -68,6 +72,7 @@ var g_SunRadius = 0;
 var g_PlanetRadius = 0;
 var g_PlanetRadius_old = 0;
 var g_PathRadius = 0;
+var g_OverlayRadius = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},

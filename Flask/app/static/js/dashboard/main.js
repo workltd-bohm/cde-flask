@@ -20,7 +20,7 @@ function CreateSpace(data) {
         .attr("class","star")
         .style("opacity", 0) // must - old not deleted yet
         .transition() // must - old not deleted yet
-        .delay(1) // must - old not deleted yet
+        .delay(100) // must - old not deleted yet
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d){AddSun(d3.select(this), d);});
 }
@@ -62,7 +62,22 @@ function AddSun(obj, data){
 
     data.values.picture = data.values.object.append("circle")
         .attr("class", "pattern")
-        .attr("r", g_SunRadius);
+        .attr("r", g_SunRadius)
+        .on("mouseover",function(d){
+            data.values.text.style("opacity", 0);
+            if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+        })
+        .on("mousedown",function(d){
+            ClickStart(function(data){
+                // TODO: action menu
+                // OverlayCreate(data);
+            }, data);
+        })
+        .on("mouseup",function(d){
+            ClickStop(function(data){
+                // NONE
+            }, data);
+        });
 
     AddText(data);
 
@@ -75,22 +90,25 @@ function AddSun(obj, data){
             .each(function(d, i){AddChildren(d3.select(this), d, data, i);});
     }
 
-    data.values.select = data.values.this.append("circle")
-        .attr("class","select")
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("r", g_SunRadius)
-        .on("mousedown",function(d){
-            ClickStart(function(data){
-                // TODO: action menu
-                OverlayCreate(data);
-            }, data);
-        })
-        .on("mouseup",function(d){
-            ClickStop(function(data){
-                // NONE
-            }, data);
-        });
+    // data.values.select = data.values.this.append("circle")
+    //     .attr("class","select")
+    //     .attr("cx", 0)
+    //     .attr("cy", 0)
+    //     .attr("r", g_SunRadius)
+    //     .on("mouseover",function(d){
+    //         OverlayCreate(data);
+    //     })
+    //     .on("mousedown",function(d){
+    //         ClickStart(function(data){
+    //             // TODO: action menu
+    //             // OverlayCreate(data);
+    //         }, data);
+    //     })
+    //     .on("mouseup",function(d){
+    //         ClickStop(function(data){
+    //             // NONE
+    //         }, data);
+    //     });
 }
 
 function AddChildren(obj, data, parent, position=0){
@@ -157,15 +175,17 @@ function AddChildren(obj, data, parent, position=0){
 // -------------------------------------------------------
 
 function AddText(data, fix=false) {
-    data.values.text = data.values.object.append("g")
+    var newobj = data.values;
+    //console.log(obj)
+    newobj.text = newobj.object.append("g")
         .attr("class", "text")
-    data.values.text.append("text")
+    newobj.text.append("text")
         .attr("class", "text_back")
         .attr("x",0)
         .attr("y",0)
         .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         .html(data.name);
-    data.values.text.append("text")
+    newobj.text.append("text")
         .attr("class", "text_front")
         .attr("x",0)
         .attr("y",0)
@@ -249,6 +269,10 @@ function AnimateUniverse() {
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
         if(!g_project.warp) {
             AddPath(g_project.skip.values.back);
+            if(g_project.overlay) {
+                g_project.overlay.remove();
+                g_project.overlay = false;
+            }
             g_project.skip.values.parent.remove()
             CreateSpace([g_project.skip]);
             g_project.warp = 2;

@@ -30,9 +30,12 @@ circle.select:hover {
     fill: rgba(255,255,255,0.3);
 }
 circle.overmenu {
-    fill: rgba(0,0,0,0);
-    stroke: rgb(204, 204, 204);
-    stroke-opacity: 0.9;
+    fill: rgba(0, 153, 255, 0.5);
+    /* stroke: rgb(204, 204, 204); */
+    /* stroke-opacity: 0.9; */
+}
+circle.overselect {
+    fill: rgba(0, 0, 0, 0);
 }
 
 text.text_back {
@@ -47,9 +50,19 @@ text.text_front {
 g.star > g.object > g.text > text {
     font-size: 40px;
 }
+g.star > g.overlay > g.text > text {
+    font-size: 40px;
+}
 g.planet > g.object > g.text > text {
     font-size: 18px;
 }
 g.draw > g.text > text {
     font-size: 12px;
+}
+
+.foregin {
+    text-align: center;
+}
+.foregin .material-icons{
+    color: white;
 }

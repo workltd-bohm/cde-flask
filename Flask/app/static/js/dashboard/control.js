@@ -27,6 +27,8 @@ function WindowResize(){
 
     g_PathRadius = g_SunRadius/PATH_SUN_RATIO;
 
+    g_OverlayRadius = g_SunRadius/OVERLAY_SUN_RATIO;
+
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
 }
@@ -92,7 +94,6 @@ function ClickStart(ToDo, data){
     if(g_project.clck_start == 0) {
         g_project.clck_start = data.values.this;
         d3.timer(function(duration) {
-            console.log("t "+g_project.clck_stop);
             if (g_project.clck_stop > 0) {
                 if(g_project.clck_stop == 1) {
                     g_project.clck_start = 0;
