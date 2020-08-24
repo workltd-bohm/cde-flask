@@ -24,6 +24,17 @@
   overflow: auto;
 }
 
+#file-input-modal-content
+{
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border-radius: 25px;
+width: 30%;
+height: 60%;
+}
+
 /* The Close Button */
 .close {
   color: #aaaaaa;
@@ -60,7 +71,7 @@
   border: 0;
   border-bottom: 2px solid #9b9b9b;
   outline: 0;
-  font-size: 1.3rem;
+  font-size: 1.3rem; 
   color: #777;
   padding: 7px 0;
   background: transparent;
