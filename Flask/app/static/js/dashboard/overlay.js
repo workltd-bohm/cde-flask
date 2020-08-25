@@ -2,22 +2,22 @@
 // -------------------------------------------------------
 
 g_OverFolder = [
-    { name : "Upload Files", icon : "arrow_circle_up", link : WrapCreateFile},
-    { name : "Create New", icon : "create_new_folder", link : WrapCreateFolder},
-    { name : "Rename", icon : "create", link : WrapRename},
-    { name : "Delete", icon : "delete", link : WrapDelete},
-    { name : "Move", icon : "open_with", link : WrapMove},
-    { name : "Share", icon : "share", link : WrapShare},
-    { name : "Download", icon : "cloud_download", link : WrapDownload},
+    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+    { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
+    { name : "RENAME", icon : "create", link : WrapRename},
+    { name : "DELETE", icon : "delete", link : WrapDelete},
+    { name : "MOVE", icon : "open_with", link : WrapMove},
+    { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
 ]
 
 g_OverFile = [
-    { name : "Upload FIles", icon : "arrow_circle_up", link : WrapCreateFile},
-    { name : "Rename", icon : "create", link : WrapRename},
-    { name : "Delete", icon : "delete", link : WrapDelete},
-    { name : "Move", icon : "open_with", link : WrapMove},
-    { name : "Share", icon : "share", link : WrapShare},
-    { name : "Download", icon : "cloud_download", link : WrapDownload},
+    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+    { name : "RENAME", icon : "create", link : WrapRename},
+    { name : "DELETE", icon : "delete", link : WrapDelete},
+    { name : "MOVE", icon : "open_with", link : WrapMove},
+    { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
 ]
 
 // -------------------------------------------------------

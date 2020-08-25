@@ -3,7 +3,7 @@
 /*This is the default Menu position (collapsed)*/
 .menu-fixed {
   background-color: var(--side-menu);
-  width: 5%;
+  width: 5%; /*5%*/
   z-index: 2;
   height: 100%;
   transition: all 0.3s;
@@ -16,7 +16,7 @@
 
 /*This is the Menu when it is collapsed*/
 .menu-fixed.closed {
-  width: 5%;
+  width: 5%; /*5%*/
   /*background-color: #0a1522;*/
   transition: all 0.3s;
 }
@@ -25,7 +25,7 @@
 }
 .menu-fixed > .menu li {
   text-align: center;
-  width: 40%;
+  width: 40%;/*40%*/
 }
 .menu-fixed.closed > .menu li > p, .menu-fixed.closed > .menu li > a {
   display: none;
@@ -48,7 +48,7 @@
 
 /*This is the OPENED Menu*/
 .menu-fixed.opend {
-  width: 15%;
+  width: 12%;
   /*background: #000;*/
   transition: all 0.3s ease-out;
 }
@@ -73,7 +73,7 @@
 }
 .menu-fixed.opend > .menu li {
   text-align: left;
-  width: 60%;
+  width: 70%;
 }
 
 /*When the Menu is opened what happens when you hover over the icons*/
@@ -81,7 +81,7 @@
   content: '';
   display: block;
   position: absolute;
-  background: rgba(0, 0, 0, 0.5); /*The background of the hovered icon*/
+  /*background: rgba(0, 0, 0, 0.5); The background of the hovered icon*/
   width: 100%;
   height: 100%;
   top: 0;
@@ -168,7 +168,7 @@
 
 /*The horizontal line that separates the logo and the icons*/
 .menu-fixed hr {
-  width: 75%;
+  width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
 .menu-fixed .menu {
@@ -178,7 +178,8 @@
   width: 100%;
 }
 .menu-fixed .menu li {
-  padding: 5px; /*padding around the icons*/
+  padding: 20px 0px 20px 0px;
+  /*padding: 15px; adding around the icons*/
   width: 40%;
   margin: auto;
   border-bottom: none; /*1px solid rgba(255, 0, 0, 0.1); /*a line between the icons*/
@@ -192,14 +193,14 @@
   border: none;
 }
 .menu-fixed .menu li:hover {
-  background: #e8e8e8; /*This is the background of the side menu icons*/
+  /*background: #121212; This is the background of the side menu icons*/
   transition: all 0.3s;
 }
 .menu-fixed .menu li:hover > .material-icons {
   color: white; /*This is the color of the icon when you hover over it*/
 }
 .menu-fixed .menu li .material-icons {
-  color: #000; /*This is the color of the actual icon*/
+  color: rgba(51, 68, 69, 0.8); /*This is the color of the actual icon*/
 }
 
 /*Text next to the icon in the expanded menu*/
@@ -208,9 +209,10 @@
   z-index: 1;
   margin: auto;
   color: #000; /*This is the color of the text next to the icon (in an expnaded menu)*/
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
   position: absolute;
+  padding-top: 10px;
   padding-left: 30px;
   line-height: 30px;
   text-shadow: 1px 1px 8px #fff;
