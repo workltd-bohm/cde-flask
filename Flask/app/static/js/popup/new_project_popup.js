@@ -7,10 +7,11 @@ var new_project_btn = document.getElementById("createProjectBtn");
 // Get the <span> element that closes the modal
 var new_project_span = document.getElementsByClassName("close2")[0];
 
+// REMOVED FROM MENU
 // When the user clicks the button, open the modal
-new_project_btn.onclick = function() {
-  new_project_modal.style.display = "block";1
-}
+// new_project_btn.onclick = function() {
+//   new_project_modal.style.display = "block";1
+// }
 
 // When the user clicks on <span> (x), close the modal
 new_project_span.onclick = function() {

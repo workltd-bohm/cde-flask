@@ -7,10 +7,11 @@ var new_folder_btn = document.getElementById("createFolderBtn");
 // Get the <span> element that closes the modal
 var new_folder_span = document.getElementsByClassName("close1")[0];
 
+// REMOVED FROM MENU
 // When the user clicks the button, open the modal
-new_folder_btn.onclick = function() {
-  new_folder_modal.style.display = "block";1
-}
+// new_folder_btn.onclick = function() {
+//   new_folder_modal.style.display = "block";1
+// }
 
 // When the user clicks on <span> (x), close the modal
 new_folder_span.onclick = function() {

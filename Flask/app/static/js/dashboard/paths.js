@@ -9,16 +9,16 @@ function DrawPath(obj, data){
 
     data.path.this.attr("transform","translate("+(g_PathRadius*PATH_ORBIT_COEF*PATH_TEXT_PADDING)+", 0)");
 
-    data.values.object = data.path.this.append("g").attr("class", "draw");
+    data.values.object = data.path.this.append("g").attr("class", "path draw");
 
     data.path.picture = data.values.object.append("circle")
-        .attr("class", "pattern")
+        .attr("class", "path pattern")
         .attr("r", g_PathRadius);
 
-    AddText(data, fix=true);
+    AddText(data, "path", fix=true);
 
     data.path.select = data.values.object.append("circle")
-        .attr("class","select")
+        .attr("class","path select")
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PathRadius)
@@ -34,7 +34,7 @@ function DrawPath(obj, data){
             }, data);
         });
 
-    data.path.child = data.path.this.append("g").attr("class", "next");
+    data.path.child = data.path.this.append("g").attr("class", "path next");
     g_project.history = data.path.child
 }
 

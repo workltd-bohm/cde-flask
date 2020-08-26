@@ -56,12 +56,12 @@ function AddSun(obj, data){
             .attr("transform", "translate("+(-g_SunRadius*SUN_SCROLL_X_COEF)+", 0)");//, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
 
-    data.values.children = data.values.this.append("g").attr("class", "child");
+    data.values.children = data.values.this.append("g").attr("class", "star child");
 
-    data.values.object = data.values.this.append("g").attr("class", "object");
+    data.values.object = data.values.this.append("g").attr("class", "star object");
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "pattern")
+        .attr("class", "star pattern")
         .attr("r", g_SunRadius)
         .on("mouseover",function(d){
             data.values.text.style("opacity", 0);
@@ -79,7 +79,7 @@ function AddSun(obj, data){
             }, data);
         });
 
-    AddText(data);
+    AddText(data, "star");
 
     if(data.sub_folders){
         data.values.children.selectAll("g")
@@ -139,18 +139,18 @@ function AddChildren(obj, data, parent, position=0){
             .attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_SunRadius*PLANET_ORBIT_COEF)+", 0), rotate("+(-data.values.rotation)+")");
     }
 
-    data.values.object = data.values.this.append("g").attr("class", "object");
+    data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "pattern_planet")
+        .attr("class", "planet pattern")
         .attr("r", g_PlanetRadius);
 
     data.values.shader = data.values.object.append("circle")
-        .attr("class", "shader")
+        .attr("class", "planet shader")
         .attr("r", g_PlanetRadius)
         .attr("transform","rotate("+((g_root.slider)?0:data.values.rotation)+")");
 
-    AddText(data);
+    AddText(data, "planet");
     if(g_root.slider) {
         data.values.text.selectAll("text")
             .attr("text-anchor","left")
@@ -158,7 +158,7 @@ function AddChildren(obj, data, parent, position=0){
     }
 
     data.values.select = data.values.this.append("circle")
-        .attr("class","select")
+        .attr("class","planet select")
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
@@ -174,19 +174,19 @@ function AddChildren(obj, data, parent, position=0){
 
 // -------------------------------------------------------
 
-function AddText(data, fix=false) {
+function AddText(data, cls="", fix=false) {
     var newobj = data.values;
     //console.log(obj)
     newobj.text = newobj.object.append("g")
-        .attr("class", "text")
+        .attr("class", cls+" text")
     newobj.text.append("text")
-        .attr("class", "text_back")
+        .attr("class", cls+" text_back")
         .attr("x",0)
         .attr("y",0)
         .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         .html(data.name);
     newobj.text.append("text")
-        .attr("class", "text_front")
+        .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
         .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
@@ -256,7 +256,7 @@ function SunFadeout(data){
 function AnimateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
 
-    if(ORBIT_PATTERN){
+    if(ORBIT_PATTERN && ORBIT_PATTERN_ANIM){
         g_project.rotate += ORBIT_ROT_SCALE/100*g_project.speed_scale;
         if(g_project.rotate > 0) g_project.rotate = -ORBIT_ROT_CICLE;
         g_PatternSun.attr("x", g_project.rotate);

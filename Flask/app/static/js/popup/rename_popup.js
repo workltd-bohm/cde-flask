@@ -7,10 +7,11 @@ var rename_btn = document.getElementById("renameBtn");
 // Get the <span> element that closes the modal
 var rename_span = document.getElementsByClassName("close4")[0];
 
+// REMOVED FROM MENU
 // When the user clicks the button, open the modal
-rename_btn.onclick = function() {
-  rename_modal.style.display = "block";1
-}
+// rename_btn.onclick = function() {
+//   rename_modal.style.display = "block";1
+// }
 
 // When the user clicks on <span> (x), close the modal
 rename_span.onclick = function() {

@@ -7,7 +7,8 @@ const ORBIT_ANIM_RESET = 600;
 
 const ORBIT_DUB_CLK_DIF = 50;
 
-const ORBIT_PATTERN = false;
+const ORBIT_PATTERN = true;
+const ORBIT_PATTERN_ANIM = false;
 const ORBIT_ROT_CICLE = 0.66;
 const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;

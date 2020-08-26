@@ -29,16 +29,17 @@ var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'De
 
 var fileList = null;
 
+// REMOVED FROM MENU
 // When the user clicks the button, open the modal
-btn.onclick = function() {
-  modal.style.display = "block";
-  if(input_json == ""){
-    input_get();
-  }
-//  else{
-//    fill_options();
-//  }
-}
+// btn.onclick = function() {
+//   modal.style.display = "block";
+//   if(input_json == ""){
+//     input_get();
+//   }
+// //  else{
+// //    fill_options();
+// //  }
+// }
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {

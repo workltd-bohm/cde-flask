@@ -1,3 +1,6 @@
+
+// -------------------------------------------------------
+
 $( document ).ready(function(){
     $.get( "/get_project", function( data ) {
         if(data){
@@ -6,6 +9,8 @@ $( document ).ready(function(){
         }
     });
 });
+
+// -------------------------------------------------------
 
 function WrapCreateFolder(data){
     new_folder_modal.style.display = "block";
@@ -37,3 +42,5 @@ function WrapShare(data){
 function WrapDownload(data){
     
 }
+
+// -------------------------------------------------------

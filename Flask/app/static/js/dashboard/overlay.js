@@ -35,13 +35,13 @@ function OverlayCreate(obj, data, parent) {
     g_project.overlay = data.overlay.object;
 
     data.overlay.object.append("circle")
-        .attr("class","overmenu")
+        .attr("class","overlay pattern")
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_SunRadius)
 
     data.overlay.object.append("circle")
-        .attr("class","overselect")
+        .attr("class","overlay select")
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_SunRadius*1.2)
@@ -57,7 +57,7 @@ function OverlayCreate(obj, data, parent) {
     AddOverText(data, obj=true, name=false);
 
     data.overlay.children = data.overlay.object.append("g")
-        .attr("class","items")
+        .attr("class","overlay items")
     
     data.overlay.children.selectAll("g")
         .data(data.overlay.items)
@@ -88,14 +88,14 @@ function AddItem(obj, data, parent, position=0) {
         .attr("width", g_OverlayRadius)
         .attr("height", g_OverlayRadius)
         .append("xhtml:div")
-        .attr("class", "foregin")
+        .attr("class", "item foregin")
 
     data.values.picture .append("i")
         .attr("class", "material-icons")
         .html(data.icon)
 
     data.values.select = data.values.this.append("circle")
-        .attr("class","select")
+        .attr("class","item select")
         // .attr("id", data.link)
         .attr("r", g_OverlayRadius)
         .on("mouseover",function(d){

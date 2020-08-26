@@ -7,11 +7,12 @@ var choose_project_btn = document.getElementById("chooseProjectBtn");
 // Get the <span> element that closes the modal
 var choose_project_span = document.getElementsByClassName("close3")[0];
 
+// REMOVED FROM MENU
 // When the user clicks the button, open the modal
-choose_project_btn.onclick = function() {
-  choose_project_modal.style.display = "block";
-  choose_input_get();
-}
+// choose_project_btn.onclick = function() {
+//   choose_project_modal.style.display = "block";
+//   choose_input_get();
+// }
 
 // When the user clicks on <span> (x), close the modal
 choose_project_span.onclick = function() {
