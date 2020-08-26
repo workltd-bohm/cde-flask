@@ -30,7 +30,7 @@ function OverlayCreate(obj, data, parent) {
     data.overlay.items = data.is_directory ? g_OverFolder : g_OverFile;
 
     data.overlay.object = data.values.this.append("g")
-        .attr("class","overlay");
+        .attr("class","star overlay");
 
     g_project.overlay = data.overlay.object;
 
