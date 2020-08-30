@@ -59,15 +59,23 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
         timeout: 5000,
         success: function(data){
             if(!stay) location.reload();
-            LoadStop();
             console.log(data);
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
             if(func) func();
+            LoadStop();
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar(textStatus);
             PopupClose();
         }
     });
+}
+
+function MakeSnackbar(data){
+    $("#snackbar").html(data);
+    $("#snackbar").show();
+    setTimeout(function(){ $("#snackbar").hide(); }, 3000);
 }

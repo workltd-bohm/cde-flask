@@ -1,15 +1,7 @@
-<div id="newProjectModal" class="modal">
-<!-- Modal content -->
-<div class="modal-content", id="new-project-modal-content">
-  <span class="close2">&times;</span>
-  <p>Create new project</p>
-  <form id="newProjectFormId" enctype="multipart/form-data" onsubmit="return submit();">
-    <div class="form__group field">
-      <input type="input" class="form__field" name="project_name" id='project_name' required />
-      <label for="project_name" class="form__label">Project name</label>
-    </div>
-    <br>
-    <input type="button" id="upload_new_project_btn" value="Upload" />
-  </form>
+<h3>Create new project</h3>
+<div class="form__group field">
+  <input type="input" class="form__field" name="project_name" required />
+  <label for="project_name" class="form__label">Project name</label>
 </div>
-</div>
+<br>
+<input type="button" value="Upload" onclick="FormSubmit('create_project', null, true)"/>

@@ -124,53 +124,53 @@ file_input.change(function(e){
 
  });
 
- function create_divs(id, type, label_value){
-    var div = document.createElement('div');
-    div.setAttribute('class', 'form__group field');
+//  function create_divs(id, type, label_value){
+//     var div = document.createElement('div');
+//     div.setAttribute('class', 'form__group field');
 
-    if(type == "text"){
-        var input = document.createElement('input');
-        input.class = 'form__field';
-        input.setAttribute('name', id);
-        input.setAttribute('id', id);
-        input.setAttribute('type', 'text');
-//        input.setAttribute(readonly);
+//     if(type == "text"){
+//         var input = document.createElement('input');
+//         input.class = 'form__field';
+//         input.setAttribute('name', id);
+//         input.setAttribute('id', id);
+//         input.setAttribute('type', 'text');
+// //        input.setAttribute(readonly);
 
-        div.appendChild(input);
-    }
-    if(type == "input"){
-        var input = document.createElement('input');
-        input.setAttribute('class', 'form__group field');
-        input.setAttribute('name', id);
-        input.setAttribute('id', id);
-        input.setAttribute('type', 'input');
-        input.setAttribute(required);
+//         div.appendChild(input);
+//     }
+//     if(type == "input"){
+//         var input = document.createElement('input');
+//         input.setAttribute('class', 'form__group field');
+//         input.setAttribute('name', id);
+//         input.setAttribute('id', id);
+//         input.setAttribute('type', 'input');
+//         input.setAttribute(required);
 
-        div.appendChild(input);
-    }
-    if(type == "select"){
-        var select = document.createElement('select');
-        select.setAttribute('class', 'form__group field');
-        select.setAttribute('name', id);
-        select.setAttribute('id', id);
-        select.setAttribute(required);
-        var option = document.createElement('option');
+//         div.appendChild(input);
+//     }
+//     if(type == "select"){
+//         var select = document.createElement('select');
+//         select.setAttribute('class', 'form__group field');
+//         select.setAttribute('name', id);
+//         select.setAttribute('id', id);
+//         select.setAttribute(required);
+//         var option = document.createElement('option');
 
-        select.appendChild(option);
+//         select.appendChild(option);
 
-        div.appendChild(select);
-    }
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.class = 'form__label';
-    label.setAttribute('value', label_value);
+//         div.appendChild(select);
+//     }
+//     var label = document.createElement('label');
+//     label.setAttribute('for', id);
+//     label.class = 'form__label';
+//     label.setAttribute('value', label_value);
 
 
-    div.appendChild(label);
+//     div.appendChild(label);
 
-    document.getElementById('modal-content').appendChild(div);
-//    $( "#myModal" ).load(window.location.href + " #myModal" );
- }
+//     document.getElementById('modal-content').appendChild(div);
+// //    $( "#myModal" ).load(window.location.href + " #myModal" );
+//  }
 
 function updateName(position, el){
     text = el.value.split(',')[0];
