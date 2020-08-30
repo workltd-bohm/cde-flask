@@ -8,7 +8,9 @@ $( document ).ready(function(){
 // -------------------------------------------------------
 
 function WrapCreateProject(){
-    if(g_root.universe) g_root.universe.remove();
+    if(g_root.universe) g_root.universe.remove(); // NEVALJA NEŠ
+    if(g_root.path) g_root.path.remove();  // NEVALJA NEŠ
+    if(g_root.overlay) g_root.overlay.remove(); // NEVALJA NEŠ
     $.get( "/get_project")
         .done(function( data ) {
             if(data){
@@ -23,7 +25,9 @@ function WrapCreateProject(){
 }
 
 function WrapCreateFolder(data){
-    new_folder_modal.style.display = "block";
+    //new_folder_modal.style.display = "block";
+    var tmp = data.values.data;
+    PopupOpen(NewFolder, tmp);
 }
 
 function WrapCreateFile(data){

@@ -11,9 +11,8 @@ def get_all_projects():
     main.IsLogin()
     if db.connect(db_adapter):
         result = db.get_all_projects(db_adapter)
-        response = {'data':[]}
         if result:
-            print(result)
+            response = {'data':[]}
             response['html'] = render_template("popup/choose_project_popup.html")
             for project in result:
                 response['data'].append(project['project_name'])
@@ -27,7 +26,11 @@ def get_all_projects():
         resp.status_code = msg.DB_FAILURE['code']
         resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
         return resp
-    return ""
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 
 @app.route('/get_new_project')
@@ -41,3 +44,37 @@ def get_new_project():
     print(response)
 
     return json.dumps(response)
+
+@app.route('/get_new_folder', methods=['GET', 'POST'])
+def get_new_folder():
+    print('Data posting path: %s' % request.path)
+    main.IsLogin()
+    request_data = json.loads(request.get_data())
+    project_name = app.test_json_request_project['project_name']
+    print(request_data)
+    if db.connect(db_adapter):
+        result = db.get_all_projects(db_adapter)
+        if result:
+            response = {
+                'html': render_template("popup/new_folder_popup.html",
+                        parent_path=request_data["parent_path"],
+                        project_name=project_name,
+                    ),
+                'data':[]
+            }
+            print(response)
+            return json.dumps(response)
+        else:
+            print("not_found")
+
+    else:
+        print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp

@@ -7,21 +7,6 @@ from app import *
 from pathlib import Path
 
 
-@app.route('/clear_db')
-def clear_db():
-    print('Data posting path: %s' % request.path)
-    main.IsLogin()
-    if db.connect(db_adapter):
-        db.clear_db(db_adapter)
-    else:
-        print(str(msg.DB_FAILURE))
-        resp = Response()
-        resp.status_code = msg.DB_FAILURE['code']
-        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
-        return resp
-    return redirect('/')
-
-
 @app.route('/get_file')
 def get_file():
     print('Data posting path: %s' % request.path)
@@ -102,11 +87,12 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     main.IsLogin()
     request_data = json.loads(request.get_data())
+    print(request_data)
     folder = IC(str(uuid.uuid1()),
                 request_data['folder_name'],
-                request_data['parent'],
+                request_data['parent_path'],
                 [],
-                request_data['parent'] + '/' + request_data['folder_name'],
+                request_data['parent_path'] + '/' + request_data['folder_name'],
                 [])
     if db.connect(db_adapter):
         result = db.create_folder(db_adapter, request_data['project_name'], folder)

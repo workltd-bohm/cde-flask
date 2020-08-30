@@ -7,20 +7,6 @@ $("div.pero > .content > .zatvori").click(function(d){
     $(this).parent().parent().hide();
 });
 
-function PopupOpen(run=null){
-    var form = $("div.pero > .content > .form");
-
-    $('div.pero > .cover.front').hide(); 
-    $("div.pero").show();
-
-    if(run) run(form);
-}
-
-function PopupClose(){
-    $('div.pero > .cover.front').hide(); 
-    $("div.pero").hide();
-}
-
 function LoadStart(){
     var load = $('div.pero > .cover.front');
     load.show();
@@ -29,6 +15,20 @@ function LoadStart(){
 function LoadStop(){
     var load = $('div.pero > .cover.front');
     load.hide();
+}
+
+function PopupOpen(run=null, data=null){
+    var form = $("div.pero > .content > .form");
+
+    LoadStop(); 
+    $("div.pero").show();
+
+    if(run) run(form, data);
+}
+
+function PopupClose(){
+    LoadStop(); 
+    $("div.pero").hide();
 }
 
 function CheckAval(data){
@@ -45,7 +45,9 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     var form = $("div.pero > .content > .form");
 
     if(!CheckAval(form)) return; 
-    if (!args) args = form.serializeArray()[0];
+    var data = {};
+    if (!args) form.serializeArray().map(function(x){data[x.name] = x.value;}); 
+    if (!args) args = data;
     console.log(args);
 
     LoadStart();

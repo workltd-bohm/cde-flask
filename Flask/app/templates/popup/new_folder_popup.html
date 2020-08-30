@@ -1,24 +1,11 @@
-<div id="newFolderModal" class="modal">
-<!-- Modal content -->
-<div class="modal-content", id="new-folder-modal-content">
-  <span class="close1">&times;</span>
-  <p>Create new folder</p>
-  <form id="newFolderFormId" enctype="multipart/form-data" onsubmit="return submit();">
-    <div class="form__group field">
-      <input type="input" class="form__field" name="project_name_create" id='project_name_create' value="test-project" required />
-      <label for="project_name_create" class="form__label">Project name</label>
-    </div>
-    <div class="form__group field">
-      <input type="input" class="form__field" name="parent_path" id='parent_path' value="app/test_files" required />
-      <label for="parent_path" class="form__label">Parent folder</label>
-    </div>
-    <br>
-    <div class="form__group field">
-      <input type="text" class="form__field" name="folder_name" id='folder_name' required />
-      <label for="folder_name" class="form__label">Folder name</label>
-    </div>
-    <br>
-    <input type="button" id="upload_new_folder_btn" value="Upload" />
-  </form>
+<h3>Create New Folder</h3>
+<input type="hidden" name="project_id" value='5f25580d49e1b44fef634b56' required/>
+<input type="hidden" name="project_name" value="{{ project_name }}" required />
+<input type="hidden" name="parent_path" value="{{ parent_path }}" required />
+<br>
+<div class="form__group field">
+  <input type="text" class="form__field" name="folder_name" required />
+  <label for="folder_name" class="form__label">Folder name</label>
 </div>
-</div>
+<br>
+<input type="button" value="Upload" onclick="FormSubmit('create_dir', null, true, WrapCreateProject)" />

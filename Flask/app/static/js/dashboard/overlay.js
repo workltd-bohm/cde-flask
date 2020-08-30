@@ -72,6 +72,7 @@ function AddItem(obj, data, parent, position=0) {
     data.box = {...g_box};
     data.values = {};
     data.values.this = obj;
+    data.values.data = parent;
     data.values.back = parent.overlay;
 
     data.values.rotation = position*360/data.values.back.items.length-90;

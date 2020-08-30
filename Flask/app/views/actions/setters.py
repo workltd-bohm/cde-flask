@@ -23,9 +23,9 @@ def clear_projects():
 def select_project():
     print('Data posting path: %s' % request.path)
     main.IsLogin()
+    print(request.get_data())
     request_data = json.loads(request.get_data())
-    print(request_data)
-    app.test_json_request_project['project_name'] = request_data['value']
+    app.test_json_request_project['project_name'] = request_data['choose_project']
 
     resp = Response()
     resp.status_code = msg.DEFAULT_OK['code']
@@ -37,15 +37,16 @@ def select_project():
 def create_project():
     print('Data posting path: %s' % request.path)
     main.IsLogin()
+    print(request.get_data())
     request_data = json.loads(request.get_data())
     user = session.get('user')
     root_obj = IC(str(uuid.uuid1()),
-                  request_data['value'],
+                  request_data['project_name'],
                   '.',
                   [],
-                  request_data['value'],
+                  request_data['project_name'],
                   [])
-    project = Project("default", request_data['value'], root_obj)
+    project = Project("default", request_data['project_name'], root_obj)
     # print(project.to_json())
     if db.connect(db_adapter):
         result = db.upload_project(db_adapter, project, user)
