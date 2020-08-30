@@ -149,9 +149,13 @@ def create_dir():
 def select_project():
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
-    test_json_request_project['project_name'] = request_data['project_name']
+    print(request_data)
+    test_json_request_project['project_name'] = request_data['value']
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.DEFAULT_OK['code']
+    resp.data = str(msg.DEFAULT_OK['message'])
+    return resp
 
 
 @app.route('/get_all_projects')
@@ -160,11 +164,12 @@ def get_all_projects():
 
     if db.connect(db_adapter):
         result = db.get_all_projects(db_adapter)
-        response = {'projects':[]}
+        response = {'data':[]}
         if result:
             print(result)
+            response['html'] = render_template("popup/choose_project_popup.html")
             for project in result:
-                response['projects'].append(project['project_name'])
+                response['data'].append(project['project_name'])
             print(response)
             return json.dumps(response)
         else:

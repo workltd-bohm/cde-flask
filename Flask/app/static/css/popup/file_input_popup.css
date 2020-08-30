@@ -50,14 +50,14 @@ height: 60%;
   cursor: pointer;
 }
 
-*:before,
+/* *:before,
 *:after {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-}
+} */
 
-.form__group {
+/* .form__group {
   position: relative;
   padding: 15px 0 0;
   margin-top: 10px;
@@ -115,5 +115,5 @@ height: 60%;
 /* reset input */
 .form__field:required, .form__field:invalid {
   box-shadow: none;
-}
+} */
 
