@@ -13,8 +13,8 @@ function GetProjects(form){
                 d3.select(form_list.get(0)).append("option")
                     .attr("value",json[i])
                     .html(json[i]);
-            LoadStop();
             }
+            LoadStop();
         })
         .fail(function($jqXHR, textStatus, errorThrown){
             console.log( errorThrown + ": " + $jqXHR.responseText );

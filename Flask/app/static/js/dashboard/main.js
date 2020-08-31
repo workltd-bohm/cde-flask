@@ -275,7 +275,7 @@ function AnimateUniverse() {
             }
             g_project.skip.values.parent.remove()
             CreateSpace([g_project.skip]);
-            g_project.warp = 2;
+            g_project.warp = ORBIT_ANIM_RESET_SKIP;
             g_project.skip = false;
         }
         else g_project.warp--;
@@ -335,7 +335,8 @@ function DashboardCreate(data) {
     CreateSpace(data);
 
     d3.timer(function(elapsed) {
-        AnimateUniverse();
+        if(g_root.universe) AnimateUniverse();
+        else return;
 
         if ($(DASHBOARD).width() != g_project.width || $(DASHBOARD).height() != g_project.height){
             WindowResize();

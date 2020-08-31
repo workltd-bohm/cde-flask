@@ -12,6 +12,7 @@ function WrapCreateProject(){
 
     $.get( "/get_project")
         .done(function( data ) {
+            data = JSON.parse(data);
             if(data){
                 DashboardCreate([data.root_ic]);
                 PathCreation([data.root_ic]);

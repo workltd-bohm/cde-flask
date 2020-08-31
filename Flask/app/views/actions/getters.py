@@ -30,7 +30,10 @@ def get_project():
             result = db.get_project(db_adapter, project_name, user)
             if result:
                 project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
-                return project.to_json()
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(project.to_json())
+                return resp
             else:
                 print("not_found")
         else:

@@ -16,8 +16,11 @@ def get_all_projects():
                 response['html'] = render_template("popup/choose_project_popup.html")
                 for project in result:
                     response['data'].append(project['project_name'])
-                print(response)
-                return json.dumps(response)
+                print(">>>", response)
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
             else:
                 print("not_found")
         else:
@@ -42,8 +45,10 @@ def get_new_project():
             'data':[]
         }
         print(response)
-
-        return json.dumps(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -68,8 +73,10 @@ def get_new_folder():
                         ),
                     'data':[]
                 }
-                print(response)
-                return json.dumps(response)
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
             else:
                 print("not_found")
 

@@ -79,7 +79,7 @@ def create_project():
 def upload_project():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        root_obj = path_to_obj('app', '.')
+        root_obj = dirs.path_to_obj('app', '.')
         project = Project("default", "test-project", root_obj)
         user = {'id': '17b16930-c5f6-11ea-99bc-50e085759747', 'role': 'OWNER'}
         if db.connect(db_adapter):

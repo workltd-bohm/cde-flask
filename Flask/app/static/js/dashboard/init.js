@@ -4,6 +4,7 @@ const ORBIT_MAX_ZOOM = 1.2;
 const ORBIT_ANIM_MOVE = 200;
 const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
+const ORBIT_ANIM_RESET_SKIP = 10;
 
 const ORBIT_DUB_CLK_DIF = 50;
 
@@ -59,15 +60,16 @@ var g_project = {
         rotate_scale : ORBIT_ROT_SCALE,
         dragging : false,
         skip: false,
-        history : null,
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
-        overlay : false,
+        path : null,
+        overlay : null,
+        history : null,
         warp : 0,
         start : Date.now()
     };
-var g_project_per = g_project;
+var g_project_per = {...g_project};
 
 var g_TouchRadius = 0;
 var g_SunRadius = 0;
@@ -110,13 +112,14 @@ var g_root = {
     obj : null,
     zoom : false,
     slider : false,
+    universe : null
 }
 
 function ClearProject(){
-    if(g_root.universe) g_root.universe.remove(); // NEVALJA NEŠ
-    if(g_project.path) g_project.path.remove();  // NEVALJA NEŠ
-    if(g_project.overlay) g_project.overlay.remove(); // NEVALJA NEŠ
-    g_project = g_project_per;
+    if(g_root.universe) g_root.universe.remove();
+    if(g_project.path) g_project.path.remove();
+    if(g_project.overlay) g_project.overlay.remove();
+    g_project = {...g_project_per};
 }
 
 // -------------------------------------------------------
