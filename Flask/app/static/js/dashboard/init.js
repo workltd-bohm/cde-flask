@@ -49,7 +49,7 @@ const SVG = d3.select("#SVG");
 
 // ----------------------------------------------------
 
-var g_project = g_project = {
+var g_project = {
         width : 0,
         height : 0,
         width_h : 0,
@@ -57,7 +57,6 @@ var g_project = g_project = {
         coef_scale : 2,
         speed_scale : ORBIT_SPEED_SCALE,
         rotate_scale : ORBIT_ROT_SCALE,
-        rotate : 0,
         dragging : false,
         skip: false,
         history : null,
@@ -65,8 +64,10 @@ var g_project = g_project = {
         clck_start : 0,
         clck_stop : 0,
         overlay : false,
+        warp : 0,
         start : Date.now()
     };
+var g_project_per = g_project;
 
 var g_TouchRadius = 0;
 var g_SunRadius = 0;
@@ -97,6 +98,7 @@ var g_root = {
     cy : 0,
     width : g_project.width_h,
     height : g_project.height_h,
+    rotate : 0,
     deg : 0,
     rad : 0,
     rad_diff : 0,
@@ -108,6 +110,13 @@ var g_root = {
     obj : null,
     zoom : false,
     slider : false,
+}
+
+function ClearProject(){
+    if(g_root.universe) g_root.universe.remove(); // NEVALJA NEŠ
+    if(g_project.path) g_project.path.remove();  // NEVALJA NEŠ
+    if(g_project.overlay) g_project.overlay.remove(); // NEVALJA NEŠ
+    g_project = g_project_per;
 }
 
 // -------------------------------------------------------

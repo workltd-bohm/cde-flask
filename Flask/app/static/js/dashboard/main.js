@@ -257,10 +257,10 @@ function AnimateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
 
     if(ORBIT_PATTERN && ORBIT_PATTERN_ANIM){
-        g_project.rotate += ORBIT_ROT_SCALE/100*g_project.speed_scale;
-        if(g_project.rotate > 0) g_project.rotate = -ORBIT_ROT_CICLE;
-        g_PatternSun.attr("x", g_project.rotate);
-        g_PatternPlanet.attr("x", g_project.rotate);
+        g_root.rotate += ORBIT_ROT_SCALE/100*g_project.speed_scale;
+        if(g_root.rotate > 0) g_root.rotate = -ORBIT_ROT_CICLE;
+        g_PatternSun.attr("x", g_root.rotate);
+        g_PatternPlanet.attr("x", g_root.rotate);
     }
 
     if(g_project.skip != false || g_project.warp){

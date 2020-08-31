@@ -1,13 +1,14 @@
 from app import *
 
 def IsLogin():
-    if not session.get('user'):
-        return redirect('/login')
+    if session.get('user'):
+        return True
+    return False
 
 @app.route('/')
 def index():
     print('Data posting path: %s' % request.path)
-    IsLogin()
+    if not IsLogin(): return redirect('/login')
     user = session.get('user')
     user.update({'project_code': 'SV', 'company_code': 'WRK'})
     username = session['user']['username']

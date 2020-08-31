@@ -8,9 +8,8 @@ $( document ).ready(function(){
 // -------------------------------------------------------
 
 function WrapCreateProject(){
-    if(g_root.universe) g_root.universe.remove(); // NEVALJA NEŠ
-    if(g_root.path) g_root.path.remove();  // NEVALJA NEŠ
-    if(g_root.overlay) g_root.overlay.remove(); // NEVALJA NEŠ
+    ClearProject();
+
     $.get( "/get_project")
         .done(function( data ) {
             if(data){

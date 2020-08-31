@@ -4,17 +4,14 @@ from app import *
 @app.route('/dashborad')
 def dashboard():
     print('Data posting path: %s' % request.path)
-    main.IsLogin()
-    if session.get('user'):
-        return redirect('/')
-    else:
-        return redirect('/login')
+    if not main.IsLogin(): return redirect('/login')
+    return redirect('/')
 
 
 @app.route('/generic_sub', methods=["POST"])
 def generic_sub():
     print('Data posting path: %s' % request.path)
-    main.IsLogin()
+    if not main.IsLogin(): return redirect('/login')
     request_data = {}
     try:
         request_data = json.loads(request.get_data())
