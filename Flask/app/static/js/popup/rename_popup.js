@@ -7,6 +7,12 @@ var rename_btn = document.getElementById("renameBtn");
 // Get the <span> element that closes the modal
 var rename_span = document.getElementsByClassName("close4")[0];
 
+var renameProjectName = document.getElementById('rename_project_name');
+var renameICPath = document.getElementById('rename_ic_path');
+var renameOldName = document.getElementById('rename_old_name');
+var renameNewName = document.getElementById('rename_new_name');
+var renameIsDir = document.getElementById('rename_is_dir');
+
 // REMOVED FROM MENU
 // When the user clicks the button, open the modal
 // rename_btn.onclick = function() {
@@ -25,7 +31,13 @@ window.onclick = function(event) {
   }
 }
 
+function set_rename_data(project_name, path, name, is_directory){
+    renameProjectName.value = project_name;
+    renameICPath.value = path;
+    renameOldName.value = name;
+    renameIsDir.checked = is_directory;
 
+}
 
 var rename_ic_btn = $("#rename_ic_btn");
 rename_ic_btn.click(function(){
@@ -34,11 +46,7 @@ rename_ic_btn.click(function(){
     if(! $renameForm[0].checkValidity()) {
       $renameForm[0].reportValidity()
     }else{
-        var renameProjectName = document.getElementById('rename_project_name');
-        var renameICPath = document.getElementById('rename_ic_path');
-        var renameOldName = document.getElementById('rename_old_name');
-        var renameNewName = document.getElementById('rename_new_name');rename_is_dir
-        var renameIsDir = document.getElementById('rename_is_dir');
+
         var data = {project_name: renameProjectName.value,
                     user: {'email': user_json.email, 'id': user_json.id, 'username': user_json.username},
                     path: renameICPath.value,

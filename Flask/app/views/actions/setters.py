@@ -94,3 +94,11 @@ def upload_project():
             return resp
 
     return redirect('/')
+
+
+@app.route('/delete_ic', methods=['POST'])
+def delete_ic():
+    print('Data posting path: %s' % request.path)
+    print(request.get_data())
+    request_data = json.loads(request.get_data())
+    return "okokok"

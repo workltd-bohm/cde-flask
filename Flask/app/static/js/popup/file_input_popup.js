@@ -10,6 +10,7 @@ var input_json = "";
 var file_extension = document.getElementById('file_extension');
 var name1 = document.getElementById('name');
 var new_name = document.getElementById('new_name');
+var projectNameFile = document.getElementById('project_name_file');
 var dir_path = document.getElementById('dir_path');
 var sel = document.getElementById('project_volume_or_system');
 var sel1 = document.getElementById('project_level');
@@ -63,6 +64,11 @@ updated_name[1] = user_json.company_code;
 fileProperties['project_code'] = user_json.project_code;
 fileProperties['company_code'] = user_json.company_code;
 
+
+function set_data(project_name, path){
+    projectNameFile.value = project_name;
+    dir_path.value = path;
+}
 
 function input_get() {
     $.get( "/input")
@@ -202,7 +208,7 @@ upload_btn.click(function(){
 //      $myForm.find(':upload_btn').click();
       $myForm[0].reportValidity()
     }else{
-        var projectNameFile = document.getElementById('project_name_file');
+
         var data = {project_id: '5f25580d49e1b44fef634b56',
                 project_name: projectNameFile.value,
                 original_name: originalName,
