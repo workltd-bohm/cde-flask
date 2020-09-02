@@ -21,14 +21,20 @@ class DBMongoAdapter:
 
     def get_user(self, identifier):
         col = self._db.Users
-        result = col.find_one(identifier, {'_id': 0})
+        message = msg.INVALID_USER_PASS
         user = None
+        result = col.find_one(identifier, {'_id': 0})
         if result:
-            user = User()
-            user.create_user(result)
-            user.id = result['id']
+            if not result['confirmed']:
+                message = msg.MESSAGE_SENT_TO_ADMIN
+            else:
+                user = User()
+                user.create_user(result)
+                user.id = result['id']
+                user.confirmed = result['confirmed']
+                message = msg.LOGGED_IN
         self._close_connection()
-        return user
+        return message, user
 
     def set_user(self, user):
         col = self._db.Users
@@ -36,10 +42,20 @@ class DBMongoAdapter:
         modified_user = None
         if col.find_one(user_query, {'_id': 0}) is None:
             user.id = str(uuid.uuid1())
+            user.confirmed = False
             col.insert_one(user.to_json())
             modified_user = user
         self._close_connection()
         return modified_user
+
+    def confirm_account(self, user):
+        col = self._db.Users
+        message = msg.USER_NOT_FOUND
+        if col.find_one(user, {'_id': 0}):
+            col.update_one(user, {'$set': {'confirmed': True}})
+            message = msg.ACCOUNT_CONFIRMED
+        self._close_connection()
+        return message
 
     def _close_connection(self):
         self._client.close()

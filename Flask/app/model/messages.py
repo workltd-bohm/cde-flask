@@ -2,6 +2,8 @@ USER_ALREADY_IN = {"message": "email already exists in the data base!", "code": 
 INVALID_USER_PASS = {"message": "Invalid Username/password combination!", "code": 404}
 SIGNED_IN = {"message": "SIGNED IN", "code": 200}
 LOGGED_IN = {"message": "LOGGED IN", "code": 200}
+USER_NOT_FOUND = {"message": "User not found", "code": 404}
+ACCOUNT_CONFIRMED = {"message": "Account confirmed", "code": 200}
 
 DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 
@@ -19,3 +21,5 @@ IC_SUCCESSFULLY_RENAMED = {"message": "Renamed successfully", "code": 200}
 
 DEFAULT_OK = {"message": "Success", "code": 200}
 DEFAULT_ERROR = {"message": "Failure", "code": 400}
+
+MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "code": 409}

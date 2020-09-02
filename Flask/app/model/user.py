@@ -5,6 +5,7 @@ class User:
         self._email = ""
         self._password = ""
         self._id = ""
+        self._confirmed = False
         self._picture = ""
         self._company_code = ""
         self._company_name = ""
@@ -22,6 +23,14 @@ class User:
     @id.setter
     def id(self, value):
         self._id = value
+
+    @property
+    def confirmed(self):
+        return self._confirmed
+
+    @confirmed.setter
+    def confirmed(self, value):
+        self._confirmed = value
 
     @property
     def username(self):
@@ -84,5 +93,6 @@ class User:
                     'id': self._id,
                     'username': self._username,
                     'email': self._email,
-                    'password': self._password
+                    'password': self._password,
+                    'confirmed': self._confirmed
                 }

@@ -14,6 +14,10 @@ def set_user(db_adapter, user):
     return db_adapter.set_user(user)
 
 
+def confirm_account(db_adapter, user):
+    return db_adapter.confirm_account(user)
+
+
 def upload_project(db_adapter, project, user):
     return db_adapter.upload_folder_structure(project, user)
 
