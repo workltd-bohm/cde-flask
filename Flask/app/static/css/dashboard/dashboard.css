@@ -29,7 +29,7 @@ circle.pattern.planet {
     /*fill : url("#patern_planet_fix");*/
     fill: #565656;
     /*stroke: none;*/
-    stroke: rgba(250,250,250,0.015);
+    stroke: rgba(250,250,250,0.15);
     stroke-width: 1;
 }
 
