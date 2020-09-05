@@ -34,7 +34,7 @@ function WrapCreateProject(){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
         }
     });
 }
