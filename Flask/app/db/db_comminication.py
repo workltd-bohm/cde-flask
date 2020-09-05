@@ -38,6 +38,10 @@ def rename_ic(db_adapter, request_data):
     return db_adapter.rename_ic(request_data)
 
 
+def delete_ic(db_adapter, delete_ic_data):
+    return db_adapter.delete_ic(delete_ic_data)
+
+
 def get_file(db_adapter, file_id, file_name):
     return db_adapter.get_file(file_id, file_name)
 

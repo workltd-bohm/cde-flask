@@ -3,7 +3,7 @@ class Basic:
     Basic config.
     """
 
-    PORT = 5656
+    PORT = 80
 
     # from db.db_file_adapter import DBFileAdapter
     # DB = DBFileAdapter()

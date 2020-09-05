@@ -169,10 +169,18 @@ def rename_ic():
 def delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        request_data = json.loads(request.get_data())
-        print(request_data)
+        delete_ic_data = json.loads(request.get_data())
+        print(delete_ic_data)
         if db.connect(db_adapter):
-            pass # TODO
+            result = db.delete_ic(db_adapter, delete_ic_data)
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+            else:
+                print("not_successful - name already exists in the DB")
 
         else:
             print(str(msg.DB_FAILURE))

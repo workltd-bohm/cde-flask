@@ -11,6 +11,7 @@ class Project:
         self._name = name
         self._root_ic = root_ic
         self._added = False
+        self._deleted = False
         self._message = ""
 
     @property
@@ -74,6 +75,23 @@ class Project:
                     if self._added:
                         break
         if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
+    def delete_ic(self, request_data, ic=None):
+        if ic.path == request_data['parent_path']:
+            for y in ic.sub_folders:
+                if y.name == request_data["delete_name"]:
+                    ic.sub_folders.remove(y)
+                    self._deleted = True
+                    self._message = msg.IC_SUCCESSFULLY_DELETED
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.delete_ic(request_data, x)
+                    if self._deleted:
+                        break
+        if not self._deleted:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 

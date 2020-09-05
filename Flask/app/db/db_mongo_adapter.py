@@ -182,6 +182,35 @@ class DBMongoAdapter:
         self._close_connection()
         return add
 
+    def delete_ic(self, delete_ic_data):
+        col = self._db.Projects
+        col_file = self._db.Projects.Files
+        project_query = {'project_name': delete_ic_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            print(project.to_json())
+            delete = project.delete_ic(delete_ic_data, project.root_ic)
+            if delete == msg.IC_SUCCESSFULLY_DELETED:
+                ic_deleted = True
+                if not delete_ic_data['is_directory']:
+                    ic_deleted = False
+                    file_query = {'file_name': delete_ic_data['delete_name']}
+                    file_json = col_file.delete_one(file_query, {'_id': 0})
+                    if file_json:
+                        ic_deleted = True
+                    else:
+                        print(msg.STORED_FILE_NOT_FOUND)
+                        return msg.STORED_FILE_NOT_FOUND
+                if ic_deleted:
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+        else:
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return delete
+
     def get_file(self, file_id, file_name):
         col = self._db.Projects.Files
         file_query = {'file_name': file_name}  # {'file_id': file_id, 'file_name': file_name}

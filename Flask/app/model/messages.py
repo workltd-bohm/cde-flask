@@ -21,3 +21,5 @@ DEFAULT_OK = {"message": "Success", "code": 200}
 DEFAULT_ERROR = {"message": "Failure", "code": 400}
 
 NO_PROJECT_SELECTED = {"message": "Project not selected", "code": 400}
+
+IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
