@@ -113,7 +113,7 @@ height: 60%;
 }
 
 /* reset input */
-.form__field:required, .form__field:invalid {
+/* .form__field:required, .form__field:invalid {
   box-shadow: none;
-} */
+} */ */
 

@@ -54,7 +54,7 @@ class Project:
         return self, self._added
 
     def rename_ic(self, request_data, ic=None):
-        if ic.path == request_data['path'] + '/' + request_data['old_name']:
+        if ic.path == request_data['path']:
             name = ic.name
             new_name = request_data['new_name']
             if not ic.is_directory:

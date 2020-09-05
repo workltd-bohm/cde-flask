@@ -1,31 +1,16 @@
-<div id="renameModal" class="modal">
-<!-- Modal content -->
-<div class="modal-content", id="rename-modal-content">
-  <span class="close4">&times;</span>
-  <p>Rename</p>
-  <form id="renameFormId" enctype="multipart/form-data" onsubmit="return submit();">
-    <div class="form__group field">
-      <input type="input" class="form__field" name="rename_project_name" id='rename_project_name' value="test-project" required />
-      <label for="rename_project_name" class="form__label">Project name</label>
-    </div>
-    <div class="form__group field">
-      <input type="input" class="form__field" name="rename_ic_path" id='rename_ic_path' value="app/test_files" required />
-      <label for="rename_ic_path" class="form__label">Path</label>
-    </div>
-    <div class="form__group field">
-      <input type="input" class="form__field" name="rename_old_name" id='rename_old_name' value="123" required />
-      <label for="rename_old_name" class="form__label">Old name</label>
-    </div>
-    <div class="form__group field">
-      <input type="input" class="form__field" name="rename_new_name" id='rename_new_name' required />
-      <label for="rename_new_name" class="form__label">New name</label>
-    </div>
-    <div class="form__group field">
-      <input type="checkbox" class="form__field" name="rename_is_dir" id='rename_is_dir' />
-      <label for="rename_is_dir" class="form__label">Is directory</label>
-    </div>
-    <br>
-    <input type="button" id="rename_ic_btn" value="Rename" />
-  </form>
+<h3>Rename</h3>
+<div class="scroll">
+  <input type="hidden" name="project_name" value="{{ project_name }}" required />
+  <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
+  <input type="hidden" name="old_name" value="{{ old_name }}" required />
+  <div class="form__group field">
+    <input type="input" class="form__field" name="new_name" value="{{ old_name }}" required />
+    <label for="rename_new_name" class="form__label">New name</label>
+  </div>
+  <div class="form__group field">
+    <input type="checkbox" class="form__field" name="is_directory"/ {% if is_directory %} checked {% endif %}>
+    <label for="rename_is_dir" class="form__label">Is directory</label>
+  </div>
+  <br>
 </div>
-</div>
+<input type="button" value="Rename" onclick="FormSubmit('rename_ic', null, true, WrapCreateProject)"/>

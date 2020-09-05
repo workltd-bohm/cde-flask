@@ -63,7 +63,7 @@ var g_project = {
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
-        path : null,
+        hist_path : null,
         overlay : null,
         history : null,
         warp : 0,
@@ -117,7 +117,7 @@ var g_root = {
 
 function ClearProject(){
     if(g_root.universe) g_root.universe.remove();
-    if(g_project.path) g_project.path.remove();
+    if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     g_project = {...g_project_per};
 }

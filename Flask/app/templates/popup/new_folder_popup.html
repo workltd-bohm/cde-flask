@@ -1,11 +1,12 @@
 <h3>Create New Folder</h3>
-<input type="hidden" name="project_id" value='5f25580d49e1b44fef634b56' required/>
-<input type="hidden" name="project_name" value="{{ project_name }}" required />
-<input type="hidden" name="parent_path" value="{{ parent_path }}" required />
-<br>
-<div class="form__group field">
-  <input type="text" class="form__field" name="folder_name" required />
-  <label for="folder_name" class="form__label">Folder name</label>
+<div class="scroll">
+  <input type="hidden" name="project_name" value="{{ project_name }}" required />
+  <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
+  <br>
+  <div class="form__group field">
+    <input type="text" class="form__field" name="folder_name" required />
+    <label for="folder_name" class="form__label">Folder name</label>
+  </div>
+  <br>
 </div>
-<br>
 <input type="button" value="Upload" onclick="FormSubmit('create_dir', null, true, WrapCreateProject)" />

@@ -10,46 +10,51 @@ $( document ).ready(function(){
 function WrapCreateProject(){
     ClearProject();
 
-    $.get( "/get_project")
-        .done(function( data ) {
+    // $.get( "/get_project")
+    //     .done(function( data ) {
+    //         data = JSON.parse(data);
+    //         if(data){
+    //             DashboardCreate([data.root_ic]);
+    //             PathCreation([data.root_ic]);
+    //         }
+    //     })
+    //     .fail(function($jqXHR, textStatus, errorThrown){
+    //         console.log( errorThrown + ": " + $jqXHR.responseText );
+    //     });
+    $.ajax({
+        url: "/get_project",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
             data = JSON.parse(data);
             if(data){
-                DashboardCreate([data.root_ic]);
-                PathCreation([data.root_ic]);
+                DashboardCreate([data.json.root_ic], data.project_position);
+                PathCreation([data.json.root_ic]);
             }
-        })
-        .fail(function($jqXHR, textStatus, errorThrown){
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            LoadStop();
-        });
+            MakeSnackbar(textStatus);
+        }
+    });
 }
 
 function WrapCreateFolder(data){
-    //new_folder_modal.style.display = "block";
     var tmp = data.values.data;
+    console.log(tmp);
     PopupOpen(NewFolder, tmp);
 }
 
 function WrapCreateFile(data){
-    if(data.values.data.parent != '.')
-        project_name = data.values.data.parent.split('/')[0];
-    else
-        project_name = data.values.data.name;
-
-    modal.style.display = "block";
-    set_data(project_name, data.values.data.path);
-    if(input_json == ""){
-        input_get();
-    }
+    var tmp = data.values.data;
+    console.log(tmp);
+    PopupOpen(NewFile, tmp);
 }
 
 function WrapRename(data){
-    if(data.values.data.parent != '.')
-        project_name = data.values.data.parent.split('/')[0];
-    else
-        project_name = data.values.data.name;
-    rename_modal.style.display = "block";
-    set_rename_data(project_name, data.values.data.path, data.values.data.name, data.values.data.is_directory);
+    var tmp = data.values.data;
+    console.log(tmp);
+    PopupOpen(RenameFile, tmp);
 }
 
 function WrapDelete(data){

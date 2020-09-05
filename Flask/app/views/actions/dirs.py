@@ -39,20 +39,26 @@ def upload_file():
         # print(json.loads(request.get_data()))
         if 'file' not in request.files:
             print('No file part')
-            # return redirect(request.url)
+            resp = Response()
+            resp.status_code = msg.DEFAULT_ERROR['code']
+            resp.data = str(msg.DEFAULT_ERROR['message'])
+            return resp
+
         file = request.files['file'].read()
         # print(file)
-        request_json = json.loads(request.form['data'])[0]  # test_json_request
-        print(request_json)
+        print(request.form['data'])
+        request_json = json.loads(request.form['data'])  # test_json_request
+        directory = request_json['parent_path']
+        # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
         file_obj = File(str(uuid.uuid1()),
-                        '.'.join(request_json['file_name'].split('.')[:-1]),
-                        request_json['original_name'],
-                        request_json['dir_path'],
+                        '.'.join(request_json['new_name'].split('.')[:-1]),
+                        request.files['file'].filename,
+                        directory,
                         [],
-                        request_json['dir_path'] + '/' + request_json['file_name'],
-                        "." + request_json['file_name'].split('.')[-1],
+                        directory + '/' + request_json['new_name'],
+                        "." + request_json['new_name'].split('.')[-1],
                         '',
-                        request_json['description'])
+                        'description') # request_json['description'])
         try:
             file_obj.project_code = request_json['project_code']
             file_obj.company_code = request_json['company_code']
@@ -72,13 +78,13 @@ def upload_file():
             encoded = file
             result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
             if result:
-                print(result["message"])
+                print(">>", result["message"])
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            print(">", str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -127,10 +133,17 @@ def create_dir():
 def rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        print(json.loads(request.get_data()))
         request_data = json.loads(request.get_data())
+        print(request_data)
         if db.connect(db_adapter):
-            result = db.rename_ic(db_adapter, request_data)
+            rename = {
+                "project_name": request_data["project_name"],
+                "path": request_data["parent_path"],
+                "old_name": request_data["old_name"],
+                "new_name": request_data["new_name"],
+                "is_directory": True if "is_directory" in request_data else False,
+            }
+            result = db.rename_ic(db_adapter, rename)
             if result:
                 print(result["message"])
                 resp = Response()
@@ -169,12 +182,12 @@ def set_dir():
     return redirect('/')
 
 
-def path_to_obj(path, parent_id):
+def path_to_obj(path, parent_id=False):
     p = Path(path)
     name = p.stem
-    parent = parent_id
-    if os.path.isdir(path):
-        new_id = str(uuid.uuid1())
+    new_id = str(uuid.uuid1())
+    parent = parent_id if parent_id != False else new_id
+    if os.path.isdir(path): 
         root = Directory(new_id,
                          name,
                          parent,
@@ -183,7 +196,7 @@ def path_to_obj(path, parent_id):
                          [path_to_obj(path + '/' + x, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(str(uuid.uuid1()), name, name, parent, [], path, p.suffix, '', '')
+        root = File(new_id, name, name, parent, [], path, p.suffix, '', '')
     return root
 
 

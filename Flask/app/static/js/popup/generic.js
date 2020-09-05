@@ -1,10 +1,12 @@
 
-$("div.pero > .cover.back").click(function(d){
-    $(this).parent().hide();
-});
+$( document ).ready(function(){
+    $("div.pero > .cover.back").click(function(d){
+        $(this).parent().hide();
+    });
 
-$("div.pero > .content > .zatvori").click(function(d){
-    $(this).parent().parent().hide();
+    $("div.pero > .content > .zatvori").click(function(d){
+        $(this).parent().parent().hide();
+    });
 });
 
 function LoadStart(){
@@ -17,8 +19,12 @@ function LoadStop(){
     load.hide();
 }
 
+function GetForm(){
+    return $("div.pero > .content > .form");
+}
+
 function PopupOpen(run=null, data=null){
-    var form = $("div.pero > .content > .form");
+    var form = GetForm();
 
     LoadStop(); 
     $("div.pero").show();
@@ -42,19 +48,19 @@ function CheckAval(data){
 }
 
 function FormSubmit(job, args=null, stay=false, func=null, fill=false){
-    var form = $("div.pero > .content > .form");
+    var form = GetForm();
 
     if(!CheckAval(form)) return; 
-    var data = {};
-    if (!args) form.serializeArray().map(function(x){data[x.name] = x.value;}); 
-    if (!args) args = data;
-    console.log(args);
+    var d = {};
+    if (!args) form.serializeArray().map(function(x){d[x.name] = x.value;}); 
+    if (!args) args = JSON.stringify(d);
+    // console.log(args);
 
     LoadStart();
     $.ajax({
         url: job,
         type: 'POST',
-        data: JSON.stringify(args),
+        data: args,
         //dataType: "json",
         processData: false,
         contentType: false,
