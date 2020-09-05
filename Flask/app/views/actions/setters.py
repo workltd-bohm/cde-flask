@@ -26,7 +26,7 @@ def select_project():
     if main.IsLogin():
         print(request.get_data())
         request_data = json.loads(request.get_data())
-        app.test_json_request_project['project_name'] = request_data['choose_project']
+        session["project_name"] = request_data['choose_project']
 
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
@@ -46,9 +46,10 @@ def create_project():
         print(request.get_data())
         request_data = json.loads(request.get_data())
         user = session.get('user')
-        root_obj = IC(str(uuid.uuid1()),
+        name_id = str(uuid.uuid1())
+        root_obj = IC(name_id,
                     request_data['project_name'],
-                    '.',
+                    name_id,
                     [],
                     request_data['project_name'],
                     [])
@@ -95,11 +96,3 @@ def upload_project():
             return resp
 
     return redirect('/')
-
-
-@app.route('/delete_ic', methods=['POST'])
-def delete_ic():
-    print('Data posting path: %s' % request.path)
-    print(request.get_data())
-    request_data = json.loads(request.get_data())
-    return "okokok"

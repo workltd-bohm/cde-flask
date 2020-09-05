@@ -13,6 +13,8 @@ function CreateSpace(data) {
     g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
 
+    g_project.overlay = false;
+
     g_root.universe.selectAll("g")
         .data(data)
         .enter()

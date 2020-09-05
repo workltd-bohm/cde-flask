@@ -28,7 +28,7 @@ def get_project():
         # request_data = json.loads(request.get_data())
         #session.set("project_position") = request_data["project_position"]
         project_position = session.get("project_position")
-        project_name = app.test_json_request_project['project_name']
+        project_name = session["project_name"]
         user = app.test_json_request_project['user']
         # print(request_data)
         if db.connect(db_adapter):

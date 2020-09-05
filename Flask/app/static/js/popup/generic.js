@@ -27,6 +27,7 @@ function PopupOpen(run=null, data=null){
     var form = GetForm();
 
     LoadStop(); 
+    $(form).empty();
     $("div.pero").show();
 
     if(run) run(form, data);
@@ -45,6 +46,10 @@ function CheckAval(data){
             ok = false;
         }
     return ok;
+}
+
+function FormClose(){
+    PopupClose();
 }
 
 function FormSubmit(job, args=null, stay=false, func=null, fill=false){

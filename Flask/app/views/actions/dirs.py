@@ -165,6 +165,30 @@ def rename_ic():
     return resp
 
 
+@app.route('/delete_ic', methods=['POST'])
+def delete_ic():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            pass # TODO
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+# ----------------------------------------------------
+
 @app.route('/get_dir')
 def get_dir():
     print('Data posting path: %s' % request.path)
@@ -181,6 +205,7 @@ def set_dir():
     print(Project.json_folders_to_obj(obj.to_json()).to_json())
     return redirect('/')
 
+# ----------------------------------------------------
 
 def path_to_obj(path, parent_id=False):
     p = Path(path)

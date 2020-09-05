@@ -56,13 +56,15 @@ class Project:
     def rename_ic(self, request_data, ic=None):
         if ic.path == request_data['path']:
             name = ic.name
+            path = request_data['path']
+            parent = path[:path.rfind("/")]
             new_name = request_data['new_name']
             if not ic.is_directory:
                 name = ic.name + ic.type
             if name == request_data['old_name']:
                 ic.name = new_name
-                ic.path = request_data['path'] + '/' + request_data['new_name']
-                # ic.parent = request_data['path']
+                ic.path = parent + '/' + request_data['new_name']
+                # ic.parent = parent # no need?
                 self._message = msg.IC_SUCCESSFULLY_RENAMED
                 self._added = True
         else:

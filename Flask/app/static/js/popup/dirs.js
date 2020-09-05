@@ -204,3 +204,32 @@ function RenameFile(form, json){
         }
     });
 }
+
+// ------------------------------------------
+
+function DeleteFile(form, json){
+    LoadStart();
+    $.ajax({
+        url: "/get_delete_ic",
+        type: 'POST',
+        data: JSON.stringify({
+            parent_path: json.path,
+            delete_name: json.name,
+            is_directory: json.is_directory,
+        }),
+        timeout: 5000,
+        success: function(data){
+            input_json2 = JSON.parse(data);
+            html = input_json2['html'];
+            form.empty();
+            form.append(html);
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar(textStatus);
+            PopupClose();
+        }
+    });
+}

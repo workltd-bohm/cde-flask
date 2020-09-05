@@ -58,13 +58,9 @@ function WrapRename(data){
 }
 
 function WrapDelete(data){
-    if(data.values.data.parent != '.')
-        project_name = data.values.data.parent.split('/')[0];
-    else
-        project_name = data.values.data.name;
-
-    delete_ic(project_name, data.values.data.path, data.values.data.name, data.values.data.is_directory);
-    
+    var tmp = data.values.data;
+    console.log(tmp);
+    PopupOpen(DeleteFile, tmp);
 }
 
 function WrapMove(data){
