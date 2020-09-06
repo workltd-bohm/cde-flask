@@ -8,6 +8,7 @@ from app.model.information_container import IC
 from app.model.directory import Directory
 from app.model.file import File
 from app.model.project import Project
+from app.model.marketplace.post import Post
 from app.model.role import Role
 
 db_adapter = cfg.config['basic'].DB
@@ -22,6 +23,8 @@ from app.views.actions import dirs
 from app.views.actions import popups
 from app.views.actions import getters
 from app.views.actions import setters
+
+from app.views.marketplace import posts
 
 app.test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',
@@ -42,4 +45,21 @@ app.test_json_request_file = {
 app.test_json_request_project = {
     'project_name': 'test-project',
     'user': '',
+}
+
+app.test_json_request_create_post = {
+    'post_id': '12',
+    'title': '300 m2 ironed concrete',
+    'user_owner': '',
+    'product': {'product_id': '321', 'name': 'Ironed concrete', 'quantity': 1},
+    'description': '300 m2 ironed concrete in five days needed with accessible location',
+    'date_created': '06.09.2020-12:41:25',
+    'date_expired': '10.09.2020-12:00:00',
+    'documents': '',
+    'bids': [],
+    'current_best_bid': None,
+    'comments': [],
+    'visibility': 'visible',
+    'location': 'Heinrich-Luebke-Strasse 8, 81737 Munich',
+    'status': 0
 }

@@ -3,6 +3,7 @@ from pymongo.errors import ConnectionFailure
 import uuid
 from app.model.user import User
 from app.model.project import Project
+from app.model.marketplace.post import Post
 import app.model.messages as msg
 
 
@@ -70,7 +71,6 @@ class DBMongoAdapter:
 
     def get_all_projects(self):
         col = self._db.Projects
-        project_query = {}
         result = col.find()
         print(result)
         self._close_connection()
@@ -218,7 +218,46 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
+    def create_post(self, request_json):
+        col = self._db.Marketplace.Posts
+        posts_query = {'post_id': request_json['post_id']}
+        message = msg.POST_ALREADY_EXISTS
+        if col.find_one(posts_query, {'_id': 0}) is None:
+            post_id = col.insert_one(request_json).inserted_id
+            col.update_one({'post_id': 'default'},
+                           {'$set': {'post_id': str(post_id)}})
+            message = msg.POST_CREATED
+            print(Post.json_to_obj(request_json).product.name)
+        self._close_connection()
+        return message
+
+    def get_all_posts(self):
+        col = self._db.Marketplace.Posts
+        result = col.find()
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            doc.pop('bids', None)
+            doc.pop('current_best_bid', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def get_my_posts(self, user):
+        col = self._db.Marketplace.Posts
+        post_query = {'user_owner': user}
+        result = col.find(post_query, {'_id': 0})
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            doc.pop('bids', None)
+            doc.pop('current_best_bid', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
     def clear_db(self):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
+        self._db.Marketplace.Posts.drop()
 

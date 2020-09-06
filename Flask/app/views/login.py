@@ -22,7 +22,9 @@ def login_data():
     if db.connect(db_adapter):
         user = db.get_user(db_adapter, json_data)
         if user is not None:
-            session['user'] = user.to_json()
+            json_user = user.to_json()
+            json_user.pop('password', None)
+            session['user'] = json_user
             return redirect(url_for('index'))
         else:
             resp = Response()

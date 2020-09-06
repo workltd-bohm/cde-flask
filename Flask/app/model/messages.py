@@ -23,3 +23,6 @@ DEFAULT_ERROR = {"message": "Failure", "code": 400}
 NO_PROJECT_SELECTED = {"message": "Project not selected", "code": 400}
 
 IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
+
+POST_ALREADY_EXISTS = {"message": "Post with the given ID already exists", "code": 409}
+POST_CREATED = {"message": "Post created successfully", "code": 200}
