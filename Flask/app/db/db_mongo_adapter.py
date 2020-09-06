@@ -250,8 +250,6 @@ class DBMongoAdapter:
         res = []
         for doc in result:
             doc.pop('_id', None)
-            doc.pop('bids', None)
-            doc.pop('current_best_bid', None)
             res.append(doc)
         self._close_connection()
         return res
