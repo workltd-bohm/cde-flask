@@ -79,7 +79,7 @@ function WrapDownload(data){
             file_name: tmp.name + tmp.type,
         }
 
-    DownloadFile(json_data)
+    DownloadFile(tmp.name + tmp.type)
 }
 
 // -------------------------------------------------------

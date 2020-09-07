@@ -42,8 +42,8 @@ def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)
 
 
-def get_file(db_adapter, file_id, file_name):
-    return db_adapter.get_file(file_id, file_name)
+def get_file(db_adapter, file_name):
+    return db_adapter.get_file(file_name)
 
 
 def create_post(db_adapter, request_json):

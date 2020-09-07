@@ -211,7 +211,7 @@ class DBMongoAdapter:
         self._close_connection()
         return delete
 
-    def get_file(self, file_id, file_name):
+    def get_file(self, file_name):
         col = self._db.Projects.Files
         file_query = {'file_name': file_name}  # {'file_id': file_id, 'file_name': file_name}
         stored_file = col.find_one(file_query, {'_id': 0})

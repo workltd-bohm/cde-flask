@@ -234,28 +234,32 @@ function DeleteFile(form, json){
     });
 }
 
-function DownloadFile(json){
+function DownloadFile(path){
     LoadStart();
-    $.ajax({
-        url: "/get_file",
-        type: 'POST',
-        data: JSON.stringify(json),
-        timeout: 5000,
-        success: function(data){
-              const blob = new Blob([data]);
-              const url = window.URL.createObjectURL(blob);
-
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = json.file_name;
-              link.click();
-
-            LoadStop();
-        },
-        error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
-//            PopupClose();
-        }
-    });
+    var url = "/get_file/" + path;
+    window.open(url, "_blank");
+//    $.ajax({
+//        url: "/get_file/" + path,
+//        type: 'GET',
+////        data: JSON.stringify(json),
+//        timeout: 5000,
+//        success: function(data){
+//
+////              const blob = new Blob([data]);
+////              const url = window.URL.createObjectURL(blob);
+//
+//
+////              const link = document.createElement('a');
+////              link.href = url;
+////              link.download = path;
+////              link.click();
+//
+//            LoadStop();
+//        },
+//        error: function($jqXHR, textStatus, errorThrown) {
+//            console.log( errorThrown + ": " + $jqXHR.responseText );
+//            MakeSnackbar(textStatus);
+////            PopupClose();
+//        }
+//    });
 }
