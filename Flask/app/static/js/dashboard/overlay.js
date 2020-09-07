@@ -1,5 +1,10 @@
 
 // -------------------------------------------------------
+g_OverProject = [
+    { name : "NEW PROJECT", icon : "create_new_folder", link : WrapNewProject},
+    //{ name : "RENAME", icon : "create", link : WrapRename},
+    //{ name : "DELETE", icon : "delete", link : WrapDelete},
+]
 
 g_OverFolder = [
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
@@ -27,7 +32,7 @@ function OverlayCreate(obj, data, parent) {
     data.overlay.this = obj;
     data.overlay.back = parent;
 
-    data.overlay.items = g_OverFolder; //data.is_directory ? g_OverFolder : g_OverFile;
+    data.overlay.items = data.is_root ? g_OverProject : g_OverFolder; //data.is_directory ? g_OverFolder : g_OverFile;
 
     data.overlay.object = data.values.this.append("g")
         .attr("class","star overlay");

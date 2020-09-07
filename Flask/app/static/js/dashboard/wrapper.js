@@ -2,25 +2,35 @@
 // -------------------------------------------------------
 
 $( document ).ready(function(){
-    WrapCreateProject();
+    //CreateProject();
+    SelectProject();
 });
 
 // -------------------------------------------------------
 
-function WrapCreateProject(){
+function SelectProject(){
     ClearProject();
 
-    // $.get( "/get_project")
-    //     .done(function( data ) {
-    //         data = JSON.parse(data);
-    //         if(data){
-    //             DashboardCreate([data.root_ic]);
-    //             PathCreation([data.root_ic]);
-    //         }
-    //     })
-    //     .fail(function($jqXHR, textStatus, errorThrown){
-    //         console.log( errorThrown + ": " + $jqXHR.responseText );
-    //     });
+    $.ajax({
+        url: "/get_root_project",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                DashboardCreate([data.json.root_ic], data.project_position);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function CreateProject(){
+    ClearProject();
+
     $.ajax({
         url: "/get_project",
         type: 'POST',
@@ -29,7 +39,7 @@ function WrapCreateProject(){
             data = JSON.parse(data);
             if(data){
                 DashboardCreate([data.json.root_ic], data.project_position);
-                PathCreation([data.json.root_ic]);
+                PathCreation([data.json.root_ic], data.project_position);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -37,6 +47,17 @@ function WrapCreateProject(){
             MakeSnackbar($jqXHR.responseText);
         }
     });
+}
+
+function WrapGetProject(data){
+    var tmp = {choose_project: data.name};
+    console.log(tmp)
+    FormSubmit('select_project', JSON.stringify(tmp), true, CreateProject);
+    //PopupOpen(GetProjects);
+}
+
+function WrapNewProject(){
+    PopupOpen(NewProject);
 }
 
 function WrapCreateFolder(data){

@@ -182,6 +182,12 @@ def delete_ic():
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
         print(delete_ic_data)
+        rename = {
+                "project_name": delete_ic_data["project_name"],
+                "parent_path": delete_ic_data["parent_path"],
+                "delete_name": delete_ic_data["delete_name"],
+                "is_directory": True if "is_directory" in delete_ic_data else False,
+            }
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)
             if result:
@@ -230,14 +236,14 @@ def path_to_obj(path, parent_id=False):
     p = Path(path)
     name = p.stem
     new_id = str(uuid.uuid1())
-    parent = parent_id if parent_id != False else new_id
+    parent = parent_id if parent_id != False else path # new_id
     if os.path.isdir(path): 
         root = Directory(new_id,
                          name,
                          parent,
                          [],
                          path,
-                         [path_to_obj(path + '/' + x, new_id) for x in os.listdir(path)
+                         [path_to_obj(path + '/' + x, path) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
         root = File(new_id, name, name, parent, [], path, p.suffix, '', '')

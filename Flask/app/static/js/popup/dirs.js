@@ -213,7 +213,7 @@ function DeleteFile(form, json){
         url: "/get_delete_ic",
         type: 'POST',
         data: JSON.stringify({
-            parent_path: json.path,
+            parent_path: json.parent,
             delete_name: json.name,
             is_directory: json.is_directory,
         }),

@@ -182,7 +182,7 @@ def get_delete_ic():
                 path = request_data["parent_path"]
                 response = {
                     'html': render_template("popup/delete_ic_popup.html",
-                            parent_path=path[:path.rfind("/")],
+                            parent_path=path,
                             project_name=project_name,
                             delete_name=request_data["delete_name"],
                             is_directory = True if request_data["is_directory"] else False

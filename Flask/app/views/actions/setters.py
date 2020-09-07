@@ -49,7 +49,7 @@ def create_project():
         name_id = str(uuid.uuid1())
         root_obj = IC(name_id,
                     request_data['project_name'],
-                    name_id,
+                    ".",
                     [],
                     request_data['project_name'],
                     [])

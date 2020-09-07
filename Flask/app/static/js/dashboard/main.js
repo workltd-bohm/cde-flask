@@ -270,13 +270,16 @@ function AnimateUniverse() {
             .duration(1)
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
         if(!g_project.warp) {
-            AddPath(g_project.skip.values.back);
+            g_root.universe.data.is_root ? 1 : AddPath(g_project.skip.values.back);
+
             if(g_project.overlay) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
             g_project.skip.values.parent.remove()
-            CreateSpace([g_project.skip]);
+
+            g_root.universe.data.is_root ? WrapGetProject(g_project.skip) : CreateSpace([g_project.skip]);
+
             g_project.warp = ORBIT_ANIM_RESET_SKIP;
             g_project.skip = false;
         }
@@ -320,7 +323,7 @@ function AnimatePlanet(data) {
 
 // -------------------------------------------------------
 
-function DashboardCreate(data) {
+function DashboardCreate(data, project_position=null) {
 
     WindowResize();
 
@@ -334,6 +337,7 @@ function DashboardCreate(data) {
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
+    g_root.universe.data = data[0];
     CreateSpace(data);
 
     d3.timer(function(elapsed) {

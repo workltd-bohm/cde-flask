@@ -126,18 +126,17 @@
   top: 25px;
   transform: rotateZ(45deg);
   -webkit-transform: rotateZ(45deg);
-  border: 8px solid white;
+  border: 8px solid rgba(51, 68, 69, 0.8);
   transition: all 0.2s;
   box-sizing: initial;
 }
 .menu-fixed .logo:hover ~ p {
-  color: white; /*I do not see the effect of this at the moment*/
   transition: all 0.3s;
 }
 .menu-fixed .logo:hover > span {
   width: 0;
   height: 0;
-  border-left: 15px solid white; /*This is the color of the part of the logo when hovered*/
+  border-left: 15px solid rgba(51, 68, 69, 0.8);
   border-right: 15px solid rgba(0, 0, 0, 0);
   border-top: 15px solid rgba(0, 0, 0, 0);
   border-bottom: 15px solid rgba(0, 0, 0, 0);
@@ -150,7 +149,7 @@
   display: block;
   width: 0;
   height: 0;
-  border-left: 8px solid #18bec9; /*This is the little arrow of the logo when hovered*/
+  border-left: 8px solid #000000; /*This is the little arrow of the logo when hovered*/
   border-right: 8px solid rgba(0, 0, 0, 0); /*These 3 appear to have no effect at all*/
   border-top: 8px solid rgba(0, 0, 0, 0);
   border-bottom: 8px solid rgba(0, 0, 0, 0);
