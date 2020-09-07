@@ -41,13 +41,15 @@ class DBMongoAdapter:
         col = self._db.Users
         user_query = {'email': user.email}
         modified_user = None
+        message = msg.USER_ALREADY_IN
         if col.find_one(user_query, {'_id': 0}) is None:
             user.id = str(uuid.uuid1())
             user.confirmed = False
             col.insert_one(user.to_json())
             modified_user = user
+            message = msg.MESSAGE_SENT_TO_ADMIN
         self._close_connection()
-        return modified_user
+        return message, modified_user
 
     def confirm_account(self, user):
         col = self._db.Users
@@ -274,4 +276,5 @@ class DBMongoAdapter:
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
         self._db.Marketplace.Posts.drop()
+        self._db.Users.drop()
 

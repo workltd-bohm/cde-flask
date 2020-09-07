@@ -51,22 +51,22 @@ def signup_data():
     if db.connect(db_adapter):
         user = User()
         user.create_user(json_data)
-        user = db.set_user(db_adapter, user)
+        message , user = db.set_user(db_adapter, user)
         print(user)
 
         if user is not None:
             email.send_an_email(user.username, user.email)
-            resp.status_code = msg.MESSAGE_SENT_TO_ADMIN['code']
-            resp.data = str(msg.MESSAGE_SENT_TO_ADMIN['message']).replace("'", "\"")
+            resp.status_code = message['code']
+            resp.data = str(message['message'])
             return resp
         else:
-            resp.status_code = msg.USER_ALREADY_IN['code']
-            resp.data = str(msg.USER_ALREADY_IN['message']).replace("'", "\"")
+            resp.status_code = message['code']
+            resp.data = str(message)
             return resp
     else:
         print(str(msg.DB_FAILURE))
         resp.status_code = msg.DB_FAILURE['code']
-        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        resp.data = str(msg.DB_FAILURE['message'])
         return resp
 
 
@@ -78,9 +78,9 @@ def confirm_account():
 
     user = {"username": request.args.get('username'), "email": request.args.get('email')}
 
-    resp = Response()
+    resp = msg.USER_NOT_FOUND
     if db.connect(db_adapter):
-        user = db.confirm_account(db_adapter, user)
-        print(user)
+        resp = db.confirm_account(db_adapter, user)
+        print(resp)
 
-    return "Confirmed"
+    return resp['message']
