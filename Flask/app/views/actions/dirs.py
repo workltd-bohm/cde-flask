@@ -15,7 +15,6 @@ def get_file(file_name):
         request_json = {
                         # 'file_id':request.args.get('file_id'),
                         'file_name':file_name}
-        #app.test_json_request_file  # json.loads(request.get_data())
         print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
@@ -26,12 +25,9 @@ def get_file(file_name):
                 resp.headers.set(
                     'Content-Disposition', 'attachment', filename='%s.jpg' % result['file_name'])
                 resp.status_code = msg.DEFAULT_OK['code']
-                # resp.data = str(msg.DEFAULT_OK['message'])
-                # return resp
                 return send_file(
                      io.BytesIO(result['file']),
                      attachment_filename=result['file_name'])
-                # return send_file(f, mimetype='image/jpg', attachment_filename=result['file_name'])
             else:
                 print("not_found")
         else:

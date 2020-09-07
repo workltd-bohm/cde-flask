@@ -68,16 +68,22 @@ function WrapMove(data){
 }
 
 function WrapShare(data){
+    var tmp = data.values.data;
+
+    var dummy = document.createElement('input'),
+    text = window.location.href + 'get_file/' + tmp.name + tmp.type;
+
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    MakeSnackbar("Copied to clipboard");
     
 }
 
 function WrapDownload(data){
     var tmp = data.values.data;
-
-    json_data = {
-            file_id: tmp.id,
-            file_name: tmp.name + tmp.type,
-        }
 
     DownloadFile(tmp.name + tmp.type)
 }
