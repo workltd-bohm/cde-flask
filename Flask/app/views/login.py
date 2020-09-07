@@ -61,7 +61,7 @@ def signup_data():
             return resp
         else:
             resp.status_code = message['code']
-            resp.data = str(message)
+            resp.data = str(message['message'])
             return resp
     else:
         print(str(msg.DB_FAILURE))

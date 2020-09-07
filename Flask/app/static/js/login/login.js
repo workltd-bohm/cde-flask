@@ -77,7 +77,7 @@ function login_post(data) {
                 location.href = '/';
         })
         .fail(function($jqXHR, textStatus, errorThrown){
-            if($jqXHR.status == 404) {
+            if($jqXHR.status == 404 || $jqXHR.status == 409) {
                 console.log( errorThrown + ": " + $jqXHR.responseText );
                 $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
             }
@@ -90,7 +90,7 @@ function signup_post(data) {
             location.href = '/';
         })
         .fail(function($jqXHR, textStatus, errorThrown){
-            if($jqXHR.status == 404) {
+            if($jqXHR.status == 404 || $jqXHR.status == 409) {
                 console.log( errorThrown + ": " + $jqXHR.responseText );
                 $msg_placeholder.text($jqXHR.responseText).css('color', 'red').css('font-size', '12px');
             }
