@@ -184,7 +184,7 @@ function RenameFile(form, json){
         url: "/get_rename_ic",
         type: 'POST',
         data: JSON.stringify({
-            parent_path: json.path,
+            parent_path: json.parent,
             old_name: json.name,
             is_directory: json.is_directory,
         }),

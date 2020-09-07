@@ -1,0 +1,75 @@
+circle.pattern.path {
+    fill: #121212;
+    stroke: rgba(250,250,250,0.8);
+    stroke-width: 2;
+}
+
+circle.pattern.star {
+    /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
+    fill : url("#patern_sun_fix");
+     /*fill: #565656;*/
+    /*stroke: none;*/
+    /* stroke: rgba(250,250,250,0.015);
+    stroke-width: 1;*/
+}
+circle.pattern.planet {
+    /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
+    /*fill : url("#patern_planet_fix");*/
+    fill: #565656;
+    /*stroke: none;*/
+    stroke: rgba(250,250,250,0.15);
+    stroke-width: 1;
+}
+
+circle.shader {
+    fill : url("#gradient_shadow");
+    stroke: 0;
+    stroke-width: 0;
+}
+
+circle.select {
+    fill: rgba(0, 0, 0, 0);
+    stroke: none;
+}
+circle.select:hover {
+    fill: rgba(230,254,255,0.3);
+}
+
+circle.overlay.pattern {
+    fill: rgba(18, 18, 18, 0.5);
+    /* stroke: rgb(204, 204, 204); */
+    /* stroke-opacity: 0.9; */
+}
+circle.overlay.select {
+    fill: rgba(0, 0, 0, 0.1);
+}
+
+text.text_back {
+    fill: rgb(0, 0, 0);
+    filter: url("#filter_shadow");
+    text-anchor: middle;
+}
+text.text_front {
+    fill: rgb(250, 250, 250);
+    text-anchor: middle;
+}
+
+g.star.object > g.text > text {
+    font-size: 40px;
+}
+g.star.overlay > g.text > text {
+    font-size: 20px;
+}
+g.planet.object > g.text > text {
+    font-size: 18px;
+}
+g.path.draw > g.text > text {
+    font-size: 12px;
+}
+
+.foregin {
+    text-align: center;
+}
+.foregin .material-icons{
+    color: #bcbcbc;
+}

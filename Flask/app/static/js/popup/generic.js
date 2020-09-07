@@ -72,9 +72,13 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
         timeout: 5000,
         success: function(data){
             if(!stay) location.reload();
-            console.log(data);
+            //console.log(data);
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
+
+            if(d["delete_name"]) g_project.project_position_mix = d["parent_path"];
+            if(d["new_name"]) g_project.project_position_mix = d["parent_path"] + "/" + d["new_name"];
+
             if(func) func();
             LoadStop();
             MakeSnackbar(data);

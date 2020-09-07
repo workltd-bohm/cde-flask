@@ -33,6 +33,7 @@ def get_project():
             resp.status_code = msg.NO_PROJECT_SELECTED['code']
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
+
         project_position = session.get("project_position")
         project_name = session["project_name"]
         user = session['user']

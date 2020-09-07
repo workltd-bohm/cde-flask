@@ -4,7 +4,7 @@ const ORBIT_MAX_ZOOM = 1.2;
 const ORBIT_ANIM_MOVE = 200;
 const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
-const ORBIT_ANIM_RESET_SKIP = 10;
+const ORBIT_ANIM_RESET_SKIP = 20;
 
 const ORBIT_DUB_CLK_DIF = 50;
 
@@ -46,7 +46,7 @@ const TEXT_PLANET_SUN_RATIO = 2;
 
 const DASHBOARD = $("#index-dashboard");
 
-const SVG = d3.select("#SVG");
+const SVG = d3.select("#PROJECT");
 
 // ----------------------------------------------------
 
@@ -60,6 +60,8 @@ var g_project = {
         rotate_scale : ORBIT_ROT_SCALE,
         dragging : false,
         skip: false,
+        project_position: null,
+        project_position_mix: null,
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,

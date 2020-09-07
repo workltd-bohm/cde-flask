@@ -30,7 +30,7 @@ function DrawPath(obj, data){
                 d3.selectAll("g.star").remove();
                 g_project.history = data.hist_path.back;
                 data.hist_path.this.selectAll("g").remove();
-                CreateSpace([data]);
+                CreateSpace(data);
             }, data);
         });
 

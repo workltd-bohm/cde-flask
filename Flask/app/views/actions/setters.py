@@ -96,3 +96,21 @@ def upload_project():
             return resp
 
     return redirect('/')
+
+@app.route('/set_project_position', methods=['POST'])
+def set_project_position():
+    resp = Response()
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        session["project_position"] = request_data["project_position"]
+
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = str(msg.DEFAULT_OK['message'])
+        return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+

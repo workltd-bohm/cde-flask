@@ -1,10 +1,14 @@
 <td id="index-dashboard" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/project.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/market.css') }}">
     <script>
         const IMG_PATH_SUN = "{{ url_for('static', filename='img/brush3.png') }}";
         const IMG_PATH_PLANET = "{{ url_for('static', filename='img/cell.png') }}";
         const PROJECT_PATH = "{{ url_for('static', filename='js/dashboard/data.json') }}";
     </script>
-    <svg id="SVG"></svg>
+    <svg id="PROJECT"></svg>
+    <div id="MARKET"></div>
     <script src="{{ url_for('static', filename='js/dashboard/init.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/shaders.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/control.js') }}" charset="utf-8"></script>

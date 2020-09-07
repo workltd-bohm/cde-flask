@@ -15,8 +15,10 @@ function CreateSpace(data) {
 
     g_project.overlay = false;
 
+    g_project.project_position = data.path;
+
     g_root.universe.selectAll("g")
-        .data(data)
+        .data([data])
         .enter()
         .append("g")
         .attr("class","star")
@@ -278,7 +280,7 @@ function AnimateUniverse() {
             }
             g_project.skip.values.parent.remove()
 
-            g_root.universe.data.is_root ? WrapGetProject(g_project.skip) : CreateSpace([g_project.skip]);
+            g_root.universe.data.is_root ? WrapGetProject(g_project.skip) : CreateSpace(g_project.skip);
 
             g_project.warp = ORBIT_ANIM_RESET_SKIP;
             g_project.skip = false;
@@ -323,6 +325,43 @@ function AnimatePlanet(data) {
 
 // -------------------------------------------------------
 
+function RecursiveFileSearch(back, data){
+    var found = false;
+    console.log(data.path +"  "+ g_project.project_position)
+    if (data.path == g_project.project_position){
+        return [[], data];
+    }
+    else if (data.sub_folders && data.sub_folders.length > 0){
+        for (var elem of data.sub_folders){
+            found = RecursiveFileSearch(data, elem);
+            if (found) {
+                found[0].push(data);
+                break;
+            }
+        }
+    }
+    return found;
+}
+
+function ProjectPosiotionSet(data){
+    //console.log(g_project.project_position)
+    var found = false;
+    if(g_project.project_position){
+        found = RecursiveFileSearch(data, data);
+        if (found) {
+            var path = found[0].reverse()
+            //console.log(path);
+            for (var add of path){
+                add.box = {...g_box};
+                add.values = {...add.values};
+                AddPath(add);
+            }
+        }
+    }
+    //console.log(found)
+    CreateSpace(found ? found[1] : data);
+}
+
 function DashboardCreate(data, project_position=null) {
 
     WindowResize();
@@ -338,7 +377,11 @@ function DashboardCreate(data, project_position=null) {
         .attr("r", g_TouchRadius);
 
     g_root.universe.data = data[0];
-    CreateSpace(data);
+    g_project.project_position = project_position;
+
+    PathCreation(data);
+
+    ProjectPosiotionSet(g_root.universe.data);
 
     d3.timer(function(elapsed) {
         if(g_root.universe) AnimateUniverse();

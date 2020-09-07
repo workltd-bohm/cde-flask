@@ -28,19 +28,33 @@ function SelectProject(){
     });
 }
 
-function CreateProject(){
-    ClearProject();
-
+function CreateProject(parent=false){
+    if (g_project.project_position_mix){
+        g_project.project_position = g_project.project_position_mix;
+        g_project.project_position_mix = null;
+    }
     $.ajax({
-        url: "/get_project",
+        url: "/set_project_position",
         type: 'POST',
+        data: JSON.stringify({project_position: g_project.project_position}),
         timeout: 5000,
         success: function(data){
-            data = JSON.parse(data);
-            if(data){
-                DashboardCreate([data.json.root_ic], data.project_position);
-                PathCreation([data.json.root_ic], data.project_position);
-            }
+            ClearProject();
+            $.ajax({
+                url: "/get_project",
+                type: 'POST',
+                timeout: 5000,
+                success: function(data){
+                    data = JSON.parse(data);
+                    if(data){
+                        DashboardCreate([data.json.root_ic], data.project_position);
+                    }
+                },
+                error: function($jqXHR, textStatus, errorThrown) {
+                    console.log( errorThrown + ": " + $jqXHR.responseText );
+                    MakeSnackbar($jqXHR.responseText);
+                }
+            });
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -51,7 +65,7 @@ function CreateProject(){
 
 function WrapGetProject(data){
     var tmp = {choose_project: data.name};
-    console.log(tmp)
+    //console.log(tmp)
     FormSubmit('select_project', JSON.stringify(tmp), true, CreateProject);
     //PopupOpen(GetProjects);
 }
@@ -62,25 +76,24 @@ function WrapNewProject(){
 
 function WrapCreateFolder(data){
     var tmp = data.values.data;
-    console.log(tmp);
+    //console.log(tmp);
     PopupOpen(NewFolder, tmp);
 }
 
 function WrapCreateFile(data){
     var tmp = data.values.data;
-    console.log(tmp);
+    //console.log(tmp);
     PopupOpen(NewFile, tmp);
 }
 
 function WrapRename(data){
     var tmp = data.values.data;
-    console.log(tmp);
+    //console.log(tmp);
     PopupOpen(RenameFile, tmp);
 }
 
 function WrapDelete(data){
     var tmp = data.values.data;
-    console.log(tmp);
     PopupOpen(DeleteFile, tmp);
 }
 
