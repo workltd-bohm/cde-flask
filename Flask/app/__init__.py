@@ -1,4 +1,4 @@
-from flask import Flask, json, request, Response, render_template, session, redirect, url_for
+from flask import Flask, json, request, Response, render_template, session, redirect, url_for, send_file
 
 import app.config as cfg
 import app.db.db_comminication as db
@@ -39,7 +39,7 @@ app.test_json_request = {
 
 app.test_json_request_file = {
     'file_id': '5f2e7166bc71e9ecb31305ba',
-    'file_name': 'SV-WRK-XX-XX-MI-W-3201-B1-P01.01-test',
+    'file_name': 'SV-WRK-ZZ-ZZ-RI-X-6001-A1-P01-IMG.jpg',
 }
 
 app.test_json_request_project = {

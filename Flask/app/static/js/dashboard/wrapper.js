@@ -72,7 +72,14 @@ function WrapShare(data){
 }
 
 function WrapDownload(data){
-    
+    var tmp = data.values.data;
+
+    json_data = {
+            file_id: tmp.id,
+            file_name: tmp.name + tmp.type,
+        }
+
+    DownloadFile(json_data)
 }
 
 // -------------------------------------------------------

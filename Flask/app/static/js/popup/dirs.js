@@ -233,3 +233,29 @@ function DeleteFile(form, json){
         }
     });
 }
+
+function DownloadFile(json){
+    LoadStart();
+    $.ajax({
+        url: "/get_file",
+        type: 'POST',
+        data: JSON.stringify(json),
+        timeout: 5000,
+        success: function(data){
+              const blob = new Blob([data]);
+              const url = window.URL.createObjectURL(blob);
+
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = json.file_name;
+              link.click();
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar(textStatus);
+//            PopupClose();
+        }
+    });
+}

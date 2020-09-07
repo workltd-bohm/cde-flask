@@ -7,23 +7,31 @@ from app import *
 from pathlib import Path
 
 
-@app.route('/get_file')
+@app.route('/get_file', methods=['POST'])
 def get_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        request_json = test_json_request_file  # json.loads(request.data)
+        request_json = json.loads(request.get_data()) #app.test_json_request_file  # json.loads(request.data)
         print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_id'], request_json['file_name'])
             if result:
-                print(result['file'])
+                print(result['file_name'])
+                resp = Response(result['file'])
+                # response.headers.set('Content-Type', 'mime/jpeg')
+                resp.headers.set(
+                    'Content-Disposition', 'attachment', filename='%s.jpg' % result['file_name'])
+                resp.status_code = msg.DEFAULT_OK['code']
+                # resp.data = str(msg.DEFAULT_OK['message'])
+                return resp
+                # return send_file(f, mimetype='image/jpg', attachment_filename=result['file_name'])
             else:
                 print("not_found")
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()
