@@ -52,6 +52,7 @@ def create_project():
                     ".",
                     [],
                     request_data['project_name'],
+                    '',
                     [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
