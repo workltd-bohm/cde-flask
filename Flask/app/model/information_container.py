@@ -9,6 +9,7 @@ class IC:
         self._sub_folders = sub_folders
         self._is_directory = True
         self._par_id = par_id
+        self._overlay_type = "ic"
 
     @property
     def ic_id(self):
@@ -53,6 +54,10 @@ class IC:
     @property
     def is_directory(self):
         return self._is_directory
+        
+    @property
+    def overlay_type(self):
+        return self._overlay_type
 
     @property
     def sub_folders(self):
@@ -79,6 +84,7 @@ class IC:
             'path': self._path,
             'is_directory': self._is_directory,
             'parent_id': self._par_id,
+            'overlay_type': self._overlay_type,
             'sub_folders': [x.to_json() for x in self._sub_folders]
         }
 

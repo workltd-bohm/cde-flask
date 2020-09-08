@@ -1,9 +1,11 @@
 @import url("../common/colors.css");
 
 #PROJECT {
+    display: none;
     position: relative;
     width: 100%;
     height: 100%;
+    transition: all 0.2s;
 }
 
 #MARKET{
@@ -11,6 +13,8 @@
     position: relative;
     width: 100%;
     height: 100%;
+    background: rgb(31, 38, 39);
+    transition: all 0.2s;
 }
 
 #Touch {

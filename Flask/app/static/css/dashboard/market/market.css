@@ -1,0 +1,36 @@
+
+.ticket{
+    display: block;
+    position: relative;
+    float: left;
+    width: 20%;
+    height: 30%;
+    background: rgb(194, 194, 194);
+    margin: 2%;
+    padding: 1%;
+    transition: all 0.3s;
+    -webkit-box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    -moz-box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ticket-body{
+    height: 100%;
+}
+
+.ticket-body > h3 {
+
+}
+
+.ticket-body > h3 {
+    color: rgba(51, 68, 69, 0.8);
+}
+.ticket-body > i {
+    color: rgba(51, 68, 69, 0.8);
+}
+.ticket:hover > .ticket-body i {
+    color: white;
+}
