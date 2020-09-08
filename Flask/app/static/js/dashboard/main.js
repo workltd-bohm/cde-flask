@@ -327,7 +327,7 @@ function AnimatePlanet(data) {
 
 function RecursiveFileSearch(back, data){
     var found = false;
-    console.log(data.path +"  "+ g_project.project_position)
+//    console.log(data.path +"  "+ g_project.project_position)
     if (data.path == g_project.project_position){
         return [[], data];
     }

@@ -82,7 +82,7 @@ def upload_project():
     if main.IsLogin():
         root_obj = dirs.path_to_obj('app')
         project = Project("default", "test-project", root_obj)
-        user = {'id': '17b16930-c5f6-11ea-99bc-50e085759747', 'role': 'OWNER'}
+        user = {'id': session['user']['id'], 'role': 'OWNER'}
         print(root_obj)
         if db.connect(db_adapter):
             result = db.upload_project(db_adapter, project, user)

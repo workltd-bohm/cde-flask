@@ -10,7 +10,7 @@ def index():
     print('Data posting path: %s' % request.path)
     if not IsLogin(): return redirect('/login')
     user = session.get('user')
-    user.update({'project_code': 'SV', 'company_code': 'WRK'})
+    # user.update({'project_code': 'SV', 'company_code': 'WRK'})
     username = session['user']['username']
     id = session['user']['id']
     email = session['user']['email']
