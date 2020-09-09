@@ -139,7 +139,7 @@ class Post:
     def status(self, value):
         self._status = value
 
-    def to_json(self, post):
+    def to_json(self):
         return {
                     'post_id': self._post_id,
                     'title':self._title,

@@ -62,5 +62,21 @@ def get_my_posts(db_adapter, user):
     return db_adapter.get_my_posts(user)
 
 
+def create_bid(db_adapter, request_json):
+    return db_adapter.create_bid(request_json)
+
+
+def get_all_bids(db_adapter):
+    return db_adapter.get_all_bids()
+
+
+def get_my_bids(db_adapter, user):
+    return db_adapter.get_my_bids(user)
+
+
+def get_bids_for_post(db_adapter, request_json):
+    return db_adapter.get_bids_for_post(request_json)
+
+
 def clear_db(db_adapter):
     return db_adapter.clear_db()
