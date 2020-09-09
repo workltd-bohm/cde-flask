@@ -33,10 +33,78 @@ function GetAllPost(){
     });
 }
 
+function OpenActivityPost(obj){
+    var data = {};
+    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
+    console.log(data)
+
+    $.ajax({
+        url: "/make_activity_post",
+        type: 'POST',
+        data: JSON.stringify(data),
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                OpenActivity(data.html);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function EditPost(obj){
+    var tmp = obj;
+    $.ajax({
+        url: "/make_edit_post",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                console.log(data)
+                OpenEditor(data.html, data.data);
+                OpenActivityEditPost(tmp);
+            }
+            MakeSnackbar("Editor");
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function OpenActivityEditPost(obj){
+    var data = {};
+    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
+    console.log(data)
+
+    $.ajax({
+        url: "/make_activity_post_edit",
+        type: 'POST',
+        data: JSON.stringify(data),
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                OpenActivity(data.html);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
 // -------------------------------------------------------
 
 function WrapGetMarket(data){
-    var tmp = {choose_market: data.name};
+    var choose_market = data.name;
     //console.log(tmp)
-    MarketGet(tmp);
+    MarketGet(choose_market);
 }

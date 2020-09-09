@@ -1,7 +1,13 @@
+var $ACTION = null;
+var ACTION = null;
 
+const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 
 $( document ).ready(function(){
+    $ACTION = $("#activity-body");
+    ACTION = d3.select("#activity-body");
+
     //CreateProject();
     SelectProject();
 });
@@ -107,10 +113,11 @@ function GetMarket(){
 // -------------------------------------------------------
 
 function SwitchDash(id){
+    ClearActivity();
     switch(id){
-        case 0: $SVG.show(); $MARKET.hide();break;
-        case 1: $SVG.hide(); $MARKET.show(); break;
-        default: $SVG.hide(); $MARKET.hide(); break;
+        case 0: $SVG.fadeIn(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+        case 1: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeIn(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+        default: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
     }
 }
 
