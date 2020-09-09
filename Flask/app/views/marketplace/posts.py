@@ -76,6 +76,27 @@ def get_my_posts():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_single_post', methods=['POST', 'GET'])
+def get_single_post():
+    print('Data posting path: %s' % request.path)
+    request_json = app.test_json_request_get_single_post
+    if request.get_data(): request_json.update(json.loads(request.get_data()))
+    print(request_json)
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            result = db.get_single_post(db_adapter, request_json)
+            print(">>>", json.dumps(result))
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(result) #, default=str)
+            return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
 @app.route('/get_bids_for_post', methods=['POST', 'GET'])
 def get_bids_for_post():
     print('Data posting path: %s' % request.path)

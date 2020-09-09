@@ -80,3 +80,7 @@ app.test_json_request_create_bid = {
 app.test_json_request_get_bids_for_post = {
     'post_id': '12'
 }
+
+app.test_json_request_get_single_post = {
+    'post_id': '12'
+}

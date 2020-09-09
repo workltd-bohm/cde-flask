@@ -307,10 +307,21 @@ class DBMongoAdapter:
         self._close_connection()
         return res
 
-    def get_bids_for_post(self, request_json):
-        col = self._db.Marketplace.Bids
+    def get_single_post(self, request_json):
+        col = self._db.Marketplace.Posts
         bid_post_query = {'post_id': request_json['post_id']}
         result = col.find(bid_post_query, {'_id': 0})
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def get_bids_for_post(self, request_json):
+        col = self._db.Marketplace.Bids
+        post_query = {'post_id': request_json['post_id']}
+        result = col.find(post_query, {'_id': 0})
         res = []
         for doc in result:
             doc.pop('_id', None)
