@@ -5,8 +5,10 @@ function OpenActivity(html){
     $ACTION.parent().removeClass("closed");
 }
 
-function ClearActivity(html){
+function ClearActivity(close=true){
   ACTION.html("");
-  $ACTION.parent().removeClass("opend");
-  $ACTION.parent().addClass("closed");
+  if(close){
+    $ACTION.parent().removeClass("opend");
+    $ACTION.parent().addClass("closed");
+  }
 }

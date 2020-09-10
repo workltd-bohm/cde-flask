@@ -69,6 +69,8 @@ def get_my_bids():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         if db.connect(db_adapter):
+            request_data = json.loads(request.get_data())
+            dirs.set_project_data(request_data)
             result = db.get_my_bids(db_adapter, session.get('user'))
             print(">>>", json.dumps(result))
             resp = Response()

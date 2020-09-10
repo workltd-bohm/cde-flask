@@ -26,8 +26,8 @@ def select_project():
     if main.IsLogin():
         print(request.get_data())
         request_data = json.loads(request.get_data())
-        session["project_name"] = request_data['choose_project']
-
+        session.get("project")["name"] = request_data['choose_project']
+        session.modified = True
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = str(msg.DEFAULT_OK['message'])
@@ -83,7 +83,7 @@ def upload_project():
     if main.IsLogin():
         root_obj = dirs.path_to_obj('app')
         project = Project("default", "test-project", root_obj)
-        user = {'id': session['user']['id'], 'role': 'OWNER'}
+        user = {'id': session.get('user')['id'], 'role': 'OWNER'}
         print(root_obj)
         if db.connect(db_adapter):
             result = db.upload_project(db_adapter, project, user)
@@ -97,21 +97,3 @@ def upload_project():
             return resp
 
     return redirect('/')
-
-@app.route('/set_project_position', methods=['POST'])
-def set_project_position():
-    resp = Response()
-    print('Data posting path: %s' % request.path)
-    if main.IsLogin():
-        request_data = json.loads(request.get_data())
-        print(request_data)
-        session["project_position"] = request_data["project_position"]
-
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = str(msg.DEFAULT_OK['message'])
-        return resp
-
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
-    return resp
-

@@ -61,10 +61,10 @@ def get_new_folder():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session["project_name"]
+        project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
-            result = db.get_project(db_adapter, project_name, session['user'])
+            result = db.get_project(db_adapter, project_name, session.get('user'))
             if result:
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
@@ -97,10 +97,10 @@ def get_new_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session["project_name"]
+        project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
-            user = session['user']
+            user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             if result:
                 response = {
@@ -137,7 +137,7 @@ def get_rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session["project_name"]
+        project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)
@@ -175,7 +175,7 @@ def get_delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session["project_name"]
+        project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)

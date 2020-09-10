@@ -23,7 +23,9 @@ function GetAllPost(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                console.log(data)
+                console.log(data);
+                ClearMarket();
+                MarketOpen(null, data);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -33,13 +35,13 @@ function GetAllPost(){
     });
 }
 
-function OpenActivityPost(obj, data){
+function OpenActivityBid(obj, data){
     var data = {};
     $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
     console.log(data)
 
     $.ajax({
-        url: "/make_activity_post",
+        url: "/make_activity_bid",
         type: 'POST',
         data: JSON.stringify(data),
         timeout: 5000,
@@ -48,6 +50,30 @@ function OpenActivityPost(obj, data){
             if(data){
                 OpenActivity(data.html);
             }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function ViewPost(obj, data){
+    var tmp = obj;
+    $.ajax({
+        url: "/make_view_post",
+        type: 'POST',
+        data: JSON.stringify({post_id: data}),
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                console.log(data)
+                OpenEditor(data.html, data.data);
+                ClearActivity(false);
+                OpenActivityEditBid(tmp);
+            }
+            MakeSnackbar("Editor");
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -86,6 +112,54 @@ function OpenActivityEditPost(obj){
 
     $.ajax({
         url: "/make_activity_post_edit",
+        type: 'POST',
+        data: JSON.stringify(data),
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                OpenActivity(data.html);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+// -------------------------------------------------------
+
+function EditBid(obj, data){
+    var tmp = obj;
+    $.ajax({
+        url: "/make_edit_bid",
+        type: 'POST',
+        data: JSON.stringify({post_id: data}),
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                console.log(data)
+                OpenEditor(data.html, data.data);
+                OpenActivityEditBid(tmp);
+            }
+            MakeSnackbar("Editor");
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function OpenActivityEditBid(obj){
+    var data = {};
+    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
+    console.log(data)
+
+    $.ajax({
+        url: "/make_activity_bid_edit",
         type: 'POST',
         data: JSON.stringify(data),
         timeout: 5000,

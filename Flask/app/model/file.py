@@ -19,6 +19,7 @@ class File(IC):
         self._file_number = ""
         self._status = ""
         self._revision = ""
+        self._overlay_type = "ic"
 
     @property
     def original_name(self):
@@ -124,6 +125,10 @@ class File(IC):
     def revision(self, value):
         self._revision = value
 
+    @property
+    def overlay_type(self):
+        return self._overlay_type
+
     def to_json(self):
         return {
             'ic_id': self._ic_id,
@@ -146,7 +151,8 @@ class File(IC):
             'role_code': self._role_code,
             'file_number': self._file_number,
             'status': self._status,
-            'revision': self._revision
+            'revision': self._revision,
+            'overlay_type': self._overlay_type,
         }
 
     @staticmethod

@@ -27,6 +27,8 @@ def login_data():
             json_user.pop('password', None)
             json_user.update({'project_code': 'SV', 'company_code': 'WRK'})
             session['user'] = json_user
+            session['project'] = {}
+            session.modified = True
             return redirect(url_for('index'))
         else:
             resp = Response()

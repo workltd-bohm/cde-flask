@@ -26,7 +26,7 @@ function MarketOpen(type, data){
 }
 
 function CreateTicket(obj){
-    console.log("ovde " + obj.html);
+    //console.log("ovde " + obj.html);
     var tmp = {};
     tmp.body =  MARKET.append("div")
         .attr("class","ticket")
@@ -52,7 +52,7 @@ function MarketGet(choose_market){
     $.ajax({
         url: choose_market == "Bids" ? "/get_my_bids" : "/get_my_posts",
         type: 'POST',
-        //data: JSON.stringify(type),
+        data: JSON.stringify({project: {market: choose_market}}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);

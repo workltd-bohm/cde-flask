@@ -76,8 +76,8 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
 
-            if(d["delete_name"]) g_project.project_position_mix = d["parent_path"];
-            if(d["new_name"]) g_project.project_position_mix = d["parent_path"] + "/" + d["new_name"];
+            if(d["delete_name"]) SESSION["position"] = d["parent_path"];
+            if(d["new_name"]) SESSION["position"] = d["parent_path"] + "/" + d["new_name"];
 
             if(func) func();
             LoadStop();

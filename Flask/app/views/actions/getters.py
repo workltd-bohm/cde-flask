@@ -20,24 +20,35 @@ def input():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_session', methods=['POST'])
+def get_session():
+    resp = Response()
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin() and session.get("project"):
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(session.get("project"))
+        return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 @app.route('/get_project', methods=['POST'])
 def get_project():
     print('Data posting path: %s' % request.path)
     resp = Response()
     if main.IsLogin():
-        # request_data = json.loads(request.get_data())
-        #session.set("project_position") = request_data["project_position"]
-        if "project_name" not in session:
+        request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data)
+        if "name" not in session.get("project"):
             print(str(msg.NO_PROJECT_SELECTED))
             resp.status_code = msg.NO_PROJECT_SELECTED['code']
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
 
-        project_position = session.get("project_position")
-        project_name = session["project_name"]
-        user = session['user']
-        # print(request_data)
+        project_position = session.get("project")["position"]
+        project_name = session.get("project")["name"]
+        user = session.get('user')
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, user)
             if result:
@@ -67,8 +78,11 @@ def get_root_project():
     print('Data posting path: %s' % request.path)
     resp = Response()
     if main.IsLogin():
-
-        user = session['user']
+        request_data = json.loads(request.get_data())
+        request_data["project"]["name"] = None
+        request_data["project"]["position"] = None
+        dirs.set_project_data(request_data)
+        user = session.get('user')
         # print(request_data)
         if db.connect(db_adapter):
             response = {
@@ -116,8 +130,9 @@ def get_user_profile():
     print('Data posting path: %s' % request.path)
     resp = Response()
     if main.IsLogin():
-
-        user = session['user']
+        request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data)
+        user = session.get('user')
         # print(request_data)
         if db.connect(db_adapter):
             response = {
@@ -153,8 +168,10 @@ def get_root_market():
     print('Data posting path: %s' % request.path)
     resp = Response()
     if main.IsLogin():
-
-        user = session['user']
+        request_data = json.loads(request.get_data())
+        request_data["project"]["market"] = None
+        dirs.set_project_data(request_data)
+        user = session.get('user')
         # print(request_data)
         if db.connect(db_adapter):
             response = {

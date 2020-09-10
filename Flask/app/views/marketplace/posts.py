@@ -41,7 +41,7 @@ def get_all_posts():
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for post in result:
-                post['html'] = render_template("dashboard/market/post.html",
+                post['html'] = render_template("dashboard/market/post_info.html",
                                                post_id=post["post_id"],
                                                title=post["title"],
                                                username=post["user_owner"]["username"],
@@ -49,7 +49,7 @@ def get_all_posts():
                                                location=post["location"],
                                                product=post["product"]["name"]
                                                )
-            result = {'one': {'html': render_template("dashboard/market/post_new.html")},
+            result = {'one': {'html': render_template("dashboard/market/bid_back.html")},
                       'many': json.dumps(result)}
             resp.data = json.dumps(result)
             return resp
@@ -71,8 +71,10 @@ def get_my_posts():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         if db.connect(db_adapter):
+            request_data = json.loads(request.get_data())
+            dirs.set_project_data(request_data)
             result = db.get_my_posts(db_adapter, session.get('user'))
-            print(">>>", json.dumps(result))
+            print(">>>", session.get('user'))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for post in result:

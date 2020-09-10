@@ -263,3 +263,9 @@ def path_to_dict(path):
     else:
         d['type'] = "file"
     return d
+
+def set_project_data(data):
+    if "project" in data:
+        session.get("project").update(data["project"])
+        session.modified = True
+        print(session.get("project"))
