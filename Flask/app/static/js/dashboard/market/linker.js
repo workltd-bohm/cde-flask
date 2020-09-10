@@ -56,11 +56,12 @@ function OpenActivityPost(obj){
     });
 }
 
-function EditPost(obj){
+function EditPost(obj, data){
     var tmp = obj;
     $.ajax({
         url: "/make_edit_post",
         type: 'POST',
+        data: JSON.stringify({post_id: data}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);

@@ -30,6 +30,7 @@ def create_post():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_all_posts', methods=['POST', 'GET'])
 def get_all_posts():
     print('Data posting path: %s' % request.path)
@@ -52,6 +53,7 @@ def get_all_posts():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_my_posts', methods=['POST', 'GET'])
 def get_my_posts():
@@ -76,6 +78,7 @@ def get_my_posts():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_single_post', methods=['POST', 'GET'])
 def get_single_post():
     print('Data posting path: %s' % request.path)
@@ -96,6 +99,7 @@ def get_single_post():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
+
 
 @app.route('/get_bids_for_post', methods=['POST', 'GET'])
 def get_bids_for_post():
