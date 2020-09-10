@@ -13,7 +13,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: rgb(31, 38, 39);
+    background: #121212;
     transition: all 0.2s;
 }
 
@@ -22,7 +22,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: rgb(11, 41, 32);
+    background: rgb(18, 18, 18, 0.26);
     transition: all 0.2s;
 }
 
