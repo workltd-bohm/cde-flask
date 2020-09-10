@@ -333,5 +333,6 @@ class DBMongoAdapter:
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
         self._db.Marketplace.Posts.drop()
+        self._db.Marketplace.Bids.drop()
         # self._db.Users.drop()
 
