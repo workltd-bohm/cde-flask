@@ -52,7 +52,7 @@ app.test_json_request_project = {
 }
 
 app.test_json_request_create_post = {
-    'post_id': 'default',
+    'post_id': '12',
     'title': '300 m2 ironed concrete',
     'user_owner': '',
     'product': {'product_id': '321', 'name': 'Ironed concrete', 'quantity': 1},

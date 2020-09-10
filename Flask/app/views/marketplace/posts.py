@@ -40,7 +40,18 @@ def get_all_posts():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(result) #, default=str)
+            for post in result:
+                post['html'] = render_template("dashboard/market/post.html",
+                                               post_id=post["post_id"],
+                                               title=post["title"],
+                                               username=post["user_owner"]["username"],
+                                               date=post["date_expired"],
+                                               location=post["location"],
+                                               product=post["product"]["name"]
+                                               )
+            result = {'one': {'html': render_template("dashboard/market/post_new.html")},
+                      'many': json.dumps(result)}
+            resp.data = json.dumps(result)
             return resp
         else:
             print(str(msg.DB_FAILURE))
@@ -64,7 +75,18 @@ def get_my_posts():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(result) #, default=str)
+            for post in result:
+                post['html'] = render_template("dashboard/market/post.html",
+                                               post_id=post["post_id"],
+                                               title=post["title"],
+                                               username=post["user_owner"]["username"],
+                                               date=post["date_expired"],
+                                               location=post["location"],
+                                               product=post["product"]["name"]
+                                               )
+            result = {'one': {'html': render_template("dashboard/market/post_new.html")},
+                      'many': json.dumps(result)}
+            resp.data = json.dumps(result)
             return resp
         else:
             print(str(msg.DB_FAILURE))

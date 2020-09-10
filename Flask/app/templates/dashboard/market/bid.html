@@ -1,6 +1,10 @@
-<div class="ticket-body" onclick="return;">
-    <h3>BID TEMPLATE</h3>
+<div class="ticket-body" onclick="EditPost(this, '{{ post_id }}');">
+    <h3>{{ title }}</h3>
+    <br>
     <div class="ticket-box">
-        <h4>cde</h4>
+        <div class="post-block"><h5>post id: </h5><h6>{{ post_id }}</h6></div>
+        <div class="post-block"><h5>offer: </h5><h6>{{ offer }}</h6></div>
+        <div class="post-block"><h5>username: </h5><h6>{{ username }}</h6></div>
+        <div class="post-block"><h5>date_created: </h5><h6>{{ date_created }}</h6></div>
     </div>
 </div>

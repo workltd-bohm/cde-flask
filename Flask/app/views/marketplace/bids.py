@@ -30,6 +30,7 @@ def create_bid():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_all_bids', methods=['POST', 'GET'])
 def get_all_bids():
     print('Data posting path: %s' % request.path)
@@ -39,7 +40,16 @@ def get_all_bids():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(result) #, default=str)
+            for bid in result:
+                bid['html'] = render_template("dashboard/market/bid.html",
+                                              post_id=bid["post_id"],
+                                              offer=bid["offer"],
+                                              username=bid["user"]["username"],
+                                              date_created=bid["date_created"]
+                                              )
+            result = {'one': {'html': render_template("dashboard/market/bid_new.html")},
+                      'many': json.dumps(result)}
+            resp.data = json.dumps(result)
             return resp
         else:
             print(str(msg.DB_FAILURE))
@@ -53,6 +63,7 @@ def get_all_bids():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_my_bids', methods=['POST', 'GET'])
 def get_my_bids():
     print('Data posting path: %s' % request.path)
@@ -62,7 +73,16 @@ def get_my_bids():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(result) #, default=str)
+            for bid in result:
+                bid['html'] = render_template("dashboard/market/bid.html",
+                                              post_id=bid["post_id"],
+                                              offer=bid["offer"],
+                                              username=bid["user"]["username"],
+                                              date_created=bid["date_created"]
+                                              )
+            result = {'one': {'html': render_template("dashboard/market/bid_all.html")},
+                      'many': json.dumps(result)}
+            resp.data = json.dumps(result)
             return resp
         else:
             print(str(msg.DB_FAILURE))
