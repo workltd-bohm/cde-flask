@@ -4,6 +4,7 @@ import uuid
 from app.model.user import User
 from app.model.project import Project
 from app.model.marketplace.post import Post
+from app.model.marketplace.bid import Bid
 import app.model.messages as msg
 
 
@@ -264,6 +265,62 @@ class DBMongoAdapter:
     def get_my_posts(self, user):
         col = self._db.Marketplace.Posts
         post_query = {'user_owner': user}
+        result = col.find(post_query, {'_id': 0})
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def create_bid(self, request_json):
+        col = self._db.Marketplace.Bids
+        bid_query = {'bid_id': request_json['bid_id']}
+        message = msg.BID_ALREADY_EXISTS
+        if col.find_one(bid_query, {'_id': 0}) is None:
+            bid_id = col.insert_one(request_json).inserted_id
+            col.update_one({'bid_id': 'default'},
+                           {'$set': {'bid_id': str(bid_id)}})
+            message = msg.BID_CREATED
+            print(Bid.json_to_obj(request_json))
+        self._close_connection()
+        return message
+
+    def get_all_bids(self):
+        col = self._db.Marketplace.Bids
+        result = col.find()
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def get_my_bids(self, user):
+        col = self._db.Marketplace.Bids
+        bid_query = {'user': user}
+        result = col.find(bid_query, {'_id': 0})
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def get_single_post(self, request_json):
+        col = self._db.Marketplace.Posts
+        bid_post_query = {'post_id': request_json['post_id']}
+        result = col.find(bid_post_query, {'_id': 0})
+        res = []
+        for doc in result:
+            doc.pop('_id', None)
+            res.append(doc)
+        self._close_connection()
+        return res
+
+    def get_bids_for_post(self, request_json):
+        col = self._db.Marketplace.Bids
+        post_query = {'post_id': request_json['post_id']}
         result = col.find(post_query, {'_id': 0})
         res = []
         for doc in result:

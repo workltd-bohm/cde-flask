@@ -2,7 +2,7 @@
 // -------------------------------------------------------
 
 function WindowResize(){
-    var dash = DASHBOARD;
+    var dash = $DASHBOARD;
 
     var dash_w = dash.width();
     var dash_h = dash.height();

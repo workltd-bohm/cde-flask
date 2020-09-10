@@ -1,0 +1,140 @@
+
+.ticket{
+    display: block;
+    position: relative;
+    float: left;
+    width: 20%;
+    height: 45%;
+    background: rgb(255,255,255,0.16);
+    margin: 2%;
+    padding: 1%;
+    transition: all 0.5s;
+    -webkit-box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    -moz-box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.19), 8px 0px 10px rgba(0, 0, 0, 0.23);
+    text-align: center;
+    overflow: hidden;
+}
+
+.ticket-body{
+    height: 98%;
+    width: 98%;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+.ticket-form{
+    height: 100%;
+    width: 100%;
+}
+
+.ticket-body > h3 {
+
+}
+
+.ticket-body > h3 {
+    color: rgba(255,255,255, 0.8);
+}
+.ticket-body > i {
+    color: rgba(255,255,255, 0.8);
+}
+.ticket-form:hover > .ticket-body i {
+    color: aqua;
+}
+
+.post-header{
+    display: block;
+    float: left;
+    background: rgba(255,255,255, 0.16);
+    padding: 2%;
+    width: 90%;
+}
+
+/*Blocks inside the POST container*/
+.post-block{
+    display: block;
+    cursor: pointer;
+    background: rgba(255,255,255, 0.16);
+    border: 1px solid black;
+    margin: 5px;
+}
+
+.post-block > h4 {
+    font-size: 12px;
+    color: rgba(255,255,255, 0.8);
+}
+
+.post-block > h6 {
+    font-size: 12px;
+    color: rgba(255,255,255, 0.8);
+}
+
+.edit-section{
+    display: block;
+    width: 100%;
+
+    border: 1px solid gray;
+    text-align: center;
+}
+.edit-section.upper{
+    background: #121212;
+    height: 50%;
+}
+.edit-section.lower{
+    background:rgb(255, 255, 255, 0.11);
+    height: 50%;
+}
+.edit-section.left{
+    float: left;
+    width: 50%;
+    border: none;
+}
+.edit-section.right{
+    float: right;
+    width: 50%;
+    border: none;
+}
+.edit-section.tab{
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    background:rgb(41, 41, 41);
+    border: 2px solid black;
+}
+
+.edit-box{
+    display: block;
+    float: left;
+    cursor: pointer;
+    background: rgb(255, 255, 255, 0.11);
+    /* width: 20%; */
+    border: 2px solid black;
+    padding: 5px 2px 5px 2px;
+}
+
+.edit-box > h4 {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(255,255,255, 0.7);
+}
+
+.edit-box > h2 {
+    font-size: 18px;
+    color: rgba(255,255,255, 0.7);
+}
+
+.edit-box.hover{
+    margin: 2%;
+    float: none;
+}
+
+.edit-box.right{
+
+}
+
+.edit-box.tab{
+
+}

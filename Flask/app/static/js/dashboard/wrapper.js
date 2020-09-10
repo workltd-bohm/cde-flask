@@ -1,16 +1,42 @@
+var $ACTION = null;
+var ACTION = null;
 
+const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 
 $( document ).ready(function(){
+    $ACTION = $("#activity-body");
+    ACTION = d3.select("#activity-body");
+
     //CreateProject();
     SelectProject();
 });
 
 // -------------------------------------------------------
 
+function UserProfile(){
+    ClearProject();
+    SwitchDash(0);
+    $.ajax({
+        url: "/get_user_profile",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                DashboardCreate([data.json.root_ic], data.project_position);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
 function SelectProject(){
     ClearProject();
-
+    SwitchDash(0);
     $.ajax({
         url: "/get_root_project",
         type: 'POST',
@@ -63,63 +89,36 @@ function CreateProject(parent=false){
     });
 }
 
-function WrapGetProject(data){
-    var tmp = {choose_project: data.name};
-    //console.log(tmp)
-    FormSubmit('select_project', JSON.stringify(tmp), true, CreateProject);
-    //PopupOpen(GetProjects);
+
+function GetMarket(){
+    ClearProject();
+    SwitchDash(0);
+    $.ajax({
+        url: "/get_root_market",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                DashboardCreate([data.json.root_ic], data.project_position);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
 }
 
-function WrapNewProject(){
-    PopupOpen(NewProject);
-}
+// -------------------------------------------------------
 
-function WrapCreateFolder(data){
-    var tmp = data.values.data;
-    //console.log(tmp);
-    PopupOpen(NewFolder, tmp);
-}
-
-function WrapCreateFile(data){
-    var tmp = data.values.data;
-    //console.log(tmp);
-    PopupOpen(NewFile, tmp);
-}
-
-function WrapRename(data){
-    var tmp = data.values.data;
-    //console.log(tmp);
-    PopupOpen(RenameFile, tmp);
-}
-
-function WrapDelete(data){
-    var tmp = data.values.data;
-    PopupOpen(DeleteFile, tmp);
-}
-
-function WrapMove(data){
-    
-}
-
-function WrapShare(data){
-    var tmp = data.values.data;
-
-    var dummy = document.createElement('input'),
-    text = window.location.href + 'get_file/' + tmp.name + tmp.type;
-
-    document.body.appendChild(dummy);
-    dummy.value = text;
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-    MakeSnackbar("Copied to clipboard");
-    
-}
-
-function WrapDownload(data){
-    var tmp = data.values.data;
-
-    DownloadFile(tmp.name + tmp.type)
+function SwitchDash(id){
+    ClearActivity();
+    switch(id){
+        case 0: $SVG.fadeIn(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+        case 1: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeIn(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+        default: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+    }
 }
 
 // -------------------------------------------------------

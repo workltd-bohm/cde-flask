@@ -97,6 +97,8 @@ class Project:
 
     def add_ic(self, ic_new, ic=None):
         if ic.is_directory:
+            print(ic.ic_id)
+            print(ic_new)
             new_path = ic_new.parent
             if not ic_new.is_directory:
                 new_path = '/'.join(ic_new.path.split('/')[:-1])
@@ -107,6 +109,7 @@ class Project:
                         already_exists = True
                         self._message = msg.IC_ALREADY_EXISTS
                 if not already_exists:
+                    ic_new.par_id = ic.ic_id
                     ic.sub_folders.append(ic_new)
                     self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True
@@ -134,6 +137,7 @@ class Project:
                              json_file['parent'],
                              json_file['history'],
                              json_file['path'],
+                             json_file['parent_id'],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
@@ -143,6 +147,8 @@ class Project:
                         json_file['history'],
                         json_file['path'],
                         json_file['type'],
+                        json_file['parent_id'],
+                        json_file['sub_folders'],
                         json_file['stored_id'],
                         json_file['description'])
         return root

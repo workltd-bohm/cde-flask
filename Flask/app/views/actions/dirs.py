@@ -69,6 +69,8 @@ def upload_file():
                         directory + '/' + request_json['new_name'],
                         "." + request_json['new_name'].split('.')[-1],
                         '',
+                        [],
+                        '',
                         'description') # request_json['description'])
         try:
             file_obj.project_code = request_json['project_code']
@@ -118,6 +120,7 @@ def create_dir():
                     request_data['parent_path'],
                     [],
                     request_data['parent_path'] + '/' + request_data['folder_name'],
+                    '',
                     [])
         if db.connect(db_adapter):
             result = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -243,10 +246,11 @@ def path_to_obj(path, parent_id=False):
                          parent,
                          [],
                          path,
+                         '',
                          [path_to_obj(path + '/' + x, path) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [], path, p.suffix, '', '')
+        root = File(new_id, name, name, parent, [], path, p.suffix, '', [],  '', '')
     return root
 
 

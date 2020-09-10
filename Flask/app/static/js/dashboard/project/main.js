@@ -254,6 +254,29 @@ function SunFadeout(data){
     });
 }
 
+function GetWarp(){
+    if(!g_project.warp) {
+        g_root.universe.data.overlay_type == "ic" ? AddPath(g_project.skip.values.back) : 1;
+        if(g_project.overlay) {
+            g_project.overlay.remove();
+            g_project.overlay = false;
+        }
+        
+        g_project.skip.values.parent.remove()
+
+        switch(g_root.universe.data.overlay_type){
+            case "ic": CreateSpace(g_project.skip); break;
+            case "project": WrapGetProject(g_project.skip); break;
+            case "market": WrapGetMarket(g_project.skip); break;
+            default : CreateSpace(g_project.skip); break;
+        }
+
+        g_project.warp = ORBIT_ANIM_RESET_SKIP;
+        g_project.skip = false;
+    }
+    else g_project.warp--;
+}
+
 // -------------------------------------------------------
 
 
@@ -271,21 +294,7 @@ function AnimateUniverse() {
         g_root.universe.transition()
             .duration(1)
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
-        if(!g_project.warp) {
-            g_root.universe.data.is_root ? 1 : AddPath(g_project.skip.values.back);
-
-            if(g_project.overlay) {
-                g_project.overlay.remove();
-                g_project.overlay = false;
-            }
-            g_project.skip.values.parent.remove()
-
-            g_root.universe.data.is_root ? WrapGetProject(g_project.skip) : CreateSpace(g_project.skip);
-
-            g_project.warp = ORBIT_ANIM_RESET_SKIP;
-            g_project.skip = false;
-        }
-        else g_project.warp--;
+        GetWarp();
     }
     else{
         g_root.universe.transition()
@@ -327,7 +336,7 @@ function AnimatePlanet(data) {
 
 function RecursiveFileSearch(back, data){
     var found = false;
-    console.log(data.path +"  "+ g_project.project_position)
+//    console.log(data.path +"  "+ g_project.project_position)
     if (data.path == g_project.project_position){
         return [[], data];
     }
@@ -387,7 +396,7 @@ function DashboardCreate(data, project_position=null) {
         if(g_root.universe) AnimateUniverse();
         else return;
 
-        if ($(DASHBOARD).width() != g_project.width || $(DASHBOARD).height() != g_project.height){
+        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() != g_project.height){
             WindowResize();
         }
     });

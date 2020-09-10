@@ -25,6 +25,7 @@ def login_data():
         if response is msg.LOGGED_IN:
             json_user = user.to_json()
             json_user.pop('password', None)
+            json_user.update({'project_code': 'SV', 'company_code': 'WRK'})
             session['user'] = json_user
             return redirect(url_for('index'))
         else:

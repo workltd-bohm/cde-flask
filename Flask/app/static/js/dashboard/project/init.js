@@ -44,8 +44,9 @@ const TEXT_PLANET_SUN_RATIO = 2;
 
 // ----------------------------------------------------
 
-const DASHBOARD = $("#index-dashboard");
+const $DASHBOARD = $("#index-dashboard");
 
+const $SVG = $("#PROJECT");
 const SVG = d3.select("#PROJECT");
 
 // ----------------------------------------------------

@@ -64,7 +64,7 @@ def get_new_folder():
         project_name = session["project_name"]
         print(request_data)
         if db.connect(db_adapter):
-            result = db.get_all_projects(db_adapter)
+            result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
@@ -100,14 +100,15 @@ def get_new_file():
         project_name = session["project_name"]
         print(request_data)
         if db.connect(db_adapter):
-            result = db.get_all_projects(db_adapter)
+            user = session['user']
+            result = db.get_project(db_adapter, project_name, user)
             if result:
                 response = {
                     'html': render_template("popup/file_input_popup.html",
                             project_path=request_data["project_path"],
                             project_name=project_name,
-                            project_code="SV",
-                            company_code="WRK",
+                            project_code=user['project_code'],
+                            company_code=user['company_code'],
                             is_file=request_data["is_file"],
                         ),
                     'data':[]
