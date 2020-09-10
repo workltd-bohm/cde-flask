@@ -33,7 +33,7 @@ function GetAllPost(){
     });
 }
 
-function OpenActivityPost(obj){
+function OpenActivityPost(obj, data){
     var data = {};
     $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
     console.log(data)
