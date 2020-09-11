@@ -9,7 +9,7 @@ class BidStatus(Enum):
 
 class Bid:
 
-    def __init__(self, bid_id, user, post_id, offer, date_created, description, status, comments):
+    def __init__(self, bid_id, user, post_id, offer, date_created, description, status, comments, post_title):
         self._bid_id = bid_id
         self._user = user
         self._post_id = post_id
@@ -18,6 +18,7 @@ class Bid:
         self._description = description
         self._status = status
         self._comments = comments
+        self._post_title = post_title
 
     @property
     def bid_id(self):
@@ -83,6 +84,14 @@ class Bid:
     def comments(self, value):
         self._comments = value
 
+    @property
+    def post_title(self):
+        return self._post_title
+
+    @post_title.setter
+    def post_title(self, value):
+        self._post_title = value
+
     def to_json(self):
         return {
                 'bid_id': self._bid_id,
@@ -92,7 +101,8 @@ class Bid:
                 'date_created': self._date_created,
                 'description': self._description,
                 'status': self._status,
-                'comments': self._comments
+                'comments': self._comments,
+                'post_title': self._post_title
             }
 
     @staticmethod
@@ -104,5 +114,6 @@ class Bid:
                    json_file['date_created'],
                    json_file['description'],
                    json_file['status'],
-                   json_file['comments']
+                   json_file['comments'],
+                   json_file['post_title']
                    )

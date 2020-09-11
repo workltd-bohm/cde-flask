@@ -40,16 +40,16 @@ def get_all_posts():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            for post in result:
-                post['html'] = render_template("dashboard/market/post_info.html",
-                                               post_id=post["post_id"],
-                                               title=post["title"],
-                                               username=post["user_owner"]["username"],
-                                               date=post["date_expired"],
-                                               location=post["location"],
-                                               product=post["product"]["name"]
-                                               )
-            result = {'one': {'html': render_template("dashboard/market/bid_back.html")},
+            # for post in result:
+            #     post['html'] = render_template("dashboard/market/post_info.html",
+            #                                    post_id=post["post_id"],
+            #                                    title=post["title"],
+            #                                    username=post["user_owner"]["username"],
+            #                                    date=post["date_expired"],
+            #                                    location=post["location"],
+            #                                    product=post["product"]["name"]
+            #                                    )
+            result = {'one': render_template("dashboard/market/bid_back.html"),
                       'many': json.dumps(result)}
             resp.data = json.dumps(result)
             return resp

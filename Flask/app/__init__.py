@@ -76,7 +76,8 @@ app.test_json_request_create_bid = {
     'date_created': '06.09.2020-17:41:25',
     'description': '',
     'status': '',
-    'comments': ['Cheap offer']
+    'comments': ['Cheap offer'],
+    'post_title': '300 m2 ironed concrete'
 }
 
 app.test_json_request_get_bids_for_post = {

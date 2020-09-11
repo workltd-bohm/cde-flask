@@ -25,32 +25,29 @@ function MarketOpen(type, data){
     switch(type){
         case "Posts":
             CreateTicket(data.one);
-            GetTicketTemplate(data.many);
+            GetTicketTemplate(data.many, g_marketTypes.posts.many, UpdatePostTicket, GetPostId);
             break;
         case "Bids":
-            CreateTicket(data.one.html);
-            for (var obj of JSON.parse(data.many)){
-                    CreateTicket(obj.html);;
-                }
+            CreateTicket(data.one);
+            GetTicketTemplate(data.many, g_marketTypes.bids.many, UpdateBidTicket, GetBidId);
             break;
         case "All_posts":
-            for (var obj of JSON.parse(data.many)){
-                    CreateTicket(obj.html);;
-                }
+            CreateTicket(data.one);
+            GetTicketTemplate(data.many, g_marketTypes.posts.many, UpdateAllPostTicket, GetPostId);
             break;
     }
 
 }
 
-function GetTicketTemplate(d){
+function GetTicketTemplate(d, url, updater, getId){
     $.ajax({
-        url: "/make_ticket_post",
+        url: url,
         type: 'POST',
         timeout: 5000,
-        success: function(data){
-            if(data){
+        success: function(template){
+            if(template){
                 for (var obj of JSON.parse(d)){
-                    CreateTicket(data, obj);;
+                    CreateTicket(template, obj, updater, getId);;
                 }
             }
         },
@@ -60,13 +57,16 @@ function GetTicketTemplate(d){
         }
     });
 }
-var posts_num = 0;
-function CreateTicket(template, obj=null){
+
+function CreateTicket(template, obj=null, updater=null, getId=null){
     //console.log("ovde " + obj.html);
+    var id  = 0;
+    if(obj != null)
+        id = getId(obj);
     var tmp = {};
     tmp.body =  MARKET.append("div")
         .attr("class","ticket")
-        .attr("id", posts_num)
+        .attr("id", id)
         .style("opacity", 0)
 
     tmp.body.transition()
@@ -78,18 +78,47 @@ function CreateTicket(template, obj=null){
         .attr("class", "ticket-form")
         .html(template);
 
-//    tmp.data = obj;
+    tmp.data = obj;
     g_market.childs.push(tmp);
 
     if(obj != null){
-        document.getElementById(posts_num).querySelector("#title").innerHTML = obj.title;
-        document.getElementById(posts_num).querySelector("#username").innerHTML = obj.user_owner.username;
-        document.getElementById(posts_num).querySelector("#date").innerHTML = obj.date_created;
-        document.getElementById(posts_num).querySelector("#location").innerHTML = obj.location;
-        document.getElementById(posts_num).querySelector("#product").innerHTML = obj.product.name;
-        document.getElementById(posts_num).querySelector("#post_ticket").onclick = function(){EditPost(this, obj.post_id);};
+        updater(obj, id);
     }
-    posts_num++;
+}
+
+function UpdatePostTicket(obj, id){
+    document.getElementById(id).querySelector("#title").innerHTML = obj.title;
+    document.getElementById(id).querySelector("#username").innerHTML = obj.user_owner.username;
+    document.getElementById(id).querySelector("#date").innerHTML = obj.date_created;
+    document.getElementById(id).querySelector("#location").innerHTML = obj.location;
+    document.getElementById(id).querySelector("#product").innerHTML = obj.product.name;
+    document.getElementById(id).querySelector("#post_ticket").onclick = function(){EditPost(this, obj.post_id);};
+}
+
+function UpdateBidTicket(obj, id){
+    document.getElementById(id).querySelector("#title").innerHTML = obj.post_title;
+    document.getElementById(id).querySelector("#username").innerHTML = obj.user.username;
+    document.getElementById(id).querySelector("#date").innerHTML = obj.date_created;
+    document.getElementById(id).querySelector("#post_id").innerHTML = obj.post_id;
+    document.getElementById(id).querySelector("#offer").innerHTML = obj.offer;
+    document.getElementById(id).querySelector("#bid_ticket").onclick = function(){OpenActivityBid(this, obj.bid_id);};
+}
+
+function UpdateAllPostTicket(obj, id){
+    document.getElementById(id).querySelector("#title").innerHTML = obj.title;
+    document.getElementById(id).querySelector("#username").innerHTML = obj.user_owner.username;
+    document.getElementById(id).querySelector("#date").innerHTML = obj.date_created;
+    document.getElementById(id).querySelector("#location").innerHTML = obj.location;
+    document.getElementById(id).querySelector("#product").innerHTML = obj.product.name;
+    document.getElementById(id).querySelector("#post_ticket").onclick = function(){ViewPost(this, obj.post_id);};
+}
+
+function GetPostId(json){
+    return json.post_id
+}
+
+function GetBidId(json){
+    return json.bid_id
 }
 
 
