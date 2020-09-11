@@ -1,12 +1,23 @@
+from enum import Enum
+
+
+class BidStatus(Enum):
+    POST_CLOSED = 0
+    PENDING = 1
+    BID_ACCEPTED = 2
+
+
 class Bid:
 
-    def __init__(self, bid_id, user, post_id, offer, date_created, description):
+    def __init__(self, bid_id, user, post_id, offer, date_created, description, status, comments):
         self._bid_id = bid_id
         self._user = user
         self._post_id = post_id
         self._offer = offer
         self._date_created = date_created
         self._description = description
+        self._status = status
+        self._comments = comments
 
     @property
     def bid_id(self):
@@ -56,6 +67,22 @@ class Bid:
     def description(self, value):
         self._description = value
 
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
+
+    @property
+    def comments(self):
+        return self._comments
+
+    @comments.setter
+    def comments(self, value):
+        self._comments = value
+
     def to_json(self):
         return {
                 'bid_id': self._bid_id,
@@ -63,7 +90,9 @@ class Bid:
                 'post_id': self._post_id,
                 'offer': self._offer,
                 'date_created': self._date_created,
-                'description': self._description
+                'description': self._description,
+                'status': self._status,
+                'comments': self._comments
             }
 
     @staticmethod
@@ -73,5 +102,7 @@ class Bid:
                    json_file['post_id'],
                    json_file['offer'],
                    json_file['date_created'],
-                   json_file['description']
+                   json_file['description'],
+                   json_file['status'],
+                   json_file['comments']
                    )

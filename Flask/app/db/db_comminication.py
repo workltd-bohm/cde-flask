@@ -78,6 +78,10 @@ def get_single_post(db_adapter, request_json):
     return db_adapter.get_single_post(request_json)
 
 
+def get_single_bid(db_adapter, request_json):
+    return db_adapter.get_single_bid(request_json)
+
+
 def get_bids_for_post(db_adapter, request_json):
     return db_adapter.get_bids_for_post(request_json)
 

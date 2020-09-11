@@ -17,19 +17,56 @@ g_marketTypes = {
     posts: {main: "/make_ticket_post_new", many: "/make_ticket_post"}, 
 };
 
-function MarketOpen(type, data){
-    CreateTicket(data.one);
+var g_template = null;
 
-    for (var obj of JSON.parse(data.many)){
-        setTimeout(function(){ CreateTicket(obj); }, ANIM_TICKET_WAIT);
+function MarketOpen(type, data){
+    console.log(type);
+
+    switch(type){
+        case "Posts":
+            CreateTicket(data.one);
+            GetTicketTemplate(data.many);
+            break;
+        case "Bids":
+            CreateTicket(data.one.html);
+            for (var obj of JSON.parse(data.many)){
+                    CreateTicket(obj.html);;
+                }
+            break;
+        case "All_posts":
+            for (var obj of JSON.parse(data.many)){
+                    CreateTicket(obj.html);;
+                }
+            break;
     }
+
 }
 
-function CreateTicket(obj){
+function GetTicketTemplate(d){
+    $.ajax({
+        url: "/make_ticket_post",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            if(data){
+                for (var obj of JSON.parse(d)){
+                    CreateTicket(data, obj);;
+                }
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+var posts_num = 0;
+function CreateTicket(template, obj=null){
     //console.log("ovde " + obj.html);
     var tmp = {};
     tmp.body =  MARKET.append("div")
         .attr("class","ticket")
+        .attr("id", posts_num)
         .style("opacity", 0)
 
     tmp.body.transition()
@@ -39,10 +76,20 @@ function CreateTicket(obj){
 
     tmp.body.append("form")
         .attr("class", "ticket-form")
-        .html(obj.html);
+        .html(template);
 
-    tmp.data = obj;
+//    tmp.data = obj;
     g_market.childs.push(tmp);
+
+    if(obj != null){
+        document.getElementById(posts_num).querySelector("#title").innerHTML = obj.title;
+        document.getElementById(posts_num).querySelector("#username").innerHTML = obj.user_owner.username;
+        document.getElementById(posts_num).querySelector("#date").innerHTML = obj.date_created;
+        document.getElementById(posts_num).querySelector("#location").innerHTML = obj.location;
+        document.getElementById(posts_num).querySelector("#product").innerHTML = obj.product.name;
+        document.getElementById(posts_num).querySelector("#post_ticket").onclick = function(){EditPost(this, obj.post_id);};
+    }
+    posts_num++;
 }
 
 

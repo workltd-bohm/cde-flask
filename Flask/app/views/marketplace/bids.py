@@ -42,6 +42,7 @@ def get_all_bids():
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
                 bid['html'] = render_template("dashboard/market/bid.html",
+                                              bid_id=bid["bid_id"],
                                               post_id=bid["post_id"],
                                               offer=bid["offer"],
                                               username=bid["user"]["username"],
@@ -77,6 +78,7 @@ def get_my_bids():
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
                 bid['html'] = render_template("dashboard/market/bid.html",
+                                              bid_id=bid["bid_id"],
                                               post_id=bid["post_id"],
                                               offer=bid["offer"],
                                               username=bid["user"]["username"],
@@ -97,3 +99,25 @@ def get_my_bids():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+@app.route('/get_single_bid', methods=['POST', 'GET'])
+def get_single_bid():
+    print('Data posting path: %s' % request.path)
+    request_json = app.test_json_request_get_single_bid
+    if request.get_data(): request_json.update(json.loads(request.get_data()))
+    print(request_json)
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            result = db.get_single_bid(db_adapter, request_json)
+            print(">>>", json.dumps(result))
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(result) #, default=str)
+            return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp

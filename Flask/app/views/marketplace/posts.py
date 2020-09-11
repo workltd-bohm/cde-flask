@@ -74,19 +74,21 @@ def get_my_posts():
             request_data = json.loads(request.get_data())
             dirs.set_project_data(request_data)
             result = db.get_my_posts(db_adapter, session.get('user'))
+            # for post in result:
+            #     print(post)
             print(">>>", session.get('user'))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            for post in result:
-                post['html'] = render_template("dashboard/market/post.html",
-                                               post_id=post["post_id"],
-                                               title=post["title"],
-                                               username=post["user_owner"]["username"],
-                                               date=post["date_expired"],
-                                               location=post["location"],
-                                               product=post["product"]["name"]
-                                               )
-            result = {'one': {'html': render_template("dashboard/market/post_new.html")},
+            # for post in result:
+            #     post['html'] = render_template("dashboard/market/post.html",
+            #                                    post_id=post["post_id"],
+            #                                    title=post["title"],
+            #                                    username=post["user_owner"]["username"],
+            #                                    date=post["date_expired"],
+            #                                    location=post["location"],
+            #                                    product=post["product"]["name"]
+            #                                    )
+            result = {'one': render_template("dashboard/market/post_new.html"),
                       'many': json.dumps(result)}
             resp.data = json.dumps(result)
             return resp

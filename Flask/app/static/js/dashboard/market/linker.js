@@ -25,7 +25,7 @@ function GetAllPost(){
             if(data){
                 console.log(data);
                 ClearMarket();
-                MarketOpen(null, data);
+                MarketOpen("All_posts", data);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -36,14 +36,14 @@ function GetAllPost(){
 }
 
 function OpenActivityBid(obj, data){
-    var data = {};
-    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
-    console.log(data)
+//    var data = {};
+//    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
+//    console.log(data)
 
     $.ajax({
         url: "/make_activity_bid",
         type: 'POST',
-        data: JSON.stringify(data),
+        data: JSON.stringify({bid_id: data}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);
@@ -107,7 +107,7 @@ function EditPost(obj, data){
 
 function OpenActivityEditPost(obj){
     var data = {};
-    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
+    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
     console.log(data)
 
     $.ajax({
@@ -135,7 +135,7 @@ function EditBid(obj, data){
     $.ajax({
         url: "/make_edit_bid",
         type: 'POST',
-        data: JSON.stringify({post_id: data}),
+        data: JSON.stringify({bid_id: data}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);

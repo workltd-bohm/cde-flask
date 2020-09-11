@@ -74,7 +74,9 @@ app.test_json_request_create_bid = {
     'post_id': '12',
     'offer': '10 euro/m2',
     'date_created': '06.09.2020-17:41:25',
-    'description': 'Cheap offer'
+    'description': '',
+    'status': '',
+    'comments': ['Cheap offer']
 }
 
 app.test_json_request_get_bids_for_post = {

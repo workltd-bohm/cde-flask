@@ -1,10 +1,10 @@
-<div class="ticket-body" onclick="EditPost(this, '{{ post_id }}');">
-    <h3>{{ title }}</h3>
+<div class="ticket-body" id="post_ticket">
+    <h3 id="title"></h3>
     <br>
     <div class="ticket-box">
-        <div class="post-block"><h4>WHO: </h4><p>{{ username }}</p></div>
-        <div class="post-block"><h4>WHEN: </h4><p>{{ date }}</p></div>
-        <div class="post-block"><h4>WHERE: </h4><p>{{ location }}</p></div>
-        <div class="post-block"><h4>WHAT: </h4><p>{{ product }}</p></div>
+        <div class="post-block"><h4>WHO: </h4><p id="username"></p></div>
+        <div class="post-block"><h4>WHEN: </h4><p id="date"></p></div>
+        <div class="post-block"><h4>WHERE: </h4><p id="location"></p></div>
+        <div class="post-block"><h4>WHAT: </h4><p id="product"></p></div>
     </div>
 </div>
