@@ -1,10 +1,16 @@
-<div class="ticket-body" id="post_ticket">
-    <h3 id="title"></h3>
+<div class="ticket-body" id="post_ticket" onclick="EditPost(this, '{{ post_id }}');">
+    <!-- <input type="hidden" name="post_id" value="{{ post_id }}"> -->
+    <h3>{{ title }}</h3>
+    <!-- <h3 id="title"></h3> -->
     <br>
     <div class="ticket-box">
-        <div class="post-block"><h4>WHO: </h4><p id="username"></p></div>
+        <div class="post-block"><h5>WHO: </h5><h6>{{ username }}</h6></div>
+        <div class="post-block"><h5>WHEN: </h5><h6>{{ date }}</h6></div>
+        <div class="post-block"><h5>WHERE: </h5><h6>{{ location }}</h6></div>
+        <div class="post-block"><h5>WHAT: </h5><h6>{{ product }}</h6></div>
+        <!-- <div class="post-block"><h4>WHO: </h4><p id="username"></p></div>
         <div class="post-block"><h4>WHEN: </h4><p id="date"></p></div>
         <div class="post-block"><h4>WHERE: </h4><p id="location"></p></div>
-        <div class="post-block"><h4>WHAT: </h4><p id="product"></p></div>
+        <div class="post-block"><h4>WHAT: </h4><p id="product"></p></div> -->
     </div>
 </div>

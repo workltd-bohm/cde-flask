@@ -40,14 +40,14 @@ def get_all_bids():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            # for bid in result:
-            #     bid['html'] = render_template("dashboard/market/bid.html",
-            #                                   bid_id=bid["bid_id"],
-            #                                   post_id=bid["post_id"],
-            #                                   offer=bid["offer"],
-            #                                   username=bid["user"]["username"],
-            #                                   date_created=bid["date_created"]
-            #                                   )
+            for bid in result:
+                bid['html'] = render_template("dashboard/market/bid.html",
+                                              bid_id=bid["bid_id"],
+                                              post_id=bid["post_id"],
+                                              offer=bid["offer"],
+                                              username=bid["user"]["username"],
+                                              date_created=bid["date_created"]
+                                              )
             result = {'one': render_template("dashboard/market/bid_new.html"),
                       'many': json.dumps(result)}
             resp.data = json.dumps(result)
@@ -76,15 +76,15 @@ def get_my_bids():
             print(">>>", json.dumps(result))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            # for bid in result:
-            #     bid['html'] = render_template("dashboard/market/bid.html",
-            #                                   title = bid["post_title"],
-            #                                   bid_id=bid["bid_id"],
-            #                                   post_id=bid["post_id"],
-            #                                   offer=bid["offer"],
-            #                                   username=bid["user"]["username"],
-            #                                   date_created=bid["date_created"]
-            #                                   )
+            for bid in result:
+                bid['html'] = render_template("dashboard/market/bid.html",
+                                              title = bid["post_title"],
+                                              bid_id=bid["bid_id"],
+                                              post_id=bid["post_id"],
+                                              offer=bid["offer"],
+                                              username=bid["user"]["username"],
+                                              date_created=bid["date_created"]
+                                              )
             result = {'one': render_template("dashboard/market/bid_all.html"),
                       'many': json.dumps(result)}
             resp.data = json.dumps(result)
