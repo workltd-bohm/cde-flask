@@ -78,11 +78,11 @@
 }
 .edit-section.upper{
     background: #121212;
-    height: 50%;
+    height: 60%;
 }
 .edit-section.lower{
     background:rgb(255, 255, 255, 0.11);
-    height: 50%;
+    /* height: 50%; */
 }
 .edit-section.left{
     float: left;
@@ -113,6 +113,10 @@
     /* width: 20%; */
     border: 2px solid black;
     padding: 5px 2px 5px 2px;
+}
+
+.edit-box:hover{
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .edit-box > h4 {

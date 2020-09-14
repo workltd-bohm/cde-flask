@@ -165,3 +165,9 @@ function OpenEditor(html, data){
 function ClearMarket(){
     $MARKET.empty();
 }
+
+
+function TabSwap(target){
+    $(".edit-section.view").children().hide();
+    $(target).show();
+}

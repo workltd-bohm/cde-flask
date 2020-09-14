@@ -2,6 +2,12 @@
 .group 			  {
   position:relative;
 }
+.group > input,
+.group > select,
+.group > textarea{
+  width: 98%;
+}
+
 input, textarea, select 				{
   font-size:18px;
   padding:10px 10px 10px 5px;
