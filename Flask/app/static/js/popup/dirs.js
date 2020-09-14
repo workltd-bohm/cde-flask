@@ -37,6 +37,7 @@ var sel4;
 var sel5;
 var sel6;
 var sel7;
+var fileList = null;
 
 var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'Default'];
 
@@ -141,8 +142,14 @@ function GetFile(){
     var d = {};
     var form = GetForm().serializeArray().map(function(x){d[x.name] = x.value;});
 
-    fd.append('data', JSON.stringify(d));
-    fd.append('file', fileList)
+    if(fileList){
+        fd.append('data', JSON.stringify(d));
+        fd.append('file', fileList)
+    }
+    else{
+        MakeSnackbar("File not selected");
+        return null;
+    }
 
     return fd;
 }
