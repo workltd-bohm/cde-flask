@@ -54,6 +54,30 @@ function AddPost(obj){
     });
 }
 
+function UpdatePost(obj, data){
+    var form = $("#EDITOR > .ticket-form");
+    if(!CheckAval(form)) return; 
+    var args = {};
+    form.serializeArray().map(function(x){args[x.name] = x.value;}); 
+    console.log(args)
+
+    $.ajax({
+        url: "/edit_post",
+        type: 'POST',
+        data: JSON.stringify(args),
+        timeout: 5000,
+        success: function(data){
+            MakeSnackbar(data);
+            MarketGet('Posts');
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+
 function GetAllPost(){
     $.ajax({
         url: "/get_all_posts",
