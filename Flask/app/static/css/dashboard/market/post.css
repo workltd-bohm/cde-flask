@@ -5,7 +5,7 @@
 .group > input,
 .group > select,
 .group > textarea{
-  width: 98%;
+  width: 100%;
 }
 
 input, textarea, select 				{
@@ -27,7 +27,7 @@ label {
   color:#aaa;
   font-size:18px;
   font-weight:normal;
-  position:absolute;
+  /* position:absolute; */
   left:5px;
   top:10px;
   transition:0.2s ease all;
@@ -36,11 +36,11 @@ label {
 }
 
 /* active state */
-input:focus ~ label, input:valid ~ label, textarea:focus ~ label, textarea:valid ~ label 		{
+/* input:focus ~ label, input:valid ~ label, textarea:focus ~ label, textarea:valid ~ label 		{
   top:-20px;
   font-size:14px;
   color:#5264AE;
-}
+} */
 
 /* BOTTOM BARS ================================= */
 .bar 	{ position:relative; display:block; width:300px; }
