@@ -10,7 +10,7 @@ def create_post():
         request_json = json.loads(request.get_data())
         request_json['post_id'] = 'default'
         request_json['user_owner'] = session['user']
-        request_json['product'].update({'product_id': '321', 'name': 'default name'})
+        request_json['product'] = {"quantity": request_json['product'], 'product_id': '321', 'name': 'default name'}
         request_json['date_created'] = '06.09.2020-12:41:25'
         request_json['documents'] = ''
         request_json['bids'] = []

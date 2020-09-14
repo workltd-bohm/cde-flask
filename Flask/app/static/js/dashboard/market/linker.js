@@ -1,6 +1,7 @@
 
 
-function NewPost(){
+function NewPost(obj){
+    var tmp = obj;
     $.ajax({
         url: "/make_new_post",
         type: 'POST',
@@ -9,6 +10,7 @@ function NewPost(){
             data = JSON.parse(data);
             if(data){
                 OpenEditor(data.html, data.data);
+                OpenActivityEditPost(tmp);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -18,20 +20,28 @@ function NewPost(){
     });
 }
 
-function AddPost(){
-    post_json = {
-        title: document.getElementById("title").value,
-        description: document.getElementById("description").value,
-        date_expired: document.getElementById("date").value,
-        visibility: document.getElementById("visibility").value,
-        location: document.getElementById("location").value,
-        product: {quantity: document.getElementById('quantity').value}
+function AddPost(obj){
+    var form = $("#EDITOR > .ticket-form");
 
-    }
+    // post_json = {
+    //     title: document.getElementById("title").value,
+    //     description: document.getElementById("description").value,
+    //     date_expired: document.getElementById("date").value,
+    //     visibility: document.getElementById("visibility").value,
+    //     location: document.getElementById("location").value,
+    //     product: {quantity: document.getElementById('quantity').value}
+
+    // }
+
+    if(!CheckAval(form)) return; 
+    var args = {};
+    form.serializeArray().map(function(x){args[x.name] = x.value;}); 
+    console.log(args)
+
     $.ajax({
         url: "/create_post",
         type: 'POST',
-        data: JSON.stringify(post_json),
+        data: JSON.stringify(args),
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);

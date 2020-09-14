@@ -1,3 +1,4 @@
+<form class="ticket-form">
 <div class="edit-section upper">
     <div class="edit-section left">
         <div class="group edit-box hover">
@@ -7,20 +8,20 @@
             <label>Who</label>
         </div>
         <div class="group edit-box hover">
-            <input type="text" id="title" required>
+            <input type="text" name="title" required>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Title</label>
         </div>
         <div class="group edit-box hover">
 <!--            <input type="text" id="description" class="textarea" required>-->
-            <textarea type="text" rows="8" id="description" required></textarea>
+            <textarea type="text" rows="8" name="description" required></textarea>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Product description</label>
         </div>
         <div class="group edit-box hover">
-            <input type="text" id="quantity" required>
+            <input type="text" name="product" required>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Quantity</label>
@@ -28,13 +29,13 @@
     </div>
     <div class="edit-section right">
         <div class="group edit-box hover">
-            <input type="text" id="date" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" required>
+            <input type="text" name="date_expired" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" required>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>When</label>
         </div>
         <div class="group edit-box hover">
-            <input type="text" id="location" required>
+            <input type="text" name="location" required>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Where</label>
@@ -47,7 +48,7 @@
             </select>
             <span class="highlight"></span>
             <span class="bar"></span>
-            <label for="visibility"></label>
+            <label name="visibility" for="visibility"></label>
         </div>
         <div class="edit-box hover right button" onclick="AddPost();">
             <h4>Create a POST</h4>
@@ -67,3 +68,4 @@
         </div>
     </div>
 </div>
+</form>

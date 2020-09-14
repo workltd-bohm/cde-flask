@@ -1,32 +1,61 @@
+<form class="ticket-form">
 <div class="edit-section upper">
     <div class="edit-section left">
-        <div class="edit-box hover">
-            <h4>WHO</h4>
-            <h2>{{ username }}</h2>
+        <div class="group edit-box hover">
+            <input type="text" id="username" value="{{ username }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Who</label>
         </div>
-        <div class="edit-box hover">
-            <h4>PRODUCT</h4>
-            <h2>{{ description }}</h2>
+        <div class="group edit-box hover">
+            <input type="text" name="title" value="{{ title }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Title</label>
         </div>
-        <div class="edit-box hover">
-            <h4>WHEN</h4>
-            <h2>{{ date }}</h2>
+        <div class="group edit-box hover">
+<!--            <input type="text" id="description" class="textarea" required>-->
+            <textarea type="text" rows="8" name="description" required>{{ description }}</textarea>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Product description</label>
         </div>
-        <div class="edit-box hover">
-            <h4>WHERE</h4>
-            <h2>{{ location }}</h2>
+        <div class="group edit-box hover">
+            <input type="text" name="product" value="{{ product }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Quantity</label>
         </div>
     </div>
     <div class="edit-section right">
-        <div class="edit-box hover right">
+        <div class="group edit-box hover">
+            <input type="text" name="date_expired" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" value="{{ date }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>When</label>
+        </div>
+        <div class="group edit-box hover">
+            <input type="text" name="location" value="{{ location }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Where</label>
+        </div>
+        <div class="group edit-box hover">
             <h4>LOWEST BID</h4>
             <h2>{{ lowest_bid }}</h2>
         </div>
-        <div class="edit-box hover right">
-            <h4>BIDS</h4>
+        <div class="group edit-box hover">
+<!--            <input type="text" id="visibility" required>-->
+            <select id="visibility" name="visibility">
+                <option value="visible">Visible</option>
+                <option value="private">Private</option>
+            </select>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label name="visibility" for="visibility"></label>
         </div>
-        <div class="edit-box hover right">
-            <h4>FINALIZE PRODUCT</h4>
+        <div class="edit-box hover right button" onclick="return;">
+            <h4>Edit POST</h4>
         </div>
     </div>
 </div>
@@ -42,5 +71,6 @@
             <h4>IMAGES</h4>
         </div>
     </div>
-<iframe width="960" height="400" src="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI" frameborder="0" allowfullscreen></iframe>
 </div>
+<iframe width="960" height="400" src="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI" frameborder="0" allowfullscreen></iframe>
+</form>
