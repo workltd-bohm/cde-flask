@@ -8,7 +8,9 @@
   width: 100%;
 }
 
-input, textarea, select 				{
+.group > input,
+.group > select,
+.group > textarea 				{
   font-size:18px;
   padding:10px 10px 10px 5px;
   display:block;
@@ -18,9 +20,9 @@ input, textarea, select 				{
   background:rgb(41, 41, 41);
   color:#aaa;
 }
-input:focus 		{ outline:none; }
+.group > input:focus 		{ outline:none; }
 
-textarea:focus 		{ outline:none; }
+.group > textarea:focus 		{ outline:none; }
 
 /* LABEL ======================================= */
 label {
@@ -63,11 +65,11 @@ label {
 }
 
 /* active state */
-input:focus ~ .bar:before, input:focus ~ .bar:after {
+.group > input:focus ~ .bar:before, .group > input:focus ~ .bar:after {
   width:50%;
 }
 
-textarea:focus ~ .bar:before, input:focus ~ .bar:after {
+.group > textarea:focus ~ .bar:before, .group > input:focus ~ .bar:after {
   width:50%;
 }
 
@@ -84,7 +86,7 @@ textarea:focus ~ .bar:before, input:focus ~ .bar:after {
 
 
 /* active state */
-input:focus ~ .highlight, textarea:focus ~ .highlight{
+.group > input:focus ~ .highlight, .group > textarea:focus ~ .highlight{
   -webkit-animation:inputHighlighter 0.3s ease;
   -moz-animation:inputHighlighter 0.3s ease;
   animation:inputHighlighter 0.3s ease;
