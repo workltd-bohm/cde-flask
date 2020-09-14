@@ -1,12 +1,41 @@
 
 
-function AddPost(){
+function NewPost(){
     $.ajax({
-        url: "/create_post",
+        url: "/make_new_post",
         type: 'POST',
         timeout: 5000,
         success: function(data){
+            data = JSON.parse(data);
+            if(data){
+                OpenEditor(data.html, data.data);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function AddPost(){
+    post_json = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        date_expired: document.getElementById("date").value,
+        visibility: document.getElementById("visibility").value,
+        location: document.getElementById("location").value,
+        product: {quantity: document.getElementById('quantity').value}
+
+    }
+    $.ajax({
+        url: "/create_post",
+        type: 'POST',
+        data: JSON.stringify(post_json),
+        timeout: 5000,
+        success: function(data){
             MakeSnackbar(data);
+            MarketGet('Posts');
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );

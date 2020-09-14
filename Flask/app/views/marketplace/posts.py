@@ -5,7 +5,19 @@ from app import *
 def create_post():
     print('Data posting path: %s' % request.path)
     request_json = app.test_json_request_create_post
-    if request.get_data(): request_json.update(json.loads(request.get_data()))
+    if request.get_data():
+        print(request.get_data())
+        request_json = json.loads(request.get_data())
+        request_json['post_id'] = 'default'
+        request_json['user_owner'] = session['user']
+        request_json['product'].update({'product_id': '321', 'name': 'default name'})
+        request_json['date_created'] = '06.09.2020-12:41:25'
+        request_json['documents'] = ''
+        request_json['bids'] = []
+        request_json['current_best_bid'] = None
+        request_json['comments'] = []
+        request_json['status'] = 0
+
     print(request_json)
     if main.IsLogin():
         request_json['user_owner'] = session.get('user')

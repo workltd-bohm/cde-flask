@@ -131,6 +131,22 @@
     float: none;
 }
 
+.edit-box.button{
+    margin: 2%;
+    float: none;
+    width: 30%;
+    display: inline-block;
+    position: relative;
+    bottom: 5px;
+    background: #757575;
+}
+
+.edit-box.button:hover{
+    margin: 2%;
+    float: none;
+    background: #5264AE;
+}
+
 .edit-box.right{
 
 }

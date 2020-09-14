@@ -156,13 +156,13 @@ def make_ticket_post():
     return resp
 
 
-@app.route('/make_ticket_post_new', methods=['POST'])
+@app.route('/make_new_post', methods=['POST'])
 def make_ticket_post_new():
     resp = Response()
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new.html",
+            'html': render_template("dashboard/market/post_new_form.html",
                 # TODO
             ),
             'data': []

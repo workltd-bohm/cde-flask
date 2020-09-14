@@ -1,0 +1,69 @@
+<div class="edit-section upper">
+    <div class="edit-section left">
+        <div class="group edit-box hover">
+            <input type="text" id="username" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Who</label>
+        </div>
+        <div class="group edit-box hover">
+            <input type="text" id="title" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Title</label>
+        </div>
+        <div class="group edit-box hover">
+<!--            <input type="text" id="description" class="textarea" required>-->
+            <textarea type="text" rows="8" id="description" required></textarea>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Product description</label>
+        </div>
+        <div class="group edit-box hover">
+            <input type="text" id="quantity" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Quantity</label>
+        </div>
+    </div>
+    <div class="edit-section right">
+        <div class="group edit-box hover">
+            <input type="text" id="date" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>When</label>
+        </div>
+        <div class="group edit-box hover">
+            <input type="text" id="location" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Where</label>
+        </div>
+        <div class="group edit-box hover">
+<!--            <input type="text" id="visibility" required>-->
+            <select id="visibility" name="visibility">
+              <option value="visible">Visible</option>
+              <option value="private">Private</option>
+            </select>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label for="visibility"></label>
+        </div>
+        <div class="edit-box hover right button" onclick="AddPost();">
+            <h4>Create a POST</h4>
+        </div>
+    </div>
+</div>
+<div class="edit-section lower">
+    <div class="edit-section tab">
+        <div class="edit-box">
+            <h4>3D VIEW</h4>
+        </div>
+        <div class="edit-box">
+            <h4>DOCUMENTS</h4>
+        </div>
+        <div class="edit-box">
+            <h4>IMAGES</h4>
+        </div>
+    </div>
+</div>
