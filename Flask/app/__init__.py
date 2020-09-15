@@ -4,6 +4,7 @@ import app.config as cfg
 import app.db.db_comminication as db
 from app.model.user import User
 import app.model.messages as msg
+import app.model.marketplace.post as status
 from app.model.information_container import IC
 from app.model.directory import Directory
 from app.model.file import File

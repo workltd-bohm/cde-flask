@@ -1,5 +1,7 @@
 from app import *
 
+from datetime import datetime
+
 
 @app.route('/create_post', methods=['POST'])
 def create_post():
@@ -8,10 +10,12 @@ def create_post():
     if request.get_data():
         print(request.get_data())
         request_json = json.loads(request.get_data())
+        time = datetime.strptime(request_json["date_expired"], '%Y-%m-%dT%H:%M')
         request_json['post_id'] = 'default'
         request_json['user_owner'] = session['user']
         request_json['product'] = {"quantity": request_json['product'], 'product_id': '321', 'name': 'default name'}
-        request_json['date_created'] = '06.09.2020-12:41:25'
+        request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
+        request_json.update({'date_expired': time.strftime("%d.%m.%Y-%H:%M:%S")})
         request_json['documents'] = ''
         request_json['bids'] = []
         request_json['current_best_bid'] = None
@@ -48,7 +52,6 @@ def edit_post():
     resp = Response()
     print('Data posting path: %s' % request.path)
     request_data = json.loads(request.get_data())
-    dirs.set_project_data(request_data)
     print(request_data)
     # if request.get_data():
     #     print(request.get_data())
@@ -132,7 +135,7 @@ def get_my_posts():
             result = db.get_my_posts(db_adapter, session.get('user'))
             # for post in result:
             #     print(post)
-            print(">>>", session.get('user'))
+            print(">>>", result)
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for post in result:

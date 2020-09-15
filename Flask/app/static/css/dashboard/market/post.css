@@ -8,9 +8,10 @@
   width: 100%;
 }
 
+
 .group > input,
 .group > select,
-.group > textarea 				{
+.group > textarea, .group > p				{
   font-size:18px;
   padding:10px 10px 10px 5px;
   display:block;
@@ -39,7 +40,8 @@
 }
 
 /* active state */
-.group > input:focus ~ label, .group > input:valid ~ label, .group > textarea:focus ~ label, .group > textarea:valid ~ label 		{
+.group > input:focus ~ label, .group > input:valid ~ label,
+ .group > textarea:focus ~ label, .group > textarea:valid ~ label 		{
   top:-20px;
   font-size:14px;
   color:#5264AE;
@@ -70,7 +72,7 @@
   width:50%;
 }
 
-.group > textarea:focus ~ .bar:before, .group > input:focus ~ .bar:after {
+.group > textarea:focus ~ .bar:before, .group > textarea:focus ~ .bar:after {
   width:50%;
 }
 

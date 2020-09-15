@@ -275,6 +275,7 @@ class DBMongoAdapter:
 
     def create_bid(self, request_json):
         col = self._db.Marketplace.Bids
+        col_post = self._db.Marketplace.Posts
         bid_query = {'bid_id': request_json['bid_id']}
         message = msg.BID_ALREADY_EXISTS
         if col.find_one(bid_query, {'_id': 0}) is None:
@@ -283,6 +284,12 @@ class DBMongoAdapter:
                            {'$set': {'bid_id': str(bid_id)}})
             message = msg.BID_CREATED
             print(Bid.json_to_obj(request_json))
+            post_query = {'post_id': request_json['post_id']}
+            post = col_post.find_one(post_query, {'_id': 0})
+            if post:
+                post['bids'].append(str(bid_id))
+                col_post.update_one(post_query,
+                               {'$set': post})
         self._close_connection()
         return message
 

@@ -15,7 +15,7 @@
         </div>
         <div class="group edit-box hover">
 <!--            <input type="text" id="description" class="textarea" required>-->
-            <textarea type="text" rows="8" name="description" required></textarea>
+            <textarea rows="8" name="description" required></textarea>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>Product description</label>
@@ -29,7 +29,7 @@
     </div>
     <div class="edit-section right">
         <div class="group edit-box hover">
-            <input type="text" name="date_expired" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" required>
+            <input type="text" name="date_expired" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label>When</label>
@@ -48,7 +48,7 @@
             </select>
             <span class="highlight"></span>
             <span class="bar"></span>
-            <label name="visibility" for="visibility"></label>
+            <label for="visibility"></label>
         </div>
         <div class="edit-box hover right button" onclick="AddPost();">
             <h4>Create a POST</h4>

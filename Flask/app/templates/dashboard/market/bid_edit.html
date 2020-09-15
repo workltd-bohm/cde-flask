@@ -1,20 +1,35 @@
+<form class="ticket-form">
 <div class="edit-section upper">
     <div class="edit-section left">
-        <div class="edit-box hover">
-            <h4>WHO</h4>
-            <h2>{{ username }}</h2>
+        <div class="group edit-box hover">
+            <p>{{ username }}</p>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Who</label>
         </div>
-        <div class="edit-box hover">
-            <h4>PRODUCT</h4>
-            <h2>{{ description }}</h2>
+        <div class="group edit-box hover">
+            <p>{{ title }}</p>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Title</label>
         </div>
-        <div class="edit-box hover">
-            <h4>WHEN</h4>
-            <h2>{{ date }}</h2>
+        <div class="group edit-box hover">
+            <p>{{ description }}</p>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Product description</label>
         </div>
-        <div class="edit-box hover">
-            <h4>WHERE</h4>
-            <h2>{{ location }}</h2>
+        <div class="group edit-box hover">
+            <p>{{ date }}</p>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>When</label>
+        </div>
+        <div class="group edit-box hover">
+            <p>{{ location }}</p>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Where</label>
         </div>
         <div class="edit-box hover">
             <h4>STATUS</h4>
@@ -22,16 +37,20 @@
         </div>
     </div>
     <div class="edit-section right">
-        <div class="edit-box hover right">
-            <h4>OFFER</h4>
-            <h2>{{ offer }}</h2>
+        <div class="group edit-box hover">
+            <input type="text" name="offer" value="{{ offer }}" required>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Offer</label>
         </div>
-        <div class="edit-box hover right">
-            <h4>COMMENTS</h4>
-            <h2>{{ comments }}</h2>
+        <div class="group edit-box hover">
+            <textarea rows="8" name="comments">{{ comments }}</textarea>
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Comment</label>
         </div>
-        <div class="edit-box hover right">
-            <h4>BID</h4>
+        <div class="edit-box hover right button" onclick="UpdateBid(this, '{{ bid_id }}');">
+            <h4>CHANGE BID</h4>
         </div>
     </div>
 </div>
@@ -55,3 +74,4 @@
         <div id="images" class="edit-view" style="display: none;"></div>
     </div>
 </div>
+</form>
