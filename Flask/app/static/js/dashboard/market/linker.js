@@ -11,7 +11,7 @@ function NewPost(obj){
             data = JSON.parse(data);
             if(data){
                 OpenEditor(data.html, data.data);
-                OpenActivityEditPost(tmp, g_post_type.new);
+                OpenActivityEditPost(tmp, g_post_type.new );
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -204,7 +204,7 @@ function EditPost(obj, data){
             if(data){
                 console.log(data)
                 OpenEditor(data.html, data.data);
-                OpenActivityEditPost(tmp, g_post_type.edit);
+                OpenActivityEditPost(tmp, g_post_type.edit, data.data[0]);
             }
             MakeSnackbar("Editor");
         },
@@ -215,8 +215,12 @@ function EditPost(obj, data){
     });
 }
 
-function OpenActivityEditPost(obj, url){
+function OpenActivityEditPost(obj, url, d=null){
+    console.log(obj)
     var data = {};
+    if(data != null){
+        data = d
+    }
     $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
     console.log(data)
 
@@ -228,6 +232,7 @@ function OpenActivityEditPost(obj, url){
         success: function(data){
             data = JSON.parse(data);
             if(data){
+                console.log(data.html)
                 OpenActivity(data.html);
             }
         },

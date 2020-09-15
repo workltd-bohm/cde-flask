@@ -262,7 +262,7 @@ def make_edit_post():
                                         location=result[0]["location"],
                                         lowest_bid=result[0]["current_best_bid"]
                                         ),
-                'data': []
+                'data': [{'bids': result[0]['bids']}]
             }
             # print(response)
             resp.status_code = msg.DEFAULT_OK['code']
@@ -305,17 +305,33 @@ def make_activity_post_new():
 def make_activity_post_edit():
     resp = Response()
     print('Data posting path: %s' % request.path)
+    request_json = json.loads(request.get_data())
+    print(request_json)
     if main.IsLogin():
-        response = {
-            'html': render_template("dashboard/market/post_edit_activity.html",
-                # TODO
-            ),
-            'data': []
-        }
-        #print(response)
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+        if db.connect(db_adapter):
+            bids = []
+            for bid_id in request_json['bids']:
+                bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
+            div = []
+            for bid in bids:
+                print(">>>> ",bid)
+                div.append(bid['offer'])
+            response = {
+                'html': render_template("dashboard/market/post_edit_activity.html",
+                    bids=div
+                ),
+                'data': []
+            }
+            #print(response)
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
