@@ -100,7 +100,12 @@ function CreateProject(position=null){
     $.ajax({
         url: "/get_project",
         type: 'POST',
-        data: JSON.stringify({project: {project_position: SESSION["position"], section: "project"}}),
+        data: JSON.stringify({
+            project: {
+                project_position: SESSION["position"] ? SESSION["position"] : null, 
+                section: "project",
+            }
+        }),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);

@@ -130,12 +130,13 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
-            file_query = {'file_name': file_obj.name+file_obj.type, "parent": file_obj.parent}
+            file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.par_id}
             file_json = col_file.find_one(file_query, {'_id': 0})
             if file_json is None:
                 file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
                                                               "file_name": file_obj.name+file_obj.type,
                                                               "parent": file_obj.parent,
+                                                              "parent_id": file_obj.par_id,
                                                               "file": file,
                                                               "description": file_obj.description})
                                          .inserted_id)

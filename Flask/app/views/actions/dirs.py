@@ -68,7 +68,7 @@ def upload_file():
                         [],
                         directory + '/' + request_json['new_name'],
                         "." + request_json['new_name'].split('.')[-1],
-                        '',
+                        request_json['parent_id'],
                         [],
                         '',
                         'description') # request_json['description'])
@@ -116,11 +116,11 @@ def create_dir():
         request_data = json.loads(request.get_data())
         print(request_data)
         folder = IC(str(uuid.uuid1()),
-                    request_data['folder_name'],
+                    request_data['new_name'],
                     request_data['parent_path'],
                     [],
-                    request_data['parent_path'] + '/' + request_data['folder_name'],
-                    '',
+                    request_data['parent_path'] + '/' + request_data['new_name'],
+                    request_data['parent_id'],
                     [])
         if db.connect(db_adapter):
             result = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -152,6 +152,8 @@ def rename_ic():
         if db.connect(db_adapter):
             rename = {
                 "project_name": request_data["project_name"],
+                "parent_id": request_data['parent_id'],
+                "ic_id": request_data['ic_id'],
                 "path": request_data["parent_path"],
                 "old_name": request_data["old_name"],
                 "new_name": request_data["new_name"],
@@ -186,6 +188,8 @@ def delete_ic():
         delete_ic_data = json.loads(request.get_data())
         print(delete_ic_data)
         rename = {
+                "parent_id": delete_ic_data['parent_id'],
+                "ic_id": delete_ic_data['ic_id'],
                 "project_name": delete_ic_data["project_name"],
                 "parent_path": delete_ic_data["parent_path"],
                 "delete_name": delete_ic_data["delete_name"],
@@ -235,22 +239,22 @@ def set_dir():
 
 # ----------------------------------------------------
 
-def path_to_obj(path, parent_id=False):
+def path_to_obj(path, parent=False, parent_id=""):
     p = Path(path)
     name = p.stem
     new_id = str(uuid.uuid1())
-    parent = parent_id if parent_id != False else path # new_id
+    parent = parent if parent != False else path # new_id
     if os.path.isdir(path): 
         root = Directory(new_id,
                          name,
                          parent,
                          [],
                          path,
-                         '',
-                         [path_to_obj(path + '/' + x, path) for x in os.listdir(path)
+                         parent_id,
+                         [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [], path, p.suffix, '', [],  '', '')
+        root = File(new_id, name, name, parent, [], path, p.suffix, new_id, [],  '', '')
     return root
 
 

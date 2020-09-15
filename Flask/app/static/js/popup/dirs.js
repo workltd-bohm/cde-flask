@@ -4,7 +4,11 @@ function NewFolder(form, json){
     $.ajax({
         url: "/get_new_folder",
         type: 'POST',
-        data: JSON.stringify({parent_path:json.path}),
+        data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
+            parent_path:json.path,
+        }),
         timeout: 5000,
         success: function(data){
             input_json = JSON.parse(data);
@@ -160,6 +164,8 @@ function NewFile(form, json){
         url: "/get_new_file",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             project_path: json.path,
             is_file: !json.is_directory,
         }),
@@ -196,6 +202,8 @@ function RenameFile(form, json){
         url: "/get_rename_ic",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             parent_path: json.parent,
             old_name: newOldName,
             is_directory: json.is_directory,
@@ -225,6 +233,8 @@ function DeleteFile(form, json){
         url: "/get_delete_ic",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             parent_path: json.parent,
             delete_name: json.name,
             is_directory: json.is_directory,

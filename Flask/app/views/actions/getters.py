@@ -46,7 +46,7 @@ def get_project():
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
 
-        project_position = session.get("project")["position"]
+        position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')
         if db.connect(db_adapter):
@@ -55,7 +55,7 @@ def get_project():
                 project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
                 resp.status_code = msg.DEFAULT_OK['code']
-                resp.data = json.dumps({"json": project.to_json(), "project_position" : project_position})
+                resp.data = json.dumps({"json": project.to_json(), "project" : position})
                 return resp
             else:
                 print(str(msg.PROJECT_NOT_FOUND))
@@ -111,7 +111,7 @@ def get_root_project():
                     response['root_ic']["sub_folders"].append(proj_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project_position" : False})
+            resp.data = json.dumps({"json": response, "project" : False})
             return resp
 
         else:
@@ -149,7 +149,7 @@ def get_user_profile():
             }
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project_position" : False})
+            resp.data = json.dumps({"json": response, "project" : False})
             return resp
 
         else:
@@ -205,7 +205,7 @@ def get_root_market():
             }
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project_position" : False})
+            resp.data = json.dumps({"json": response, "project" : False})
             return resp
 
         else:

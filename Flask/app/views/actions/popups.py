@@ -69,6 +69,8 @@ def get_new_folder():
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
                             parent_path=request_data["parent_path"],
+                            parent_id=request_data["parent_id"],
+                            ic_id=request_data["ic_id"],
                             project_name=project_name,
                         ),
                     'data':[]
@@ -106,6 +108,8 @@ def get_new_file():
                 response = {
                     'html': render_template("popup/file_input_popup.html",
                             project_path=request_data["project_path"],
+                            parent_id=request_data["parent_id"],
+                            ic_id=request_data["ic_id"],
                             project_name=project_name,
                             project_code=user['project_code'],
                             company_code=user['company_code'],
@@ -145,6 +149,8 @@ def get_rename_ic():
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
                             parent_path=request_data["parent_path"],
+                            parent_id=request_data["parent_id"],
+                            ic_id=request_data["ic_id"],
                             project_name=project_name,
                             old_name=request_data["old_name"],
                             is_directory = True if request_data["is_directory"] else False
@@ -180,10 +186,11 @@ def get_delete_ic():
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)
             if result:
-                path = request_data["parent_path"]
                 response = {
                     'html': render_template("popup/delete_ic_popup.html",
-                            parent_path=path,
+                            parent_path=request_data["parent_path"],
+                            parent_id=request_data["parent_id"],
+                            ic_id=request_data["ic_id"],
                             project_name=project_name,
                             delete_name=request_data["delete_name"],
                             is_directory = True if request_data["is_directory"] else False

@@ -1,11 +1,13 @@
 <h3>Create New Folder</h3>
 <div class="scroll">
+  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+  <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
   <input type="hidden" name="project_name" value="{{ project_name }}" required />
   <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
   <br>
   <div class="form__group field">
-    <input type="text" class="form__field" name="folder_name" required />
-    <label for="folder_name" class="form__label">Folder name</label>
+    <input type="text" class="form__field" name="new_name" required />
+    <label for="new_name" class="form__label">Folder name</label>
   </div>
   <br>
 </div>

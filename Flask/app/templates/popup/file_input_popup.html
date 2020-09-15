@@ -1,5 +1,7 @@
 <h3>Upload New File</h3>
 <div class="scroll">
+  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+  <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
   <input type="hidden" id="project_name" name="project_name" value="{{ project_name }}" required />
 <!--  <input type="hidden" id="project_code" name="project_code" value="{{ project_code }}" required />-->
 <!--  <input type="hidden" id="company_code" name="company_code" value="{{ company_code }}" required />-->
@@ -86,7 +88,7 @@
   </div>
   <br>
   <div class="form__group field">
-    <input type="text" class="form__field" name="new_name" id='new_name'required />
+    <input type="text" class="form__field" name="new_name" id='new_name' required/>
     <label for="new_name" class="form__label">New name</label>
   </div>
   <br>

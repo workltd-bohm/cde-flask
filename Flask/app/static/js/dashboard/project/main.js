@@ -15,7 +15,7 @@ function CreateSpace(data) {
 
     g_project.overlay = false;
 
-    g_project.project_position = data.path;
+    // g_project.project_position = data.path;
 
     g_root.universe.selectAll("g")
         .data([data])
@@ -341,8 +341,9 @@ function AnimatePlanet(data) {
 
 function RecursiveFileSearch(back, data){
     var found = false;
-//    console.log(data.path +"  "+ g_project.project_position)
-    if (data.path == g_project.project_position){
+    // console.log(data.parent_id +"  "+ data.ic_id, data.sub_folders.length)
+    if ((data.parent_id == SESSION["position"]["parent_id"]) &&
+        (data.ic_id == SESSION["position"]["ic_id"])){
         return [[], data];
     }
     else if (data.sub_folders && data.sub_folders.length > 0){
@@ -354,13 +355,18 @@ function RecursiveFileSearch(back, data){
             }
         }
     }
+    if (!found) {
+        if (data.ic_id == SESSION["position"]["parent_id"]){
+            return [[], data];
+        }
+    }
     return found;
 }
 
 function ProjectPosiotionSet(data){
-    //console.log(g_project.project_position)
+    // console.log(SESSION["position"])
     var found = false;
-    if(g_project.project_position){
+    if(SESSION["position"]){
         found = RecursiveFileSearch(data, data);
         if (found) {
             var path = found[0].reverse()
@@ -391,7 +397,7 @@ function DashboardCreate(data, project_position=null) {
         .attr("r", g_TouchRadius);
 
     g_root.universe.data = data[0];
-    g_project.project_position = project_position;
+    //g_project.project_position = project_position;
 
     PathCreation(data);
 

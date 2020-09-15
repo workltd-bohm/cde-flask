@@ -56,8 +56,8 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     var form = GetForm();
 
     if(!CheckAval(form)) return; 
-    var d = {};
-    if (!args) form.serializeArray().map(function(x){d[x.name] = x.value;}); 
+    var d = {parent_id: '', ic_id:''};
+    form.serializeArray().map(function(x){d[x.name] = x.value;}); 
     if (!args) args = JSON.stringify(d);
     // console.log(args);
 
@@ -76,8 +76,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
 
-            if(d["delete_name"]) SESSION["position"] = d["parent_path"];
-            if(d["new_name"]) SESSION["position"] = d["parent_path"] + "/" + d["new_name"];
+            SESSION["position"] = {parent_id: d["parent_id"], ic_id: d["ic_id"]};
 
             if(func) func();
             LoadStop();
