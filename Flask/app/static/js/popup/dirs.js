@@ -15,7 +15,7 @@ function NewFolder(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -177,7 +177,7 @@ function NewFile(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -187,12 +187,17 @@ function NewFile(form, json){
 
 function RenameFile(form, json){
     LoadStart();
+    var newOldName = json.name;
+    if(json.hasOwnProperty("type")){
+//        console.log(data.name);
+        newOldName = json.name + json.type
+    }
     $.ajax({
         url: "/get_rename_ic",
         type: 'POST',
         data: JSON.stringify({
             parent_path: json.parent,
-            old_name: json.name,
+            old_name: newOldName,
             is_directory: json.is_directory,
         }),
         timeout: 5000,
@@ -206,7 +211,7 @@ function RenameFile(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -235,7 +240,7 @@ function DeleteFile(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });

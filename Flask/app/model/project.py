@@ -55,19 +55,22 @@ class Project:
         return self, self._added
 
     def rename_ic(self, request_data, ic=None):
-        if ic.parent == request_data['path']:
-            name = ic.name
-            #path = request_data['path']
-            parent = request_data['path'] #[:path.rfind("/")]
-            new_name = request_data['new_name']
-            if not ic.is_directory:
-                name = ic.name + ic.type
-            if name == request_data['old_name']:
-                ic.name = new_name
-                ic.path = parent + '/' + request_data['new_name']
-                # ic.parent = parent # no need?
-                self._message = msg.IC_SUCCESSFULLY_RENAMED
-                self._added = True
+        if ic.path == request_data['path']:
+            for y in ic.sub_folders:
+                name = y.name
+                #path = request_data['path']
+                parent = request_data['path'] #[:path.rfind("/")]
+                new_name = request_data['new_name']
+                if not y.is_directory:
+                    name = y.name   + y.type
+                    new_name = '.'.join(new_name.split('.')[:-1])
+                if name == request_data['old_name']:
+                    y.name = new_name
+                    y.path = parent + '/' + request_data['new_name']
+                    # ic.parent = parent # no need?
+                    self._message = msg.IC_SUCCESSFULLY_RENAMED
+                    self._added = True
+                    break
         else:
             if ic.sub_folders:
                 for x in ic.sub_folders:

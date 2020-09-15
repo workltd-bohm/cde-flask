@@ -140,7 +140,7 @@ def get_rename_ic():
         project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
-            result = db.get_all_projects(db_adapter)
+            result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",

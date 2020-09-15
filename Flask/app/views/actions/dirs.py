@@ -100,7 +100,7 @@ def upload_file():
             print(">", str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
     
     resp = Response()
@@ -134,7 +134,7 @@ def create_dir():
             print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()
@@ -170,7 +170,7 @@ def rename_ic():
             print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()
@@ -263,6 +263,7 @@ def path_to_dict(path):
     else:
         d['type'] = "file"
     return d
+
 
 def set_project_data(data):
     if "project" in data:

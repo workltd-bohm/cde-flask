@@ -85,7 +85,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });

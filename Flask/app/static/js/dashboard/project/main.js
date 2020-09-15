@@ -180,7 +180,12 @@ function AddChildren(obj, data, parent, position=0){
 
 function AddText(data, cls="", fix=false) {
     var newobj = data.values;
-    //console.log(obj)
+    var newName = data.name;
+    if(data.hasOwnProperty("type")){
+//        console.log(data.name);
+        newName = data.name + data.type
+    }
+
     newobj.text = newobj.object.append("g")
         .attr("class", cls+" text")
     newobj.text.append("text")
@@ -188,13 +193,13 @@ function AddText(data, cls="", fix=false) {
         .attr("x",0)
         .attr("y",0)
         .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(data.name);
+        .html(newName);
     newobj.text.append("text")
         .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
         .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(data.name);
+        .html(newName);
 }
 
 function SunFadeout(data){
