@@ -91,7 +91,7 @@ class DBMongoAdapter:
     def get_all_projects(self):
         col = self._db.Projects
         result = col.find()
-        print(result)
+        # print(result)
         self._close_connection()
         return result
 
@@ -178,7 +178,7 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
-            print(project.to_json())
+            # print(project.to_json())
             add = project.rename_ic(request_data, project.root_ic)
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 file_updated = True

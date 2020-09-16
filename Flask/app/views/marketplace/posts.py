@@ -168,7 +168,7 @@ def get_my_posts():
 def get_single_post():
     print('Data posting path: %s' % request.path)
     request_json = app.test_json_request_get_single_post
-    if request.get_data(): request_json.update(json.loads(request.get_data()))
+    if request.get_data(): request_json = json.loads(request.get_data())
     print(request_json)
     if main.IsLogin():
         if db.connect(db_adapter):
@@ -190,7 +190,7 @@ def get_single_post():
 def get_bids_for_post():
     print('Data posting path: %s' % request.path)
     request_json = app.test_json_request_get_bids_for_post
-    if request.get_data(): request_json.update(json.loads(request.get_data()))
+    if request.get_data(): request_json = json.loads(request.get_data())
     print(request_json)
     if main.IsLogin():
         if db.connect(db_adapter):

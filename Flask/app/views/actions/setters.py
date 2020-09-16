@@ -10,6 +10,8 @@ def clear_projects():
     if main.IsLogin():
         if db.connect(db_adapter):
             db.clear_db(db_adapter)
+            session.get("project")["name"] = ''
+            session.modified = True
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()

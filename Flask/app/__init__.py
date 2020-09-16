@@ -26,6 +26,7 @@ from app.views.actions import dirs
 from app.views.actions import popups
 from app.views.actions import getters
 from app.views.actions import setters
+from app.views.actions import search
 
 from app.views.marketplace import make
 from app.views.marketplace import posts
@@ -87,4 +88,18 @@ app.test_json_request_get_bids_for_post = {
 
 app.test_json_request_get_single_post = {
     'post_id': '12'
+}
+
+app.test_json_request_get_filtered_files = {
+    'project_id': '5f623020e60b784154788876',
+    'project_name': '123',
+    'project_code': '',
+    'company_code': '',
+    'project_volume_or_system': '',
+    'project_level': '',
+    'type_of_information': '',
+    'role_code': '',
+    'file_number': '',
+    'status': '',
+    'overlay_type': '',
 }

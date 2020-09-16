@@ -157,6 +157,12 @@ class Project:
 
         return Project(json_file['project_id'], json_file['project_name'], root)
 
+    def extract_files(self, ic, files):
+        for x in ic.sub_folders:
+            if not x.is_directory:
+                files.append(x)
+            self.extract_files(x, files)
+
     #
     # def add_ic_old(self, ic_new, ic=None):
     #     if ic.is_directory:
