@@ -91,8 +91,8 @@ app.test_json_request_get_single_post = {
 }
 
 app.test_json_request_get_filtered_files = {
-    'project_id': '5f623020e60b784154788876',
-    'project_name': '123',
+    # 'project_id': '5f623020e60b784154788876',
+    # 'project_name': '123',
     'project_code': '',
     'company_code': '',
     'project_volume_or_system': '',
@@ -101,5 +101,6 @@ app.test_json_request_get_filtered_files = {
     'role_code': '',
     'file_number': '',
     'status': '',
+    'revision': '',
     'overlay_type': '',
 }

@@ -149,6 +149,15 @@ class Project:
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])
+            root.project_code = json_file['project_code']
+            root.company_code = json_file['company_code']
+            root.project_volume_or_system = json_file['project_volume_or_system']
+            root.project_level = json_file['project_level']
+            root.type_of_information = json_file['type_of_information']
+            root.role_code = json_file['role_code']
+            root.file_number = json_file['file_number']
+            root.status = json_file['status']
+            root.revision = json_file['revision']
         return root
 
     @staticmethod
