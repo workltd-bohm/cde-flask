@@ -1,6 +1,6 @@
 class IC:
 
-    def __init__(self, ic_id, name, parent, history, path, par_id, sub_folders):
+    def __init__(self, ic_id, name, parent, history, path, parent_id, sub_folders):
         self._ic_id = ic_id
         self._name = name
         self._parent = parent
@@ -8,7 +8,7 @@ class IC:
         self._path = path
         self._sub_folders = sub_folders
         self._is_directory = True
-        self._par_id = par_id
+        self._parent_id = parent_id
         self._overlay_type = "ic"
 
     @property
@@ -68,12 +68,12 @@ class IC:
         self._sub_folders = value
 
     @property
-    def par_id(self):
-        return self._par_id
+    def parent_id(self):
+        return self._parent_id
 
-    @par_id.setter
-    def par_id(self, value):
-        self._par_id = value
+    @parent_id.setter
+    def parent_id(self, value):
+        self._parent_id = value
 
     def to_json(self):
         return {
@@ -83,7 +83,7 @@ class IC:
             'history': self._history,
             'path': self._path,
             'is_directory': self._is_directory,
-            'parent_id': self._par_id,
+            'parent_id': self._parent_id,
             'overlay_type': self._overlay_type,
             'sub_folders': [x.to_json() for x in self._sub_folders]
         }

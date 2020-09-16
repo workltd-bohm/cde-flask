@@ -68,7 +68,7 @@ def upload_file():
                         [],
                         directory + '/' + request_json['new_name'],
                         "." + request_json['new_name'].split('.')[-1],
-                        request_json['parent_id'],
+                        request_json['ic_id'],
                         [],
                         '',
                         'description') # request_json['description'])
@@ -120,7 +120,7 @@ def create_dir():
                     request_data['parent_path'],
                     [],
                     request_data['parent_path'] + '/' + request_data['new_name'],
-                    request_data['parent_id'],
+                    request_data['ic_id'],
                     [])
         if db.connect(db_adapter):
             result = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -187,14 +187,6 @@ def delete_ic():
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
         print(delete_ic_data)
-        rename = {
-                "parent_id": delete_ic_data['parent_id'],
-                "ic_id": delete_ic_data['ic_id'],
-                "project_name": delete_ic_data["project_name"],
-                "parent_path": delete_ic_data["parent_path"],
-                "delete_name": delete_ic_data["delete_name"],
-                "is_directory": True if "is_directory" in delete_ic_data else False,
-            }
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)
             if result:

@@ -55,7 +55,7 @@ class Project:
         return self, self._added
 
     def rename_ic(self, request_data, ic=None):
-        if ic.path == request_data['path']:
+        if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
                 name = y.name
                 #path = request_data['path']
@@ -82,7 +82,7 @@ class Project:
         return self._message
 
     def delete_ic(self, request_data, ic=None):
-        if ic.path == request_data['parent_path']:
+        if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
                 if y.name == request_data["delete_name"]:
                     ic.sub_folders.remove(y)
@@ -99,28 +99,23 @@ class Project:
         return self._message
 
     def add_ic(self, ic_new, ic=None):
-        if ic.is_directory:
-            print(ic.ic_id)
-            print(ic_new)
-            new_path = ic_new.parent
-            if not ic_new.is_directory:
-                new_path = '/'.join(ic_new.path.split('/')[:-1])
-            if ic.path == new_path:
-                already_exists = False
-                for sub_f in ic.sub_folders:
-                    if sub_f.name == ic_new.name:
-                        already_exists = True
-                        self._message = msg.IC_ALREADY_EXISTS
-                if not already_exists:
-                    ic_new.par_id = ic.ic_id
-                    ic.sub_folders.append(ic_new)
-                    self._message = msg.IC_SUCCESSFULLY_ADDED
+        if ic.ic_id == ic_new.parent_id:
+            already_exists = False
+            for sub_f in ic.sub_folders:
+                if sub_f.name == ic_new.name:
+                    already_exists = True
+                    self._added = True
+                    self._message = msg.IC_ALREADY_EXISTS
+            if not already_exists:
+                # ic_new.parent_id = ic.ic_id
+                ic.sub_folders.append(ic_new)
+                self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True
-            else:
-                for x in ic.sub_folders:
-                    self.add_ic(ic_new, x)
-                    if self._added:
-                        break
+        else:
+            for x in ic.sub_folders:
+                self.add_ic(ic_new, x)
+                if self._added:
+                    break
         if not self._added:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
@@ -151,7 +146,7 @@ class Project:
                         json_file['path'],
                         json_file['type'],
                         json_file['parent_id'],
-                        json_file['sub_folders'],
+                        [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])
         return root
@@ -161,3 +156,32 @@ class Project:
         root = Project.json_folders_to_obj(json_file['root_ic'])
 
         return Project(json_file['project_id'], json_file['project_name'], root)
+
+    #
+    # def add_ic_old(self, ic_new, ic=None):
+    #     if ic.is_directory:
+    #         print(ic.ic_id)
+    #         print(ic_new.parent_id)
+    #         new_path = ic_new.parent
+    #         if not ic_new.is_directory:
+    #             new_path = '/'.join(ic_new.path.split('/')[:-1])
+    #         if ic.path == new_path:
+    #             already_exists = False
+    #             for sub_f in ic.sub_folders:
+    #                 if sub_f.name == ic_new.name:
+    #                     already_exists = True
+    #                     self._added = True
+    #                     self._message = msg.IC_ALREADY_EXISTS
+    #             if not already_exists:
+    #                 ic_new.parent_id = ic.ic_id
+    #                 ic.sub_folders.append(ic_new)
+    #                 self._message = msg.IC_SUCCESSFULLY_ADDED
+    #             self._added = True
+    #         else:
+    #             for x in ic.sub_folders:
+    #                 self.add_ic(ic_new, x)
+    #                 if self._added:
+    #                     break
+    #     if not self._added:
+    #         self._message = msg.IC_PATH_NOT_FOUND
+    #     return self._message
