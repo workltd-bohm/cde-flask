@@ -12,3 +12,7 @@ function ClearActivity(close=true){
     $ACTION.parent().addClass("closed");
   }
 }
+
+function AppendActivity(html){
+    $ACTION.append(html);
+}

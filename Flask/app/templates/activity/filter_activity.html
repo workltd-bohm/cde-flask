@@ -1,0 +1,18 @@
+<form onchange="FilterOut(this)">
+<h3>Filters</h3>
+<div class="scroll">
+<!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
+
+    {% for key, value in inputs.items() %}
+      <div class="form__group field">
+          <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+              <option></option>
+              {% for v in value %}
+                <option>{{ v }}</option>
+              {% endfor %}
+          </select>
+          <label for="{{ key }}" class="form__label">{{ key }}</label>
+      </div>
+    {% endfor %}
+</div>
+</form>

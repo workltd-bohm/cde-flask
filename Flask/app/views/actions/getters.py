@@ -9,7 +9,9 @@ from app import *
 def input():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        file = open('app/static/file/input.json', 'r').read()
+        doc = open('app/static/file/input.json', 'r')
+        file = doc.read()
+        doc.close()
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = file
