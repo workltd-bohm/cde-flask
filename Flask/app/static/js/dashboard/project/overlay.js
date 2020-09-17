@@ -21,6 +21,7 @@ g_OverFolder = [
     { name : "MOVE", icon : "open_with", link : WrapMove},
     { name : "SHARE", icon : "share", link : WrapShare},
     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+    { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
 
 g_OverFile = [
@@ -111,8 +112,12 @@ function AddItem(obj, data, parent, position=0) {
         .append("xhtml:div")
         .attr("class", "item foregin")
 
+
+    var defaultColor = (data.values.data.color) ? data.values.data.color : $(".foregin .material-icons").css("color");
+
     data.values.picture .append("i")
         .attr("class", "material-icons")
+        .style("color", defaultColor)
         .html(data.icon)
 
     data.values.select = data.values.this.append("circle")

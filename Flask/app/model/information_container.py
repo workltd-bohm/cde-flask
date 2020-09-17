@@ -10,6 +10,7 @@ class IC:
         self._is_directory = True
         self._parent_id = parent_id
         self._overlay_type = "ic"
+        self._color = False
 
     @property
     def ic_id(self):
@@ -70,6 +71,14 @@ class IC:
     @property
     def parent_id(self):
         return self._parent_id
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        self._color = value
 
     @parent_id.setter
     def parent_id(self, value):

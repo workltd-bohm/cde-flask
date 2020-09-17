@@ -99,3 +99,21 @@ def upload_project():
             return resp
 
     return redirect('/')
+
+
+@app.route('/set_color', methods=['POST'])
+def set_color():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            pass # TODO
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    return redirect('/')

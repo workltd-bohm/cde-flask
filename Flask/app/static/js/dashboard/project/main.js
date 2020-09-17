@@ -148,6 +148,7 @@ function AddChildren(obj, data, parent, position=0){
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern")
         .attr("r", g_PlanetRadius);
+    if (data.color) data.values.picture.style("fill", data.color)
 
     data.values.shader = data.values.object.append("circle")
         .attr("class", "planet shader")
