@@ -178,28 +178,42 @@ function AddChildren(obj, data, parent, position=0){
 
 // -------------------------------------------------------
 
+function AddTspan(target, newobj, text){
+    // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+    var slice = ((text.length/TEXT_MAX_LENGHT) | 0) + 1;
+    newobj.text_len = (slice > 1) ? TEXT_MAX_LENGHT : newobj.text_len;
+    var spacing = parseFloat($(target.node()).css("fontSize"));
+    for(var i=0; i < slice; i++){
+        target.append("tspan")
+        .attr('x', 0)
+        .attr('y', (i-(slice-1)/2)*spacing) //TEXT_SPACING)
+        .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
+    }
+}
+
 function AddText(data, cls="", fix=false) {
     var newobj = data.values;
     var newName = data.name;
-    if(data.hasOwnProperty("type")){
-//        console.log(data.name);
+    if(data.type){
         newName = data.name + data.type
     }
-
+    newobj.text_len = newName.length;
     newobj.text = newobj.object.append("g")
         .attr("class", cls+" text")
-    newobj.text.append("text")
+    var tmp = newobj.text.append("text")
         .attr("class", cls+" text_back")
         .attr("x",0)
         .attr("y",0)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(newName);
-    newobj.text.append("text")
+        //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        //.html(newName);
+    AddTspan(tmp, newobj, newName);
+    tmp = newobj.text.append("text")
         .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(newName);
+        //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        //.html(newName);
+    AddTspan(tmp, newobj, newName);
 }
 
 function SunFadeout(data){
@@ -329,10 +343,14 @@ function AnimatePlanet(data) {
             .attr("transform","rotate("+(g_root.deg)+")");
 
         data.values.children.selectAll("g.planet").each(function(data){
+            var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
+            //var anchor =  (rot_x > 0) ? "start" : "end"; //(rot_x > -0.5 ) ? "middle" : 
+            var pos =  rot_x*TEXT_MOVE_COEF*data.values.text_len;
+            //data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform","rotate("+(-g_root.deg)+")");
+                .attr("transform","rotate("+(-g_root.deg)+"), translate("+(pos)+")")
         });
     }
 }

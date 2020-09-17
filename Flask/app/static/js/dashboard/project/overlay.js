@@ -58,16 +58,16 @@ function OverlayCreate(obj, data, parent) {
         .attr("class","overlay pattern")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_SunRadius)
+        .attr("r", g_OverlayRadius)
 
     data.overlay.object.append("circle")
         .attr("class","overlay select")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_SunRadius*1.2)
+        .attr("r", g_OverlayRadius*1.2)
         .on("mouseleave",function(d){
-            //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_SunRadius)
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_SunRadius){
+            //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
+            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){
                 data.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;
@@ -97,17 +97,17 @@ function AddItem(obj, data, parent, position=0) {
 
     data.values.rotation = position*360/data.values.back.items.length-90;
 
-    data.values.this.attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_SunRadius-g_OverlayRadius-OVERLAY_MARG)+", 0), rotate("+(-data.values.rotation)+")");
+    data.values.this.attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_OverlayRadius-g_OverlayItem-OVERLAY_MARG)+", 0), rotate("+(-data.values.rotation)+")");
 
     // data.item.picture = data.values.this.append("circle")
     //     .attr("class", "pattern overlay")
-    //     .attr("r", g_OverlayRadius)
+    //     .attr("r", g_OverlayItem)
 
     data.values.picture = data.values.this.append("foreignObject")
-        .attr("x", -g_OverlayRadius/2)
-        .attr("y", -g_OverlayRadius/2)
-        .attr("width", g_OverlayRadius)
-        .attr("height", g_OverlayRadius)
+        .attr("x", -g_OverlayItem/2)
+        .attr("y", -g_OverlayItem/2)
+        .attr("width", g_OverlayItem)
+        .attr("height", g_OverlayItem)
         .append("xhtml:div")
         .attr("class", "item foregin")
 
@@ -118,13 +118,13 @@ function AddItem(obj, data, parent, position=0) {
     data.values.select = data.values.this.append("circle")
         .attr("class","item select")
         // .attr("id", data.link)
-        .attr("r", g_OverlayRadius)
+        .attr("r", g_OverlayItem)
         .on("mouseover",function(d){
             data.values.back.text.selectAll("text").html(data.name);
         })
         .on("mouseleave",function(d){
             data.values.back.text.selectAll("text").html("");
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_SunRadius){
+            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){
                 parent.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;
