@@ -181,13 +181,13 @@ function AddChildren(obj, data, parent, position=0){
 
 function AddTspan(target, newobj, text){
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
-    var slice = ((text.length/TEXT_MAX_LENGHT) | 0) + 1;
-    newobj.text_len = (slice > 1) ? TEXT_MAX_LENGHT : newobj.text_len;
+    var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
+    newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;
     var spacing = parseFloat($(target.node()).css("fontSize"));
-    for(var i=0; i < slice; i++){
+    for(var i = 0; i <= slice; i++){
         target.append("tspan")
         .attr('x', 0)
-        .attr('y', (i-(slice-1)/2)*spacing) //TEXT_SPACING)
+        .attr('y', (i-(slice)/2)*spacing) //TEXT_SPACING)
         .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
     }
 }
@@ -345,9 +345,9 @@ function AnimatePlanet(data) {
 
         data.values.children.selectAll("g.planet").each(function(data){
             var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
-            //var anchor =  (rot_x > 0) ? "start" : "end"; //(rot_x > -0.5 ) ? "middle" : 
+            var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
             var pos =  rot_x*TEXT_MOVE_COEF*data.values.text_len;
-            //data.values.text.selectAll("text").style("text-anchor", anchor)
+            data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
