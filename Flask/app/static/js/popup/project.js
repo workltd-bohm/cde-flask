@@ -40,3 +40,43 @@ function NewProject(form){
             PopupClose();
         });
 }
+
+function SharePopup(form){
+    LoadStart();
+    $.get( "/get_share")
+        .done(function( data ) {
+            input_json = JSON.parse(data);
+            html = input_json['html'];
+            form.empty();
+            form.append(html);
+            LoadStop();
+        })
+        .fail(function($jqXHR, textStatus, errorThrown){
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar(textStatus);
+            PopupClose();
+        });
+}
+
+function ShareProject(data){
+    LoadStart();
+    $.ajax({
+        url: "/share_project",
+        type: 'POST',
+        data: JSON.stringify({
+            project_id: data,
+            user_name: document.getElementById('user_name').value,
+            role: $("#role option:selected").text()
+        }),
+        timeout: 5000,
+        success: function(data){
+            MakeSnackbar(data);
+            PopupClose();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}

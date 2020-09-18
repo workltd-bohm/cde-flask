@@ -57,3 +57,9 @@ function WrapDownload(data){
 
     DownloadFile(tmp.name + tmp.type)
 }
+
+function WrapShareProject(data){
+    var tmp = data.values.data;
+
+    PopupOpen(SharePopup, tmp);
+}

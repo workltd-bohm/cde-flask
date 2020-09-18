@@ -5,6 +5,7 @@ from app.model.user import User
 from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
+from app.model.role import Role
 import app.model.messages as msg
 
 
@@ -67,6 +68,7 @@ class DBMongoAdapter:
     def upload_folder_structure(self, project, user):
         col = self._db.Projects
         col_roles = self._db.Roles
+        col_users = self._db.Users.Roles
         project_query = {'project_name': project.name}
         message = msg.PROJECT_ALREADY_EXISTS
         if col.find_one(project_query, {'_id': 0}) is None:
@@ -84,6 +86,19 @@ class DBMongoAdapter:
                 role['user'].append(user)
                 col_roles.update_one({'project_id': project_id}, {'$set': role})
 
+            user_query = {'user_id': user['id']}
+            u = col_users.find_one(user_query, {'_id': 0})
+            if not u:
+                u = {}
+                u['projects'] = [{'project_id': str(project_id), 'role': Role.OWNER.value}]
+                u['user_id'] = user['id']
+                col_users.insert_one(u)
+            else:
+                # u_json = json.loads(u)
+                u['projects'].append({'project_id': str(project_id), 'role': Role.OWNER.value})
+                col_users.update_one(user_query,
+                               {'$set': u})
+
             message = msg.PROJECT_SUCCESSFULLY_ADDED
         self._close_connection()
         return message
@@ -92,6 +107,24 @@ class DBMongoAdapter:
         col = self._db.Projects
         result = col.find()
         # print(result)
+        self._close_connection()
+        return result
+
+    def get_my_projects(self, user):
+        col_users = self._db.Users.Roles
+        user_query = {'user_id': user['id']}
+        result = col_users.find_one(user_query, {'_id': 0})
+        projects = []
+        if result:
+            for pr in result['projects']:
+                projects.append(self.get_my_project(pr['project_id']))
+        self._close_connection()
+        return projects
+
+    def get_my_project(self, project_id):
+        col = self._db.Projects
+        project_query = {'project_id': project_id}
+        result = col.find_one(project_query, {'_id': 0})
         self._close_connection()
         return result
 
@@ -348,10 +381,48 @@ class DBMongoAdapter:
         self._close_connection()
         return res
 
+    def share_project(self, request_data, user):
+        col_users = self._db.Users.Roles
+        col = self._db.Users
+        # TODO: check does user has the rights to share
+        user_query = {'username': request_data['user_name']}
+        result = col.find_one(user_query, {'_id': 0})
+        message = msg.DEFAULT_ERROR
+        if result:
+            user_id = result['id']
+            user_query = {'user_id': user_id}
+            u = col_users.find_one(user_query, {'_id': 0})
+            u['projects'].append({'project_id': request_data['project_id'],
+                                  'role': getattr(Role, request_data['role']).value})
+            col_users.update_one(user_query,
+                                 {'$set': u})
+            message = msg.SUCCESSFULLY_SHARED
+
+        else:
+            message = msg.USER_NOT_FOUND
+        self._close_connection()
+        return message
+
     def clear_db(self):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
         self._db.Marketplace.Posts.drop()
         self._db.Marketplace.Bids.drop()
+        self._db.Roles.drop()
+        self._db.Users.Roles.drop()
         # self._db.Users.drop()
+
+        col_users = self._db.Users.Roles
+        col = self._db.Users
+        # TODO: check does user has the rights to share
+        result = col.find()
+        for user in result:
+            user_query = {'user_id': user['id']}
+            u = col_users.find_one(user_query, {'_id': 0})
+            if not u:
+                u = {}
+                u['projects'] = []
+                u['user_id'] = user['id']
+                col_users.insert_one(u)
+
 

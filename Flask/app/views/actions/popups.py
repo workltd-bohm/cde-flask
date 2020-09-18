@@ -215,3 +215,41 @@ def get_delete_ic():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+@app.route('/get_share', methods=['GET'])
+def get_share():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        # request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
+        # print(request_data)
+        if db.connect(db_adapter):
+            user = session.get('user')
+            result = db.get_project(db_adapter, project_name, user)
+            if result:
+                print('>>>>>>>', result['project_id'])
+                response = {
+                    'html': render_template("popup/share_project.html",
+                            project_id=result["project_id"]
+                        ),
+                    'data':[]
+                }
+                print('>>>>>>>', response)
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                print("not_found")
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp

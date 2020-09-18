@@ -33,3 +33,5 @@ BID_ALREADY_EXISTS = {"message": "Bid with the given ID already exists", "code":
 BID_CREATED = {"message": "Bid created successfully", "code": 200}
 
 MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "code": 409}
+
+SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}

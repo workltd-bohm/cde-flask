@@ -26,6 +26,10 @@ def get_all_projects(db_adapter):
     return db_adapter.get_all_projects()
 
 
+def get_my_projects(db_adapter, user):
+    return db_adapter.get_my_projects(user)
+
+
 def get_project(db_adapter, project_name, user):
     return db_adapter.get_project(project_name, user)
 
@@ -84,6 +88,10 @@ def get_single_bid(db_adapter, request_json):
 
 def get_bids_for_post(db_adapter, request_json):
     return db_adapter.get_bids_for_post(request_json)
+
+
+def share_project(db_adapter, request_data, user):
+    return db_adapter.share_project(request_data, user)
 
 
 def clear_db(db_adapter):

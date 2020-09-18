@@ -117,3 +117,27 @@ def set_color():
             return resp
 
     return redirect('/')
+
+
+@app.route('/share_project', methods=['POST'])
+def share_project():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            result = db.share_project(db_adapter, request_data, session['user'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    return redirect('/')

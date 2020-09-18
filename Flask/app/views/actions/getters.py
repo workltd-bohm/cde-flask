@@ -99,7 +99,7 @@ def get_root_project():
                     "sub_folders": []
                 }
             }
-            result = db.get_all_projects(db_adapter)
+            result = db.get_my_projects(db_adapter, user)
             if result:
                 for project in result:
                     proj_obj = {

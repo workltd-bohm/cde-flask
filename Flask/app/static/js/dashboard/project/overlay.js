@@ -20,6 +20,7 @@ g_OverFolder = [
     { name : "DELETE", icon : "delete", link : WrapDelete},
     { name : "MOVE", icon : "open_with", link : WrapMove},
     { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "SHARE PROJECT", icon : "control_point_duplicate", link : WrapShareProject},
     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
     { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
