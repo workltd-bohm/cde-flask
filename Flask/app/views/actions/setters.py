@@ -55,6 +55,7 @@ def create_project():
                     [],
                     request_data['project_name'],
                     '',
+                    '',
                     [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
@@ -106,9 +107,20 @@ def set_color():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
-            pass # TODO
+            color_change = {
+                "project_name": project_name,
+                "ic_id": request_data["ic_id"],
+                "color": request_data["color"],
+            }
+            result = db.change_color(db_adapter, color_change)
+            if result:
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
@@ -116,7 +128,10 @@ def set_color():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 
 @app.route('/share_project', methods=['POST'])

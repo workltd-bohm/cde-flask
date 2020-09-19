@@ -44,7 +44,7 @@ function ColorPicker(data) {
             var fill = d3.select(this).attr("fill");
             data.values.data.color = fill;
             $(".foregin .material-icons").css("color", fill);
-            SetColor(data.values.data, fill);
+            SetColor(data.values.data);
             wheel.remove();
         });
 
@@ -57,8 +57,11 @@ function SetColor(data, fill){
     $.ajax({
         url: "/set_color",
         type: 'POST',
-        data: JSON.stringify({parent_id: data.parent_id, ic_id: data.ic_id, color: fill}),
+        data: JSON.stringify({ic_id: data.ic_id, color: data.color}),
         timeout: 5000,
+        success: function(data){
+            MakeSnackbar(data);
+        },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
             MakeSnackbar($jqXHR.responseText);

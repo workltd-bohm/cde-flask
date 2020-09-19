@@ -54,6 +54,22 @@ class Project:
 
         return self, self._added
 
+    def change_color(self, request_data, ic=None):
+        if ic.ic_id == request_data['ic_id']:
+            print(ic.color, request_data)
+            ic.color = request_data["color"]
+            self._message = msg.IC_COLOR_CHANGED
+            self._added = True
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.change_color(request_data, x)
+                    if self._added:
+                        break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
     def rename_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
@@ -136,6 +152,7 @@ class Project:
                              json_file['history'],
                              json_file['path'],
                              json_file['parent_id'],
+                             json_file['color'],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
@@ -146,6 +163,7 @@ class Project:
                         json_file['path'],
                         json_file['type'],
                         json_file['parent_id'],
+                        json_file['color'],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])

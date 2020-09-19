@@ -18,6 +18,7 @@ PROJECT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 STORED_FILE_NOT_FOUND = {"message": "Stored file not found", "code": 404}
 
 IC_SUCCESSFULLY_RENAMED = {"message": "Renamed successfully", "code": 200}
+IC_COLOR_CHANGED = {"message": "Color changed", "code": 200}
 
 DEFAULT_OK = {"message": "Success", "code": 200}
 DEFAULT_ERROR = {"message": "Failure", "code": 400}

@@ -271,6 +271,24 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
+    def change_color(self, file_obj):
+        col = self._db.Projects
+        project_query = {'project_name': file_obj["project_name"]}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            add = project.change_color(file_obj, project.root_ic)
+            if add == msg.IC_COLOR_CHANGED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            else:
+                print(msg.DEFAULT_ERROR)
+                return msg.DEFAULT_ERROR
+        else:
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return add
+
     def create_post(self, request_json):
         col = self._db.Marketplace.Posts
         posts_query = {'post_id': request_json['post_id']}

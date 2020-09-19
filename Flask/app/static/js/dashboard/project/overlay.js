@@ -49,7 +49,7 @@ function OverlayCreate(obj, data, parent) {
         case "market": type = g_OverNone; break;
         //case "file": type = g_OverFile;
     }
-    data.overlay.items = type;
+    data.overlay.items = type.slice();
 
     data.overlay.object = data.values.this.append("g")
         .attr("class","star overlay");
@@ -80,7 +80,16 @@ function OverlayCreate(obj, data, parent) {
 
     data.overlay.children = data.overlay.object.append("g")
         .attr("class","overlay items")
-    
+
+    if (data.parent_id != ""){
+        for (var i=0; i < data.overlay.items.length; i++){
+            if(data.overlay.items[i].name == "SHARE PROJECT"){
+                data.overlay.items.splice(i,1);
+                break;
+            }
+        }
+    }
+
     data.overlay.children.selectAll("g")
         .data(data.overlay.items)
         .enter()
