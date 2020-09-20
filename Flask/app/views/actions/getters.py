@@ -146,7 +146,16 @@ def get_user_profile():
                     "path": ".",
                     "overlay_type": "user",
                     "is_directory": False,
-                    "sub_folders": []
+                    "sub_folders": [
+                        {
+                            "ic_id": "",
+                            "name": "User Profile",
+                            "parent": user["username"],
+                            "history": [],
+                            "path": user["username"],
+                            "is_directory": False,
+                        },
+                    ]
                 }
             }
 

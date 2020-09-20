@@ -1,0 +1,12 @@
+.user-header{
+    display: block;
+    float: left;
+    padding: 2%;
+    width: 90%;
+}
+
+.user-block{
+    display: block;
+    cursor: pointer;
+    margin: 5px;
+}

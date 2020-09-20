@@ -1,18 +1,21 @@
 
-function OpenActivity(html){
-    ACTION.html(html);
-    $ACTION.parent().addClass("opend");
-    $ACTION.parent().removeClass("closed");
+function OpenActivity(html, head=null){
+  ACTIVITY.html(html);
+    if (head) {
+      ACTIVITY_HEAD.html(head);
+    }
+    $ACTIVITY.parent().addClass("opend");
+    $ACTIVITY.parent().removeClass("closed");
 }
 
 function ClearActivity(close=true){
-  ACTION.html("");
+  ACTIVITY.html("");
   if(close){
-    $ACTION.parent().removeClass("opend");
-    $ACTION.parent().addClass("closed");
+    $ACTIVITY.parent().removeClass("opend");
+    $ACTIVITY.parent().addClass("closed");
   }
 }
 
 function AppendActivity(html){
-    $ACTION.append(html);
+    $ACTIVITY.append(html);
 }

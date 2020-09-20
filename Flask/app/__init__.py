@@ -26,6 +26,7 @@ from app.views.actions import dirs
 from app.views.actions import popups
 from app.views.actions import getters
 from app.views.actions import setters
+from app.views.actions import user
 from app.views.actions import search
 
 from app.views.marketplace import make

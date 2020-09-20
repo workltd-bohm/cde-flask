@@ -58,14 +58,14 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     if(!CheckAval(form)) return; 
     var d = {parent_id: '', ic_id:''};
     form.serializeArray().map(function(x){d[x.name] = x.value;}); 
-    if (!args) args = JSON.stringify(d);
+    if (!args) args = d;
     // console.log(args);
 
     LoadStart();
     $.ajax({
         url: job,
         type: 'POST',
-        data: args,
+        data: (args instanceof FormData)? args : JSON.stringify(args),
         //dataType: "json",
         processData: false,
         contentType: false,

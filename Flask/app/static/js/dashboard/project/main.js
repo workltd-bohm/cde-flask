@@ -68,7 +68,6 @@ function AddSun(obj, data){
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
         .on("mouseover",function(d){
-            data.values.text.style("opacity", 0);
             if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
@@ -173,7 +172,12 @@ function AddChildren(obj, data, parent, position=0){
             }, data);
         })
         .on("mouseup",function(d){
-            ClickStop(SunFadeout, data);
+            var func = function(){};
+            switch(g_root.universe.data.overlay_type){
+                case "user" : func = GetWarp; break;
+                default : func = SunFadeout; break;
+            }
+            ClickStop(func, data);
         });
 }
 
@@ -275,17 +279,20 @@ function SunFadeout(data){
     });
 }
 
-function GetWarp(){
+function GetWarp(data){
     if(!g_project.warp) {
         g_root.universe.data.overlay_type == "ic" ? AddPath(g_project.skip.values.back) : 1;
+        
         if(g_project.overlay) {
             g_project.overlay.remove();
             g_project.overlay = false;
         }
         
-        g_project.skip.values.parent.remove()
+        if (g_project.skip) g_project.skip.values.parent.remove()
+        else g_project.skip = data;
 
         switch(g_root.universe.data.overlay_type){
+            case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
             case "project": WrapGetProject(g_project.skip); break;
             case "market": WrapGetMarket(g_project.skip); break;

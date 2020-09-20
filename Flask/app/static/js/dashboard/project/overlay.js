@@ -49,6 +49,9 @@ function OverlayCreate(obj, data, parent) {
         case "market": type = g_OverNone; break;
         //case "file": type = g_OverFile;
     }
+    if(type.length == 0) return;
+
+    data.values.text.style("opacity", 0);
     data.overlay.items = type.slice();
 
     data.overlay.object = data.values.this.append("g")

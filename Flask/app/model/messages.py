@@ -4,6 +4,7 @@ SIGNED_IN = {"message": "SIGNED IN", "code": 200}
 LOGGED_IN = {"message": "LOGGED IN", "code": 200}
 USER_NOT_FOUND = {"message": "User not found", "code": 404}
 ACCOUNT_CONFIRMED = {"message": "Account confirmed", "code": 200}
+ACCOUNT_CHANGED = {"message": "Account changed", "code": 200}
 
 DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 

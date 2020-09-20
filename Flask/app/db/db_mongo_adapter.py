@@ -53,6 +53,16 @@ class DBMongoAdapter:
         self._close_connection()
         return message, modified_user
 
+    def edit_user(self, user_json):
+        col = self._db.Users
+        user_query = {'id': user_json["id"]}
+        message = msg.USER_NOT_FOUND
+        if col.find_one(user_query, {'_id': 0}):
+            col.update_one(user_query, {'$set': user_json})
+            message = msg.ACCOUNT_CHANGED
+        self._close_connection()
+        return message
+
     def confirm_account(self, user):
         col = self._db.Users
         message = msg.USER_NOT_FOUND

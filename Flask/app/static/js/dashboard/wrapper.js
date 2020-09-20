@@ -1,5 +1,7 @@
-var $ACTION = null;
-var ACTION = null;
+var $ACTIVITY = null;
+var ACTIVITY = null;
+var $ACTIVITY_HEAD = null;
+var ACTIVITY_HEAD = null;
 
 var SESSION = {};
 
@@ -7,8 +9,10 @@ const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 
 $( document ).ready(function(){
-    $ACTION = $("#activity-body");
-    ACTION = d3.select("#activity-body");
+    $ACTIVITY = $("#activity-body");
+    ACTIVITY = d3.select("#activity-body");
+    $ACTIVITY_HEAD = $("#activity-head");
+    ACTIVITY_HEAD = d3.select("#activity-head");
 
     //CreateProject();
     //SelectProject();
