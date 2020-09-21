@@ -25,7 +25,7 @@ def login_data():
         if response is msg.LOGGED_IN:
             json_user = user.to_json()
             json_user.pop('password', None)
-            json_user.update({'project_code': 'SV'}) # temp!!
+            # json_user.update({'project_code': 'SV'}) # temp!!
             session['user'] = json_user
             session['project'] = {}
             session.modified = True

@@ -23,14 +23,14 @@ function GetForm(){
     return $("div.pero > .content > .form");
 }
 
-function PopupOpen(run=null, data=null){
+function PopupOpen(run=null, data=null, file=null){
     var form = GetForm();
 
     LoadStop(); 
     $(form).empty();
     $("div.pero").show();
 
-    if(run) run(form, data);
+    if(run) run(form, data, file);
 }
 
 function PopupClose(){

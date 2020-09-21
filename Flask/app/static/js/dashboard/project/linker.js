@@ -19,7 +19,8 @@ function WrapCreateFolder(data){
 function WrapCreateFile(data){
     var tmp = data.values.data;
     //console.log(tmp);
-    PopupOpen(NewFile, tmp);
+//    PopupOpen(NewFile, tmp);
+    OpenFileDialog(tmp);
 }
 
 function WrapRename(data){

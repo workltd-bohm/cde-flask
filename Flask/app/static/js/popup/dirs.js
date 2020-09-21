@@ -69,11 +69,11 @@ function FileDataInit(){
 
 // ------------------------------------------
 
-function input_get() {
+function input_get(file) {
     $.get( "/input")
         .done(function( data ) {
             input_json = JSON.parse(data);
-            OnFileUpload();
+            OnFileUpload(file);
         })
         .fail(function($jqXHR, textStatus, errorThrown){
             if($jqXHR.status == 404) {
@@ -117,6 +117,9 @@ function updateName(position, el){
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];
     }
+//    console.log(el.value);
+//    console.log(el.selectedIndex);
+//    el.innerHTML = text;
     updated_name[position] = text;
     updateNewName();
 }
@@ -124,9 +127,9 @@ function updateNewName(){
     $("#new_name").attr("value", updated_name.join("-"))
 }
 
-function OnFileUpload(){
-    $("#file").change(function(e){
-        var file = e.target.files[0];
+function OnFileUpload(file){
+//    $("#file").change(function(e){
+//        var file = e.target.files[0];
         fill_options();
         var fileName = file.name.split('.');
         file_extension.value = '.' + fileName[1];
@@ -138,7 +141,7 @@ function OnFileUpload(){
         originalName = fileName[0] + '.' + fileName[1]
         updateNewName();
 
- });
+// });
 }
 
 function GetFile(){
@@ -158,7 +161,29 @@ function GetFile(){
     return fd;
 }
 
-function NewFile(form, json){
+function OpenFileDialog(data){
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+
+       // getting a hold of the file reference
+       var file = e.target.files[0];
+
+       PopupOpen(NewFile, data, file);
+
+       // setting up the reader
+//       var reader = new FileReader();
+//       reader.readAsText(file,'UTF-8');
+//
+//       // here we tell the reader what to do when it's done reading...
+//       reader.onload = readerEvent => {
+//          var content = readerEvent.target.result; // this is the content!
+//          console.log( content );
+       }
+    input.click();
+}
+
+function NewFile(form, json, file){
     LoadStart();
     $.ajax({
         url: "/get_new_file",
@@ -177,7 +202,7 @@ function NewFile(form, json){
             form.append(html);
 
             FileDataInit();
-            input_get();
+            input_get(file);
 
             LoadStop();
         },

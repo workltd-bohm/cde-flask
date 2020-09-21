@@ -39,18 +39,19 @@ def update_user():
         user_data = session.get('user')
         # print(user_data)
         # print(json_data)
+        json_user = {}
         if "id" in json_data and user_data["id"] == json_data["id"]:
             if db.connect(db_adapter):
-                user = User()
-                user.update_user(user_data)
-                user.update_user(json_data)
-                user.id = user_data["id"]
-                message = db.edit_user(db_adapter, user.to_json())
+                for key, value in json_data.items():
+                    if value:
+                        json_user[key] = value
+                message = db.edit_user(db_adapter, json_user)
 
-                json_user = user.to_json()
-                json_user.pop('password', None)
-                json_user.update({'project_code': 'SV'}) # temp!!
+                # json_user = user.to_json()
+                # json_user.pop('password', None)
+                json_user['project_code'] = 'SV' # temp!!
                 session['user'] = json_user
+                print(session['user'])
                 session.modified = True
 
                 resp.status_code = message['code']
