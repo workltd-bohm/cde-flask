@@ -31,10 +31,11 @@ class DBMongoAdapter:
             if not result['confirmed']:
                 message = msg.MESSAGE_SENT_TO_ADMIN
             else:
-                user = User()
-                user.create_user(result)
-                user.id = result['id']
-                user.confirmed = result['confirmed']
+                # user = User()
+                # user.create_user(result)
+                # user.id = result['id']
+                # user.confirmed = result['confirmed']
+                user = result
                 message = msg.LOGGED_IN
         self._close_connection()
         return message, user

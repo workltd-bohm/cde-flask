@@ -23,9 +23,9 @@ def login_data():
     if db.connect(db_adapter):
         response, user = db.get_user(db_adapter, json_data)
         if response is msg.LOGGED_IN:
-            json_user = user.to_json()
+            json_user = user # .to_json()
             json_user.pop('password', None)
-            # json_user.update({'project_code': 'SV'}) # temp!!
+            json_user.update({'project_code': 'SV'}) # temp, until drawn from project
             session['user'] = json_user
             session['project'] = {}
             session.modified = True
