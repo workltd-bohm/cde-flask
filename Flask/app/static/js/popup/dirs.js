@@ -105,15 +105,19 @@ function fill(json, sel, code){
             text = code[i] + ', ' + text;
             opt.value = code[i] + ', ' + json[i];
         }
-        opt.appendChild( document.createTextNode(text) );
+        opt.text = text;
+        sel.add(opt);
+//        opt.appendChild( document.createTextNode(text) );
 
         // add opt to end of select box (sel)
-        sel.appendChild(opt);
+//        sel.appendChild(opt);
     }
 }
 
 function updateName(position, el){
+    console.log(el.value);
     text = el.value.split(',')[0];
+    console.log(text);
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];
     }
@@ -135,7 +139,7 @@ function OnFileUpload(file){
         file_extension.value = '.' + fileName[1];
         name1.value = file.name;
         fileList = file;
-        console.log(file);
+//        console.log(file);
         updated_name[9] = file.name;
         //updated_name[10] = '.' + fileName[1];
         originalName = fileName[0] + '.' + fileName[1]
@@ -217,6 +221,7 @@ function NewFile(form, json, file){
 // ------------------------------------------
 
 function RenameFile(form, json){
+//    console.log(json);
     LoadStart();
     var newOldName = json.name;
     if(json.hasOwnProperty("type")){
@@ -240,6 +245,53 @@ function RenameFile(form, json){
             form.empty();
             form.append(html);
 
+            if(json.is_directory){
+//                console.log(html);
+                document.getElementById('smart_naming').remove();
+                document.getElementById('name_div').style.bottom = "120px";
+            }
+            else{
+                document.getElementById('project_code').value = json.project_code;
+                document.getElementById('company_code').value = json.company_code;
+//                document.getElementById('name').value = json.original_name;
+                var file = {};
+                file.name = json.original_name;
+
+                FileDataInit();
+                input_get(file);
+
+                updated_name[0] = json.project_code;
+                updated_name[1] = json.company_code;
+                updated_name[2] = json.project_volume_or_system.split(',')[0];
+                updated_name[3] = json.project_level.split(',')[0];
+                updated_name[4] = json.type_of_information.split(',')[0];
+                updated_name[5] = json.role_code.split(',')[0];
+                updated_name[6] = json.file_number.split(',')[0];
+                updated_name[7] = json.status.split(',')[0];
+                updated_name[8] = json.revision.split(',')[0];
+//                updated_name[9] = json.uniclass_2015.split(',')[0];
+
+                updateNewName();
+
+//                console.log(sel);
+//                console.log(json.project_volume_or_system);
+//                sel.value = json.project_volume_or_system;
+
+//                var option = document.createElement("option");
+//                option.text = json.project_volume_or_system;
+//                sel.add(option, sel.options[0]);
+//                setSelectedIndex(sel, json.project_volume_or_system);
+                $('#project_volume_or_system').val(json.project_volume_or_system);
+                $('#project_level').val(json.project_level);
+                $('#type_of_information').val(json.type_of_information);
+                $('#role_code').val(json.role_code);
+                $('#file_number').val(json.file_number);
+                $('#status').val(json.status);
+                $('#revision').val(json.revision);
+
+//                console.log(document.getElementById('project_volume_or_system').value);
+            }
+
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -248,6 +300,28 @@ function RenameFile(form, json){
             PopupClose();
         }
     });
+}
+
+function setSelectedIndex(s, valsearch)
+{
+    Array.from(s).forEach(function(item) {
+   console.log(item);
+});
+    for (i = 0; i< s.options.length; i++)
+    {
+        console.log(s.options.namedItem(valsearch));
+        console.log(s.options.length);
+        console.log(s.options[1]);
+
+        console.log(valsearch);
+        if (s.options[i].value == valsearch)
+        {
+            console.log('ovdeeee11111');
+            s.options[i].selected = true;
+            break;
+        }
+    }
+    return;
 }
 
 // ------------------------------------------

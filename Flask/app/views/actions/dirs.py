@@ -85,7 +85,7 @@ def upload_file():
         file_obj.revision = request_json['revision']
         # except Exception:
         #     pass
-        print(file_obj.to_json())
+        # print(file_obj.to_json())
         if db.connect(db_adapter):
             # with open('app/templates/activity/activity.html', "rb") as f:
             #     encoded = Binary(f.read())  # request_json['file']

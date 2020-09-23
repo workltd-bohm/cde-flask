@@ -7,69 +7,72 @@
 <!--  <input type="hidden" id="company_code" name="company_code" value="{{ company_code }}" required />-->
   <input type="hidden" id="parent_path" name="parent_path" value="{{ project_path }}" required />
   <input type="hidden" id="is_file" name="is_file" value="{{ is_file }}" required />
-  <div class="form__group_popup circle">
-    <input type="text" class="form__field_popup" name="project_code" id='project_code' value="{{ project_code }}" required/>
-    <label for="project_code" class="form__label_popup">Project Code</label>
-  </div>
-  <div class="form__group_popup circle">
-    <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}" required/>
-    <label for="company_code" class="form__label_popup">Company Code</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" id="project_volume_or_system" name="project_volume_or_system" onchange="updateName(2, this)" required>
+
+  <div id="smart_naming">
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="project_code" id='project_code' value="{{ project_code }}" required/>
+      <label for="project_code" class="form__label_popup">Project Code</label>
+    </div>
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}" required/>
+      <label for="company_code" class="form__label_popup">Company Code</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" id="project_volume_or_system" name="project_volume_or_system" onchange="updateName(2, this)" required>
+        <option></option>
+      </select>
+      <label for="project_volume_or_system" class="form__label_popup">Project Volume or System</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="project_level" id='project_level' onchange="updateName(3, this)" required >
+        <option></option>
+      </select>
+      <label for="project_level" class="form__label_popup">Project Level</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="type_of_information" id='type_of_information' onchange="updateName(4, this)" required >
+        <option></option>
+      </select>
+      <label for="type_of_information" class="form__label_popup">Type of Information</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="role_code" id='role_code' onchange="updateName(5, this)" required >
       <option></option>
-    </select>
-    <label for="project_volume_or_system" class="form__label_popup">Project Volume or System</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="project_level" id='project_level' onchange="updateName(3, this)" required >
-      <option></option>
-    </select>
-    <label for="project_level" class="form__label_popup">Project Level</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="type_of_information" id='type_of_information' onchange="updateName(4, this)" required >
-      <option></option>
-    </select>
-    <label for="type_of_information" class="form__label_popup">Type of Information</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="role_code" id='role_code' onchange="updateName(5, this)" required >
-    <option></option>
-    </select>
-    <label for="role_code" class="form__label_popup">Role</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="file_number" id='file_number' onchange="updateName(6, this)" required >
-      <option></option>
-    </select>
-    <label for="file_number" class="form__label_popup">File Number</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="status" id='status' onchange="updateName(7, this)" required >
-      <option></option>
-    </select>
-    <label for="status" class="form__label_popup">Status</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select  class="form__field_popup" name="revision" id='revision' onchange="updateName(8, this)" required >
-      <option></option>
-    </select>
-    <label for="revision" class="form__label_popup">Revision</label>
-  </div>
-  <div class="form__group_popup circle">
-    <select class="form__field_popup" name="uniclass_2015" id='uniclass_2015' >
-      <option></option>
-    </select>
-    <label for="uniclass_2015" class="form__label_popup">Uniclass 2015</label>
-  </div>
-  <div class="form__group_popup rectangle">
-    <input class="" name="name" id='name' value="Default" onchange="updateName(9, this)" required />
-    <label for="name" class="form__label_popup">Name</label>
-  </div>
-  <div class="form__group_popup circle">
-    <input type="text" class="form__field_popup" name="file_extension" id='file_extension' value="" readonly />
-    <label for="file_extension" class="form__label_popup">File Extension</label>
+      </select>
+      <label for="role_code" class="form__label_popup">Role</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="file_number" id='file_number' onchange="updateName(6, this)" required >
+        <option></option>
+      </select>
+      <label for="file_number" class="form__label_popup">File Number</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="status" id='status' onchange="updateName(7, this)" required >
+        <option></option>
+      </select>
+      <label for="status" class="form__label_popup">Status</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select  class="form__field_popup" name="revision" id='revision' onchange="updateName(8, this)" required >
+        <option></option>
+      </select>
+      <label for="revision" class="form__label_popup">Revision</label>
+    </div>
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="uniclass_2015" id='uniclass_2015' >
+        <option></option>
+      </select>
+      <label for="uniclass_2015" class="form__label_popup">Uniclass 2015</label>
+    </div>
+    <div class="form__group_popup rectangle">
+      <input class="" name="name" id='name' value="Default" oninput="updateName(9, this)" required />
+      <label for="name" class="form__label_popup">Name</label>
+    </div>
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="file_extension" id='file_extension' value="" readonly />
+      <label for="file_extension" class="form__label_popup">File Extension</label>
+    </div>
   </div>
   <br>
   <div class="form__group_popup_new">
@@ -77,5 +80,6 @@
     <label for="new_name" class="form__label">New name</label>
   </div>
   <br>
+
 </div>
 <input type="button" class="popup_button" value="Upload" onclick="FormSubmit('upload_file', GetFile(), true, CreateProject)"/>

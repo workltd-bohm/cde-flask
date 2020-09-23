@@ -187,7 +187,7 @@ class DBMongoAdapter:
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
                 add = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
-                    print(project.to_json())
+                    # print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
             else:
                 print(msg.IC_ALREADY_EXISTS)
