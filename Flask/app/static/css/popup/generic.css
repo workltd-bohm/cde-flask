@@ -42,7 +42,7 @@ div.pero > div.content {
     border: 1px solid #888;
     border-radius: 25px;
     width: 70%;
-    height: 18vw;
+    height: 19vw;
     overflow: unset;
 }
 
@@ -131,6 +131,7 @@ div.content > .form > .scroll {
 }
 
 .popup_button {
-    position: absolute;
-    bottom: 20px;
+    position: relative;
+    top: 3vw;
+    left: 50px;
 }

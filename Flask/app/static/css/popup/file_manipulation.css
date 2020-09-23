@@ -58,10 +58,10 @@
 }
 
 .form__group_popup_new {
-    position: absolute;
+    position: relative;
     padding: 15px 0 0;
-    bottom: 65px;
-    width: 100%;
+    top: 3vw;
+    width: 80%;
 }
 
 .form__group_popup > label {
