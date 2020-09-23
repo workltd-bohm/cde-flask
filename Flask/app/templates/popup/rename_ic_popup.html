@@ -14,54 +14,20 @@
       <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}" required/>
       <label for="company_code" class="form__label_popup">Company Code</label>
     </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" id="project_volume_or_system" name="project_volume_or_system" onchange="updateName(2, this)">
-        <option></option>
-      </select>
-      <label for="project_volume_or_system" class="form__label_popup">Project Volume or System</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="project_level" id='project_level' onchange="updateName(3, this)" >
-        <option></option>
-      </select>
-      <label for="project_level" class="form__label_popup">Project Level</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="type_of_information" id='type_of_information' onchange="updateName(4, this)" >
-        <option></option>
-      </select>
-      <label for="type_of_information" class="form__label_popup">Type of Information</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="role_code" id='role_code' onchange="updateName(5, this)" >
-      <option></option>
-      </select>
-      <label for="role_code" class="form__label_popup">Role</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="file_number" id='file_number' onchange="updateName(6, this)" >
-        <option></option>
-      </select>
-      <label for="file_number" class="form__label_popup">File Number</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="status" id='status' onchange="updateName(7, this)" >
-        <option></option>
-      </select>
-      <label for="status" class="form__label_popup">Status</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select  class="form__field_popup" name="revision" id='revision' onchange="updateName(8, this)" >
-        <option></option>
-      </select>
-      <label for="revision" class="form__label_popup">Revision</label>
-    </div>
-    <div class="form__group_popup circle">
-      <select class="form__field_popup" name="uniclass_2015" id='uniclass_2015' >
-        <option></option>
-      </select>
-      <label for="uniclass_2015" class="form__label_popup">Uniclass 2015</label>
-    </div>
+
+
+     {% for key, value in inputs.items() %}
+      <div class="form__group_popup circle">
+          <select class="form__field_popup" name="{{ key }}" id='{{ key }}' onchange="updateName({{ value.order }}, this)" >
+              <option></option>
+              {% for v in value.elements %}
+                <option value="{{ v }}">{{ v }}</option>
+              {% endfor %}
+          </select>
+          <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+      </div>
+    {% endfor %}
+
     <div class="form__group_popup rectangle">
       <input class="" name="name" id='name' value="Default" oninput="updateName(9, this)" />
       <label for="name" class="form__label_popup">Name</label>

@@ -134,7 +134,7 @@ function updateNewName(){
 function OnFileUpload(file){
 //    $("#file").change(function(e){
 //        var file = e.target.files[0];
-        fill_options();
+//        fill_options();
         var fileName = file.name.split('.');
         file_extension.value = '.' + fileName[1];
         name1.value = file.name;
@@ -206,7 +206,7 @@ function NewFile(form, json, file){
             form.append(html);
 
             FileDataInit();
-            input_get(file);
+            OnFileUpload(file);
 
             LoadStop();
         },
@@ -258,7 +258,7 @@ function RenameFile(form, json){
                 file.name = json.original_name;
 
                 FileDataInit();
-                input_get(file);
+                OnFileUpload(file);
 
                 updated_name[0] = json.project_code;
                 updated_name[1] = json.company_code;

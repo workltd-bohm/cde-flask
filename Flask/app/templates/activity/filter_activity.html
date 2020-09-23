@@ -7,11 +7,11 @@
       <div class="form__group field">
           <select class="form__field" name="{{ key }}" id='{{ key }}' required >
               <option></option>
-              {% for v in value %}
-                <option>{{ v }}</option>
+              {% for v in value.elements %}
+                <option value="{{ v }}">{{ v }}</option>
               {% endfor %}
           </select>
-          <label for="{{ key }}" class="form__label">{{ key }}</label>
+          <label for="{{ key }}" class="form__label">{{ value.name }}</label>
       </div>
     {% endfor %}
 </div>

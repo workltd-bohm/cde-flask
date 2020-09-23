@@ -1,5 +1,6 @@
 from app import *
 
+import app.views.actions.getters as gtr
 
 def filter_out(request_json, files):
     filtered = []
@@ -55,36 +56,7 @@ def get_filter_activity():
     resp = Response()
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        doc = open('app/static/file/input.json', 'r')
-        file = json.loads(doc.read())
-        doc.close()
-        print(file)
-        filter_file = {}
-        keys = list(file.keys())
-        values = list(file.values())
-        for i in range(0, len(keys), 2):
-            elements = []
-            for j in range(0, len(values[i])):
-                elements.append(values[i][j] + ', ' + values[i+1][j])
-            key = ''
-            if keys[i] == 'volume_system_code':
-                key = 'project_volume_or_system'
-            if keys[i] == 'level_code':
-                key = 'project_level'
-            if keys[i] == 'type_code':
-                key = 'type_of_information'
-            if keys[i] == 'role_code':
-                key = 'role_code'
-            if keys[i] == 'number_code':
-                key = 'file_number'
-            if keys[i] == 'status_code':
-                key = 'status'
-            if keys[i] == 'revision_code':
-                key = 'revision'
-            if keys[i] == 'uniclass_code':
-                key = 'uniclass_2015'
-            filter_file[key] = elements
-            # filter_file[keys[i]] = elements
+        filter_file = gtr.get_input_file_fixed()
         response = {
             'html': render_template("activity/filter_activity.html",
                                     inputs=filter_file
@@ -99,5 +71,3 @@ def get_filter_activity():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
-
-

@@ -4,6 +4,8 @@ import uuid
 
 from app import *
 
+import app.views.actions.getters as gtr
+
 
 @app.route('/get_all_projects')
 def get_all_projects():
@@ -105,6 +107,7 @@ def get_new_file():
             user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             if result:
+                filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/file_input_popup.html",
                             project_path=request_data["project_path"],
@@ -114,6 +117,7 @@ def get_new_file():
                             project_code=user['project_code'],
                             company_code=user['company_code'],
                             is_file=request_data["is_file"],
+                            inputs=filter_file
                         ),
                     'data':[]
                 }
@@ -146,6 +150,7 @@ def get_rename_ic():
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
+                filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
                             parent_path=request_data["parent_path"],
@@ -153,7 +158,8 @@ def get_rename_ic():
                             ic_id=request_data["ic_id"],
                             project_name=project_name,
                             old_name=request_data["old_name"],
-                            is_directory = True if request_data["is_directory"] else False
+                            is_directory = True if request_data["is_directory"] else False,
+                            inputs=filter_file
                         ),
                     'data':[]
                 }
