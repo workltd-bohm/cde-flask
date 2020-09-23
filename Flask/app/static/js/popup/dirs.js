@@ -67,63 +67,12 @@ function FileDataInit(){
 
 };
 
-// ------------------------------------------
-
-function input_get(file) {
-    $.get( "/input")
-        .done(function( data ) {
-            input_json = JSON.parse(data);
-            OnFileUpload(file);
-        })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            if($jqXHR.status == 404) {
-                console.log( errorThrown + ": " + $jqXHR.responseText );
-            }
-        });
-};
-
-function fill_options(){
-    fill(input_json.volume_system_name, sel, input_json.volume_system_code);
-    fill(input_json.level_name, sel1, input_json.level_code);
-    fill(input_json.type_name, sel2, input_json.type_code);
-    fill(input_json.role_name, sel3, input_json.role_code);
-    fill(input_json.number_name, sel4, input_json.number_code);
-    fill(input_json.status_name, sel5, input_json.status_code);
-    fill(input_json.revision_name, sel6, input_json.revision_code);
-    fill(input_json.uniclass_name, sel7, '');
-}
-
-function fill(json, sel, code){
-    for(var i = 0; i < json.length; i++) {
-        // create new option element
-        var opt = document.createElement('option');
-        // create text node to add to option element (opt)
-        var text = json[i];
-        // set value property of opt
-        opt.value = json[i];
-        if(code != ''){
-            text = code[i] + ', ' + text;
-            opt.value = code[i] + ', ' + json[i];
-        }
-        opt.text = text;
-        sel.add(opt);
-//        opt.appendChild( document.createTextNode(text) );
-
-        // add opt to end of select box (sel)
-//        sel.appendChild(opt);
-    }
-}
-
 function updateName(position, el){
     console.log(el.value);
     text = el.value.split(',')[0];
-    console.log(text);
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];
     }
-//    console.log(el.value);
-//    console.log(el.selectedIndex);
-//    el.innerHTML = text;
     updated_name[position] = text;
     updateNewName();
 }
@@ -174,16 +123,7 @@ function OpenFileDialog(data){
        var file = e.target.files[0];
 
        PopupOpen(NewFile, data, file);
-
-       // setting up the reader
-//       var reader = new FileReader();
-//       reader.readAsText(file,'UTF-8');
-//
-//       // here we tell the reader what to do when it's done reading...
-//       reader.onload = readerEvent => {
-//          var content = readerEvent.target.result; // this is the content!
-//          console.log( content );
-       }
+    }
     input.click();
 }
 
@@ -273,14 +213,6 @@ function RenameFile(form, json){
 
                 updateNewName();
 
-//                console.log(sel);
-//                console.log(json.project_volume_or_system);
-//                sel.value = json.project_volume_or_system;
-
-//                var option = document.createElement("option");
-//                option.text = json.project_volume_or_system;
-//                sel.add(option, sel.options[0]);
-//                setSelectedIndex(sel, json.project_volume_or_system);
                 $('#project_volume_or_system').val(json.project_volume_or_system);
                 $('#project_level').val(json.project_level);
                 $('#type_of_information').val(json.type_of_information);
@@ -288,8 +220,6 @@ function RenameFile(form, json){
                 $('#file_number').val(json.file_number);
                 $('#status').val(json.status);
                 $('#revision').val(json.revision);
-
-//                console.log(document.getElementById('project_volume_or_system').value);
             }
 
             LoadStop();
@@ -300,28 +230,6 @@ function RenameFile(form, json){
             PopupClose();
         }
     });
-}
-
-function setSelectedIndex(s, valsearch)
-{
-    Array.from(s).forEach(function(item) {
-   console.log(item);
-});
-    for (i = 0; i< s.options.length; i++)
-    {
-        console.log(s.options.namedItem(valsearch));
-        console.log(s.options.length);
-        console.log(s.options[1]);
-
-        console.log(valsearch);
-        if (s.options[i].value == valsearch)
-        {
-            console.log('ovdeeee11111');
-            s.options[i].selected = true;
-            break;
-        }
-    }
-    return;
 }
 
 // ------------------------------------------

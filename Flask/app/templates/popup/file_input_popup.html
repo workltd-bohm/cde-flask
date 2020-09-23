@@ -21,7 +21,7 @@
 
     {% for key, value in inputs.items() %}
       <div class="form__group_popup circle">
-          <select class="form__field_popup" name="{{ key }}" id='{{ key }}' onchange="updateName({{ value.order }}, this)" >
+          <select class="form__field_popup" name="{{ key }}" id='{{ key }}' onchange="updateName({{ value.order }}, this)" required>
               <option></option>
               {% for v in value.elements %}
                 <option value="{{ v }}">{{ v }}</option>
@@ -31,6 +31,12 @@
       </div>
     {% endfor %}
 
+    <div class="form__group_popup circle">
+      <select class="form__field_popup" name="uniclass_2015" id='uniclass_2015' >
+        <option></option>
+      </select>
+      <label for="uniclass_2015" class="form__label_popup">Uniclass 2015</label>
+    </div>
 
     <div class="form__group_popup rectangle">
       <input class="" name="name" id='name' value="Default" oninput="updateName(9, this)" required />

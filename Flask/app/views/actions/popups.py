@@ -108,6 +108,7 @@ def get_new_file():
             result = db.get_project(db_adapter, project_name, user)
             if result:
                 filter_file = gtr.get_input_file_fixed()
+                filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
                             project_path=request_data["project_path"],
