@@ -4,6 +4,7 @@ function OpenActivity(html, head=null){
     if (head) {
       ACTIVITY_HEAD.html(head);
     }
+    else ACTIVITY_HEAD.style("display","none");
     $ACTIVITY.parent().addClass("opend");
     $ACTIVITY.parent().removeClass("closed");
 }

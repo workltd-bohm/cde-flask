@@ -126,7 +126,7 @@ function ClearProject(){
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     g_project = {...g_project_per};
-    SESSION = {};
+    //SESSION = {};
 }
 
 // -------------------------------------------------------

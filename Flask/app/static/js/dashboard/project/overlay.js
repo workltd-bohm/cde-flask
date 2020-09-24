@@ -13,6 +13,10 @@ g_OverProject = [
     //{ name : "DELETE", icon : "delete", link : WrapDelete},
 ]
 
+g_OverSearch = [
+    { name : "GO TO FILE", icon : "open_with", link : SearchOpen},
+]
+
 g_OverFolder = [
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
     { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
@@ -47,7 +51,8 @@ function OverlayCreate(obj, data, parent) {
         case "project": type = g_OverProject; break;
         case "ic": type = g_OverFolder; break;
         case "market": type = g_OverNone; break;
-        //case "file": type = g_OverFile;
+        case "search_target": type = g_OverSearch; break;
+        default: break;
     }
     if(type.length == 0) return;
 

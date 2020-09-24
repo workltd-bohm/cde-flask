@@ -35,6 +35,22 @@ def get_session():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/set_project', methods=['POST'])
+def set_project():
+    resp = Response()
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data)
+
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = str(msg.DEFAULT_OK['message'])
+        return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
 @app.route('/get_project', methods=['POST'])
 def get_project():
     print('Data posting path: %s' % request.path)

@@ -59,6 +59,7 @@ def upload_file():
         # print(file)
         print(request.form['data'])
         request_json = json.loads(request.form['data'])  # test_json_request
+        set_project_data(request_json)
         directory = request_json['parent_path']
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
         file_obj = File(str(uuid.uuid1()),
@@ -115,6 +116,7 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        set_project_data(request_data)
         print(request_data)
         folder = IC(str(uuid.uuid1()),
                     request_data['new_name'],
@@ -150,6 +152,7 @@ def rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        set_project_data(request_data)
         print(request_data)
         if db.connect(db_adapter):
             rename = {
@@ -188,6 +191,7 @@ def delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
+        set_project_data(delete_ic_data)
         print(delete_ic_data)
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)

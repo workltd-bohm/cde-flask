@@ -47,7 +47,7 @@ function AddPath(data){
     DrawPath(g_project.history, d);
 }
 
-function PathCreation(data, project_position=null){
+function PathCreation(data){
     g_project.hist_path = SVG.append("g")
         .attr("id","Path")
         .attr("transform","translate(0,"+(g_PathRadius*PATH_ORBIT_COEF)+")")

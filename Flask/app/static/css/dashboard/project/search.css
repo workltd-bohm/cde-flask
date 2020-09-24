@@ -1,0 +1,20 @@
+.project-tab{
+    height: 5%;
+    margin-bottom: 5%;
+}
+
+.project-box{
+    display: block;
+    float: left;
+    width: 43%;
+    border: 1px solid gray;
+    margin: 1%;
+}
+
+.project-box:hover{
+    background: honeydew;
+    cursor: pointer;
+}
+
+.project-view{
+}

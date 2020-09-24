@@ -17,6 +17,8 @@ function CreateSpace(data) {
 
     // g_project.project_position = data.path;
 
+    g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
+
     g_root.universe.selectAll("g")
         .data([data])
         .enter()
@@ -33,6 +35,8 @@ function AddSun(obj, data){
     data.box = {...g_box};
     data.values = {};
     data.values.this = obj;
+    data.values.parent = obj;
+    data.values.back = data;
     data.values.rotation = 1;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
@@ -281,7 +285,10 @@ function SunFadeout(data){
 
 function GetWarp(data){
     if(!g_project.warp) {
-        g_root.universe.data.overlay_type == "ic" ? AddPath(g_project.skip.values.back) : 1;
+        switch(g_root.universe.data.overlay_type){
+            case "search": case "ic": AddPath(g_project.skip.values.back); break;
+            default: break;
+        }
         
         if(g_project.overlay) {
             g_project.overlay.remove();
@@ -289,7 +296,7 @@ function GetWarp(data){
         }
         
         if (g_project.skip) g_project.skip.values.parent.remove()
-        else g_project.skip = data;
+        if (data) g_project.skip = data;
 
         switch(g_root.universe.data.overlay_type){
             case "user": UserActivity(g_project.skip); break;

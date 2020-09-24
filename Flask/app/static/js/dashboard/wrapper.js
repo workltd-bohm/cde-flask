@@ -49,6 +49,21 @@ function CheckSession(){
     });
 }
 
+function SendProject(data){
+    SESSION["position"] = {parent_id: data.parent_id, ic_id: data.ic_id};
+    SEARCH_HISTORY = data;
+    $.ajax({
+        url: "/set_project",
+        type: 'POST',
+        data: JSON.stringify({project:SESSION}),
+        timeout: 5000,
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            //MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
 // -------------------------------------------------------
 
 function UserProfile(){
@@ -62,7 +77,7 @@ function UserProfile(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                DashboardCreate([data.json.root_ic], data.project_position);
+                DashboardCreate([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -83,7 +98,7 @@ function SelectProject(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                DashboardCreate([data.json.root_ic], data.project_position);
+                DashboardCreate([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -106,7 +121,7 @@ function CreateProject(position=null){
         type: 'POST',
         data: JSON.stringify({
             project: {
-                project_position: SESSION["position"] ? SESSION["position"] : null, 
+                position: SESSION["position"] ? SESSION["position"] : null, 
                 section: "project",
             }
         }),
@@ -115,7 +130,8 @@ function CreateProject(position=null){
             data = JSON.parse(data);
             console.log(data)
             if(data){
-                DashboardCreate([data.json.root_ic], data.project_position);
+                DashboardCreate([data.json.root_ic], data.project);
+                OpenFilterActivity();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -137,7 +153,7 @@ function SelectMarket(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                DashboardCreate([data.json.root_ic], data.project_position);
+                DashboardCreate([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
