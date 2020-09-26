@@ -10,7 +10,7 @@ function OpenFilterActivity(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                OpenActivity(data.html);
+                OpenActivity(data.html, null, false);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -21,9 +21,9 @@ function OpenFilterActivity(){
 }
 
 function FilterOut(obj){
-    console.log(obj);
     var data = {};
     $(obj).serializeArray().map(function(x){data[x.name] = x.value;});
+    console.log(data);
 
     $.ajax({
         url: "/get_filtered_files",
@@ -37,7 +37,7 @@ function FilterOut(obj){
                     g_root.universe.data = data;
                     g_project.skip = SEARCH_HISTORY;
                     GetWarp(data);
-                    //AppendActivity(data.html);
+                    g_project.search = data;
                 }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -54,6 +54,8 @@ function FilterSwap(target){
 
 function SearchOpen(data){
     console.log(data);
-    SESSION["position"] = {parent_id: data.values.data.parent_id, ic_id: data.values.data.ic_id};
+    if(g_project.search) g_project.search = false;
+    //SESSION["position"] = {parent_id: data.values.data.parent_id, ic_id: data.values.data.ic_id};
+    SESSION["position"] = {parent_id: data.parent_id, ic_id: data.ic_id};
     CreateProject();
 }

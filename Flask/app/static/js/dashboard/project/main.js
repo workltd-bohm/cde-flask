@@ -285,11 +285,28 @@ function SunFadeout(data){
 
 function GetWarp(data){
     if(!g_project.warp) {
-        switch(g_root.universe.data.overlay_type){
-            case "search": case "ic": AddPath(g_project.skip.values.back); break;
-            default: break;
+        console.log(g_root.universe.data)
+        console.log(g_project.skip, g_project.search,g_project.history)
+        if(!g_project.search)
+            switch(g_root.universe.data.overlay_type){
+                case "search": 
+                case "ic": AddPath(g_project.skip.values.back); break;
+                default: break;
+            }
+        else{
+            console.log(g_project.skip, g_project.search,g_project.history)
+            // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
+            //     console.log(1)
+            //     g_project.history = g_project.skip.hist_path.this;
+            //     g_project.skip.hist_path.child.selectAll("g").remove();
+            // }
+            
+            // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
+            if (data) g_project.skip = g_project.search;
+            else g_project.search = g_project.skip;
+            g_root.universe.data = g_project.search;
+            
         }
-        
         if(g_project.overlay) {
             g_project.overlay.remove();
             g_project.overlay = false;
@@ -297,12 +314,15 @@ function GetWarp(data){
         
         if (g_project.skip) g_project.skip.values.parent.remove()
         if (data) g_project.skip = data;
-
+        
+        console.log(g_project.skip, g_project.search,g_project.history)
         switch(g_root.universe.data.overlay_type){
             case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
             case "project": WrapGetProject(g_project.skip); break;
             case "market": WrapGetMarket(g_project.skip); break;
+            case "search": CreateSpace(g_project.skip); break; // TODO 
+            case "search_target": SearchOpen(g_project.skip); break; // TODO 
             default : CreateSpace(g_project.skip); break;
         }
 

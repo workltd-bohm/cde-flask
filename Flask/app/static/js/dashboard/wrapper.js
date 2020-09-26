@@ -67,7 +67,7 @@ function SendProject(data){
 // -------------------------------------------------------
 
 function UserProfile(){
-    ClearProject();
+    ClearProject(true);
     SwitchDash(0);
     $.ajax({
         url: "/get_user_profile",
@@ -88,7 +88,7 @@ function UserProfile(){
 }
 
 function SelectProject(){
-    ClearProject();
+    ClearProject(true);
     SwitchDash(0);
     $.ajax({
         url: "/get_root_project",
@@ -143,7 +143,7 @@ function CreateProject(position=null){
 
 
 function SelectMarket(){
-    ClearProject();
+    ClearProject(true);
     SwitchDash(0);
     $.ajax({
         url: "/get_root_market",

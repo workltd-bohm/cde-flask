@@ -1,12 +1,14 @@
 
-function OpenActivity(html, head=null){
+function OpenActivity(html, head=null, open=true){
   ACTIVITY.html(html);
     if (head) {
       ACTIVITY_HEAD.html(head);
     }
     else ACTIVITY_HEAD.style("display","none");
-    $ACTIVITY.parent().addClass("opend");
-    $ACTIVITY.parent().removeClass("closed");
+    if(open){
+      $ACTIVITY.parent().addClass("opend");
+      $ACTIVITY.parent().removeClass("closed");
+    }
 }
 
 function ClearActivity(close=true){

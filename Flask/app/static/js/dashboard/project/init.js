@@ -65,6 +65,7 @@ var g_project = {
         skip: false,
         //project_position: null,
         //project_position_mix: null,
+        search:false,
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
@@ -121,12 +122,12 @@ var g_root = {
     universe : null
 }
 
-function ClearProject(){
+function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     g_project = {...g_project_per};
-    //SESSION = {};
+    if(hard)SESSION = {};
 }
 
 // -------------------------------------------------------
