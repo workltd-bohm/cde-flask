@@ -135,7 +135,7 @@ def get_my_posts():
             result = db.get_my_posts(db_adapter, session.get('user'))
             # for post in result:
             #     print(post)
-            print(">>>", result)
+            # print(">>>", result)
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for post in result:
@@ -205,6 +205,49 @@ def get_bids_for_post():
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/upload_post_file', methods=['POST'])
+def upload_post_file():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        print(request.files['file'])
+        if 'file' not in request.files:
+            print('No file part')
+            resp = Response()
+            resp.status_code = msg.DEFAULT_ERROR['code']
+            resp.data = str(msg.DEFAULT_ERROR['message'])
+            return resp
+
+        file = request.files['file'].read()
+        # print(file)
+        print(request.form['data'])
+        request_json = json.loads(request.form['data'])
+
+        if db.connect(db_adapter):
+            result, id = db.upload_post_file(db_adapter, request_json, file)
+            if id:
+                print(">>", result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = 400
+                resp.data = 'not found'
+                return resp
+        else:
+            print(">", str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()

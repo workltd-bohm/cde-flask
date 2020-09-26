@@ -36,8 +36,9 @@ function AddPost(obj){
 
     if(!CheckAval(form)) return; 
     var args = {};
-    form.serializeArray().map(function(x){args[x.name] = x.value;}); 
-    console.log(args)
+    form.serializeArray().map(function(x){args[x.name] = x.value;});
+    args['image'] = images;
+    console.log(args);
 
     $.ajax({
         url: "/create_post",

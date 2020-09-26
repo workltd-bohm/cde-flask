@@ -336,6 +336,21 @@ class DBMongoAdapter:
         self._close_connection()
         return res
 
+    def upload_post_file(self, request_json, file):
+        col = self._db.Marketplace.Posts.Files
+        # file_query = {'file_name': request_json['file_name']}
+        # file_json = col.find_one(file_query, {'_id': 0})
+        # if file_json is None:
+        stored_id = str(col.insert_one({"file_id": "default",
+                                        "file_name": request_json['file_name'],
+                                        "file": file,}).inserted_id)
+        col.update_one({'file_id': 'default'},
+                                    {'$set': {'file_id': str(stored_id)}})
+        message = msg.IC_SUCCESSFULLY_ADDED
+
+        self._close_connection()
+        return message, str(stored_id)
+
     def create_bid(self, request_json):
         col = self._db.Marketplace.Bids
         col_post = self._db.Marketplace.Posts
@@ -439,6 +454,7 @@ class DBMongoAdapter:
         self._db.Marketplace.Bids.drop()
         self._db.Roles.drop()
         self._db.Users.Roles.drop()
+        self._db.Marketplace.Posts.Files.drop()
         # self._db.Users.drop()
 
         col_users = self._db.Users.Roles

@@ -55,8 +55,10 @@ def delete_ic(db_adapter, delete_ic_data):
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 
+
 def change_color(db_adapter, file_obj):
     return db_adapter.change_color(file_obj)
+
 
 def create_post(db_adapter, request_json):
     return db_adapter.create_post(request_json)
@@ -68,6 +70,10 @@ def get_all_posts(db_adapter):
 
 def get_my_posts(db_adapter, user):
     return db_adapter.get_my_posts(user)
+
+
+def upload_post_file(db_adapter, request_json, file):
+    return db_adapter.upload_post_file(request_json, file)
 
 
 def create_bid(db_adapter, request_json):
