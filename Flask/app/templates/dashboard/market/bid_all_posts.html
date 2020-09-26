@@ -76,10 +76,24 @@
     </div>
     <div class="edit-section view">
         <div id="3d-view" class="edit-view">
-            <iframe width="960" height="400" src="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI" frameborder="0" allowfullscreen></iframe>
+            <iframe width="960" height="400" src="{{ dview }}" frameborder="0" allowfullscreen></iframe>
         </div>
-        <div id="docs" class="edit-view" style="display: none;"></div>
-        <div id="images" class="edit-view" style="display: none;"></div>
+        <div id="docs" class="edit-view" style="display: none;">
+            <div class="group edit-box hover">
+                <input type="text" name="doc" value="{{ doc }}">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Document</label>
+            </div>
+        </div>
+        <div id="images" class="edit-view" style="display: none;">
+            <div class="group edit-box hover">
+                <input type="text" name="image" value="{{ image }}">
+                <span class="highlight"></span>
+                <span class="bar"></span>
+                <label>Image</label>
+            </div>
+        </div>
     </div>
 </div>
 </form>

@@ -104,6 +104,16 @@
     background:rgb(41, 41, 41);
     border: 2px solid black;
 }
+.edit-section.view{
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    background:rgb(61, 61, 61);
+    border: 2px solid black;
+}
 
 .edit-box{
     display: block;

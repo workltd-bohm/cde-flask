@@ -221,6 +221,9 @@ def make_view_post():
                                         date=result[0]["date_expired"],
                                         location=result[0]["location"],
                                         status=status.Status(int(result[0]["status"])).name,
+                                        dview = result[0]['documents']['3d-view'],
+                                        doc=result[0]['documents']['doc'],
+                                        image=result[0]['documents']['image'],
                                         offer=0
                                         ),
                 'data': []
@@ -260,7 +263,10 @@ def make_edit_post():
                                         quantity=result[0]["product"]["quantity"],
                                         date=result[0]["date_expired"],
                                         location=result[0]["location"],
-                                        lowest_bid=result[0]["current_best_bid"]
+                                        lowest_bid=result[0]["current_best_bid"],
+                                        dview=result[0]['documents']['3d-view'],
+                                        doc=result[0]['documents']['doc'],
+                                        image=result[0]['documents']['image'],
                                         ),
                 'data': [{'bids': result[0]['bids']}]
             }

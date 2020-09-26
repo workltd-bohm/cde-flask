@@ -16,7 +16,7 @@ def create_post():
         request_json['product'] = {"quantity": request_json['product'], 'product_id': '321', 'name': 'default name'}
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json.update({'date_expired': time.strftime("%d.%m.%Y-%H:%M:%S")})
-        request_json['documents'] = ''
+        request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'], 'image': request_json['image']}
         request_json['bids'] = []
         request_json['current_best_bid'] = None
         request_json['comments'] = []
