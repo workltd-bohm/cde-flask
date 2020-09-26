@@ -285,8 +285,8 @@ function SunFadeout(data){
 
 function GetWarp(data){
     if(!g_project.warp) {
-        console.log(g_root.universe.data)
-        console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_root.universe.data)
+        //console.log(g_project.skip, g_project.search,g_project.history)
         if(!g_project.search)
             switch(g_root.universe.data.overlay_type){
                 case "search": 
@@ -294,7 +294,7 @@ function GetWarp(data){
                 default: break;
             }
         else{
-            console.log(g_project.skip, g_project.search,g_project.history)
+            //console.log(g_project.skip, g_project.search,g_project.history)
             // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
             //     console.log(1)
             //     g_project.history = g_project.skip.hist_path.this;
@@ -315,7 +315,7 @@ function GetWarp(data){
         if (g_project.skip) g_project.skip.values.parent.remove()
         if (data) g_project.skip = data;
         
-        console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_project.skip, g_project.search,g_project.history)
         switch(g_root.universe.data.overlay_type){
             case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
