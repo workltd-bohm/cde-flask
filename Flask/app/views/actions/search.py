@@ -20,12 +20,12 @@ def filter_out(request_json, files):
 def get_filtered_files():
     print('Data posting path: %s' % request.path)
     project_name = session.get("project")["name"]
-    request_json = app.test_json_request_get_filtered_files
-    bundle = json.loads(request.get_data())
-    print(bundle)
-    path_id = bundle["path_id"]
-    temp_request_json = bundle["data"]
-    if temp_request_json and len(temp_request_json) > 0: request_json = temp_request_json
+    request_json = json.loads(request.get_data())
+    # bundle = json.loads(request.get_data())
+    # print(bundle)
+    # path_id = bundle["path_id"]
+    # temp_request_json = bundle["data"]
+    # if temp_request_json and len(temp_request_json) > 0: request_json = temp_request_json
     print(request_json)
     resp = Response()
     if main.IsLogin():
@@ -34,10 +34,10 @@ def get_filtered_files():
             if result:
                 files = []
                 p = Project.json_to_obj(result)
-                ic = p.find_folder(path_id, p.root_ic)
+                ic = p.find_folder(request_json['path_id'], p.root_ic)
                 print(ic.to_json())
                 p.extract_files(ic, files)
-                filtered = filter_out(request_json, files)
+                filtered = filter_out(request_json['data'], files)
 
                 #res = [file.to_json()['name'] + file.to_json()['type'] for file in filtered]
                 response = {

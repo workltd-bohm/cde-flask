@@ -193,6 +193,7 @@ class Project:
     def find_folder(self, path_id, ic):
         new_ic = None
         if ic.ic_id == path_id:
+            new_ic = ic
             self._added = True
         else:
             if ic.sub_folders:
