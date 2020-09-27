@@ -38,6 +38,7 @@ function AddPost(obj){
     var args = {};
     form.serializeArray().map(function(x){args[x.name] = x.value;});
     args['image'] = images;
+    args['doc'] = documents;
     console.log(args);
 
     $.ajax({
@@ -171,6 +172,7 @@ function OpenActivityBid(obj, data){
 
 function ViewPost(obj, data){
     var tmp = obj;
+    let post_id = data;
     $.ajax({
         url: "/make_view_post",
         type: 'POST',
@@ -179,12 +181,17 @@ function ViewPost(obj, data){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                console.log(data)
+//                console.log(data)
                 OpenEditor(data.html, data.data);
                 ClearActivity(false);
                 OpenActivityEditBid(tmp);
+                data.data.image.forEach(async function(img) {
+                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    previewFile(blob);
+                });
             }
-            MakeSnackbar("Editor");
+//            MakeSnackbar("Editor");
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -195,6 +202,7 @@ function ViewPost(obj, data){
 
 function EditPost(obj, data){
     var tmp = obj;
+    let post_id = data;
     $.ajax({
         url: "/make_edit_post",
         type: 'POST',
@@ -206,6 +214,11 @@ function EditPost(obj, data){
                 console.log(data)
                 OpenEditor(data.html, data.data);
                 OpenActivityEditPost(tmp, g_post_type.edit, data.data[0]);
+                data.data[0].image.forEach(async function(img) {
+                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    previewFile(blob);
+                });
             }
             MakeSnackbar("Editor");
         },

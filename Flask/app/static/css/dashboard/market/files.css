@@ -1,4 +1,4 @@
-#drop-area {
+.drop-area {
   border: 2px dashed #ccc;
   border-radius: 20px;
   width: 80%;
@@ -6,7 +6,7 @@
   margin: 100px auto;
   padding: 20px;
 }
-#drop-area.highlight {
+.drop-area.highlight {
   border-color: purple;
 }
 p {
@@ -36,5 +36,8 @@ p {
   background: #ddd;
 }
 #image {
+  display: none;
+}
+#doc {
   display: none;
 }

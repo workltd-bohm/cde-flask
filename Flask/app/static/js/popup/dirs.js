@@ -267,6 +267,7 @@ function DownloadFile(path){
     LoadStart();
     var url = "/get_file/" + path;
     window.open(url, "_blank");
+    LoadStop();
 //    $.ajax({
 //        url: "/get_file/" + path,
 //        type: 'GET',

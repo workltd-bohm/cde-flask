@@ -77,26 +77,20 @@
                 </div>
             </div>
             <div id="docs" class="edit-view" style="display: none;">
-                <div class="group edit-box hover">
-                    <input type="text" name="doc" value="{{ doc }}">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Document</label>
-                </div>
-<!--                <div id="drop-area">-->
-<!--                  <form class="my-form">-->
-<!--                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>-->
-<!--                    <input type="file" id="doc" name="doc" multiple accept="image/*" onchange="handleFiles(this.files)">-->
-<!--                    <label class="button" for="doc">Select file(s)</label>-->
-<!--                  </form>-->
-<!--                    <div id="gallery"></div>-->
-<!--                </div>-->
-            </div>
-            <div id="images" class="edit-view" style="display: none;">
-                <div id="drop-area">
+                <div class="drop-area" id="drop-area-doc">
                   <form class="my-form">
                     <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
-                    <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files)">
+                    <input type="file" id="doc" name="doc" multiple accept="image/*" onchange="handleFiles(this.files, 'doc')">
+                    <label class="button" for="doc">Select file(s)</label>
+                  </form>
+<!--                    <div id="gallery"></div>-->
+                </div>
+            </div>
+            <div id="images" class="edit-view" style="display: none;">
+                <div class="drop-area" id="drop-area-image">
+                  <form class="my-form">
+                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+                    <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
                     <label class="button" for="image">Select file(s)</label>
                   </form>
                     <div id="gallery"></div>

@@ -56,6 +56,10 @@ def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 
 
+def get_post_file(db_adapter, request_json):
+    return db_adapter.get_post_file(request_json)
+
+
 def change_color(db_adapter, file_obj):
     return db_adapter.change_color(file_obj)
 
@@ -74,6 +78,10 @@ def get_my_posts(db_adapter, user):
 
 def upload_post_file(db_adapter, request_json, file):
     return db_adapter.upload_post_file(request_json, file)
+
+
+def update_post_file(db_adapter, file, post_id, user):
+    return db_adapter.update_post_file(file, post_id, user)
 
 
 def create_bid(db_adapter, request_json):

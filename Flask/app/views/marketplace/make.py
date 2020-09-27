@@ -226,7 +226,7 @@ def make_view_post():
                                         image=result[0]['documents']['image'],
                                         offer=0
                                         ),
-                'data': []
+                'data': {'image': result[0]['documents']['image']}
             }
             # print(response)
             resp.status_code = msg.DEFAULT_OK['code']
@@ -268,7 +268,7 @@ def make_edit_post():
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
                                         ),
-                'data': [{'bids': result[0]['bids']}]
+                'data': [{'bids': result[0]['bids'], 'image': result[0]['documents']['image']}]
             }
             # print(response)
             resp.status_code = msg.DEFAULT_OK['code']

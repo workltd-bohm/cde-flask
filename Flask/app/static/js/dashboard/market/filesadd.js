@@ -1,9 +1,12 @@
 var images = [];
+documents = [];
 
-let dropArea = document.getElementById('drop-area');
+let dropAreaImage = document.getElementById('drop-area-image');
+let dropAreaDoc = document.getElementById('drop-area-doc');
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-  dropArea.addEventListener(eventName, preventDefaults, false);
+  dropAreaImage.addEventListener(eventName, preventDefaults, false);
+  dropAreaDoc.addEventListener(eventName, preventDefaults, false);
 });
 
 function preventDefaults (e) {
@@ -12,38 +15,48 @@ function preventDefaults (e) {
 }
 
 ['dragenter', 'dragover'].forEach(eventName => {
-  dropArea.addEventListener(eventName, highlight, false);
+  dropAreaImage.addEventListener(eventName, highlight, false);
+  dropAreaDoc.addEventListener(eventName, highlight, false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-  dropArea.addEventListener(eventName, unhighlight, false);
+  dropAreaImage.addEventListener(eventName, unhighlight, false);
+  dropAreaDoc.addEventListener(eventName, unhighlight, false);
 });
 
 function highlight(e) {
-  dropArea.classList.add('highlight');
+  dropAreaImage.classList.add('highlight');
+  dropAreaDoc.classList.add('highlight');
 }
 
 function unhighlight(e) {
-  dropArea.classList.remove('highlight');
+  dropAreaImage.classList.remove('highlight');
+  dropAreaDoc.classList.remove('highlight');
 }
 
-dropArea.addEventListener('drop', handleDrop, false);
+dropAreaImage.addEventListener('drop', handleDrop, false);
+dropAreaDoc.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
   let dt = e.dataTransfer;
   let files = dt.files;
 
+  console.log(e);
+
   handleFiles(files);
 }
 
-function handleFiles(files) {
-  files = [...files]
-  files.forEach(uploadPostFile)
-  files.forEach(previewFile)
+function handleFiles(files, fileType) {
+  files = [...files];
+  files.forEach(function(file){
+    uploadPostFile(file, fileType)
+  });
+  if(fileType == 'image'){
+      files.forEach(previewFile);
+  }
 }
 
-
-function uploadPostFile(file) {
+function uploadPostFile(file, fileType) {
   var url = 'upload_post_file';
   var formData = new FormData();
 
@@ -62,7 +75,12 @@ function uploadPostFile(file) {
         success: function(data){
             LoadStop();
             MakeSnackbar(data);
-            images.push(file.name);
+            if(fileType == 'image'){
+                images.push(file.name);
+            }
+            if(fileType == 'doc'){
+                documents.push(file.name);
+            }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -74,6 +92,7 @@ function uploadPostFile(file) {
 
 
 function previewFile(file) {
+  console.log(file);
   let reader = new FileReader()
   reader.readAsDataURL(file)
   reader.onloadend = function() {

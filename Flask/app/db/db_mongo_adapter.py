@@ -282,6 +282,13 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
+    def get_post_file(self, request_json):
+        col = self._db.Marketplace.Posts.Files
+        file_query = request_json
+        stored_file = col.find_one(file_query, {'_id': 0})
+        self._close_connection()
+        return stored_file
+
     def change_color(self, file_obj):
         col = self._db.Projects
         project_query = {'project_name': file_obj["project_name"]}
@@ -304,6 +311,7 @@ class DBMongoAdapter:
         col = self._db.Marketplace.Posts
         posts_query = {'post_id': request_json['post_id']}
         message = msg.POST_ALREADY_EXISTS
+        post_id = ''
         if col.find_one(posts_query, {'_id': 0}) is None:
             post_id = col.insert_one(request_json).inserted_id
             col.update_one({'post_id': 'default'},
@@ -311,7 +319,7 @@ class DBMongoAdapter:
             message = msg.POST_CREATED
             print(Post.json_to_obj(request_json).product.name)
         self._close_connection()
-        return message
+        return message, str(post_id)
 
     def get_all_posts(self):
         col = self._db.Marketplace.Posts
@@ -342,6 +350,7 @@ class DBMongoAdapter:
         # file_json = col.find_one(file_query, {'_id': 0})
         # if file_json is None:
         stored_id = str(col.insert_one({"file_id": "default",
+                                        "post_id": request_json['user'],
                                         "file_name": request_json['file_name'],
                                         "file": file,}).inserted_id)
         col.update_one({'file_id': 'default'},
@@ -350,6 +359,14 @@ class DBMongoAdapter:
 
         self._close_connection()
         return message, str(stored_id)
+
+    def update_post_file(self, file, post_id, user):
+        col = self._db.Marketplace.Posts.Files
+        file_query = {'file_name': file, 'post_id': user['username']}
+        col.update_one(file_query,
+                       {'$set': {'post_id': post_id}})
+        message = msg.IC_SUCCESSFULLY_ADDED
+        return message
 
     def create_bid(self, request_json):
         col = self._db.Marketplace.Bids

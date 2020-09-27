@@ -23,7 +23,7 @@ def get_file(file_name):
                 resp = Response(result['file'])
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
-                    'Content-Disposition', 'attachment', filename='%s.jpg' % result['file_name'])
+                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
                 resp.status_code = msg.DEFAULT_OK['code']
                 return send_file(
                      io.BytesIO(result['file']),

@@ -1,6 +1,7 @@
 from app import *
 
 from datetime import datetime
+import io
 
 
 @app.route('/create_post', methods=['POST'])
@@ -27,9 +28,13 @@ def create_post():
         request_json['user_owner'] = session.get('user')
         print(request_json)
         if db.connect(db_adapter):
-            result = db.create_post(db_adapter, request_json)
+            result, post_id = db.create_post(db_adapter, request_json)
             if result:
                 print(">>", result["message"])
+                if post_id:
+                    for file in request_json['documents']['image']:
+                        response = db.update_post_file(db_adapter, file, post_id, request_json['user_owner'])
+                        print(response)
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
@@ -229,6 +234,7 @@ def upload_post_file():
         # print(file)
         print(request.form['data'])
         request_json = json.loads(request.form['data'])
+        request_json['user'] = session['user']['username']
 
         if db.connect(db_adapter):
             result, id = db.upload_post_file(db_adapter, request_json, file)
@@ -245,6 +251,42 @@ def upload_post_file():
                 return resp
         else:
             print(">", str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_post_image/<path:file_name>', methods=['POST', 'GET'])
+def get_post_image(file_name):
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_json = {
+                        'post_id': request.args.get('post_id'),
+                        'file_name': file_name
+        }
+        print('POST data: %s ' % request_json)
+        if db.connect(db_adapter):
+            result = db.get_post_file(db_adapter, request_json)
+            if result:
+                print(result['file_name'])
+                resp = Response(result['file'])
+                # response.headers.set('Content-Type', 'mime/jpeg')
+                resp.headers.set(
+                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
+                resp.status_code = msg.DEFAULT_OK['code']
+                return send_file(
+                     io.BytesIO(result['file']),
+                     attachment_filename=result['file_name'])
+            else:
+                print("not_found")
+        else:
+            print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
