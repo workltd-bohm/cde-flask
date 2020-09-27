@@ -190,6 +190,19 @@ class Project:
                 files.append(x)
             self.extract_files(x, files)
 
+    def find_folder(self, path_id, ic):
+        new_ic = None
+        if ic.ic_id == path_id:
+            self._added = True
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.find_folder(path_id, x)
+                    if self._added:
+                        new_ic = x
+                        break
+        return new_ic
+
     #
     # def add_ic_old(self, ic_new, ic=None):
     #     if ic.is_directory:
