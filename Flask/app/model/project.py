@@ -190,19 +190,19 @@ class Project:
                 files.append(x)
             self.extract_files(x, files)
 
-    def find_folder(self, path_id, ic):
-        new_ic = None
+    def find_folder(self, path_id, ic, new_ic_array):
         if ic.ic_id == path_id:
-            new_ic = ic
-            self._added = True
-        else:
-            if ic.sub_folders:
-                for x in ic.sub_folders:
-                    self.find_folder(path_id, x)
-                    if self._added:
-                        new_ic = x
-                        break
-        return new_ic
+            new_ic_array.append(ic)
+        for x in ic.sub_folders:
+            if x.ic_id == path_id:
+                self._added = True
+                new_ic_array.append(x)
+            else:
+                new_ic_array.append(self.find_folder(path_id, x, new_ic_array))
+                # print('++++++', new_ic_array)
+                if self._added:
+                    break
+
 
     #
     # def add_ic_old(self, ic_new, ic=None):

@@ -34,9 +34,15 @@ def get_filtered_files():
             if result:
                 files = []
                 p = Project.json_to_obj(result)
-                ic = p.find_folder(request_json['path_id'], p.root_ic)
-                print(ic.to_json())
-                p.extract_files(ic, files)
+                new_ic_array = []
+                p.find_folder(request_json['path_id'], p.root_ic, new_ic_array)
+                # print(new_ic_array)
+                new_ic = None
+                for ic in new_ic_array:
+                    if ic:
+                        new_ic = ic
+                print(new_ic.to_json())
+                p.extract_files(new_ic, files)
                 filtered = filter_out(request_json['data'], files)
 
                 #res = [file.to_json()['name'] + file.to_json()['type'] for file in filtered]
