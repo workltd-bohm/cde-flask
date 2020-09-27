@@ -23,12 +23,12 @@ function OpenFilterActivity(){
 function FilterOut(obj){
     var data = {};
     $(obj).serializeArray().map(function(x){data[x.name] = x.value;});
-    console.log(data);
+    //console.log({path_id:SEARCH_HISTORY.ic_id, data: data});
 
     $.ajax({
         url: "/get_filtered_files",
         type: 'POST',
-        data: JSON.stringify(data),
+        data: JSON.stringify({path_id:SEARCH_HISTORY.ic_id, data: data}),
         timeout: 5000,
         success: function(data){
                 data = JSON.parse(data);

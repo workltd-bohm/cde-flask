@@ -13,7 +13,7 @@
 
   </div>
   <div id="filter-search" style="display: none;">
-    <form id="filter-form">
+    <form id="filter-form" onchange="FilterOut('#filter-form')">
       <div class="scroll">
         <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
         
@@ -29,7 +29,6 @@
               </div>
             {% endfor %}
         </div>
-        <input type="button" class="popup_button" value="Search" onclick="FilterOut('#filter-form')"/>
       </form>
   </div>
 </div>

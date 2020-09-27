@@ -21,7 +21,10 @@ def get_filtered_files():
     print('Data posting path: %s' % request.path)
     project_name = session.get("project")["name"]
     request_json = app.test_json_request_get_filtered_files
-    temp_request_json = json.loads(request.get_data())
+    bundle = json.loads(request.get_data())
+    print(bundle)
+    path_id = bundle["path_id"]
+    temp_request_json = bundle["data"]
     if temp_request_json and len(temp_request_json) > 0: request_json = temp_request_json
     print(request_json)
     resp = Response()

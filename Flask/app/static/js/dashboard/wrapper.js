@@ -128,7 +128,7 @@ function CreateProject(position=null){
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);
-            console.log(data)
+            //console.log(data)
             if(data){
                 DashboardCreate([data.json.root_ic], data.project);
                 OpenFilterActivity();
