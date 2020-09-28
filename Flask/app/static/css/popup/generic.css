@@ -41,8 +41,8 @@ div.pero > div.content {
     padding: 20px;
     border: 1px solid #888;
     border-radius: 25px;
-    width: 30%;
-    height: 60%;
+    width: 70%;
+    /* height: 30%; */
     overflow: unset;
 }
 
@@ -129,3 +129,9 @@ div.content > .form > .scroll {
 .form__field:required, .form__field:invalid {
     box-shadow: none;
 }
+
+/* .popup_button {
+    position: relative;
+    top: 3vw;
+    left: 50px;
+} */

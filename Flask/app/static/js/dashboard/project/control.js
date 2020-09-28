@@ -27,7 +27,8 @@ function WindowResize(){
 
     g_PathRadius = g_SunRadius/PATH_SUN_RATIO;
 
-    g_OverlayRadius = g_SunRadius/OVERLAY_SUN_RATIO;
+    g_OverlayRadius = g_SunRadius;
+    g_OverlayItem = g_SunRadius/OVERLAY_SUN_RATIO;
 
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;

@@ -38,8 +38,10 @@ const PATH_TEXT_PADDING = 3;
 const OVERLAY_SUN_RATIO = 4;
 const OVERLAY_MARG = 2;
 
-const TEXT_SUN_SCALE = 2;
+const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
+const TEXT_MOVE_COEF = 4;
+const TEXT_MAX_LENGHT = 10;
 
 
 // ----------------------------------------------------
@@ -61,8 +63,9 @@ var g_project = {
         rotate_scale : ORBIT_ROT_SCALE,
         dragging : false,
         skip: false,
-        project_position: null,
-        project_position_mix: null,
+        //project_position: null,
+        //project_position_mix: null,
+        search:false,
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
@@ -80,6 +83,7 @@ var g_PlanetRadius = 0;
 var g_PlanetRadius_old = 0;
 var g_PathRadius = 0;
 var g_OverlayRadius = 0;
+var g_OverlayItem = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},
@@ -118,11 +122,12 @@ var g_root = {
     universe : null
 }
 
-function ClearProject(){
+function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     g_project = {...g_project_per};
+    if(hard)SESSION = {};
 }
 
 // -------------------------------------------------------

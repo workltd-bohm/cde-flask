@@ -13,6 +13,8 @@ def get_user(db_adapter, identifier):
 def set_user(db_adapter, user):
     return db_adapter.set_user(user)
 
+def edit_user(db_adapter, user):
+    return db_adapter.edit_user(user)
 
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
@@ -24,6 +26,10 @@ def upload_project(db_adapter, project, user):
 
 def get_all_projects(db_adapter):
     return db_adapter.get_all_projects()
+
+
+def get_my_projects(db_adapter, user):
+    return db_adapter.get_my_projects(user)
 
 
 def get_project(db_adapter, project_name, user):
@@ -50,6 +56,14 @@ def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 
 
+def get_post_file(db_adapter, request_json):
+    return db_adapter.get_post_file(request_json)
+
+
+def change_color(db_adapter, file_obj):
+    return db_adapter.change_color(file_obj)
+
+
 def create_post(db_adapter, request_json):
     return db_adapter.create_post(request_json)
 
@@ -60,6 +74,14 @@ def get_all_posts(db_adapter):
 
 def get_my_posts(db_adapter, user):
     return db_adapter.get_my_posts(user)
+
+
+def upload_post_file(db_adapter, request_json, file):
+    return db_adapter.upload_post_file(request_json, file)
+
+
+def update_post_file(db_adapter, file, post_id, user):
+    return db_adapter.update_post_file(file, post_id, user)
 
 
 def create_bid(db_adapter, request_json):
@@ -78,8 +100,16 @@ def get_single_post(db_adapter, request_json):
     return db_adapter.get_single_post(request_json)
 
 
+def get_single_bid(db_adapter, request_json):
+    return db_adapter.get_single_bid(request_json)
+
+
 def get_bids_for_post(db_adapter, request_json):
     return db_adapter.get_bids_for_post(request_json)
+
+
+def share_project(db_adapter, request_data, user):
+    return db_adapter.share_project(request_data, user)
 
 
 def clear_db(db_adapter):

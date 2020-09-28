@@ -15,7 +15,9 @@ function CreateSpace(data) {
 
     g_project.overlay = false;
 
-    g_project.project_position = data.path;
+    // g_project.project_position = data.path;
+
+    g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
 
     g_root.universe.selectAll("g")
         .data([data])
@@ -33,6 +35,8 @@ function AddSun(obj, data){
     data.box = {...g_box};
     data.values = {};
     data.values.this = obj;
+    data.values.parent = obj;
+    data.values.back = data;
     data.values.rotation = 1;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
@@ -68,7 +72,6 @@ function AddSun(obj, data){
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
         .on("mouseover",function(d){
-            data.values.text.style("opacity", 0);
             if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
@@ -148,6 +151,7 @@ function AddChildren(obj, data, parent, position=0){
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern")
         .attr("r", g_PlanetRadius);
+    if (data.color) data.values.picture.style("fill", data.color)
 
     data.values.shader = data.values.object.append("circle")
         .attr("class", "planet shader")
@@ -172,29 +176,53 @@ function AddChildren(obj, data, parent, position=0){
             }, data);
         })
         .on("mouseup",function(d){
-            ClickStop(SunFadeout, data);
+            var func = function(){};
+            switch(g_root.universe.data.overlay_type){
+                case "user" : func = GetWarp; break;
+                default : func = SunFadeout; break;
+            }
+            ClickStop(func, data);
         });
 }
 
 // -------------------------------------------------------
 
+function AddTspan(target, newobj, text){
+    // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+    var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
+    newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;
+    var spacing = parseFloat($(target.node()).css("fontSize"));
+    for(var i = 0; i <= slice; i++){
+        target.append("tspan")
+        .attr('x', 0)
+        .attr('y', (i-(slice)/2)*spacing) //TEXT_SPACING)
+        .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
+    }
+}
+
 function AddText(data, cls="", fix=false) {
     var newobj = data.values;
-    //console.log(obj)
+    var newName = data.name;
+    if(data.type){
+        newName = data.name + data.type
+    }
+    newobj.text_len = newName.length;
     newobj.text = newobj.object.append("g")
         .attr("class", cls+" text")
-    newobj.text.append("text")
+    var tmp = newobj.text.append("text")
         .attr("class", cls+" text_back")
         .attr("x",0)
         .attr("y",0)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(data.name);
-    newobj.text.append("text")
+        //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        //.html(newName);
+    AddTspan(tmp, newobj, newName);
+    tmp = newobj.text.append("text")
         .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(data.name);
+        //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        //.html(newName);
+    AddTspan(tmp, newobj, newName);
 }
 
 function SunFadeout(data){
@@ -231,7 +259,8 @@ function SunFadeout(data){
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
-    if(g_root.slider) data.values.text.transition()
+    // if(g_root.slider) 
+    data.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("text-anchor","middle")
@@ -254,20 +283,46 @@ function SunFadeout(data){
     });
 }
 
-function GetWarp(){
+function GetWarp(data){
     if(!g_project.warp) {
-        g_root.universe.data.overlay_type == "ic" ? AddPath(g_project.skip.values.back) : 1;
+        //console.log(g_root.universe.data)
+        //console.log(g_project.skip, g_project.search,g_project.history)
+        if(!g_project.search)
+            switch(g_root.universe.data.overlay_type){
+                case "search": 
+                case "ic": AddPath(g_project.skip.values.back); break;
+                default: break;
+            }
+        else{
+            //console.log(g_project.skip, g_project.search,g_project.history)
+            // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
+            //     console.log(1)
+            //     g_project.history = g_project.skip.hist_path.this;
+            //     g_project.skip.hist_path.child.selectAll("g").remove();
+            // }
+            
+            // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
+            if (data) g_project.skip = g_project.search;
+            else g_project.search = g_project.skip;
+            g_root.universe.data = g_project.search;
+            
+        }
         if(g_project.overlay) {
             g_project.overlay.remove();
             g_project.overlay = false;
         }
         
-        g_project.skip.values.parent.remove()
-
+        if (g_project.skip) g_project.skip.values.parent.remove()
+        if (data) g_project.skip = data;
+        
+        //console.log(g_project.skip, g_project.search,g_project.history)
         switch(g_root.universe.data.overlay_type){
+            case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
             case "project": WrapGetProject(g_project.skip); break;
             case "market": WrapGetMarket(g_project.skip); break;
+            case "search": CreateSpace(g_project.skip); break; // TODO 
+            case "search_target": SearchOpen(g_project.skip); break; // TODO 
             default : CreateSpace(g_project.skip); break;
         }
 
@@ -324,10 +379,14 @@ function AnimatePlanet(data) {
             .attr("transform","rotate("+(g_root.deg)+")");
 
         data.values.children.selectAll("g.planet").each(function(data){
+            var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
+            var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
+            var pos =  rot_x*TEXT_MOVE_COEF*data.values.text_len;
+            data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform","rotate("+(-g_root.deg)+")");
+                .attr("transform","rotate("+(-g_root.deg)+"), translate("+(pos)+")")
         });
     }
 }
@@ -336,8 +395,9 @@ function AnimatePlanet(data) {
 
 function RecursiveFileSearch(back, data){
     var found = false;
-//    console.log(data.path +"  "+ g_project.project_position)
-    if (data.path == g_project.project_position){
+    // console.log(data.parent_id +"  "+ data.ic_id, data.sub_folders.length)
+    if ((data.parent_id == SESSION["position"]["parent_id"]) &&
+        (data.ic_id == SESSION["position"]["ic_id"])){
         return [[], data];
     }
     else if (data.sub_folders && data.sub_folders.length > 0){
@@ -349,13 +409,18 @@ function RecursiveFileSearch(back, data){
             }
         }
     }
+    if (!found) {
+        if (data.ic_id == SESSION["position"]["parent_id"]){
+            return [[], data];
+        }
+    }
     return found;
 }
 
 function ProjectPosiotionSet(data){
-    //console.log(g_project.project_position)
+    // console.log(SESSION["position"])
     var found = false;
-    if(g_project.project_position){
+    if(SESSION["position"]){
         found = RecursiveFileSearch(data, data);
         if (found) {
             var path = found[0].reverse()
@@ -386,7 +451,7 @@ function DashboardCreate(data, project_position=null) {
         .attr("r", g_TouchRadius);
 
     g_root.universe.data = data[0];
-    g_project.project_position = project_position;
+    //g_project.project_position = project_position;
 
     PathCreation(data);
 

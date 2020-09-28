@@ -1,20 +1,15 @@
 <div class="post-header">
+    <div class="post-block" onclick="MarketGet('Posts');">
+        <i class="material-icons w3-xxxlarge">reply</i>
+    </div>
     <div class="post-block">
         <h3>BID LIST</h3>
     </div>
 </div>
-<div class="post-header">
+{% for bid in bids %}
+    <div class="post-header">
     <div class="post-block">
-        <h4>BID</h4>
+        <h5>{{ bid }}</h5>
     </div>
 </div>
-<div class="post-header">
-    <div class="post-block">
-        <h4>BID</h4>
-    </div>
-</div>
-<div class="post-header">
-    <div class="post-block">
-        <h4>BID</h4>
-    </div>
-</div>
+{% endfor %}

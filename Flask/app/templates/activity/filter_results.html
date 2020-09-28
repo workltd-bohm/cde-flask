@@ -1,0 +1,10 @@
+<br>
+<table>
+    {% for key in filtered %}
+      <tr class="activity" onclick="DownloadFile( '{{ key }}' )">
+        <td>{{ key }}</td>
+      </tr>
+    <br>
+    {% endfor %}
+
+</table>

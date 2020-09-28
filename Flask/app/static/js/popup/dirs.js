@@ -4,7 +4,11 @@ function NewFolder(form, json){
     $.ajax({
         url: "/get_new_folder",
         type: 'POST',
-        data: JSON.stringify({parent_path:json.path}),
+        data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
+            parent_path:json.path,
+        }),
         timeout: 5000,
         success: function(data){
             input_json = JSON.parse(data);
@@ -15,7 +19,7 @@ function NewFolder(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -37,6 +41,7 @@ var sel4;
 var sel5;
 var sel6;
 var sel7;
+var fileList = null;
 
 var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'Default'];
 
@@ -62,52 +67,8 @@ function FileDataInit(){
 
 };
 
-// ------------------------------------------
-
-function input_get() {
-    $.get( "/input")
-        .done(function( data ) {
-            input_json = JSON.parse(data);
-            OnFileUpload();
-        })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            if($jqXHR.status == 404) {
-                console.log( errorThrown + ": " + $jqXHR.responseText );
-            }
-        });
-};
-
-function fill_options(){
-    fill(input_json.volume_system_name, sel, input_json.volume_system_code);
-    fill(input_json.level_name, sel1, input_json.level_code);
-    fill(input_json.type_name, sel2, input_json.type_code);
-    fill(input_json.role_name, sel3, input_json.role_code);
-    fill(input_json.number_name, sel4, input_json.number_code);
-    fill(input_json.status_name, sel5, input_json.status_code);
-    fill(input_json.revision_name, sel6, input_json.revision_code);
-    fill(input_json.uniclass_name, sel7, '');
-}
-
-function fill(json, sel, code){
-    for(var i = 0; i < json.length; i++) {
-        // create new option element
-        var opt = document.createElement('option');
-        // create text node to add to option element (opt)
-        var text = json[i];
-        // set value property of opt
-        opt.value = json[i];
-        if(code != ''){
-            text = code[i] + ', ' + text;
-            opt.value = code[i] + ', ' + json[i];
-        }
-        opt.appendChild( document.createTextNode(text) );
-
-        // add opt to end of select box (sel)
-        sel.appendChild(opt);
-    }
-}
-
 function updateName(position, el){
+    console.log(el.value);
     text = el.value.split(',')[0];
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];
@@ -119,21 +80,21 @@ function updateNewName(){
     $("#new_name").attr("value", updated_name.join("-"))
 }
 
-function OnFileUpload(){
-    $("#file").change(function(e){
-        var file = e.target.files[0];
-        fill_options();
+function OnFileUpload(file){
+//    $("#file").change(function(e){
+//        var file = e.target.files[0];
+//        fill_options();
         var fileName = file.name.split('.');
         file_extension.value = '.' + fileName[1];
         name1.value = file.name;
         fileList = file;
-        console.log(file);
+//        console.log(file);
         updated_name[9] = file.name;
         //updated_name[10] = '.' + fileName[1];
         originalName = fileName[0] + '.' + fileName[1]
         updateNewName();
 
- });
+// });
 }
 
 function GetFile(){
@@ -141,18 +102,39 @@ function GetFile(){
     var d = {};
     var form = GetForm().serializeArray().map(function(x){d[x.name] = x.value;});
 
-    fd.append('data', JSON.stringify(d));
-    fd.append('file', fileList)
+    if(fileList){
+        fd.append('data', JSON.stringify(d));
+        fd.append('file', fileList)
+    }
+    else{
+        MakeSnackbar("File not selected");
+        return null;
+    }
 
     return fd;
 }
 
-function NewFile(form, json){
+function OpenFileDialog(data){
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+
+       // getting a hold of the file reference
+       var file = e.target.files[0];
+
+       PopupOpen(NewFile, data, file);
+    }
+    input.click();
+}
+
+function NewFile(form, json, file){
     LoadStart();
     $.ajax({
         url: "/get_new_file",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             project_path: json.path,
             is_file: !json.is_directory,
         }),
@@ -164,13 +146,13 @@ function NewFile(form, json){
             form.append(html);
 
             FileDataInit();
-            input_get();
+            OnFileUpload(file);
 
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -179,13 +161,21 @@ function NewFile(form, json){
 // ------------------------------------------
 
 function RenameFile(form, json){
+//    console.log(json);
     LoadStart();
+    var newOldName = json.name;
+    if(json.hasOwnProperty("type")){
+//        console.log(data.name);
+        newOldName = json.name + json.type
+    }
     $.ajax({
         url: "/get_rename_ic",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             parent_path: json.parent,
-            old_name: json.name,
+            old_name: newOldName,
             is_directory: json.is_directory,
         }),
         timeout: 5000,
@@ -195,11 +185,48 @@ function RenameFile(form, json){
             form.empty();
             form.append(html);
 
+            if(json.is_directory){
+//                console.log(html);
+                document.getElementById('smart_naming').remove();
+                document.getElementById('name_div').style.bottom = "120px";
+            }
+            else{
+                document.getElementById('project_code').value = json.project_code;
+                document.getElementById('company_code').value = json.company_code;
+//                document.getElementById('name').value = json.original_name;
+                var file = {};
+                file.name = json.original_name;
+
+                FileDataInit();
+                OnFileUpload(file);
+
+                updated_name[0] = json.project_code;
+                updated_name[1] = json.company_code;
+                updated_name[2] = json.project_volume_or_system.split(',')[0];
+                updated_name[3] = json.project_level.split(',')[0];
+                updated_name[4] = json.type_of_information.split(',')[0];
+                updated_name[5] = json.role_code.split(',')[0];
+                updated_name[6] = json.file_number.split(',')[0];
+                updated_name[7] = json.status.split(',')[0];
+                updated_name[8] = json.revision.split(',')[0];
+//                updated_name[9] = json.uniclass_2015.split(',')[0];
+
+                updateNewName();
+
+                $('#project_volume_or_system').val(json.project_volume_or_system);
+                $('#project_level').val(json.project_level);
+                $('#type_of_information').val(json.type_of_information);
+                $('#role_code').val(json.role_code);
+                $('#file_number').val(json.file_number);
+                $('#status').val(json.status);
+                $('#revision').val(json.revision);
+            }
+
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -213,6 +240,8 @@ function DeleteFile(form, json){
         url: "/get_delete_ic",
         type: 'POST',
         data: JSON.stringify({
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
             parent_path: json.parent,
             delete_name: json.name,
             is_directory: json.is_directory,
@@ -228,7 +257,7 @@ function DeleteFile(form, json){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
@@ -238,6 +267,7 @@ function DownloadFile(path){
     LoadStart();
     var url = "/get_file/" + path;
     window.open(url, "_blank");
+    LoadStop();
 //    $.ajax({
 //        url: "/get_file/" + path,
 //        type: 'GET',

@@ -11,9 +11,9 @@ def index():
     if not IsLogin(): return redirect('/login')
     user = session.get('user')
     # user.update({'project_code': 'SV', 'company_code': 'WRK'})
-    username = session['user']['username']
-    id = session['user']['id']
-    email = session['user']['email']
+    username = session.get('user')['username']
+    id = session.get('user')['id']
+    email = session.get('user')['email']
     menu = render_template("menu/menu.html", username=username)
     dashboard = render_template("dashboard/dashboard.html")
     activity = render_template("activity/activity.html", activity_name="BLANK")

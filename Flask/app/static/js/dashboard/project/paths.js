@@ -27,6 +27,7 @@ function DrawPath(obj, data){
         })
         .on("mouseup",function(d){
             ClickStop(function(data){
+                if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
                 d3.selectAll("g.star").remove();
                 g_project.history = data.hist_path.back;
                 data.hist_path.this.selectAll("g").remove();
@@ -47,7 +48,7 @@ function AddPath(data){
     DrawPath(g_project.history, d);
 }
 
-function PathCreation(data, project_position=null){
+function PathCreation(data){
     g_project.hist_path = SVG.append("g")
         .attr("id","Path")
         .attr("transform","translate(0,"+(g_PathRadius*PATH_ORBIT_COEF)+")")

@@ -2,7 +2,7 @@
 function WrapGetProject(data){
     var tmp = {choose_project: data.name};
     //console.log(tmp)
-    FormSubmit('select_project', JSON.stringify(tmp), true, CreateProject);
+    FormSubmit('select_project', tmp, true, CreateProject);
     //PopupOpen(GetProjects);
 }
 
@@ -19,7 +19,8 @@ function WrapCreateFolder(data){
 function WrapCreateFile(data){
     var tmp = data.values.data;
     //console.log(tmp);
-    PopupOpen(NewFile, tmp);
+//    PopupOpen(NewFile, tmp);
+    OpenFileDialog(tmp);
 }
 
 function WrapRename(data){
@@ -56,4 +57,10 @@ function WrapDownload(data){
     var tmp = data.values.data;
 
     DownloadFile(tmp.name + tmp.type)
+}
+
+function WrapShareProject(data){
+    var tmp = data.values.data;
+
+    PopupOpen(SharePopup, tmp);
 }

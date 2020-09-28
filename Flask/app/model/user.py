@@ -16,6 +16,15 @@ class User:
         self._email = json_data['email']
         self._password = json_data['password']
 
+    def update_user(self, json_data):
+        if "username" in json_data and len(json_data['username']) > 0: self._username = json_data['username']
+        if "email" in json_data and len(json_data['email']) > 0: self._email = json_data['email']
+        if "password" in json_data and len(json_data['password']) > 0: self._password = json_data['password']
+        if "picture" in json_data and len(json_data['picture']) > 0: self._picture = json_data['picture']
+        if "company_code" in json_data and len(json_data['company_code']) > 0: self._company_code = json_data['company_code']
+        if "company_name" in json_data and len(json_data['company_name']) > 0: self._company_name = json_data['company_name']
+        if "company_role" in json_data and len(json_data['company_role']) > 0: self._company_role = json_data['company_role']
+
     @property
     def id(self):
         return self._id
@@ -94,5 +103,9 @@ class User:
                     'username': self._username,
                     'email': self._email,
                     'password': self._password,
+                    'picture': self._picture,
+                    'company_code': self._company_code,
+                    'company_name': self._company_name,
+                    'company_role': self._company_role,
                     'confirmed': self._confirmed
                 }

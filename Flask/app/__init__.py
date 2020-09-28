@@ -4,6 +4,7 @@ import app.config as cfg
 import app.db.db_comminication as db
 from app.model.user import User
 import app.model.messages as msg
+import app.model.marketplace.post as status
 from app.model.information_container import IC
 from app.model.directory import Directory
 from app.model.file import File
@@ -25,6 +26,8 @@ from app.views.actions import dirs
 from app.views.actions import popups
 from app.views.actions import getters
 from app.views.actions import setters
+from app.views.actions import user
+from app.views.actions import search
 
 from app.views.marketplace import make
 from app.views.marketplace import posts
@@ -74,7 +77,10 @@ app.test_json_request_create_bid = {
     'post_id': '12',
     'offer': '10 euro/m2',
     'date_created': '06.09.2020-17:41:25',
-    'description': 'Cheap offer'
+    'description': '',
+    'status': '',
+    'comments': ['Cheap offer'],
+    'post_title': '300 m2 ironed concrete'
 }
 
 app.test_json_request_get_bids_for_post = {
@@ -83,4 +89,19 @@ app.test_json_request_get_bids_for_post = {
 
 app.test_json_request_get_single_post = {
     'post_id': '12'
+}
+
+app.test_json_request_get_filtered_files = {
+    # 'project_id': '5f623020e60b784154788876',
+    # 'project_name': '123',
+    'project_code': '',
+    'company_code': '',
+    'project_volume_or_system': '',
+    'project_level': '',
+    'type_of_information': '',
+    'role_code': '',
+    'file_number': '',
+    'status': '',
+    'revision': '',
+    'overlay_type': '',
 }

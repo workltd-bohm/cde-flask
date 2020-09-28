@@ -23,14 +23,14 @@ function GetForm(){
     return $("div.pero > .content > .form");
 }
 
-function PopupOpen(run=null, data=null){
+function PopupOpen(run=null, data=null, file=null){
     var form = GetForm();
 
     LoadStop(); 
     $(form).empty();
     $("div.pero").show();
 
-    if(run) run(form, data);
+    if(run) run(form, data, file);
 }
 
 function PopupClose(){
@@ -56,16 +56,16 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     var form = GetForm();
 
     if(!CheckAval(form)) return; 
-    var d = {};
-    if (!args) form.serializeArray().map(function(x){d[x.name] = x.value;}); 
-    if (!args) args = JSON.stringify(d);
+    var d = {parent_id: '', ic_id:''};
+    form.serializeArray().map(function(x){d[x.name] = x.value;}); 
+    if (!args) args = d;
     // console.log(args);
 
     LoadStart();
     $.ajax({
         url: job,
         type: 'POST',
-        data: args,
+        data: (args instanceof FormData)? args : JSON.stringify(args),
         //dataType: "json",
         processData: false,
         contentType: false,
@@ -76,8 +76,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
 
-            if(d["delete_name"]) g_project.project_position_mix = d["parent_path"];
-            if(d["new_name"]) g_project.project_position_mix = d["parent_path"] + "/" + d["new_name"];
+            SESSION["position"] = {parent_id: d["parent_id"], ic_id: d["ic_id"]};
 
             if(func) func();
             LoadStop();
@@ -85,7 +84,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
+            MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });

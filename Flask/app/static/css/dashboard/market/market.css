@@ -78,11 +78,11 @@
 }
 .edit-section.upper{
     background: #121212;
-    height: 50%;
+    height: 70%;
 }
 .edit-section.lower{
     background:rgb(255, 255, 255, 0.11);
-    height: 50%;
+    /* height: 50%; */
 }
 .edit-section.left{
     float: left;
@@ -104,6 +104,16 @@
     background:rgb(41, 41, 41);
     border: 2px solid black;
 }
+.edit-section.view{
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    background:rgb(61, 61, 61);
+    border: 2px solid black;
+}
 
 .edit-box{
     display: block;
@@ -113,6 +123,11 @@
     /* width: 20%; */
     border: 2px solid black;
     padding: 5px 2px 5px 2px;
+}
+
+.edit-box:hover{
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
 }
 
 .edit-box > h4 {
@@ -129,6 +144,22 @@
 .edit-box.hover{
     margin: 2%;
     float: none;
+}
+
+.edit-box.button{
+    margin: 2%;
+    float: none;
+    width: 30%;
+    display: inline-block;
+    position: relative;
+    bottom: 5px;
+    background: #757575;
+}
+
+.edit-box.button:hover{
+    margin: 2%;
+    float: none;
+    background: #5264AE;
 }
 
 .edit-box.right{

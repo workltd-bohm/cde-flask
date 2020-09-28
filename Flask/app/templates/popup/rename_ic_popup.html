@@ -1,16 +1,52 @@
 <h3>Rename {{ old_name }}</h3>
 <div class="scroll">
+  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+  <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
   <input type="hidden" name="project_name" value="{{ project_name }}" required />
   <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
   <input type="hidden" name="old_name" value="{{ old_name }}" required />
-  <div class="form__group field">
-    <input type="input" class="form__field" name="new_name" value="{{ old_name }}" required />
-    <label for="rename_new_name" class="form__label">New name</label>
+ <div id="smart_naming">
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="project_code" id='project_code' value="{{ project_code }}" required/>
+      <label for="project_code" class="form__label_popup">Project Code</label>
+    </div>
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}" required/>
+      <label for="company_code" class="form__label_popup">Company Code</label>
+    </div>
+
+
+     {% for key, value in inputs.items() %}
+      <div class="form__group_popup circle">
+          <select class="form__field_popup" name="{{ key }}" id='{{ key }}' onchange="updateName({{ value.order }}, this)" >
+              <option></option>
+              {% for v in value.elements %}
+                <option value="{{ v }}">{{ v }}</option>
+              {% endfor %}
+          </select>
+          <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+      </div>
+    {% endfor %}
+
+    <div class="form__group_popup rectangle">
+      <input class="" name="name" id='name' value="Default" oninput="updateName(9, this)" />
+      <label for="name" class="form__label_popup">Name</label>
+    </div>
+    <div class="form__group_popup circle">
+      <input type="text" class="form__field_popup" name="file_extension" id='file_extension' value="" readonly />
+      <label for="file_extension" class="form__label_popup">File Extension</label>
+    </div>
   </div>
-  <div class="form__group field">
-    <input type="checkbox" class="form__field" name="is_directory"/ {% if is_directory %} checked {% endif %}>
+  <br>
+  <div class="form__group_popup_new" id="name_div">
+    <input type="text" class="form__field_popup" name="new_name" id='new_name' required/>
+    <label for="new_name" class="form__label">New name</label>
+  </div>
+  <br>
+  <div class="form__group field" id="is_dir_div" style="display:none">
+    <input type="checkbox" class="form__field" id="rename_is_dir" name="is_directory"/ {% if is_directory %} checked {% endif %}>
     <label for="rename_is_dir" class="form__label">Is directory</label>
   </div>
   <br>
 </div>
-<input type="button" value="Rename" onclick="FormSubmit('rename_ic', null, true, CreateProject)"/>
+<input type="button" class="popup_button" value="Rename" onclick="FormSubmit('rename_ic', null, true, CreateProject)"/>

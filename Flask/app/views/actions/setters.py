@@ -10,6 +10,8 @@ def clear_projects():
     if main.IsLogin():
         if db.connect(db_adapter):
             db.clear_db(db_adapter)
+            session.get("project")["name"] = ''
+            session.modified = True
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
@@ -26,8 +28,8 @@ def select_project():
     if main.IsLogin():
         print(request.get_data())
         request_data = json.loads(request.get_data())
-        session["project_name"] = request_data['choose_project']
-
+        session.get("project")["name"] = request_data['choose_project']
+        session.modified = True
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = str(msg.DEFAULT_OK['message'])
@@ -52,6 +54,7 @@ def create_project():
                     ".",
                     [],
                     request_data['project_name'],
+                    '',
                     '',
                     [])
         project = Project("default", request_data['project_name'], root_obj)
@@ -83,7 +86,7 @@ def upload_project():
     if main.IsLogin():
         root_obj = dirs.path_to_obj('app')
         project = Project("default", "test-project", root_obj)
-        user = {'id': session['user']['id'], 'role': 'OWNER'}
+        user = {'id': session.get('user')['id'], 'role': 'OWNER'}
         print(root_obj)
         if db.connect(db_adapter):
             result = db.upload_project(db_adapter, project, user)
@@ -98,20 +101,58 @@ def upload_project():
 
     return redirect('/')
 
-@app.route('/set_project_position', methods=['POST'])
-def set_project_position():
-    resp = Response()
+
+@app.route('/set_color', methods=['POST'])
+def set_color():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
         print(request_data)
-        session["project_position"] = request_data["project_position"]
+        if db.connect(db_adapter):
+            color_change = {
+                "project_name": project_name,
+                "ic_id": request_data["ic_id"],
+                "color": request_data["color"],
+            }
+            result = db.change_color(db_adapter, color_change)
+            if result:
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
 
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = str(msg.DEFAULT_OK['message'])
-        return resp
-
+    resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
+@app.route('/share_project', methods=['POST'])
+def share_project():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            result = db.share_project(db_adapter, request_data, session['user'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    return redirect('/')

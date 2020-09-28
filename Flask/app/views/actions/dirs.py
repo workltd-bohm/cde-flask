@@ -23,7 +23,7 @@ def get_file(file_name):
                 resp = Response(result['file'])
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
-                    'Content-Disposition', 'attachment', filename='%s.jpg' % result['file_name'])
+                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
                 resp.status_code = msg.DEFAULT_OK['code']
                 return send_file(
                      io.BytesIO(result['file']),
@@ -59,6 +59,7 @@ def upload_file():
         # print(file)
         print(request.form['data'])
         request_json = json.loads(request.form['data'])  # test_json_request
+        set_project_data(request_json)
         directory = request_json['parent_path']
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
         file_obj = File(str(uuid.uuid1()),
@@ -68,23 +69,24 @@ def upload_file():
                         [],
                         directory + '/' + request_json['new_name'],
                         "." + request_json['new_name'].split('.')[-1],
+                        request_json['ic_id'],
                         '',
                         [],
                         '',
                         'description') # request_json['description'])
-        try:
-            file_obj.project_code = request_json['project_code']
-            file_obj.company_code = request_json['company_code']
-            file_obj.project_volume_or_system = request_json['project_volume_or_system']
-            file_obj.project_level = request_json['project_level']
-            file_obj.type_of_information = request_json['type_of_information']
-            file_obj.role_code = request_json['role_code']
-            file_obj.file_number = request_json['file_number']
-            file_obj.status = request_json['status']
-            file_obj.revision = request_json['revision']
-        except Exception:
-            pass
-        print(file_obj.to_json())
+        # try:
+        file_obj.project_code = request_json['project_code']
+        file_obj.company_code = request_json['company_code']
+        file_obj.project_volume_or_system = request_json['project_volume_or_system']
+        file_obj.project_level = request_json['project_level']
+        file_obj.type_of_information = request_json['type_of_information']
+        file_obj.role_code = request_json['role_code']
+        file_obj.file_number = request_json['file_number']
+        file_obj.status = request_json['status']
+        file_obj.revision = request_json['revision']
+        # except Exception:
+        #     pass
+        # print(file_obj.to_json())
         if db.connect(db_adapter):
             # with open('app/templates/activity/activity.html', "rb") as f:
             #     encoded = Binary(f.read())  # request_json['file']
@@ -100,7 +102,7 @@ def upload_file():
             print(">", str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
     
     resp = Response()
@@ -114,12 +116,14 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        set_project_data(request_data)
         print(request_data)
         folder = IC(str(uuid.uuid1()),
-                    request_data['folder_name'],
+                    request_data['new_name'],
                     request_data['parent_path'],
                     [],
-                    request_data['parent_path'] + '/' + request_data['folder_name'],
+                    request_data['parent_path'] + '/' + request_data['new_name'],
+                    request_data['ic_id'],
                     '',
                     [])
         if db.connect(db_adapter):
@@ -134,7 +138,7 @@ def create_dir():
             print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()
@@ -148,10 +152,13 @@ def rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        set_project_data(request_data)
         print(request_data)
         if db.connect(db_adapter):
             rename = {
                 "project_name": request_data["project_name"],
+                "parent_id": request_data['parent_id'],
+                "ic_id": request_data['ic_id'],
                 "path": request_data["parent_path"],
                 "old_name": request_data["old_name"],
                 "new_name": request_data["new_name"],
@@ -170,7 +177,7 @@ def rename_ic():
             print(str(msg.DB_FAILURE))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
     resp = Response()
@@ -184,13 +191,8 @@ def delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
+        set_project_data(delete_ic_data)
         print(delete_ic_data)
-        rename = {
-                "project_name": delete_ic_data["project_name"],
-                "parent_path": delete_ic_data["parent_path"],
-                "delete_name": delete_ic_data["delete_name"],
-                "is_directory": True if "is_directory" in delete_ic_data else False,
-            }
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)
             if result:
@@ -235,22 +237,23 @@ def set_dir():
 
 # ----------------------------------------------------
 
-def path_to_obj(path, parent_id=False):
+def path_to_obj(path, parent=False, parent_id=""):
     p = Path(path)
     name = p.stem
     new_id = str(uuid.uuid1())
-    parent = parent_id if parent_id != False else path # new_id
+    parent = parent if parent != False else path # new_id
     if os.path.isdir(path): 
         root = Directory(new_id,
                          name,
                          parent,
                          [],
                          path,
+                         parent_id,
                          '',
-                         [path_to_obj(path + '/' + x, path) for x in os.listdir(path)
+                         [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [], path, p.suffix, '', [],  '', '')
+        root = File(new_id, name, name, parent, [], path, p.suffix, new_id, '', [],  '', '')
     return root
 
 
@@ -263,3 +266,10 @@ def path_to_dict(path):
     else:
         d['type'] = "file"
     return d
+
+
+def set_project_data(data):
+    if "project" in data:
+        session.get("project").update(data["project"])
+        session.modified = True
+        print(session.get("project"))
