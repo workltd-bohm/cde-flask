@@ -41,6 +41,7 @@ def update_user():
         # print(json_data)
         if "id" in json_data and user_data["id"] == json_data["id"]:
             if db.connect(db_adapter):
+                user_data = {'email': json_data['email'], 'password': json_data['password']}
                 message, json_user = db.get_user(db_adapter, user_data)
                 if message == msg.LOGGED_IN:
                     user = User()

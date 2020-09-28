@@ -26,6 +26,7 @@ class DBMongoAdapter:
         col = self._db.Users
         message = msg.INVALID_USER_PASS
         user = None
+        print(identifier)
         result = col.find_one(identifier, {'_id': 0})
         if result:
             if not result['confirmed']:
