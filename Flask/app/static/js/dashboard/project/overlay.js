@@ -9,6 +9,7 @@ g_OverUser = [
 
 g_OverProject = [
     { name : "NEW PROJECT", icon : "create_new_folder", link : WrapNewProject},
+    { name : "UPLOAD PROJECT", icon : "cloud_upload", link : WrapUploadProject}
     //{ name : "RENAME", icon : "create", link : WrapRename},
     //{ name : "DELETE", icon : "delete", link : WrapDelete},
 ]

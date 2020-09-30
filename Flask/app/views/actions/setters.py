@@ -60,7 +60,7 @@ def create_project():
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
         if db.connect(db_adapter):
-            result = db.upload_project(db_adapter, project, user)
+            result, id = db.upload_project(db_adapter, project, user)
             if result:
                 print(result["message"])
                 resp = Response()
@@ -79,6 +79,101 @@ def create_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+complete_project = []
+@app.route('/upload_existing_project', methods=['POST', 'GET'])
+def upload_existing_project():
+    global complete_project
+    print('Data posting path: %s' % request.path)
+    # print('>>>>>>>>>>>>>>>>>', request.args)
+    # print('>>>>>>>>>>>>>>>>>', request.form)
+    print(request.form['path'])
+    print(str((int(request.form['counter'])/int(request.form['total']))*100) + '%')
+    path = request.form['path']
+    file = request.files['file'].read()
+    counter = request.form['counter']
+    total = request.form['total']
+    complete_project.append({'path': path, 'file': file})
+    if counter == total:
+        root_id = str(uuid.uuid1())
+        root_obj = Directory(root_id,
+                         complete_project[0]['path'].split('/')[0],
+                         '',
+                         [],
+                         complete_project[0]['path'].split('/')[0],
+                         '',
+                         '',
+                         [])
+        project = Project("default", complete_project[0]['path'].split('/')[0], root_obj)
+        if main.IsLogin():
+            if db.connect(db_adapter):
+                result, id = db.upload_project(db_adapter, project, session['user'])
+                if result != msg.PROJECT_SUCCESSFULLY_ADDED:
+                    resp = Response()
+                    resp.status_code = msg.PROJECT_ALREADY_EXISTS['code']
+                    resp.data = str(msg.PROJECT_ALREADY_EXISTS['message'])
+                    return resp
+                else:
+                    project.project_id = id
+                    for file in complete_project:
+                        current_file_path_old = file['path'].split('/')
+                        file_name = current_file_path_old[-1]
+                        current_file_path_backup = current_file_path_old[:]
+                        current_file_path = current_file_path_old[1:-1]
+                        parent_id = root_id
+                        parent_ic = root_obj
+                        for i in range(0, len(current_file_path)):
+                            name = current_file_path[i]
+                            new_id = str(uuid.uuid1())
+                            if i < 1:
+                                parent_directory = ('/').join(current_file_path_backup[0:1])
+                            else:
+                                parent_directory = ('/').join(current_file_path_backup[0:i+1])
+                            path = ('/').join(current_file_path[:i])
+                            ic_new = Directory(new_id,
+                                               name,
+                                               parent_directory,
+                                               [],
+                                               path,
+                                               parent_id,
+                                               '',
+                                               []
+                                               )
+
+                            parent_id = new_id
+
+                            project.added = False
+                            # message, ic = project.update_ic(ic_new, parent_ic)
+                            message, ic = db.create_folder(db_adapter, project.name, ic_new)
+                            parent_ic = ic_new
+                            if message == msg.IC_ALREADY_EXISTS:
+                                parent_id = ic.ic_id
+                                parent_ic = ic
+
+                        new_id = str(uuid.uuid1())
+                        name  = ('').join(file_name.split('.')[:-1])
+                        parent_directory = ('/').join(current_file_path_backup[:-1])
+                        ic_new_file = File(new_id, name , name, parent_directory, [], file['path'],
+                                           ('').join(['.', file_name.split('.')[-1]]), parent_id, '', [],  '', '')
+
+                        project.added = False
+                        encoded = file['file']
+                        result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
+                        print(ic_new_file.name)
+                        if result != msg.IC_SUCCESSFULLY_ADDED:
+                            print(">>", result["message"])
+                            resp = Response()
+                            resp.status_code = result['code']
+                            resp.data = result['message']
+                            return resp
+
+        resp = Response()
+        resp.status_code = msg.PROJECT_SUCCESSFULLY_UPLOADED['code']
+        resp.data = msg.PROJECT_SUCCESSFULLY_UPLOADED['message']
+        return resp
+    else:
+
+        return request.form['path']
+
 
 @app.route('/upload_project')
 def upload_project():
@@ -89,7 +184,7 @@ def upload_project():
         user = {'id': session.get('user')['id'], 'role': 'OWNER'}
         print(root_obj)
         if db.connect(db_adapter):
-            result = db.upload_project(db_adapter, project, user)
+            result, id = db.upload_project(db_adapter, project, user)
             if result:
                 print(result)
         else:

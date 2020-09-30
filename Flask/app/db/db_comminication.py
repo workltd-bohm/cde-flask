@@ -24,6 +24,10 @@ def upload_project(db_adapter, project, user):
     return db_adapter.upload_folder_structure(project, user)
 
 
+def update_project(db_adapter, project, user):
+    return db_adapter.update_project(project, user)
+
+
 def get_all_projects(db_adapter):
     return db_adapter.get_all_projects()
 

@@ -58,6 +58,26 @@ def get_new_project():
     return resp
 
 
+@app.route('/get_upload_project')
+def get_upload_project():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        response = {
+            'html': render_template("popup/upload_folder_popup.html"),
+            'data':[]
+        }
+        print(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/get_new_folder', methods=['POST'])
 def get_new_folder():
     print('Data posting path: %s' % request.path)

@@ -10,6 +10,11 @@ function WrapNewProject(){
     PopupOpen(NewProject);
 }
 
+function WrapUploadProject(){
+    PopupOpen(UploadProject);
+//    OpenFolderDialog();
+}
+
 function WrapCreateFolder(data){
     var tmp = data.values.data;
     //console.log(tmp);

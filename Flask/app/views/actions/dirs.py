@@ -19,17 +19,16 @@ def get_file(file_name):
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
             if result:
-                print(result['file_name'])
-                resp = Response(result['file'])
-                # response.headers.set('Content-Type', 'mime/jpeg')
-                resp.headers.set(
-                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
-                resp.status_code = msg.DEFAULT_OK['code']
-                return send_file(
-                     io.BytesIO(result['file']),
-                     attachment_filename=result['file_name'])
+                print(result.file_name)
+                response = make_response(result.read())
+                # response.mimetype = result.file_name.split('.')[-1]
+                return response
             else:
-                print("not_found")
+                print(str(msg.STORED_FILE_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
@@ -127,7 +126,7 @@ def create_dir():
                     '',
                     [])
         if db.connect(db_adapter):
-            result = db.create_folder(db_adapter, request_data['project_name'], folder)
+            result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
             if result:
                 print(result["message"])
                 resp = Response()

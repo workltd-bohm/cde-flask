@@ -15,6 +15,7 @@ IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}
 PROJECT_NOT_FOUND = {"message": "Project with the specific ID not found", "code": 404}
 PROJECT_ALREADY_EXISTS = {"message": "Project with the given name already exists", "code": 409}
 PROJECT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+PROJECT_SUCCESSFULLY_UPDATED = {"message": "Updated successfully", "code": 200}
 
 STORED_FILE_NOT_FOUND = {"message": "Stored file not found", "code": 404}
 
@@ -37,3 +38,5 @@ BID_CREATED = {"message": "Bid created successfully", "code": 200}
 MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "code": 409}
 
 SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
+
+PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}

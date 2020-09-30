@@ -1,4 +1,4 @@
-from flask import Flask, json, request, Response, render_template, session, redirect, url_for, send_file
+from flask import Flask, make_response,json, request, Response, render_template, session, redirect, url_for, send_file
 
 import app.config as cfg
 import app.db.db_comminication as db

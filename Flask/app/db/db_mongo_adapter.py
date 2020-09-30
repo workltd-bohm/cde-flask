@@ -1,4 +1,5 @@
 from pymongo import *
+import gridfs
 from pymongo.errors import ConnectionFailure
 import uuid
 from app.model.user import User
@@ -18,6 +19,7 @@ class DBMongoAdapter:
         try:
             self._client = MongoClient('localhost:27017')
             self._db = self._client.slDB
+            self._fs = gridfs.GridFS(self._db)
         except ConnectionFailure(message='', error_labels=None):
             return False
         return True
@@ -82,7 +84,9 @@ class DBMongoAdapter:
         col_roles = self._db.Roles
         col_users = self._db.Users.Roles
         project_query = {'project_name': project.name}
+        print(project_query)
         message = msg.PROJECT_ALREADY_EXISTS
+        project_id = ''
         if col.find_one(project_query, {'_id': 0}) is None:
             project_id = col.insert_one(project.to_json()).inserted_id
             col.update_one({'project_id': 'default'},
@@ -112,6 +116,17 @@ class DBMongoAdapter:
                                {'$set': u})
 
             message = msg.PROJECT_SUCCESSFULLY_ADDED
+        self._close_connection()
+        return message, str(project_id)
+
+    def update_project(self, project, user):
+        col = self._db.Projects
+        project_query = {'project_name': project.name}
+        message = msg.PROJECT_NOT_FOUND
+        if col.find_one(project_query, {'_id': 0}):
+            col.update_one(project_query, {'$set': project.to_json()})
+
+            message = msg.PROJECT_SUCCESSFULLY_UPDATED
         self._close_connection()
         return message
 
@@ -178,16 +193,15 @@ class DBMongoAdapter:
             file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id}
             file_json = col_file.find_one(file_query, {'_id': 0})
             if file_json is None:
-                file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                                                              "file_name": file_obj.name+file_obj.type,
-                                                              "parent": file_obj.parent,
-                                                              "parent_id": file_obj.parent_id,
-                                                              "file": file,
-                                                              "description": file_obj.description})
-                                         .inserted_id)
+                file_obj.stored_id = str(self._fs.put(file,
+                                    file_name=file_obj.name+file_obj.type,
+                                    parent=file_obj.parent,
+                                    parent_id=file_obj.parent_id,
+                                    description=file_obj.description
+                                    ))
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                add = project.add_ic(file_obj, project.root_ic)
+                add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
@@ -201,20 +215,21 @@ class DBMongoAdapter:
         return add
 
     def create_folder(self, project_name, folder):
+        ic = None
         col = self._db.Projects
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
 
-            add = project.add_ic(folder, project.root_ic)
-            if add == msg.IC_SUCCESSFULLY_ADDED:
+            message, ic = project.add_ic(folder, project.root_ic)
+            if message == msg.IC_SUCCESSFULLY_ADDED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
         self._close_connection()
-        return add
+        return message, ic
 
     def rename_ic(self, request_data):
         col = self._db.Projects
@@ -277,9 +292,9 @@ class DBMongoAdapter:
         return delete
 
     def get_file(self, file_name):
-        col = self._db.Projects.Files
-        file_query = {'file_name': file_name}  # {'file_id': file_id, 'file_name': file_name}
-        stored_file = col.find_one(file_query, {'_id': 0})
+        stored_file = None
+        for grid_out in self._fs.find({"file_name": file_name}, no_cursor_timeout=True):
+            stored_file = grid_out
         self._close_connection()
         return stored_file
 
@@ -473,6 +488,8 @@ class DBMongoAdapter:
         self._db.Roles.drop()
         self._db.Users.Roles.drop()
         self._db.Marketplace.Posts.Files.drop()
+        self._db.fs.files.drop()
+        self._db.fs.chunks.drop()
         # self._db.Users.drop()
 
         col_users = self._db.Users.Roles

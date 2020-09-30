@@ -38,6 +38,14 @@ class Project:
     def root_ic(self, value):
         self._root_ic = value
 
+    @property
+    def added(self):
+        return self._added
+
+    @added.setter
+    def added(self, value):
+        self._added = value
+
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic
@@ -115,13 +123,21 @@ class Project:
         return self._message
 
     def add_ic(self, ic_new, ic=None):
+        self._ic = ''
         if ic.ic_id == ic_new.parent_id:
             already_exists = False
             for sub_f in ic.sub_folders:
-                if sub_f.name == ic_new.name:
+                temp_sub_name = sub_f.name
+                temp_ic_new_name = ic_new.name
+                if not sub_f.is_directory:
+                    temp_sub_name = sub_f.name + sub_f.type
+                if not ic_new.is_directory:
+                    temp_ic_new_name = ic_new.name + ic_new.type
+                if temp_sub_name == temp_ic_new_name:
                     already_exists = True
                     self._added = True
                     self._message = msg.IC_ALREADY_EXISTS
+                    self._ic = sub_f
             if not already_exists:
                 # ic_new.parent_id = ic.ic_id
                 ic.sub_folders.append(ic_new)
@@ -134,7 +150,32 @@ class Project:
                     break
         if not self._added:
             self._message = msg.IC_PATH_NOT_FOUND
-        return self._message
+        return self._message, self._ic
+
+    def update_ic(self, ic_new, ic=None):
+        self._ic = ''
+        if ic.ic_id == ic_new.parent_id:
+            already_exists = False
+            for sub_f in ic.sub_folders:
+                if sub_f.name == ic_new.name:
+                    already_exists = True
+                    self._added = True
+                    self._message = msg.IC_ALREADY_EXISTS
+                    self._ic = sub_f
+                    break
+            if not already_exists:
+                # ic_new.parent_id = ic.ic_id
+                ic.sub_folders.append(ic_new)
+                self._message = msg.IC_SUCCESSFULLY_ADDED
+                self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.add_ic(ic_new, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message, self._ic
 
     def to_json(self):
         return {
