@@ -79,7 +79,8 @@ def create_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
-complete_project = []
+complete_project = {}
+curr_total = 0
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
     global complete_project
@@ -88,22 +89,38 @@ def upload_existing_project():
     # print('>>>>>>>>>>>>>>>>>', request.form)
     print(request.form['path'])
     print(str((int(request.form['counter'])/int(request.form['total']))*100) + '%')
+
+    username = session['user']['username']
+
+    if not username in complete_project:
+        complete_project[username] = []
     path = request.form['path']
     file = request.files['file'].read()
     counter = request.form['counter']
     total = request.form['total']
-    complete_project.append({'path': path, 'file': file})
+    complete_project[username].append({'path': path, 'file': file})
+
     if counter == total:
+        session['curr_total'] = total
+        session.modified = True
+        folders = json.loads(request.form['folders'])
+        print('folders', folders)
+        # print('folders', json.loads(folders))
+
+    curr_total = session['curr_total']
+
+    if curr_total == total and str(len(complete_project[username])) == total:
+        complete = complete_project[username]
         root_id = str(uuid.uuid1())
         root_obj = Directory(root_id,
-                         complete_project[0]['path'].split('/')[0],
+                         complete[0]['path'].split('/')[0],
                          '',
                          [],
-                         complete_project[0]['path'].split('/')[0],
+                         complete[0]['path'].split('/')[0],
                          '',
                          '',
                          [])
-        project = Project("default", complete_project[0]['path'].split('/')[0], root_obj)
+        project = Project("default", complete[0]['path'].split('/')[0], root_obj)
         if main.IsLogin():
             if db.connect(db_adapter):
                 result, id = db.upload_project(db_adapter, project, session['user'])
@@ -114,7 +131,7 @@ def upload_existing_project():
                     return resp
                 else:
                     project.project_id = id
-                    for file in complete_project:
+                    for file in complete:
                         current_file_path_old = file['path'].split('/')
                         file_name = current_file_path_old[-1]
                         current_file_path_backup = current_file_path_old[:]
@@ -166,6 +183,46 @@ def upload_existing_project():
                             resp.data = result['message']
                             return resp
 
+                    if folders:
+                        for folder in folders:
+                            print('folder', folder)
+                            current_dir_path = folder['path'].split('/')[1:]
+                            parent_id = root_id
+                            parent_ic = root_obj
+                            for i in range(0, len(current_dir_path)):
+                                name = current_dir_path[i]
+                                new_id = str(uuid.uuid1())
+                                if i < 1:
+                                    parent_directory = ('/').join(current_dir_path[0:1])
+                                else:
+                                    parent_directory = ('/').join(current_dir_path[0:i + 1])
+                                path = ('/').join(current_dir_path[:i])
+                                ic_new = Directory(new_id,
+                                                   name,
+                                                   parent_directory,
+                                                   [],
+                                                   path,
+                                                   parent_id,
+                                                   '',
+                                                   []
+                                                   )
+
+                                parent_id = new_id
+
+                                project.added = False
+                                # message, ic = project.update_ic(ic_new, parent_ic)
+                                message, ic = db.create_folder(db_adapter, project.name, ic_new)
+                                parent_ic = ic_new
+                                print(message['message'])
+                                if message == msg.IC_ALREADY_EXISTS:
+                                    parent_id = ic.ic_id
+                                    parent_ic = ic
+
+
+        # complete_project = []
+        complete_project[username] *= 0
+        session['curr_total'] = 0
+        session.modified = True
         resp = Response()
         resp.status_code = msg.PROJECT_SUCCESSFULLY_UPLOADED['code']
         resp.data = msg.PROJECT_SUCCESSFULLY_UPLOADED['message']

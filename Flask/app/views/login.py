@@ -28,6 +28,7 @@ def login_data():
             json_user.update({'project_code': 'SV'}) # temp, until drawn from project
             session['user'] = json_user
             session['project'] = {}
+            session['curr_total'] = 0
             session.modified = True
             return redirect(url_for('index'))
         else:
