@@ -81,12 +81,12 @@ function ShareProject(data){
     });
 }
 
-
 var counter = 1;
 var total = 0;
 var listing = null;
 var dropArea = null;
 var box = null;
+var interval = null;
 function UploadProject(form){
     LoadStart();
     $.get( "/get_upload_project")
@@ -104,37 +104,6 @@ function UploadProject(form){
             dropArea.addEventListener("change", filesDroped);
             dropArea.addEventListener("drop", filesDroped);
 
-
-//            var upload_project = document.getElementById("upload_project");
-//            var dropArea = document.getElementById("drop-area-folders");
-//            dropArea.addEventListener("dragover", dragHandler);
-//            dropArea.addEventListener("change", filesDroped);
-//            dropArea.addEventListener("drop", filesDroped);
-
-//            var picker = document.getElementById("picker");
-//            listing = document.getElementById('listing');
-//            box = document.getElementById('box');
-//
-//            picker.addEventListener('change', e => {
-//                // Reset previous upload progress
-//                listing.innerHTML = "";
-//                // Get total of files in that folder
-//                total = picker.files.length;
-//                counter = 1;
-//                // Process every single file
-////                e.preventDefault();
-////                e.dataTransfer.effectAllowed = 'copy';
-////                e.dataTransfer.setData('Text', this.id);
-////                console.log(e.target.webkitEntries);
-//                for (var i = 0; i < picker.files.length; i++) {
-//                    var file = e.target.files[i];
-////                    console.log(file);
-//                    sendFile(file, file.webkitRelativePath, i+1);
-//                }
-////                MakeSnackbar("Upload completed!");
-////                PopupClose();
-////                LoadStop();
-//            });
             LoadStop();
         })
         .fail(function($jqXHR, textStatus, errorThrown){
@@ -144,77 +113,36 @@ function UploadProject(form){
         });
 }
 
-
 function sendFilesHelper(files, folders){
     total = files.length;
-    for (var i = 0; i < files.length; i++) {
-        file = files[i];
-//                    console.log(file);
-        if(i == files.length - 1){
-            sendFile(file.file, file.path.substring(1), file.isDir, i+1, folders);
-        }else{
-            sendFile(file.file, file.path.substring(1), file.isDir, i+1);
-        }
-    }
-//    total = folders.length;
-//    for (var i = 0; i < files.length; i++) {
-//        file = JSON.parse(files[i]);
-////                    console.log(file);
-//        sendFile(file.file, file.path, file.isDir, i+1);
-//    }
+    dropArea.style.display = "none";
+    createProject(files, folders);
 }
 
-// Function to send a file, call PHP backend
-    sendFile = function(file, path, isDir, current, folders=null) {
-//        console.log(file);
-        // Set post variables
-        var item = document.createElement('li');
-        var formData = new FormData();
-        var request = new XMLHttpRequest();
-
-        formData.set('file', file); // One object file
-        formData.set('path', path); // String of local file's path
-        formData.set('counter', current);
-        formData.set('total', total);
-        formData.set('is_dir', isDir);
-        if(folders != null){
-            formData.set('folders', JSON.stringify(folders));
-        }
-
-        $.ajax({
-        url: 'upload_existing_project',
+function createProject(files, folders){
+    var current = 0;
+    if(files.length > 0){
+        project_name = files[current].path.substring(1).split('/')[0];
+    }
+    else{
+        project_name = folders[current].path.substring(1).split('/')[0];
+    }
+    let data = {project_name: project_name};
+    console.log(data);
+    listing.innerHTML = 'Crating ' + project_name;
+    $.ajax({
+        url: 'create_project',
         type: 'POST',
-        data: formData,
-        //dataType: "json",
+        data: JSON.stringify(data),
         processData: false,
         contentType: false,
-//        timeout: 20000,
+    //        timeout: 20000,
         success: function(data){
-//            console.log(data);
-            if(counter == 1){
-                dropArea.style.display = "none";
-            }
+    //            console.log(data);
+            listing.innerHTML = "Project " + project_name + ' ' + data;
 
-            listing.innerHTML = data + " (" + counter + " of " + total + " ) ";
-            // Show percentage
-            box.innerHTML = Math.min(counter / total * 100, 100).toFixed(2) + "%";
+            sendFile(files, folders, current);
 
-            // Increment counter
-            counter = counter + 1;
-
-            if (counter >= total) {
-                listing.innerHTML = "Uploading " + total + " file(s) is done!";
-                box.innerHTML = "<br>Creating " + path.split('/')[0] + " project. This may take several minutes";
-                adjustBox();
-                MakeSnackbar("Uploading " + total + " file(s) is done!");
-//                PopupClose();
-                console.log(data);
-                if(data == "Project successfully uploaded"){
-                    counter = 1;
-                    location.reload();
-                    MakeSnackbar(data);
-                }
-            }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -222,90 +150,91 @@ function sendFilesHelper(files, folders){
             PopupClose();
         }
     });
-
-    };
-
-function adjustBox(){
-
-    var dots = window.setInterval( function() {
-                var wait = document.getElementById("wait");
-                if ( wait.innerHTML.length > 5 )
-                    wait.innerHTML = "";
-                else
-                    wait.innerHTML += ".";
-                }, 500);
 }
 
-//function addFiles(e){
-//        e.stopPropagation();
-//        e.preventDefault();
-//        console.log('++++++++++++++++++++++++++++++++++');
-//        console.log(e);
-//        console.log(e.dataTransfer);
-//        console.log(e.target.files);
-//        // if directory support is available
-//        if(e.dataTransfer && e.dataTransfer.items)
-//        {
-//            console.log('ovdeeeeeeeeee')
-//            var items = e.dataTransfer.items;
-//            for (var i=0; i<items.length; i++) {
-//                var item = items[i].webkitGetAsEntry();
-//
-//                if (item) {
-//                  addDirectory(item);
-//                }
-//            }
-//            return;
-//        }
-//
-//        // Fallback
-//        var files = e.target.files || e.dataTransfer.files;
-//        if (!files.length)
-//        {
-//            alert('File type not accepted');
-//            return;
-//        }
-//        console.log(files);
-//        for(var i=0; i<files.length; i++){
-//            sendFiles(files[i]);
-//        };
-//
-//    }
-//
-//    function addDirectory(item) {
-//        var _this = this;
-//        if (item.isDirectory) {
-//            var directoryReader = item.createReader();
-//            directoryReader.readEntries(function(entries) {
-//            entries.forEach(function(entry) {
-//                    _this.addDirectory(entry);
-//                });
-//            });
-//        } else {
-//            item.file(function(file){
-//                processFile([file],0);
-//            });
-//        }
-//    }
+// Function to send a file, call PHP backend
+function sendFile(files, folders, current) {
+    file = files[current];
+    var formData = new FormData();
+    var request = new XMLHttpRequest();
+    let path = ''
 
-//
-//function OpenFolderDialog(){
-//    var input = document.createElement('input');
-//    input.webkitdirectory  = True;
-//    input.directory  = True;
-//    input.onchange = e => {
-//
-//       // getting a hold of the file reference
-//       var file = e.target.files[0];
-//        console.log('ovde');
-////       PopupOpen(NewFile, data, file);
-//    }
-//    input.click();
-//}
+    if(counter > total){
+        path = folders[0].path;
+        listing.innerHTML = "Uploading " + total + " file(s) is done!<br>Creating folder structure. Please wait";
+        box.innerHTML = "";
+        interval = setInterval(adjustBox, 500);
+//        adjustBox();
+        formData.set('folders', JSON.stringify(folders));
+        formData.set('path', path);
+        formData.set('is_dir', true);
+    }
+    else{
+        path = file.path.substring(1);
+        listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0]  + " (" + counter + " of " + total + " ) ";
+        box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
+        formData.set('file', file.file); // One object file
+        formData.set('path', path); // String of local file's path
+        formData.set('is_dir', false);
+    }
+    formData.set('counter', counter);
+    formData.set('total', total);
 
-//var dropArea = document.getElementById("dropArea");
-    // var output = document.getElementById("result");
-    //var ul = output.querySelector("ul");
+
+    $.ajax({
+        url: 'upload_existing_project',
+        type: 'POST',
+        data: formData,
+        //dataType: "json",
+        processData: false,
+        contentType: false,
+    //        timeout: 20000,
+        success: function(data){
+            console.log(data);
+
+            if (counter > total) {
+                listing.innerHTML = data;
+//                box.innerHTML = "<br>Creating " + path.split('/')[0] + " project. This may take several minutes";
+//                adjustBox();
+                stopFunction();
+                MakeSnackbar(data);
+    //                PopupClose();
+                console.log(data);
+                if(data == "Project successfully uploaded"){
+//                    counter = 1;
+                    location.reload();
+                    MakeSnackbar(data);
+                }
+            }
+            else{
+                listing.innerHTML = "Uploaded<br>" + data + " (" + counter + " of " + total + " ) ";
+                // Show percentage
+                box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
+                counter++;
+                sendFile(files, folders, current+1);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+        });
+
+}
+
+function adjustBox(){
+    var wait = document.getElementById("wait");
+    if ( wait.innerHTML.length > 5 )
+        wait.innerHTML = "";
+    else
+        wait.innerHTML += ".";
+}
+
+function stopFunction() {
+    document.getElementById("wait").innerHTML += "";
+    clearInterval(interval);
+}
 
 function dragHandler(event) {
   event.stopPropagation();
