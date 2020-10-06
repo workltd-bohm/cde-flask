@@ -75,15 +75,15 @@ function AddSun(obj, data){
             if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
-            ClickStart(function(data){
-                // TODO: action menu
-                // OverlayCreate(data);
-            }, data);
+            // ClickStart(function(data){
+            //     // TODO: action menu
+            //     // OverlayCreate(data);
+            // }, data);
         })
         .on("mouseup",function(d){
-            ClickStop(function(data){
-                // NONE
-            }, data);
+            // ClickStop(function(data){
+            //     // NONE
+            // }, data);
         });
 
     AddText(data, "star");
@@ -153,10 +153,6 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius);
     if (data.color) data.values.picture.style("fill", data.color)
 
-    // data.values.picture.on("mouseover",function(d){
-    //     if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
-    // })
-
     data.values.shader = data.values.object.append("circle")
         .attr("class", "planet shader")
         .attr("r", g_PlanetRadius)
@@ -174,22 +170,43 @@ function AddChildren(obj, data, parent, position=0){
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
+        // .on("mouseover",function(d){
+        //     if(!g_project.overlay && g_root.zoom){
+        //         data.overlay_type = "planet";
+        //         OverlayCreate(d3.select(this), d, data);
+        //     }
+        // })
         .on("mousedown",function(d){
+            ClickStart(function(d){
+                if(!g_project.overlay && g_root.zoom){
+                    data.overlay_type = "planet";
+                    OverlayCreate(d3.select(this), d, data);
+                }
+            }, data);
+        })
+        .on("mouseup",function(d){
             var func = function(){};
             switch(g_root.universe.data.overlay_type){
                 case "user" : func = GetWarp; break;
                 default : func = SunFadeout; break;
             }
-            ClickStart(func, data);
-        })
-        .on("mouseup",function(d){
-            // var func = function(){};
-            // switch(g_root.universe.data.overlay_type){
-            //     case "user" : func = GetWarp; break;
-            //     default : func = SunFadeout; break;
-            // }
-            ClickStop(function(d){}, data);
+            ClickStop(func, data);
         });
+
+    data.values.checked = data.values.this.append("foreignObject")
+        .attr("x", -g_OverlayItem/2)
+        .attr("y", -g_OverlayItem/2)
+        .attr("width", g_OverlayItem)
+        .attr("height", g_OverlayItem)
+        .attr("transform","translate(0, "+(-g_PlanetRadius)+")")
+        .style("opacity", 0)
+
+    data.values.checked.append("xhtml:div")
+        .attr("class", "planet foregin")
+        .append("i")
+        .attr("class", "material-icons")
+        .html("check_circle")
+
 }
 
 // -------------------------------------------------------
@@ -394,6 +411,18 @@ function AnimatePlanet(data) {
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
                 .attr("transform","rotate("+(-g_root.deg)+"), translate("+(pos)+")")
+
+            if (data.overlay)
+                data.overlay.object.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform","rotate("+(-g_root.deg)+")")
+
+            if (data.values.checked)
+                data.values.checked.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform","rotate("+(-g_root.deg)+"), translate(0,"+(-g_PlanetRadius)+")")
         });
     }
 }

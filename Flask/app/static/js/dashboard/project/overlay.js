@@ -41,6 +41,11 @@ g_OverFile = [
     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
 ]
 
+g_OverPlanet = [
+    { name : "SELECT", icon : "check_circle_outline", link : SelectPlanet},
+    { name : "OPEN", icon : "preview", link : WrapOpenFile},
+]
+
 // -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent) {
@@ -55,6 +60,12 @@ function OverlayCreate(obj, data, parent) {
         case "ic": type = g_OverFolder; break;
         case "market": type = g_OverNone; break;
         case "search_target": type = g_OverSearch; break;
+        case "planet": {
+            type = [ {...g_OverPlanet[0]}, {...g_OverPlanet[1]} ];
+            if (data.selected) type[0].icon = "check_circle";
+            console.log(data.selected, type[0].icon)
+            break;
+        }
         default: break;
     }
     if(type.length == 0) return;
@@ -63,7 +74,9 @@ function OverlayCreate(obj, data, parent) {
     data.overlay.items = type.slice();
 
     data.overlay.object = data.values.this.append("g")
-        .attr("class","star overlay");
+        .attr("class","star overlay")
+
+    if(data.overlay_type == "planet") data.overlay.object.attr("transform","rotate("+(-g_root.deg)+")");
 
     g_project.overlay = data.overlay.object;
 
@@ -136,7 +149,7 @@ function AddItem(obj, data, parent, position=0) {
 
     var defaultColor = (data.values.data.color) ? data.values.data.color : $(".foregin .material-icons").css("color");
 
-    data.values.picture .append("i")
+    data.values.picture.append("i")
         .attr("class", "material-icons")
         .style("color", defaultColor)
         .html(data.icon)
