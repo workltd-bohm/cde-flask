@@ -149,9 +149,13 @@ function AddChildren(obj, data, parent, position=0){
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "planet pattern")
+        .attr("class", "planet pattern"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
         .attr("r", g_PlanetRadius);
     if (data.color) data.values.picture.style("fill", data.color)
+
+    // data.values.picture.on("mouseover",function(d){
+    //     if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+    // })
 
     data.values.shader = data.values.object.append("circle")
         .attr("class", "planet shader")
@@ -171,17 +175,20 @@ function AddChildren(obj, data, parent, position=0){
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
         .on("mousedown",function(d){
-            ClickStart(function(data){
-                // TODO: action menu
-            }, data);
-        })
-        .on("mouseup",function(d){
             var func = function(){};
             switch(g_root.universe.data.overlay_type){
                 case "user" : func = GetWarp; break;
                 default : func = SunFadeout; break;
             }
-            ClickStop(func, data);
+            ClickStart(func, data);
+        })
+        .on("mouseup",function(d){
+            // var func = function(){};
+            // switch(g_root.universe.data.overlay_type){
+            //     case "user" : func = GetWarp; break;
+            //     default : func = SunFadeout; break;
+            // }
+            ClickStop(function(d){}, data);
         });
 }
 

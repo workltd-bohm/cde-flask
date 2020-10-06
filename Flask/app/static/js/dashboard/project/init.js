@@ -6,7 +6,7 @@ const ORBIT_ANIM_MOVE_SCROLL = 5;
 const ORBIT_ANIM_RESET = 600;
 const ORBIT_ANIM_RESET_SKIP = 20;
 
-const ORBIT_DUB_CLK_DIF = 50;
+const ORBIT_DUB_CLK_DIF = 1; // 50; - doubleclick
 
 const ORBIT_PATTERN = true;
 const ORBIT_PATTERN_ANIM = false;

@@ -17,8 +17,14 @@ circle.pattern.planet {
     /*fill : url("#patern_planet_fix");*/
     fill: #565656;
     /*stroke: none;*/
-    stroke: rgba(250,250,250,0.15);
-    stroke-width: 1;
+    stroke: rgba(190, 190, 190, 0.5);
+    stroke-width: 4;
+}
+circle.pattern.planet.dir{
+    stroke: rgba(30, 118, 190, 0.5);
+}
+circle.pattern.planet.empty{
+    stroke: rgba(190, 30, 20, 0.5);
 }
 
 circle.shader {

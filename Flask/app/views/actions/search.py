@@ -95,7 +95,9 @@ def get_filter_activity():
         response = {
             'html': render_template("activity/filter_activity.html",
                                     project_name=session.get("project")["name"],
-                                    inputs=filter_file
+                                    search=filter_file,
+                                    comments={},
+                                    details={},
                                     ),
             'data': []
         }

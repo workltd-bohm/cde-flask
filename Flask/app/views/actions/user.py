@@ -39,7 +39,7 @@ def update_user():
         # print(json_data)
         if "id" in json_data and user_data["id"] == json_data["id"]:
             if db.connect(db_adapter):
-                user_data = {'email': json_data['email'], 'password': json_data['password']}
+                user_data = {'id': user_data["id"]}
                 message, json_user = db.get_user(db_adapter, user_data)
                 if message == msg.LOGGED_IN:
                     user = User()
@@ -50,11 +50,12 @@ def update_user():
                     json_user = user.to_json()
                     message = db.edit_user(db_adapter, json_user)
 
-                    json_user.pop('password', None)
-                    json_user['project_code'] = 'SV' # temp, until drawn from project
-                    session['user'] = json_user
-                    print(session['user'])
-                    session.modified = True
+                    if message == msg.ACCOUNT_CHANGED:
+                        json_user.pop('password', None)
+                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        session['user'] = json_user
+                        print(session['user'])
+                        session.modified = True
 
                 resp.status_code = message['code']
                 resp.data = str(message['message'])

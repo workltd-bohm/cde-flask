@@ -23,16 +23,16 @@ function DrawPath(obj, data){
         .attr("cy", 0)
         .attr("r", g_PathRadius)
         .on("mousedown",function(d){
-            ClickStart(function(data){}, data);
-        })
-        .on("mouseup",function(d){
-            ClickStop(function(data){
+            ClickStart(function(data){
                 if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
                 d3.selectAll("g.star").remove();
                 g_project.history = data.hist_path.back;
                 data.hist_path.this.selectAll("g").remove();
                 CreateSpace(data);
             }, data);
+        })
+        .on("mouseup",function(d){
+            ClickStop(function(data){}, data);
         });
 
     data.hist_path.child = data.hist_path.this.append("g").attr("class", "path next");

@@ -6,9 +6,11 @@
 .project-box{
     display: block;
     float: left;
-    width: 43%;
+    width: 30%;
     border: 1px solid gray;
     margin: 1%;
+    text-overflow: clip;
+    /* padding: 1%; */
 }
 
 .project-box:hover{
