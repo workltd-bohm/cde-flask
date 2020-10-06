@@ -42,6 +42,41 @@ def get_file(file_name):
     return resp
 
 
+@app.route('/get_shared_file/<path:file_name>', methods=['POST', 'GET'])
+def get_shared_file(file_name):
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_json = {
+                        # 'file_id':request.args.get('file_id'),
+                        'file_name':file_name}
+        print('POST data: %s ' % request_json)
+        if db.connect(db_adapter):
+            result = db.get_file(db_adapter, request_json['file_name'])
+            if result:
+                print(result.file_name)
+                resp = Response(result.file_name)
+                # response.headers.set('Content-Type', 'mime/jpeg')
+                resp.headers.set(
+                    'Content-Disposition', 'attachment', filename='%s' % result.file_name)
+                resp.status_code = msg.DEFAULT_OK['code']
+                return send_file(
+                     io.BytesIO(result.read()),
+                     attachment_filename=result.file_name)
+            else:
+                print("not_found")
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     print('Data posting path: %s' % request.path)

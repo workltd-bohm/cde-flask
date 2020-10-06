@@ -68,7 +68,7 @@ function FileDataInit(){
 };
 
 function updateName(position, el){
-    console.log(el.value);
+//    console.log(el.value);
     text = el.value.split(',')[0];
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];

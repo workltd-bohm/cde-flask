@@ -47,7 +47,7 @@ function WrapShare(data){
     var tmp = data.values.data;
 
     var dummy = document.createElement('input'),
-    text = window.location.href + 'get_file/' + tmp.name + tmp.type;
+    text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
 
     document.body.appendChild(dummy);
     dummy.value = text;
