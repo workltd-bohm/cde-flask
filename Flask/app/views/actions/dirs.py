@@ -191,10 +191,15 @@ def delete_ic():
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
         set_project_data(delete_ic_data)
+        delete_ic_data['user_id'] = session['user']['id']
         print(delete_ic_data)
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)
             if result:
+                if result == msg.PROJECT_SUCCESSFULLY_DELETED:
+                    session.get("project").update({'section': 'project'})
+                    session.get("project").update({'position': None})
+                    session.modified = True
                 print(result["message"])
                 resp = Response()
                 resp.status_code = result["code"]

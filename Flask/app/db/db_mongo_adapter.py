@@ -267,10 +267,29 @@ class DBMongoAdapter:
         col_file = self._db.Projects.Files
         project_query = {'project_name': delete_ic_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+        delete = msg.PROJECT_NOT_FOUND
         if project_json:
-            project = Project.json_to_obj(project_json)
-            # print(project.to_json())
-            delete = project.delete_ic(delete_ic_data, project.root_ic)
+            if delete_ic_data['parent_id'] == 'root':
+                col.delete_one(project_query)
+                file_query = {'project_name': delete_ic_data['project_name']}
+                col_file.delete_many(file_query)
+                col_users = self._db.Users.Roles
+                user_query = {'user_id': delete_ic_data['user_id']}
+                result = col_users.find_one(user_query, {'_id': 0})
+                if result:
+                    remove = -1
+                    for count, p in enumerate(result['projects']):
+                        if p['project_id'] == project_json['project_id']:
+                            remove = count
+                            break
+                    if remove != -1:
+                        del result['projects'][remove]
+                        col_users.update_one(user_query,
+                                       {'$set': {'projects': result['projects']}})
+                delete = msg.PROJECT_SUCCESSFULLY_DELETED
+            else:
+                project = Project.json_to_obj(project_json)
+                delete = project.delete_ic(delete_ic_data, project.root_ic)
             if delete == msg.IC_SUCCESSFULLY_DELETED:
                 ic_deleted = True
                 if not delete_ic_data['is_directory']:

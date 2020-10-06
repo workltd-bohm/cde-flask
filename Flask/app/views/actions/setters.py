@@ -54,7 +54,7 @@ def create_project():
                     ".",
                     [],
                     request_data['project_name'],
-                    '',
+                    'root',
                     '',
                     [])
         project = Project("default", request_data['project_name'], root_obj)

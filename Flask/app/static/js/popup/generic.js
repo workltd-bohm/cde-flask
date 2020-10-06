@@ -72,11 +72,15 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
         timeout: 5000,
         success: function(data){
             if(!stay) location.reload();
-            //console.log(data);
+//            console.log(data);
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
 
             SESSION["position"] = {parent_id: d["parent_id"], ic_id: d["ic_id"]};
+            if(data == 'Project successfully deleted'){
+                SESSION["position"] = null;
+                func = SelectProject;
+                }
 
             if(func) func();
             LoadStop();

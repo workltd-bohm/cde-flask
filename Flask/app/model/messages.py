@@ -40,3 +40,4 @@ MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "c
 SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
+PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
