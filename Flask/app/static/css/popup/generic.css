@@ -77,6 +77,10 @@ div.content > .form > .scroll {
     width: 100%;
 }
 
+.preview{
+    height: 100%;
+    width: 100%;
+}
 
 .form__field {
     font-family: inherit;

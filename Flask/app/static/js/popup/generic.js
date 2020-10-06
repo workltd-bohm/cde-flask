@@ -29,13 +29,15 @@ function PopupOpen(run=null, data=null, file=null){
     LoadStop(); 
     $(form).empty();
     $("div.pero").show();
+    $("div.content").height('auto');
 
     if(run) run(form, data, file);
 }
 
 function PopupClose(){
-    LoadStop(); 
+    LoadStop();
     $("div.pero").hide();
+    ClearActivity();
 }
 
 function CheckAval(data){

@@ -21,6 +21,18 @@ function WrapCreateFolder(data){
     PopupOpen(NewFolder, tmp);
 }
 
+function WrapOpenFile(data){
+    var tmp = data.values.data;
+    console.log(tmp);
+    if(tmp.is_directory){
+        OpenActivity(null);
+    }else{
+        PopupOpen(OpenFile, tmp);
+    }
+//    PopupOpen(NewFile, tmp);
+//    OpenFileDialog(tmp);
+}
+
 function WrapCreateFile(data){
     var tmp = data.values.data;
     //console.log(tmp);

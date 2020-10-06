@@ -1,4 +1,36 @@
 
+
+function OpenFile(form, json, file){
+    LoadStart();
+    $.ajax({
+        url: "/get_open_file",
+        type: 'POST',
+        data: JSON.stringify({
+            name: json.name,
+            type: json.type
+        }),
+        timeout: 5000,
+        success: function(data){
+            input_json2 = JSON.parse(data);
+            html = input_json2['html'];
+            form.empty();
+            form.append(html);
+
+            $("div.content").height('100%');
+
+            OpenActivity(null);
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
+
+
 function NewFolder(form, json){
     LoadStart();
     $.ajax({

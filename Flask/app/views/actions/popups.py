@@ -1,10 +1,30 @@
-import os
 import json
-import uuid
 
 from app import *
 
 import app.views.actions.getters as gtr
+
+
+@app.route('/get_open_file', methods=['POST'])
+def get_open_file():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        name = request_data['name']
+        type = request_data['type']
+        print(request_data)
+        response = {
+            'html': render_template("popup/open_file.html",
+                                    preview='/get_shared_file/' + name + type
+                                    ),
+            'data': []
+        }
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
+    else:
+        return redirect('/')
 
 
 @app.route('/get_all_projects')

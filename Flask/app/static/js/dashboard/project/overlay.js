@@ -19,6 +19,7 @@ g_OverSearch = [
 ]
 
 g_OverFolder = [
+    { name : "OPEN", icon : "preview", link : WrapOpenFile},
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
     { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
     { name : "RENAME", icon : "create", link : WrapRename},
@@ -31,6 +32,7 @@ g_OverFolder = [
 ]
 
 g_OverFile = [
+    { name : "OPEN", icon : "preview", link : WrapOpenFile},
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
     { name : "RENAME", icon : "create", link : WrapRename},
     { name : "DELETE", icon : "delete", link : WrapDelete},

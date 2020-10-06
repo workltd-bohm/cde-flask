@@ -92,7 +92,7 @@ function uploadPostFile(file, fileType) {
 
 
 function previewFile(file) {
-  console.log(file);
+//  console.log(file);
   let reader = new FileReader()
   reader.readAsDataURL(file)
   reader.onloadend = function() {

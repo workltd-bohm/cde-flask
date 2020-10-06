@@ -108,7 +108,7 @@ function Bid(obj, data, t, s){
     if(!CheckAval(form)) return;
     var args = {post_id: data, post_title: t, status: s};
     form.serializeArray().map(function(x){args[x.name] = x.value;});
-    console.log(args)
+//    console.log(args)
 
     $.ajax({
         url: "/create_bid",
@@ -236,7 +236,7 @@ function OpenActivityEditPost(obj, url, d=null){
         data = d
     }
     $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
-    console.log(data)
+//    console.log(data)
 
     $.ajax({
         url: url,
@@ -246,7 +246,7 @@ function OpenActivityEditPost(obj, url, d=null){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                console.log(data.html)
+//                console.log(data.html)
                 OpenActivity(data.html);
             }
         },
