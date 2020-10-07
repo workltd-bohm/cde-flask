@@ -175,7 +175,7 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
             if(!g_project.overlay && g_root.zoom){
-                OverlayCreate(d3.select(this), d, data, true);
+                g_root.universe.data.overlay_type == "ic" ? OverlayCreate(d3.select(this), d, data, true):1;
             }
         })
         .on("mousedown",function(d){
