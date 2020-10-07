@@ -18,6 +18,7 @@ def index():
     dashboard = render_template("dashboard/dashboard.html")
     activity = render_template("activity/activity.html", activity_name="BLANK")
     popup = render_template("popup/generic.html")
+    preview = render_template("popup/preview.html")
 
     return render_template("index.html",
                             email=email,
@@ -25,4 +26,5 @@ def index():
                             dashboard=dashboard,
                             activity=activity,
                             popup=popup,
+                            preview=preview,
                             user=user)

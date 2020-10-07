@@ -11,6 +11,20 @@ function OpenActivity(html, head=null, open=true){
     }
 }
 
+function ExtractActivity(html=null, head=null, open=true){
+    if(html){
+        ACTIVITY.html(html);
+    }
+    if (head) {
+      ACTIVITY_HEAD.html(head);
+    }
+    else ACTIVITY_HEAD.style("display","none");
+    if(open){
+      $ACTIVITY.parent().addClass("opend");
+      $ACTIVITY.parent().removeClass("closed");
+    }
+}
+
 function ClearActivity(close=true){
   ACTIVITY.html("");
   if(close){
@@ -21,4 +35,8 @@ function ClearActivity(close=true){
 
 function AppendActivity(html){
     $ACTIVITY.append(html);
+}
+
+function AppendActivityTab(parent, child){
+    parent.append(child);
 }

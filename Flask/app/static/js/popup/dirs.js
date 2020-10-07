@@ -1,7 +1,7 @@
 
 
 function OpenFile(form, json, file){
-    LoadStart();
+    LoadStartPreview();
     $.ajax({
         url: "/get_open_file",
         type: 'POST',
@@ -16,11 +16,21 @@ function OpenFile(form, json, file){
             form.empty();
             form.append(html);
 
-            $("div.content").height('100%');
+//            OpenActivity(null, 'Details');
+            ExtractActivity(null, 'Details');
+            $('#filter-details-tab').show();
+            $('#filter-comments-tab').show();
+            $('#filter-details').show();
+            $('#filter-comments').show();
+            $('#filter-search-tab').hide();
+            $('#filter-search').hide();
+            FilterSwap('#filter-details');
 
-            OpenActivity(null);
+            details = input_json2['details'];
 
-            LoadStop();
+            AppendActivityTab($('#filter-details'), details);
+
+            LoadStopPreview();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );

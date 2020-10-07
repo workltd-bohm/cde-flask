@@ -317,6 +317,16 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
+    def get_file_object(self, s_project, file_name):
+        col = self._db.Projects
+        project_query = {'project_name': s_project['name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        ic = None
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            ic = project.find_ic(s_project, file_name, project.root_ic)
+        return ic
+
     def get_post_file(self, request_json):
         col = self._db.Marketplace.Posts.Files
         file_query = request_json

@@ -13,6 +13,7 @@ class Project:
         self._added = False
         self._deleted = False
         self._message = ""
+        self._current_ic = None
 
     @property
     def project_id(self):
@@ -177,6 +178,20 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message, self._ic
 
+    def find_ic(self, s_project, file_name, ic=None):
+        if ic.ic_id == s_project['position']['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.name+sub_f.type == file_name:
+                    self._current_ic = ic
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.find_ic(s_project, file_name, x)
+                if self._added:
+                    break
+        return self._current_ic
+
     def to_json(self):
         return {
             'project_id': self._project_id,
@@ -194,6 +209,7 @@ class Project:
                              json_file['path'],
                              json_file['parent_id'],
                              json_file['color'],
+                             json_file['time_uploaded'],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
@@ -205,6 +221,7 @@ class Project:
                         json_file['type'],
                         json_file['parent_id'],
                         json_file['color'],
+                        json_file['time_uploaded'],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])

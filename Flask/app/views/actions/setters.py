@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+from datetime import datetime
 
 from app import *
 
@@ -56,6 +57,7 @@ def create_project():
                     request_data['project_name'],
                     'root',
                     '',
+                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                     [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
@@ -127,6 +129,7 @@ def upload_existing_project():
                                            path,
                                            parent_id,
                                            '',
+                                           datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                            []
                                            )
 
@@ -146,7 +149,8 @@ def upload_existing_project():
                         name = ('').join(file_name.split('.')[:-1])
                         parent_directory = ('/').join(current_file_path_backup[:-1])
                         ic_new_file = File(new_id, name, name, parent_directory, [], path,
-                                           ('').join(['.', file_name.split('.')[-1]]), parent_id, '', [], '', '')
+                                           ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
+                                           datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), [], '', '')
 
                         project.added = False
                         encoded = file
@@ -182,6 +186,7 @@ def upload_existing_project():
                                                path,
                                                parent_id,
                                                '',
+                                               datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                []
                                                )
 

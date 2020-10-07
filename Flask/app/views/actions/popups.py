@@ -10,12 +10,29 @@ def get_open_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        details = ''
         name = request_data['name']
         type = request_data['type']
         print(request_data)
+
+        if db.connect(db_adapter):
+            s_project = session['project']
+            result = db.get_file_object(db_adapter, s_project, name + type)
+            if result:
+                details = result.time_uploaded
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
         response = {
             'html': render_template("popup/open_file.html",
                                     preview='/get_shared_file/' + name + type
+                                    ),
+            'details': render_template("activity/details.html",
+                                    details=details
                                     ),
             'data': []
         }

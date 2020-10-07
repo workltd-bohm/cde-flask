@@ -2,6 +2,7 @@ import os
 import io
 import json
 import uuid
+from datetime import datetime
 
 from app import *
 
@@ -105,6 +106,7 @@ def upload_file():
                         "." + request_json['new_name'].split('.')[-1],
                         request_json['ic_id'],
                         '',
+                        datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                         [],
                         '',
                         'description') # request_json['description'])
@@ -159,6 +161,7 @@ def create_dir():
                     request_data['parent_path'] + '/' + request_data['new_name'],
                     request_data['ic_id'],
                     '',
+                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                     [])
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -289,10 +292,12 @@ def path_to_obj(path, parent=False, parent_id=""):
                          path,
                          parent_id,
                          '',
+                         datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [], path, p.suffix, new_id, '', [],  '', '')
+        root = File(new_id, name, name, parent, [], path, p.suffix, new_id, '',
+                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), [],  '', '')
     return root
 
 

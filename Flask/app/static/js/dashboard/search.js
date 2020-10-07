@@ -11,6 +11,11 @@ function OpenFilterActivity(){
             data = JSON.parse(data);
             if(data){
                 OpenActivity(data.html, null, false);
+                FilterSwap('#filter-search');
+                $('#filter-details-tab').hide();
+                $('#filter-comments-tab').hide();
+                $('#filter-details').hide();
+                $('#filter-comments').hide();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

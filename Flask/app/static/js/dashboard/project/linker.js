@@ -27,7 +27,8 @@ function WrapOpenFile(data){
     if(tmp.is_directory){
         OpenActivity(null);
     }else{
-        PopupOpen(OpenFile, tmp);
+        console.log("tmp");
+        PreviewOpen(OpenFile, tmp);
     }
 //    PopupOpen(NewFile, tmp);
 //    OpenFileDialog(tmp);

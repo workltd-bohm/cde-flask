@@ -1,5 +1,5 @@
 /* The Modal Background */
-div.pero {
+div.pero, div.preview {
     display: none;
 }
 div.pero > .cover {
@@ -13,14 +13,27 @@ div.pero > .cover {
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
 }
-div.pero > .cover.back {
+
+div.preview > .cover {
+     /* Hidden by default */
+    position: fixed; /* Stay in place */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 70%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+}
+
+div.pero > .cover.back, div.preview > .cover.back {
     z-index: 1;
 }
-div.pero > .cover.front {
+div.pero > .cover.front, div.preview > .cover.front {
     display: none;
     z-index: 3;
 }
-div.pero > .cover.front > .loading {
+div.pero > .cover.front > .loading, div.preview > .cover.front > .loading {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -44,6 +57,33 @@ div.pero > div.content {
     width: 70%;
     /* height: 30%; */
     overflow: unset;
+}
+
+/* The Modal content */
+div.preview > div.content {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 39%;
+    transform: translate(-50%, -50%);
+    background-color: #111111;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 25px;
+    width: 78%;
+    height: 100%;
+    overflow: unset;
+}
+
+div.preview > div.content > div.preview-placeholder {
+    width: 100%;
+    height: 100%;
+}
+
+.preview-content{
+    height: 95%;
+    width: 100%;
 }
 
 /* The Close Button */
@@ -74,11 +114,6 @@ div.content > .form > .scroll {
     position: relative;
     padding: 15px 0 0;
     margin-top: 10px;
-    width: 100%;
-}
-
-.preview{
-    height: 100%;
     width: 100%;
 }
 
@@ -133,9 +168,3 @@ div.content > .form > .scroll {
 .form__field:required, .form__field:invalid {
     box-shadow: none;
 }
-
-/* .popup_button {
-    position: relative;
-    top: 3vw;
-    left: 50px;
-} */
