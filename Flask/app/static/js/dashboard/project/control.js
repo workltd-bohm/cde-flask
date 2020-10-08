@@ -123,15 +123,16 @@ function ClickStop(ToDo, data, single=false){
 }
 
 function SelectPlanet(data){
-    if (data.values.data.selected) {
-        data.values.data.selected = false;
+    if (data.values.data.checked) {
+        data.values.data.checked = false;
         data.values.data.values.checked.style("opacity", 0);
+        if(data.values.data.ic_id in CHECKED) delete CHECKED[data.values.data.ic_id];
     }
     else {
-        data.values.data.selected = true;
+        data.values.data.checked = true;
         data.values.data.values.checked.style("opacity", 100);
+        CHECKED[data.values.data.ic_id] = data.values.data;
     }
-    console.log(data.values.data)
 }
 
 // -------------------------------------------------------

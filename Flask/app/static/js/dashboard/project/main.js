@@ -18,6 +18,7 @@ function CreateSpace(data) {
     // g_project.project_position = data.path;
 
     g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
+    CHECKED = {};
 
     g_root.universe.selectAll("g")
         .data([data])
@@ -38,6 +39,7 @@ function AddSun(obj, data){
     data.values.parent = obj;
     data.values.back = data;
     data.values.rotation = 1;
+    data.values.sun = true;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");
@@ -127,6 +129,7 @@ function AddChildren(obj, data, parent, position=0){
     data.values.back = parent;
     data.values.position = position;
     data.values.parent = (parent != null) ? d3.select("#obj-"+data.par_id) : null;
+    data.values.sun = false;
 
     data.values.rotation = data.values.back.sub_folders.length > 1 ? position*360/data.values.back.sub_folders.length : 1;
 
@@ -170,18 +173,16 @@ function AddChildren(obj, data, parent, position=0){
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
-        // .on("mouseover",function(d){
-        //     if(!g_project.overlay && g_root.zoom){
-        //         data.overlay_type = "planet";
-        //         OverlayCreate(d3.select(this), d, data);
-        //     }
-        // })
+        .on("mouseover",function(d){
+            if(!g_project.overlay && g_root.zoom){
+                g_root.universe.data.overlay_type == "ic" ? OverlayCreate(d3.select(this), d, data, true):1;
+            }
+        })
         .on("mousedown",function(d){
             ClickStart(function(d){
-                if(!g_project.overlay && g_root.zoom){
-                    data.overlay_type = "planet";
-                    OverlayCreate(d3.select(this), d, data);
-                }
+                // if(!g_project.overlay && g_root.zoom){
+                //     OverlayCreate(d3.select(this), d, data);
+                // }
             }, data);
         })
         .on("mouseup",function(d){
@@ -190,7 +191,7 @@ function AddChildren(obj, data, parent, position=0){
                 case "user" : func = GetWarp; break;
                 default : func = SunFadeout; break;
             }
-            ClickStop(func, data);
+            ClickStop(func, data, true);
         });
 
     data.values.checked = data.values.this.append("foreignObject")

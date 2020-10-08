@@ -5,6 +5,8 @@ var ACTIVITY_HEAD = null;
 
 var SESSION = {};
 
+var CHECKED = {};
+
 const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 

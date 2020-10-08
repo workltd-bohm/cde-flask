@@ -48,7 +48,7 @@ circle.overlay.pattern {
     /* stroke-opacity: 0.9; */
 }
 circle.overlay.select {
-    fill: rgba(0, 0, 0, 0.1);
+    fill: rgba(0, 0, 0, 0.0);
 }
 
 text.text_back {
