@@ -19,7 +19,9 @@ def get_open_file():
             s_project = session['project']
             result = db.get_file_object(db_adapter, s_project, name + type)
             if result:
-                details = result.time_uploaded
+                print(result.history)
+                details = [x.to_json() for x in result.history]
+                print(details)
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()

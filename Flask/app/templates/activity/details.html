@@ -1,1 +1,9 @@
-{{ details }}
+<hr>
+{% for detail in details %}
+  <div class="details_field">
+      <p>{{ detail['event_name'] }}</p>
+      <p>{{ detail['date'] }}</p>
+      <p>{{ detail['event_value'] }}</p>
+  </div>
+<hr>
+{% endfor %}

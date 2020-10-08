@@ -50,14 +50,14 @@ def create_project():
         request_data = json.loads(request.get_data())
         user = session.get('user')
         name_id = str(uuid.uuid1())
+        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
         root_obj = IC(name_id,
                     request_data['project_name'],
                     ".",
-                    [],
+                    [details],
                     request_data['project_name'],
                     'root',
                     '',
-                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                     [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
@@ -122,14 +122,14 @@ def upload_existing_project():
                         else:
                             parent_directory = ('/').join(current_file_path_backup[0:i + 1])
                         path = ('/').join(current_file_path[:i])
+                        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
                         ic_new = Directory(new_id,
                                            name,
                                            parent_directory,
-                                           [],
+                                           [details],
                                            path,
                                            parent_id,
                                            '',
-                                           datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                            []
                                            )
 
@@ -146,11 +146,12 @@ def upload_existing_project():
                     message = db.update_project(db_adapter, project, user)
                     if message == msg.PROJECT_SUCCESSFULLY_UPDATED:
                         new_id = str(uuid.uuid1())
-                        name = ('').join(file_name.split('.')[:-1])
+                        name = ('.').join(file_name.split('.')[:-1])
                         parent_directory = ('/').join(current_file_path_backup[:-1])
-                        ic_new_file = File(new_id, name, name, parent_directory, [], path,
+                        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+                        ic_new_file = File(new_id, name, name, parent_directory, [details], path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), [], '', '')
+                                           [], '', '')
 
                         project.added = False
                         encoded = file
@@ -179,14 +180,14 @@ def upload_existing_project():
                             else:
                                 parent_directory = ('/').join(current_dir_path[0:i + 1])
                             path = ('/').join(current_dir_path[:i])
+                            details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
                             ic_new = Directory(new_id,
                                                name,
                                                parent_directory,
-                                               [],
+                                               [details],
                                                path,
                                                parent_id,
                                                '',
-                                               datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                []
                                                )
 

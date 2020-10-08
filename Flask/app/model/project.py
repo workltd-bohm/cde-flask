@@ -1,7 +1,8 @@
-from .information_container import IC
+from .details import Details
 from .directory import Directory
 from .file import File
 import app.model.messages as msg
+from datetime import datetime
 
 
 class Project:
@@ -90,6 +91,10 @@ class Project:
                     name = y.name   + y.type
                     new_name = '.'.join(new_name.split('.')[:-1])
                 if name == request_data['old_name']:
+                    details = Details('IC renamed',
+                                      datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
+                                      name + '\n >>>> \n' + new_name)
+                    y.history.append(details)
                     y.name = new_name
                     y.path = parent + '/' + request_data['new_name']
                     # ic.parent = parent # no need?
@@ -182,7 +187,7 @@ class Project:
         if ic.ic_id == s_project['position']['parent_id']:
             for sub_f in ic.sub_folders:
                 if sub_f.name+sub_f.type == file_name:
-                    self._current_ic = ic
+                    self._current_ic = sub_f
                     self._added = True
                     break
         else:
@@ -205,23 +210,21 @@ class Project:
             root = Directory(json_file['ic_id'],
                              json_file['name'],
                              json_file['parent'],
-                             json_file['history'],
+                             [Details.json_to_obj(x) for x in json_file['history']],
                              json_file['path'],
                              json_file['parent_id'],
                              json_file['color'],
-                             json_file['time_uploaded'],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
                         json_file['name'],
                         json_file['original_name'],
                         json_file['parent'],
-                        json_file['history'],
+                        [Details.json_to_obj(x) for x in json_file['history']],
                         json_file['path'],
                         json_file['type'],
                         json_file['parent_id'],
                         json_file['color'],
-                        json_file['time_uploaded'],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])

@@ -164,7 +164,8 @@ class DBMongoAdapter:
 
     def update_file(self, project, file_obj, file):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_id': project.project_id, 'stored_id': file_obj.stored_id}
         project_uploaded = False
         if col.find_one(project_query, {'_id': 0}) is None:
@@ -185,13 +186,13 @@ class DBMongoAdapter:
 
     def upload_file(self, project_name, file_obj, file):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
             file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id}
-            file_json = col_file.find_one(file_query, {'_id': 0})
+            file_json = self._fs.find_one(file_query)
             if file_json is None:
                 file_obj.stored_id = str(self._fs.put(file,
                                     file_name=file_obj.name+file_obj.type,
@@ -199,8 +200,8 @@ class DBMongoAdapter:
                                     parent_id=file_obj.parent_id,
                                     description=file_obj.description
                                     ))
-                col_file.update_one({'file_id': 'default'},
-                                    {'$set': {'file_id': str(file_obj.stored_id)}})
+                # col_file.update_one({'file_id': 'default'},
+                #                     {'$set': {'file_id': str(file_obj.stored_id)}})
                 add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
@@ -233,7 +234,8 @@ class DBMongoAdapter:
 
     def rename_ic(self, request_data):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -245,7 +247,7 @@ class DBMongoAdapter:
                 if not request_data['is_directory']:
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
-                    file_json = col_file.find_one(file_query, {'_id': 0})
+                    file_json = col_file.find_one(file_query)
                     if file_json:
                         col_file.update_one({'file_name': request_data['old_name']},
                                             {'$set': {'file_name': str(request_data['new_name'])}})
@@ -264,7 +266,9 @@ class DBMongoAdapter:
 
     def delete_ic(self, delete_ic_data):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
+        col_file_chunks = self._db.fs.chunks
         project_query = {'project_name': delete_ic_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
         delete = msg.PROJECT_NOT_FOUND
@@ -273,6 +277,7 @@ class DBMongoAdapter:
                 col.delete_one(project_query)
                 file_query = {'project_name': delete_ic_data['project_name']}
                 col_file.delete_many(file_query)
+                col_file_chunks.delete_many(file_query)
                 col_users = self._db.Users.Roles
                 user_query = {'user_id': delete_ic_data['user_id']}
                 result = col_users.find_one(user_query, {'_id': 0})

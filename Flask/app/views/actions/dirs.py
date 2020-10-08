@@ -97,16 +97,16 @@ def upload_file():
         set_project_data(request_json)
         directory = request_json['parent_path']
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
+        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
         file_obj = File(str(uuid.uuid1()),
                         '.'.join(request_json['new_name'].split('.')[:-1]),
                         request.files['file'].filename,
                         directory,
-                        [],
+                        [details],
                         directory + '/' + request_json['new_name'],
                         "." + request_json['new_name'].split('.')[-1],
                         request_json['ic_id'],
                         '',
-                        datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                         [],
                         '',
                         'description') # request_json['description'])
@@ -154,14 +154,14 @@ def create_dir():
         request_data = json.loads(request.get_data())
         set_project_data(request_data)
         print(request_data)
+        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
         folder = IC(str(uuid.uuid1()),
                     request_data['new_name'],
                     request_data['parent_path'],
-                    [],
+                    [details],
                     request_data['parent_path'] + '/' + request_data['new_name'],
                     request_data['ic_id'],
                     '',
-                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                     [])
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -284,20 +284,19 @@ def path_to_obj(path, parent=False, parent_id=""):
     name = p.stem
     new_id = str(uuid.uuid1())
     parent = parent if parent != False else path # new_id
-    if os.path.isdir(path): 
+    details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+    if os.path.isdir(path):
         root = Directory(new_id,
                          name,
                          parent,
-                         [],
+                         [details],
                          path,
                          parent_id,
                          '',
-                         datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [], path, p.suffix, new_id, '',
-                    datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [],  '', '')
     return root
 
 

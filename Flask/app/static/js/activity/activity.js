@@ -40,3 +40,7 @@ function AppendActivity(html){
 function AppendActivityTab(parent, child){
     parent.append(child);
 }
+
+function ClearActivityTab(parent){
+    parent.html('');
+}

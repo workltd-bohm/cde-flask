@@ -4,8 +4,8 @@ from .information_container import IC
 class File(IC):
 
     def __init__(self, file_id, name, original_name, directory, file_history, path, type, parent_id, color,
-                 time_uploaded, sub_folders, stored_id="", description=''):
-        super().__init__(file_id, name, directory, file_history, path, parent_id, color, time_uploaded, sub_folders)
+                 sub_folders, stored_id="", description=''):
+        super().__init__(file_id, name, directory, file_history, path, parent_id, color, sub_folders)
         self._original_name = original_name
         self._type = type
         self._stored_id = stored_id
@@ -136,13 +136,12 @@ class File(IC):
             'name': self._name,
             'original_name': self._original_name,
             'parent': self._parent,
-            'history': self._history,
+            'history': [x.to_json() for x in self._history],
             'path': self._path,
             'type': self._type,
             'parent_id': self._parent_id,
             'color': self._color,
             'overlay_type': self._overlay_type,
-            'time_uploaded': self._time_uploaded,
             'sub_folders': [x.to_json() for x in self._sub_folders],
             'stored_id': self._stored_id,
             'description': self._description,
@@ -161,17 +160,19 @@ class File(IC):
 
     @staticmethod
     def json_to_obj(json_file):
+        print(json_file['history'])
+        p = [x.json_to_obj() for x in json_file['history']]
+        print(p)
         file = File(json_file['ic_id'],
                     json_file['name'],
                     json_file['original_name'],
-                    json_file['history'],
+                    [x.json_to_obj() for x in json_file['history']],
                     json_file['path'],
                     json_file['type'],
                     json_file['parent'],
                     json_file['parent_id'],
                     json_file['color'],
-                    json_file['time_uploaded'],
-                    json_file['sub_folders'],
+                    [x.json_to_obj() for x in json_file['sub_folders']],
                     json_file['stored_id'],
                     json_file['description'],
                     )

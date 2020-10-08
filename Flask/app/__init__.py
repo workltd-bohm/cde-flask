@@ -8,6 +8,7 @@ import app.model.marketplace.post as status
 from app.model.information_container import IC
 from app.model.directory import Directory
 from app.model.file import File
+from app.model.details import Details
 from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid

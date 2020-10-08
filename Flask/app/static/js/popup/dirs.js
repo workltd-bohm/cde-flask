@@ -28,6 +28,7 @@ function OpenFile(form, json, file){
 
             details = input_json2['details'];
 
+            ClearActivityTab($('#filter-details'));
             AppendActivityTab($('#filter-details'), details);
 
             LoadStopPreview();
@@ -127,7 +128,7 @@ function OnFileUpload(file){
 //        var file = e.target.files[0];
 //        fill_options();
         var fileName = file.name.split('.');
-        file_extension.value = '.' + fileName[1];
+        file_extension.value = '.' + fileName[fileName.length-1];
         name1.value = file.name;
         fileList = file;
 //        console.log(file);
@@ -237,7 +238,7 @@ function RenameFile(form, json){
                 document.getElementById('company_code').value = json.company_code;
 //                document.getElementById('name').value = json.original_name;
                 var file = {};
-                file.name = json.original_name;
+                file.name = json.original_name + json.type;
 
                 FileDataInit();
                 OnFileUpload(file);
