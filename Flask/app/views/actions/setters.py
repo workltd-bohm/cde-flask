@@ -317,7 +317,9 @@ def send_comment():
                 print(result["message"])
                 resp = Response()
                 resp.status_code = result["code"]
-                resp.data = result["message"]
+                resp.data = render_template("activity/single_comment.html",
+                                                comment=comment.to_json()
+                                                )
                 return resp
         else:
             print(str(msg.DB_FAILURE))

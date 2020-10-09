@@ -50,6 +50,7 @@ function sendComment(){
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
+    div = $('.activity-tab-div-comment');
     console.log(comment);
     $.ajax({
         url: "/send_comment",
@@ -64,6 +65,7 @@ function sendComment(){
         success: function(data){
 //            input_json = JSON.parse(data);
             console.log(data);
+            div.append(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
