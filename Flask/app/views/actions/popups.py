@@ -10,7 +10,6 @@ def get_open_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        details = ''
         name = request_data['name']
         type = request_data['type']
         print(request_data)
@@ -19,9 +18,35 @@ def get_open_file():
             s_project = session['project']
             result = db.get_file_object(db_adapter, s_project, name + type)
             if result:
-                print(result.history)
                 details = [x.to_json() for x in result.history]
-                print(details)
+                file_name = result.name + result.type
+                path = result.path
+                share_link = 'http://bohm.cloud/get_shared_file/' + file_name
+                comments = [x.to_json() for x in result.comments]
+                print('>>>>>>>>>>>>', comments)
+
+                response = {
+                    'html': render_template("popup/open_file.html",
+                                            preview='/get_shared_file/' + name + type
+                                            ),
+                    'details': render_template("activity/details.html",
+                                               details=details,
+                                               file_name=file_name,
+                                               path=path,
+                                               share_link=share_link
+                                               ),
+                    'comments': render_template("activity/comments.html",
+                                                comments=comments,
+                                                project_name=s_project['name'],
+                                                parent_id=result.parent_id,
+                                                ic_id=result.ic_id
+                                                ),
+                    'data': []
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
@@ -29,19 +54,7 @@ def get_open_file():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-        response = {
-            'html': render_template("popup/open_file.html",
-                                    preview='/get_shared_file/' + name + type
-                                    ),
-            'details': render_template("activity/details.html",
-                                    details=details
-                                    ),
-            'data': []
-        }
-        resp = Response()
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+
     else:
         return redirect('/')
 

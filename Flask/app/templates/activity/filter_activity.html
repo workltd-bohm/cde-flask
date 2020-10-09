@@ -1,4 +1,5 @@
 
+
 <div class="project-tab">
   <div class="project-box" id="filter-details-tab" onclick="FilterSwap('#filter-details')">
     <p>Details</p>
@@ -10,33 +11,30 @@
     <p>Filters</p>
   </div>
 </div>
+<div class="activity-tab-div">
+    <div class="project-view">
+      <div id="filter-details">
+      </div>
+      <div id="filter-comments">
+      </div>
+      <div id="filter-search" style="display: none;">
+        <form id="filter-form" onchange="FilterOut('#filter-form')">
+          <div class="scroll">
+            <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
 
-<div class="project-view">
-  <div id="filter-details">
-    {% for key, value in details.items() %}
-    {% endfor %}
-  </div>
-  <div id="filter-comments">
-    {% for key, value in comments.items() %}
-    {% endfor %}
-  </div>
-  <div id="filter-search" style="display: none;">
-    <form id="filter-form" onchange="FilterOut('#filter-form')">
-      <div class="scroll">
-        <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
-
-            {% for key, value in search.items() %}
-              <div class="form__group field">
-                  <select class="form__field" name="{{ key }}" id='{{ key }}' required >
-                      <option></option>
-                      {% for v in value.elements %}
-                        <option value="{{ v }}">{{ v }}</option>
-                      {% endfor %}
-                  </select>
-                  <label for="{{ key }}" class="form__label">{{ value.name }}</label>
-              </div>
-            {% endfor %}
-        </div>
-      </form>
-  </div>
+                {% for key, value in search.items() %}
+                  <div class="form__group field">
+                      <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                          <option></option>
+                          {% for v in value.elements %}
+                            <option value="{{ v }}">{{ v }}</option>
+                          {% endfor %}
+                      </select>
+                      <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                  </div>
+                {% endfor %}
+            </div>
+          </form>
+      </div>
+    </div>
 </div>

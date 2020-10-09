@@ -50,15 +50,17 @@ def create_project():
         request_data = json.loads(request.get_data())
         user = session.get('user')
         name_id = str(uuid.uuid1())
-        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+        u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+        details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['project_name'])
         root_obj = IC(name_id,
-                    request_data['project_name'],
-                    ".",
-                    [details],
-                    request_data['project_name'],
-                    'root',
-                    '',
-                    [])
+                      request_data['project_name'],
+                      ".",
+                      [details],
+                      request_data['project_name'],
+                      'root',
+                      '',
+                      [],
+                      [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
         if db.connect(db_adapter):
@@ -94,6 +96,7 @@ def upload_existing_project():
             path = request.form['path']
             is_dir = request.form['is_dir']
             project = db.get_project(db_adapter, path.split('/')[0], user)
+            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
             if not project:
                 print(str(msg.PROJECT_NOT_FOUND['message']))
                 resp = Response()
@@ -106,6 +109,7 @@ def upload_existing_project():
                     file = request.files['file'].read()
                     counter = request.form['counter']
                     total = request.form['total']
+                    original_path = path
                     print(path)
                     print(str((int(counter) / int(total)) * 100) + '%')
                     current_file_path_old = path.split('/')
@@ -114,6 +118,7 @@ def upload_existing_project():
                     current_file_path = current_file_path_old[1:-1]
                     parent_id = project.root_ic.ic_id
                     parent_ic = project.root_ic
+
                     for i in range(0, len(current_file_path)):
                         name = current_file_path[i]
                         new_id = str(uuid.uuid1())
@@ -122,7 +127,7 @@ def upload_existing_project():
                         else:
                             parent_directory = ('/').join(current_file_path_backup[0:i + 1])
                         path = ('/').join(current_file_path[:i])
-                        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+                        details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
                         ic_new = Directory(new_id,
                                            name,
                                            parent_directory,
@@ -130,6 +135,7 @@ def upload_existing_project():
                                            path,
                                            parent_id,
                                            '',
+                                           [],
                                            []
                                            )
 
@@ -148,10 +154,11 @@ def upload_existing_project():
                         new_id = str(uuid.uuid1())
                         name = ('.').join(file_name.split('.')[:-1])
                         parent_directory = ('/').join(current_file_path_backup[:-1])
-                        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
-                        ic_new_file = File(new_id, name, name, parent_directory, [details], path,
+                        details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
+                                          ('').join(['.', file_name.split('.')[-1]]))
+                        ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], '', '')
+                                           [], [], '', '')
 
                         project.added = False
                         encoded = file
@@ -180,7 +187,7 @@ def upload_existing_project():
                             else:
                                 parent_directory = ('/').join(current_dir_path[0:i + 1])
                             path = ('/').join(current_dir_path[:i])
-                            details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+                            details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
                             ic_new = Directory(new_id,
                                                name,
                                                parent_directory,
@@ -188,6 +195,7 @@ def upload_existing_project():
                                                path,
                                                parent_id,
                                                '',
+                                               [],
                                                []
                                                )
 
@@ -279,6 +287,32 @@ def share_project():
         print(request_data)
         if db.connect(db_adapter):
             result = db.share_project(db_adapter, request_data, session['user'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+
+@app.route('/send_comment', methods=['POST'])
+def send_comment():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+            comment = Comments(u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+            result = db.add_comment(db_adapter, request_data, comment)
             if result:
                 print(result["message"])
                 resp = Response()

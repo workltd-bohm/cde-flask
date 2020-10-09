@@ -96,8 +96,10 @@ def upload_file():
         request_json = json.loads(request.form['data'])  # test_json_request
         set_project_data(request_json)
         directory = request_json['parent_path']
+        u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
-        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+        details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'] +
+                          "." + request_json['new_name'].split('.')[-1])
         file_obj = File(str(uuid.uuid1()),
                         '.'.join(request_json['new_name'].split('.')[:-1]),
                         request.files['file'].filename,
@@ -107,6 +109,7 @@ def upload_file():
                         "." + request_json['new_name'].split('.')[-1],
                         request_json['ic_id'],
                         '',
+                        [],
                         [],
                         '',
                         'description') # request_json['description'])
@@ -154,14 +157,16 @@ def create_dir():
         request_data = json.loads(request.get_data())
         set_project_data(request_data)
         print(request_data)
-        details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
-        folder = IC(str(uuid.uuid1()),
+        u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+        details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
+        folder = Directory(str(uuid.uuid1()),
                     request_data['new_name'],
                     request_data['parent_path'],
                     [details],
                     request_data['parent_path'] + '/' + request_data['new_name'],
                     request_data['ic_id'],
                     '',
+                    [],
                     [])
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
@@ -201,7 +206,8 @@ def rename_ic():
                 "new_name": request_data["new_name"],
                 "is_directory": True if "is_directory" in request_data else False,
             }
-            result = db.rename_ic(db_adapter, rename)
+            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+            result = db.rename_ic(db_adapter, rename, u)
             if result:
                 print(result["message"])
                 resp = Response()
@@ -284,7 +290,8 @@ def path_to_obj(path, parent=False, parent_id=""):
     name = p.stem
     new_id = str(uuid.uuid1())
     parent = parent if parent != False else path # new_id
-    details = Details('Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+    u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+    details = Details(u, 'Date created', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
     if os.path.isdir(path):
         root = Directory(new_id,
                          name,
@@ -293,10 +300,11 @@ def path_to_obj(path, parent=False, parent_id=""):
                          path,
                          parent_id,
                          '',
+                         [],
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [],  '', '')
     return root
 
 

@@ -232,7 +232,7 @@ class DBMongoAdapter:
         self._close_connection()
         return message, ic
 
-    def rename_ic(self, request_data):
+    def rename_ic(self, request_data, user):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
@@ -241,7 +241,7 @@ class DBMongoAdapter:
         if project_json:
             project = Project.json_to_obj(project_json)
             # print(project.to_json())
-            add = project.rename_ic(request_data, project.root_ic)
+            add = project.rename_ic(request_data, user, project.root_ic)
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 file_updated = True
                 if not request_data['is_directory']:
@@ -511,6 +511,22 @@ class DBMongoAdapter:
 
         else:
             message = msg.USER_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def add_comment(self, request_data, comment):
+        col = self._db.Projects
+        # col_file = self._db.Projects.Files
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.add_comment(request_data, comment, project.root_ic)
+            if message == msg.COMMENT_SUCCESSFULLY_ADDED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
         self._close_connection()
         return message
 

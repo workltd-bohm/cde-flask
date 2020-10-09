@@ -1,4 +1,5 @@
 from .details import Details
+from .comment import Comments
 from .directory import Directory
 from .file import File
 import app.model.messages as msg
@@ -80,7 +81,7 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
-    def rename_ic(self, request_data, ic=None):
+    def rename_ic(self, request_data, user, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
                 name = y.name
@@ -91,9 +92,9 @@ class Project:
                     name = y.name   + y.type
                     new_name = '.'.join(new_name.split('.')[:-1])
                 if name == request_data['old_name']:
-                    details = Details('IC renamed',
+                    details = Details(user, 'Renamed',
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
-                                      name + '\n >>>> \n' + new_name)
+                                      name + ' to ' + new_name + y.type)
                     y.history.append(details)
                     y.name = new_name
                     y.path = parent + '/' + request_data['new_name']
@@ -104,7 +105,7 @@ class Project:
         else:
             if ic.sub_folders:
                 for x in ic.sub_folders:
-                    self.rename_ic(request_data, x)
+                    self.rename_ic(request_data, user, x)
                     if self._added:
                         break
         if not self._added:
@@ -186,7 +187,10 @@ class Project:
     def find_ic(self, s_project, file_name, ic=None):
         if ic.ic_id == s_project['position']['parent_id']:
             for sub_f in ic.sub_folders:
-                if sub_f.name+sub_f.type == file_name:
+                sub_f_name = sub_f.name
+                if not sub_f.is_directory:
+                    sub_f_name = sub_f.name+sub_f.type
+                if sub_f_name == file_name:
                     self._current_ic = sub_f
                     self._added = True
                     break
@@ -196,6 +200,23 @@ class Project:
                 if self._added:
                     break
         return self._current_ic
+
+    def add_comment(self, request, comment, ic=None):
+        if ic.ic_id == request['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.ic_id == request['ic_id']:
+                    sub_f.comments.append(comment)
+                    self._message = msg.COMMENT_SUCCESSFULLY_ADDED
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.add_comment(request, comment, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
 
     def to_json(self):
         return {
@@ -214,6 +235,7 @@ class Project:
                              json_file['path'],
                              json_file['parent_id'],
                              json_file['color'],
+                             [Comments.json_to_obj(x) for x in json_file['comments']],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
@@ -225,6 +247,7 @@ class Project:
                         json_file['type'],
                         json_file['parent_id'],
                         json_file['color'],
+                        [Comments.json_to_obj(x) for x in json_file['comments']],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])

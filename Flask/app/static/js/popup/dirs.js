@@ -31,6 +31,11 @@ function OpenFile(form, json, file){
             ClearActivityTab($('#filter-details'));
             AppendActivityTab($('#filter-details'), details);
 
+            comments = input_json2['comments'];
+
+            ClearActivityTab($('#filter-comments'));
+            AppendActivityTab($('#filter-comments'), comments);
+
             LoadStopPreview();
         },
         error: function($jqXHR, textStatus, errorThrown) {

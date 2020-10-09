@@ -44,3 +44,32 @@ function AppendActivityTab(parent, child){
 function ClearActivityTab(parent){
     parent.html('');
 }
+
+function sendComment(){
+    comment = $('#comment').val();
+    project_name = $('#project_name').val();
+    parent_id = $('#parent_id').val();
+    ic_id = $('#ic_id').val();
+    console.log(comment);
+    $.ajax({
+        url: "/send_comment",
+        type: 'POST',
+        data: JSON.stringify({
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id
+        }),
+        timeout: 5000,
+        success: function(data){
+//            input_json = JSON.parse(data);
+            console.log(data);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+
+}

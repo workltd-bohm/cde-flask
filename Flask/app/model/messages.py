@@ -8,6 +8,8 @@ ACCOUNT_CHANGED = {"message": "Account changed", "code": 200}
 
 DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 
+COMMENT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}
 IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}

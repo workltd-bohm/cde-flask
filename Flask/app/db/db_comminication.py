@@ -48,8 +48,8 @@ def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
 
 
-def rename_ic(db_adapter, request_data):
-    return db_adapter.rename_ic(request_data)
+def rename_ic(db_adapter, request_data, user):
+    return db_adapter.rename_ic(request_data, user)
 
 
 def delete_ic(db_adapter, delete_ic_data):
@@ -118,6 +118,10 @@ def get_bids_for_post(db_adapter, request_json):
 
 def share_project(db_adapter, request_data, user):
     return db_adapter.share_project(request_data, user)
+
+
+def add_comment(db_adapter, request_data, comment):
+    return db_adapter.add_comment(request_data, comment)
 
 
 def clear_db(db_adapter):
