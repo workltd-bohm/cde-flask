@@ -25,6 +25,11 @@ function ExtractActivity(html=null, head=null, open=true){
     }
 }
 
+function CloseActivity(){
+    $ACTIVITY.parent().removeClass("opend");
+    $ACTIVITY.parent().addClass("closed");
+}
+
 function ClearActivity(close=true){
   ACTIVITY.html("");
   if(close){
@@ -45,7 +50,13 @@ function ClearActivityTab(parent){
     parent.html('');
 }
 
-function sendComment(){
+function sendComment(el){
+    var key = window.event.keyCode;
+    if(key != 13)
+        return true;
+    if (key === 13 && el.shiftKey){
+        return true;
+    }
     comment = $('#comment').val();
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
@@ -66,6 +77,8 @@ function sendComment(){
 //            input_json = JSON.parse(data);
             console.log(data);
             div.append(data);
+            $('#comment').val('');
+            div.scrollTop(div[0].scrollHeight);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );

@@ -1,17 +1,18 @@
 <input type="hidden" id="project_name" value="{{ project_name }}" required />
 <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
 <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
-<div class="activity-tab-div-comment">
-  {% for comment in comments %}
-    <p><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
-    <div class="comments_field">
-        <p class="details_event" style="margin-left:5px;">{{ comment['comment'] }}</p>
-        <p class="details_date" style="margin-left:5px;">{{ comment['date'] }}</p>
+<div class="comments-div"></div>
+    <div class="activity-tab-div-comment">
+      {% for comment in comments %}
+        <p><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
+        <div class="comments_field">
+            <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ comment['comment'] }}</p>
+            <p class="details_date" style="margin-left:20px; margin-right:10px;">{{ comment['date'] }}</p>
+        </div>
+      {% endfor %}
     </div>
-  {% endfor %}
-</div>
-<br>
-<div class="comment-div">
-  <textarea id="comment" rows="3" placeholder="Add comment..."></textarea><br>
-  <button class="comment-bnt" onclick="sendComment()">>></button>
+    <br>
+    <div class="comment-div">
+      <textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="   Add comment..."></textarea><br>
+    </div>
 </div>

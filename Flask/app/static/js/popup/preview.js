@@ -36,5 +36,5 @@ function PreviewOpen(run=null, data=null, file=null){
 function PreviewClose(){
     LoadStopPreview();
     $("div.preview").hide();
-    ClearActivity();
+    CloseActivity();
 }
