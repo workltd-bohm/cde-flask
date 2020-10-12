@@ -1,6 +1,6 @@
 
 function OpenActivity(html, head=null, open=true){
-  ACTIVITY.html(html);
+  if (html) ACTIVITY.html(html);
     if (head) {
       ACTIVITY_HEAD.html(head);
     }

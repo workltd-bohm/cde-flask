@@ -92,12 +92,25 @@ def get_filter_activity():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         filter_file = gtr.get_input_file_fixed()
+        # TODO!
+        # details = [x.to_json() for x in result.history]
+        # file_name = result.name + result.type
+        # path = result.path
+        # share_link = 'http://bohm.cloud/get_shared_file/' + file_name
+        # comments = [x.to_json() for x in result.comments]
         response = {
-            'html': render_template("activity/filter_activity.html",
+            'html': render_template("activity/filter_folders.html",
                                     project_name=session.get("project")["name"],
                                     search=filter_file,
-                                    comments={},
-                                    details={},
+                                    details = {},
+                                    comments = {},
+                                    # details=details,
+                                    # file_name=file_name,
+                                    # path=path,
+                                    # share_link=share_link,
+                                    # comments=comments,
+                                    # parent_id=result.parent_id,
+                                    # ic_id=result.ic_id
                                     ),
             'data': []
         }

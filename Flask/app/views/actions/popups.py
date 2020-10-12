@@ -29,30 +29,28 @@ def get_open_file():
                     'html': render_template("popup/open_file.html",
                                             preview='/get_shared_file/' + name + type
                                             ),
-                    'details': render_template("activity/details.html",
-                                               details=details,
-                                               file_name=file_name,
-                                               path=path,
-                                               share_link=share_link
-                                               ),
-                    'comments': render_template("activity/comments.html",
-                                                comments=comments,
-                                                project_name=s_project['name'],
-                                                parent_id=result.parent_id,
-                                                ic_id=result.ic_id
-                                                ),
+                    'activity': render_template("activity/filter_files.html",
+                                            details=details,
+                                            file_name=file_name,
+                                            path=path,
+                                            share_link=share_link,
+                                            comments=comments,
+                                            project_name=s_project['name'],
+                                            parent_id=result.parent_id,
+                                            ic_id=result.ic_id,
+                                            ),
                     'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
                 return resp
-        else:
-            print(str(msg.DB_FAILURE))
-            resp = Response()
-            resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message'])
-            return resp
+
+        print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
 
 
     else:

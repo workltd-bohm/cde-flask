@@ -22,15 +22,16 @@ function GetFormPreview(){
     return $("div.preview > .content > .preview-placeholder");
 }
 
-function PreviewOpen(run=null, data=null, file=null){
-    var form = GetFormPreview();
-
-    LoadStopPreview();
-    $(form).empty();
-    $("div.preview").show();
-//    $("div.content").height('auto');
-
-    if(run) run(form, data, file);
+function PreviewOpen(run=null, data=null, file=null, open = false){
+    var form = null;
+    if(open){
+        form = GetFormPreview();
+        LoadStopPreview();
+        $(form).empty();
+        $("div.preview").show();
+    //    $("div.content").height('auto');
+    }
+    if(run) run(form, data, file, open);
 }
 
 function PreviewClose(){

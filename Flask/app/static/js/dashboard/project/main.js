@@ -15,8 +15,6 @@ function CreateSpace(data) {
 
     g_project.overlay = false;
 
-    // g_project.project_position = data.path;
-
     g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
@@ -38,8 +36,11 @@ function AddSun(obj, data){
     data.values.this = obj;
     data.values.parent = obj;
     data.values.back = data;
+    data.values.data = data;
     data.values.rotation = 1;
     data.values.sun = true;
+
+    WrapOpenFile(data, false);
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");
@@ -175,7 +176,12 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
             if(!g_project.overlay && g_root.zoom){
-                g_root.universe.data.overlay_type == "ic" ? OverlayCreate(d3.select(this), d, data, true):1;
+                console.log(g_root.universe.data.overlay_type)
+                switch(g_root.universe.data.overlay_type){
+                    case "ic":
+                    case "search": OverlayCreate(d3.select(this), d, data, true); break;
+                    default: break;
+                }
             }
         })
         .on("mousedown",function(d){
@@ -205,7 +211,8 @@ function AddChildren(obj, data, parent, position=0){
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin")
         .append("i")
-        .attr("class", "material-icons")
+        .attr("class", "planet material-icons")
+        .style("font-size", g_OverlayItem+"px")
         .html("check_circle")
 
 }
@@ -405,7 +412,8 @@ function AnimatePlanet(data) {
 
         data.values.children.selectAll("g.planet").each(function(data){
             var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
-            var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
+            // var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
+            var anchor =  (rot_x > 0) ? "start" : "end";
             var pos =  rot_x*TEXT_MOVE_COEF*data.values.text_len;
             data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()

@@ -76,6 +76,7 @@ g.path.draw > g.text > text {
 
 .foregin {
     text-align: center;
+    vertical-align: middle;
 }
 .foregin .material-icons{
     color: #bcbcbc;

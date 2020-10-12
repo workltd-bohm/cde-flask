@@ -19,7 +19,7 @@ g_OverSearch = [
 ]
 
 g_OverFolder = [
-    { name : "OPEN", icon : "preview", link : WrapOpenFile},
+    { name : "DETAILS", icon : "preview", link : WrapOpenFile},
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
     { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
     { name : "RENAME", icon : "create", link : WrapRename},
@@ -31,15 +31,17 @@ g_OverFolder = [
     { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
 
-// g_OverFile = [
-//     { name : "OPEN", icon : "preview", link : WrapOpenFile},
-//     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
-//     { name : "RENAME", icon : "create", link : WrapRename},
-//     { name : "DELETE", icon : "delete", link : WrapDelete},
-//     { name : "MOVE", icon : "open_with", link : WrapMove},
-//     { name : "SHARE", icon : "share", link : WrapShare},
-//     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
-// ]
+g_OverFile = [
+    { name : "PREVIEW", icon : "preview", link : WrapOpenFile},
+    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+    { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
+    { name : "RENAME", icon : "create", link : WrapRename},
+    { name : "DELETE", icon : "delete", link : WrapDelete},
+    { name : "MOVE", icon : "open_with", link : WrapMove},
+    { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+    { name : "COLOR", icon : "color_lens", link : ColorPicker},
+]
 
 g_OverPlanet = [
     { name : "SELECT", icon : "check_circle", link : SelectPlanet},
@@ -57,9 +59,12 @@ function OverlayCreate(obj, data, parent, planet=false) {
     switch(data.overlay_type){
         case "user": type = g_OverUser; break;
         case "project": type = g_OverProject; break;
-        case "ic": type = data.values.sun ? g_OverFolder:g_OverPlanet; break;
+        case "ic": {
+            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            break;
+        } 
         case "market": type = g_OverNone; break;
-        case "search_target": type = g_OverSearch; break;
+        case "search_target": type = g_OverPlanet; break;
         default: break;
     }
     if(type.length == 0) return;
@@ -79,6 +84,7 @@ function OverlayCreate(obj, data, parent, planet=false) {
     if(!data.values.sun) g_OverlayRadius = g_PlanetRadius;
     else g_OverlayRadius = g_SunRadius;
 
+    g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
     g_project.overlay = data.overlay.object;
 
     // var pie = d3.layout.pie().sort(null);
@@ -178,14 +184,15 @@ function AddItem(obj, data, parent, position=0) {
     var defaultColor = (data.values.data.color) ? data.values.data.color : $(".foregin .material-icons").css("color");
 
     data.values.picture.append("i")
-        .attr("class", "material-icons")
+        .attr("class", "item material-icons")
         .style("color", defaultColor)
+        .style("font-size", g_OverlayItem+"px")
         .html(data.icon)
 
     data.values.select = data.values.this.append("circle")
         .attr("class","item select")
         // .attr("id", data.link)
-        .attr("r", g_OverlayItem)
+        .attr("r", g_OverlayItem/2)
         .on("mouseover",function(d){
             data.values.back.text.selectAll("text").html(data.name);
         })

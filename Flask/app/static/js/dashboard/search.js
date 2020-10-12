@@ -1,6 +1,6 @@
 SEARCH_HISTORY = {};
 
-function OpenFilterActivity(){
+function OpenFilterActivity(open=false){
 
     $.ajax({
         url: "/get_filter_activity",
@@ -10,12 +10,7 @@ function OpenFilterActivity(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                OpenActivity(data.html, null, false);
-                FilterSwap('#filter-search');
-                $('#filter-details-tab').hide();
-                $('#filter-comments-tab').hide();
-                $('#filter-details').hide();
-                $('#filter-comments').hide();
+                OpenActivity(data.html, null, open);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

@@ -1,6 +1,6 @@
 
 
-function OpenFile(form, json, file){
+function OpenFile(form, json, file, open){
     LoadStartPreview();
     $.ajax({
         url: "/get_open_file",
@@ -13,28 +13,11 @@ function OpenFile(form, json, file){
         success: function(data){
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
-            form.empty();
-            form.append(html);
+            activity = input_json2['activity'];
+            if(form) form.empty();
+            if(form) form.append(html);
 
-//            OpenActivity(null, 'Details');
-            ExtractActivity(null, 'Details');
-            $('#filter-details-tab').show();
-            $('#filter-comments-tab').show();
-            $('#filter-details').show();
-            $('#filter-comments').show();
-            $('#filter-search-tab').hide();
-            $('#filter-search').hide();
-            FilterSwap('#filter-details');
-
-            details = input_json2['details'];
-
-            ClearActivityTab($('#filter-details'));
-            AppendActivityTab($('#filter-details'), details);
-
-            comments = input_json2['comments'];
-
-            ClearActivityTab($('#filter-comments'));
-            AppendActivityTab($('#filter-comments'), comments);
+            OpenActivity(activity, null, open);
 
             LoadStopPreview();
         },

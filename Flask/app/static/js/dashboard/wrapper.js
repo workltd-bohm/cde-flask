@@ -133,7 +133,7 @@ function CreateProject(position=null){
             //console.log(data)
             if(data){
                 DashboardCreate([data.json.root_ic], data.project);
-                OpenFilterActivity();
+                //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

@@ -21,14 +21,15 @@ function WrapCreateFolder(data){
     PopupOpen(NewFolder, tmp);
 }
 
-function WrapOpenFile(data){
+function WrapOpenFile(data, open=true){
     var tmp = data.values.data;
     console.log(tmp);
     if(tmp.is_directory){
-        OpenActivity(null);
+        //OpenActivity(null, null, open);
+        OpenFilterActivity(open);
     }else{
-        console.log("tmp");
-        PreviewOpen(OpenFile, tmp);
+        console.log("tmp",open);
+        PreviewOpen(OpenFile, tmp, null, open);
     }
 //    PopupOpen(NewFile, tmp);
 //    OpenFileDialog(tmp);
