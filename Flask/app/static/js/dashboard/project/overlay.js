@@ -9,6 +9,7 @@ g_OverUser = [
 
 g_OverProject = [
     { name : "NEW PROJECT", icon : "create_new_folder", link : WrapNewProject},
+    { name : "UPLOAD PROJECT", icon : "cloud_upload", link : WrapUploadProject}
     //{ name : "RENAME", icon : "create", link : WrapRename},
     //{ name : "DELETE", icon : "delete", link : WrapDelete},
 ]
@@ -18,6 +19,7 @@ g_OverSearch = [
 ]
 
 g_OverFolder = [
+    { name : "OPEN", icon : "preview", link : WrapOpenFile},
     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
     { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
     { name : "RENAME", icon : "create", link : WrapRename},
@@ -29,18 +31,24 @@ g_OverFolder = [
     { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
 
-g_OverFile = [
-    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
-    { name : "RENAME", icon : "create", link : WrapRename},
-    { name : "DELETE", icon : "delete", link : WrapDelete},
-    { name : "MOVE", icon : "open_with", link : WrapMove},
-    { name : "SHARE", icon : "share", link : WrapShare},
-    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+// g_OverFile = [
+//     { name : "OPEN", icon : "preview", link : WrapOpenFile},
+//     { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+//     { name : "RENAME", icon : "create", link : WrapRename},
+//     { name : "DELETE", icon : "delete", link : WrapDelete},
+//     { name : "MOVE", icon : "open_with", link : WrapMove},
+//     { name : "SHARE", icon : "share", link : WrapShare},
+//     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+// ]
+
+g_OverPlanet = [
+    { name : "SELECT", icon : "check_circle", link : SelectPlanet},
+    { name : "OPEN", icon : "preview", link : WrapOpenFile},
 ]
 
 // -------------------------------------------------------
 
-function OverlayCreate(obj, data, parent) {
+function OverlayCreate(obj, data, parent, planet=false) {
     data.overlay = {};
     data.overlay.this = obj;
     data.overlay.back = parent;
@@ -49,21 +57,39 @@ function OverlayCreate(obj, data, parent) {
     switch(data.overlay_type){
         case "user": type = g_OverUser; break;
         case "project": type = g_OverProject; break;
-        case "ic": type = g_OverFolder; break;
+        case "ic": type = data.values.sun ? g_OverFolder:g_OverPlanet; break;
         case "market": type = g_OverNone; break;
         case "search_target": type = g_OverSearch; break;
         default: break;
     }
     if(type.length == 0) return;
 
+    if(planet) {
+        type = [ {...g_OverPlanet[0]}, {...g_OverPlanet[1]} ];
+        if (data.checked) type[0].icon = "check_circle_outline";
+    }
+
     data.values.text.style("opacity", 0);
     data.overlay.items = type.slice();
 
     data.overlay.object = data.values.this.append("g")
-        .attr("class","star overlay");
+        .attr("class","star overlay")
+
+    if(!data.values.sun) data.overlay.object.attr("transform","rotate("+(-g_root.deg)+")");
+    if(!data.values.sun) g_OverlayRadius = g_PlanetRadius;
+    else g_OverlayRadius = g_SunRadius;
 
     g_project.overlay = data.overlay.object;
 
+    // var pie = d3.layout.pie().sort(null);
+    // var arc = d3.svg.arc().innerRadius(g_OverlayRadius).outerRadius(g_OverlayRadius*1.5);
+    // data.overlay.object.datum([1])
+    //     .selectAll("path")
+    //     .data(pie)
+    //     .enter()
+    //     .append("path")
+    //     .attr("d", arc)
+    //     .attr("class","overlay pattern")
     data.overlay.object.append("circle")
         .attr("class","overlay pattern")
         .attr("cx", 0)
@@ -82,6 +108,24 @@ function OverlayCreate(obj, data, parent) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
+        })
+        .on("mousedown",function(d){
+            if(!data.values.sun) ClickStart(function(d){}, data);
+        })
+        .on("mouseup",function(d){
+            if(!data.values.sun){
+                var func = function(){};
+                switch(g_root.universe.data.overlay_type){
+                    case "user" : func = GetWarp; break;
+                    default : func = SunFadeout; break;
+                }
+                ClickStop(function(data){
+                    data.values.text.style("opacity", 100);
+                    g_project.overlay.remove();
+                    g_project.overlay = false;
+                    func(data);
+                }, data, true);
+            }
         });
 
     AddOverText(data, obj=true, name=false);
@@ -89,7 +133,7 @@ function OverlayCreate(obj, data, parent) {
     data.overlay.children = data.overlay.object.append("g")
         .attr("class","overlay items")
 
-    if (data.parent_id != ""){
+    if (data.parent_id != "root"){
         for (var i=0; i < data.overlay.items.length; i++){
             if(data.overlay.items[i].name == "SHARE PROJECT"){
                 data.overlay.items.splice(i,1);
@@ -133,7 +177,7 @@ function AddItem(obj, data, parent, position=0) {
 
     var defaultColor = (data.values.data.color) ? data.values.data.color : $(".foregin .material-icons").css("color");
 
-    data.values.picture .append("i")
+    data.values.picture.append("i")
         .attr("class", "material-icons")
         .style("color", defaultColor)
         .html(data.icon)

@@ -1,4 +1,5 @@
 from pymongo import *
+import gridfs
 from pymongo.errors import ConnectionFailure
 import uuid
 from app.model.user import User
@@ -18,6 +19,7 @@ class DBMongoAdapter:
         try:
             self._client = MongoClient('localhost:27017')
             self._db = self._client.slDB
+            self._fs = gridfs.GridFS(self._db)
         except ConnectionFailure(message='', error_labels=None):
             return False
         return True
@@ -82,7 +84,9 @@ class DBMongoAdapter:
         col_roles = self._db.Roles
         col_users = self._db.Users.Roles
         project_query = {'project_name': project.name}
+        print(project_query)
         message = msg.PROJECT_ALREADY_EXISTS
+        project_id = ''
         if col.find_one(project_query, {'_id': 0}) is None:
             project_id = col.insert_one(project.to_json()).inserted_id
             col.update_one({'project_id': 'default'},
@@ -112,6 +116,17 @@ class DBMongoAdapter:
                                {'$set': u})
 
             message = msg.PROJECT_SUCCESSFULLY_ADDED
+        self._close_connection()
+        return message, str(project_id)
+
+    def update_project(self, project, user):
+        col = self._db.Projects
+        project_query = {'project_name': project.name}
+        message = msg.PROJECT_NOT_FOUND
+        if col.find_one(project_query, {'_id': 0}):
+            col.update_one(project_query, {'$set': project.to_json()})
+
+            message = msg.PROJECT_SUCCESSFULLY_UPDATED
         self._close_connection()
         return message
 
@@ -149,7 +164,8 @@ class DBMongoAdapter:
 
     def update_file(self, project, file_obj, file):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_id': project.project_id, 'stored_id': file_obj.stored_id}
         project_uploaded = False
         if col.find_one(project_query, {'_id': 0}) is None:
@@ -170,24 +186,23 @@ class DBMongoAdapter:
 
     def upload_file(self, project_name, file_obj, file):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
             file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id}
-            file_json = col_file.find_one(file_query, {'_id': 0})
+            file_json = self._fs.find_one(file_query)
             if file_json is None:
-                file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                                                              "file_name": file_obj.name+file_obj.type,
-                                                              "parent": file_obj.parent,
-                                                              "parent_id": file_obj.parent_id,
-                                                              "file": file,
-                                                              "description": file_obj.description})
-                                         .inserted_id)
-                col_file.update_one({'file_id': 'default'},
-                                    {'$set': {'file_id': str(file_obj.stored_id)}})
-                add = project.add_ic(file_obj, project.root_ic)
+                file_obj.stored_id = str(self._fs.put(file,
+                                    file_name=file_obj.name+file_obj.type,
+                                    parent=file_obj.parent,
+                                    parent_id=file_obj.parent_id,
+                                    description=file_obj.description
+                                    ))
+                # col_file.update_one({'file_id': 'default'},
+                #                     {'$set': {'file_id': str(file_obj.stored_id)}})
+                add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
@@ -201,36 +216,38 @@ class DBMongoAdapter:
         return add
 
     def create_folder(self, project_name, folder):
+        ic = None
         col = self._db.Projects
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
 
-            add = project.add_ic(folder, project.root_ic)
-            if add == msg.IC_SUCCESSFULLY_ADDED:
+            message, ic = project.add_ic(folder, project.root_ic)
+            if message == msg.IC_SUCCESSFULLY_ADDED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
         self._close_connection()
-        return add
+        return message, ic
 
-    def rename_ic(self, request_data):
+    def rename_ic(self, request_data, user):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
             # print(project.to_json())
-            add = project.rename_ic(request_data, project.root_ic)
+            add = project.rename_ic(request_data, user, project.root_ic)
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 file_updated = True
                 if not request_data['is_directory']:
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
-                    file_json = col_file.find_one(file_query, {'_id': 0})
+                    file_json = col_file.find_one(file_query)
                     if file_json:
                         col_file.update_one({'file_name': request_data['old_name']},
                                             {'$set': {'file_name': str(request_data['new_name'])}})
@@ -249,13 +266,35 @@ class DBMongoAdapter:
 
     def delete_ic(self, delete_ic_data):
         col = self._db.Projects
-        col_file = self._db.Projects.Files
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
+        col_file_chunks = self._db.fs.chunks
         project_query = {'project_name': delete_ic_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+        delete = msg.PROJECT_NOT_FOUND
         if project_json:
-            project = Project.json_to_obj(project_json)
-            # print(project.to_json())
-            delete = project.delete_ic(delete_ic_data, project.root_ic)
+            if delete_ic_data['parent_id'] == 'root':
+                col.delete_one(project_query)
+                file_query = {'project_name': delete_ic_data['project_name']}
+                col_file.delete_many(file_query)
+                col_file_chunks.delete_many(file_query)
+                col_users = self._db.Users.Roles
+                user_query = {'user_id': delete_ic_data['user_id']}
+                result = col_users.find_one(user_query, {'_id': 0})
+                if result:
+                    remove = -1
+                    for count, p in enumerate(result['projects']):
+                        if p['project_id'] == project_json['project_id']:
+                            remove = count
+                            break
+                    if remove != -1:
+                        del result['projects'][remove]
+                        col_users.update_one(user_query,
+                                       {'$set': {'projects': result['projects']}})
+                delete = msg.PROJECT_SUCCESSFULLY_DELETED
+            else:
+                project = Project.json_to_obj(project_json)
+                delete = project.delete_ic(delete_ic_data, project.root_ic)
             if delete == msg.IC_SUCCESSFULLY_DELETED:
                 ic_deleted = True
                 if not delete_ic_data['is_directory']:
@@ -277,11 +316,21 @@ class DBMongoAdapter:
         return delete
 
     def get_file(self, file_name):
-        col = self._db.Projects.Files
-        file_query = {'file_name': file_name}  # {'file_id': file_id, 'file_name': file_name}
-        stored_file = col.find_one(file_query, {'_id': 0})
+        stored_file = None
+        for grid_out in self._fs.find({"file_name": file_name}, no_cursor_timeout=True):
+            stored_file = grid_out
         self._close_connection()
         return stored_file
+
+    def get_file_object(self, s_project, file_name):
+        col = self._db.Projects
+        project_query = {'project_name': s_project['name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        ic = None
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            ic = project.find_ic(s_project, file_name, project.root_ic)
+        return ic
 
     def get_post_file(self, request_json):
         col = self._db.Marketplace.Posts.Files
@@ -465,6 +514,22 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def add_comment(self, request_data, comment):
+        col = self._db.Projects
+        # col_file = self._db.Projects.Files
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.add_comment(request_data, comment, project.root_ic)
+            if message == msg.COMMENT_SUCCESSFULLY_ADDED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
     def clear_db(self):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
@@ -473,6 +538,8 @@ class DBMongoAdapter:
         self._db.Roles.drop()
         self._db.Users.Roles.drop()
         self._db.Marketplace.Posts.Files.drop()
+        self._db.fs.files.drop()
+        self._db.fs.chunks.drop()
         # self._db.Users.drop()
 
         col_users = self._db.Users.Roles

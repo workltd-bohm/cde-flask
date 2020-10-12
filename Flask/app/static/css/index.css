@@ -233,3 +233,47 @@ body {
 .op5 {
   background-color: #673ab7;
 }
+
+#upload_project {
+  display: none;
+}
+
+.area > input[type="file"] {
+  position: relative;
+  width: 98%;
+  height: 180px;
+  top: -35px;
+}
+
+.area > div[for="file"] {
+  width: 98%;
+  height: 180px;
+}
+
+.area {
+ width: 98%;
+  height: 180px;
+  display: block;
+  border: 5px dotted #ccc;
+  text-align: center;
+}
+
+.drag {
+  border: 5px dotted black;
+  background-color: gray;
+}
+
+#result ul {
+  list-style: none;
+  margin-top: 20px;
+}
+
+#result ul li {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+#result li span {
+  font-weight: bold;
+  color: navy;
+}

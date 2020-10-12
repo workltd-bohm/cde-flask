@@ -97,6 +97,11 @@
   display: inline-block;
 }
 
+.menu-activity.opend {
+  width: 20%;
+  /*background: #000;*/
+}
+
 .menu-fixed .logo {
   width: 100%;
   height: 70px;

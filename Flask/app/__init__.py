@@ -1,4 +1,4 @@
-from flask import Flask, json, request, Response, render_template, session, redirect, url_for, send_file
+from flask import Flask, make_response,json, request, Response, render_template, session, redirect, url_for, send_file
 
 import app.config as cfg
 import app.db.db_comminication as db
@@ -8,6 +8,8 @@ import app.model.marketplace.post as status
 from app.model.information_container import IC
 from app.model.directory import Directory
 from app.model.file import File
+from app.model.details import Details
+from app.model.comment import Comments
 from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid

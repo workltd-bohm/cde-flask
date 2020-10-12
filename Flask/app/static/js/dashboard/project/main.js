@@ -18,6 +18,7 @@ function CreateSpace(data) {
     // g_project.project_position = data.path;
 
     g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
+    CHECKED = {};
 
     g_root.universe.selectAll("g")
         .data([data])
@@ -38,6 +39,7 @@ function AddSun(obj, data){
     data.values.parent = obj;
     data.values.back = data;
     data.values.rotation = 1;
+    data.values.sun = true;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");
@@ -75,15 +77,15 @@ function AddSun(obj, data){
             if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
-            ClickStart(function(data){
-                // TODO: action menu
-                // OverlayCreate(data);
-            }, data);
+            // ClickStart(function(data){
+            //     // TODO: action menu
+            //     // OverlayCreate(data);
+            // }, data);
         })
         .on("mouseup",function(d){
-            ClickStop(function(data){
-                // NONE
-            }, data);
+            // ClickStop(function(data){
+            //     // NONE
+            // }, data);
         });
 
     AddText(data, "star");
@@ -127,6 +129,7 @@ function AddChildren(obj, data, parent, position=0){
     data.values.back = parent;
     data.values.position = position;
     data.values.parent = (parent != null) ? d3.select("#obj-"+data.par_id) : null;
+    data.values.sun = false;
 
     data.values.rotation = data.values.back.sub_folders.length > 1 ? position*360/data.values.back.sub_folders.length : 1;
 
@@ -149,7 +152,7 @@ function AddChildren(obj, data, parent, position=0){
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "planet pattern")
+        .attr("class", "planet pattern"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
         .attr("r", g_PlanetRadius);
     if (data.color) data.values.picture.style("fill", data.color)
 
@@ -170,9 +173,16 @@ function AddChildren(obj, data, parent, position=0){
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
+        .on("mouseover",function(d){
+            if(!g_project.overlay && g_root.zoom){
+                g_root.universe.data.overlay_type == "ic" ? OverlayCreate(d3.select(this), d, data, true):1;
+            }
+        })
         .on("mousedown",function(d){
-            ClickStart(function(data){
-                // TODO: action menu
+            ClickStart(function(d){
+                // if(!g_project.overlay && g_root.zoom){
+                //     OverlayCreate(d3.select(this), d, data);
+                // }
             }, data);
         })
         .on("mouseup",function(d){
@@ -181,8 +191,23 @@ function AddChildren(obj, data, parent, position=0){
                 case "user" : func = GetWarp; break;
                 default : func = SunFadeout; break;
             }
-            ClickStop(func, data);
+            ClickStop(func, data, true);
         });
+
+    data.values.checked = data.values.this.append("foreignObject")
+        .attr("x", -g_OverlayItem/2)
+        .attr("y", -g_OverlayItem/2)
+        .attr("width", g_OverlayItem)
+        .attr("height", g_OverlayItem)
+        .attr("transform","translate(0, "+(-g_PlanetRadius)+")")
+        .style("opacity", 0)
+
+    data.values.checked.append("xhtml:div")
+        .attr("class", "planet foregin")
+        .append("i")
+        .attr("class", "material-icons")
+        .html("check_circle")
+
 }
 
 // -------------------------------------------------------
@@ -387,6 +412,18 @@ function AnimatePlanet(data) {
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
                 .attr("transform","rotate("+(-g_root.deg)+"), translate("+(pos)+")")
+
+            if (data.overlay)
+                data.overlay.object.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform","rotate("+(-g_root.deg)+")")
+
+            if (data.values.checked)
+                data.values.checked.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform","rotate("+(-g_root.deg)+"), translate(0,"+(-g_PlanetRadius)+")")
         });
     }
 }

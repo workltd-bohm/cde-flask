@@ -10,10 +10,28 @@ function WrapNewProject(){
     PopupOpen(NewProject);
 }
 
+function WrapUploadProject(){
+    PopupOpen(UploadProject);
+//    OpenFolderDialog();
+}
+
 function WrapCreateFolder(data){
     var tmp = data.values.data;
     //console.log(tmp);
     PopupOpen(NewFolder, tmp);
+}
+
+function WrapOpenFile(data){
+    var tmp = data.values.data;
+    console.log(tmp);
+    if(tmp.is_directory){
+        OpenActivity(null);
+    }else{
+        console.log("tmp");
+        PreviewOpen(OpenFile, tmp);
+    }
+//    PopupOpen(NewFile, tmp);
+//    OpenFileDialog(tmp);
 }
 
 function WrapCreateFile(data){
@@ -42,7 +60,7 @@ function WrapShare(data){
     var tmp = data.values.data;
 
     var dummy = document.createElement('input'),
-    text = window.location.href + 'get_file/' + tmp.name + tmp.type;
+    text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
 
     document.body.appendChild(dummy);
     dummy.value = text;

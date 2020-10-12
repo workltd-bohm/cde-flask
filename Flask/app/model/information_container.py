@@ -1,11 +1,12 @@
 class IC:
 
-    def __init__(self, ic_id, name, parent, history, path, parent_id, color, sub_folders):
+    def __init__(self, ic_id, name, parent, history, path, parent_id, color, comments, sub_folders):
         self._ic_id = ic_id
         self._name = name
         self._parent = parent
         self._history = history
         self._path = path
+        self._comments = comments
         self._sub_folders = sub_folders
         self._is_directory = True
         self._parent_id = parent_id
@@ -61,6 +62,14 @@ class IC:
         return self._overlay_type
 
     @property
+    def comments(self):
+        return self._comments
+
+    @comments.setter
+    def comments(self, value):
+        self._comments = value
+
+    @property
     def sub_folders(self):
         return self._sub_folders
 
@@ -89,12 +98,13 @@ class IC:
             'ic_id': self._ic_id,
             'name': self._name,
             'parent': self._parent,
-            'history': self._history,
+            'history': [x.to_json() for x in self._history],
             'path': self._path,
             'is_directory': self._is_directory,
             'parent_id': self._parent_id,
             'color': self._color,
             'overlay_type': self._overlay_type,
+            'comments': [x.to_json() for x in self._comments],
             'sub_folders': [x.to_json() for x in self._sub_folders]
         }
 
@@ -103,8 +113,9 @@ class IC:
         return IC(json_file['ic_id'],
                   json_file['name'],
                   json_file['parent'],
-                  json_file['history'],
+                  [x.json_to_obj() for x in json_file['history']],
                   json_file['path'],
                   json_file['parent_id'],
                   json_file['color'],
-                  [x.to_json() for x in json_file['sub_folders']])
+                  [x.json_to_obj() for x in json_file['comments']],
+                  [x.json_to_obj() for x in json_file['sub_folders']])

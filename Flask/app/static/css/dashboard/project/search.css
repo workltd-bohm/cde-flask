@@ -6,15 +6,24 @@
 .project-box{
     display: block;
     float: left;
-    width: 43%;
-    border: 1px solid gray;
+    width: 30%;
+    border-bottom: 1px solid gray;
     margin: 1%;
+    text-overflow: clip;
+    /* padding: 1%; */
 }
 
 .project-box:hover{
-    background: honeydew;
+    background: #777;
     cursor: pointer;
 }
 
+.project-box:selection {
+    background: #000;
+    cursor: pointer;
+    color: #fff
+}
+
 .project-view{
+    height: 100%;
 }

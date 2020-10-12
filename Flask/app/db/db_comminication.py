@@ -24,6 +24,10 @@ def upload_project(db_adapter, project, user):
     return db_adapter.upload_folder_structure(project, user)
 
 
+def update_project(db_adapter, project, user):
+    return db_adapter.update_project(project, user)
+
+
 def get_all_projects(db_adapter):
     return db_adapter.get_all_projects()
 
@@ -44,8 +48,8 @@ def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
 
 
-def rename_ic(db_adapter, request_data):
-    return db_adapter.rename_ic(request_data)
+def rename_ic(db_adapter, request_data, user):
+    return db_adapter.rename_ic(request_data, user)
 
 
 def delete_ic(db_adapter, delete_ic_data):
@@ -54,6 +58,10 @@ def delete_ic(db_adapter, delete_ic_data):
 
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
+
+
+def get_file_object(db_adapter, s_project, file_name):
+    return db_adapter.get_file_object(s_project, file_name)
 
 
 def get_post_file(db_adapter, request_json):
@@ -110,6 +118,10 @@ def get_bids_for_post(db_adapter, request_json):
 
 def share_project(db_adapter, request_data, user):
     return db_adapter.share_project(request_data, user)
+
+
+def add_comment(db_adapter, request_data, comment):
+    return db_adapter.add_comment(request_data, comment)
 
 
 def clear_db(db_adapter):

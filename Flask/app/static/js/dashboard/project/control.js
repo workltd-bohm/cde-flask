@@ -92,7 +92,7 @@ function ClickStart(ToDo, data){
     data.box.position.x = d3.event.x;
     data.box.position.y = d3.event.y;
 
-    if(g_project.clck_start == 0) {
+    if(g_project.clck_start == 0 && g_root.zoom) {
         g_project.clck_start = data.values.this;
         d3.timer(function(duration) {
             if (g_project.clck_stop > 0) {
@@ -107,9 +107,10 @@ function ClickStart(ToDo, data){
     }
 }
 
-function ClickStop(ToDo, data){
+function ClickStop(ToDo, data, single=false){
     if(data.box.position.x == d3.event.x && data.box.position.y == d3.event.y) {
-        if(g_project.clck_stop > 0){
+        // console.log(g_project)
+        if(g_project.clck_stop > 0 || (single && g_root.zoom)){
             if(g_project.clck_start != 0 && g_project.clck_start == data.values.this) {
                 g_project.clck_start = 0;
                 g_project.clck_stop = 0;
@@ -118,6 +119,19 @@ function ClickStop(ToDo, data){
             }
         }
         g_project.clck_stop = ORBIT_DUB_CLK_DIF;
+    }
+}
+
+function SelectPlanet(data){
+    if (data.values.data.checked) {
+        data.values.data.checked = false;
+        data.values.data.values.checked.style("opacity", 0);
+        if(data.values.data.ic_id in CHECKED) delete CHECKED[data.values.data.ic_id];
+    }
+    else {
+        data.values.data.checked = true;
+        data.values.data.values.checked.style("opacity", 100);
+        CHECKED[data.values.data.ic_id] = data.values.data;
     }
 }
 

@@ -32,7 +32,7 @@ function DrawPath(obj, data){
                 g_project.history = data.hist_path.back;
                 data.hist_path.this.selectAll("g").remove();
                 CreateSpace(data);
-            }, data);
+            }, data, true);
         });
 
     data.hist_path.child = data.hist_path.this.append("g").attr("class", "path next");

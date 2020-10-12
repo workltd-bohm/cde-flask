@@ -1,4 +1,52 @@
 
+
+function OpenFile(form, json, file){
+    LoadStartPreview();
+    $.ajax({
+        url: "/get_open_file",
+        type: 'POST',
+        data: JSON.stringify({
+            name: json.name,
+            type: json.type
+        }),
+        timeout: 5000,
+        success: function(data){
+            input_json2 = JSON.parse(data);
+            html = input_json2['html'];
+            form.empty();
+            form.append(html);
+
+//            OpenActivity(null, 'Details');
+            ExtractActivity(null, 'Details');
+            $('#filter-details-tab').show();
+            $('#filter-comments-tab').show();
+            $('#filter-details').show();
+            $('#filter-comments').show();
+            $('#filter-search-tab').hide();
+            $('#filter-search').hide();
+            FilterSwap('#filter-details');
+
+            details = input_json2['details'];
+
+            ClearActivityTab($('#filter-details'));
+            AppendActivityTab($('#filter-details'), details);
+
+            comments = input_json2['comments'];
+
+            ClearActivityTab($('#filter-comments'));
+            AppendActivityTab($('#filter-comments'), comments);
+
+            LoadStopPreview();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
+
+
 function NewFolder(form, json){
     LoadStart();
     $.ajax({
@@ -68,7 +116,7 @@ function FileDataInit(){
 };
 
 function updateName(position, el){
-    console.log(el.value);
+//    console.log(el.value);
     text = el.value.split(',')[0];
     if(position == 3 || position == 6){
         text = el.value.split(',')[0].split('.')[0];
@@ -85,7 +133,7 @@ function OnFileUpload(file){
 //        var file = e.target.files[0];
 //        fill_options();
         var fileName = file.name.split('.');
-        file_extension.value = '.' + fileName[1];
+        file_extension.value = '.' + fileName[fileName.length-1];
         name1.value = file.name;
         fileList = file;
 //        console.log(file);
@@ -195,7 +243,7 @@ function RenameFile(form, json){
                 document.getElementById('company_code').value = json.company_code;
 //                document.getElementById('name').value = json.original_name;
                 var file = {};
-                file.name = json.original_name;
+                file.name = json.original_name + json.type;
 
                 FileDataInit();
                 OnFileUpload(file);
@@ -266,30 +314,11 @@ function DeleteFile(form, json){
 function DownloadFile(path){
     LoadStart();
     var url = "/get_file/" + path;
-    window.open(url, "_blank");
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = path;
+    link.dispatchEvent(new MouseEvent('click'));
+
+//    window.open(url, "_blank");
     LoadStop();
-//    $.ajax({
-//        url: "/get_file/" + path,
-//        type: 'GET',
-////        data: JSON.stringify(json),
-//        timeout: 5000,
-//        success: function(data){
-//
-////              const blob = new Blob([data]);
-////              const url = window.URL.createObjectURL(blob);
-//
-//
-////              const link = document.createElement('a');
-////              link.href = url;
-////              link.download = path;
-////              link.click();
-//
-//            LoadStop();
-//        },
-//        error: function($jqXHR, textStatus, errorThrown) {
-//            console.log( errorThrown + ": " + $jqXHR.responseText );
-//            MakeSnackbar(textStatus);
-////            PopupClose();
-//        }
-//    });
 }
