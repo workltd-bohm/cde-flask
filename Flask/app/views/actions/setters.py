@@ -124,9 +124,11 @@ def upload_existing_project():
                         new_id = str(uuid.uuid1())
                         if i < 1:
                             parent_directory = ('/').join(current_file_path_backup[0:1])
+                            path = ('/').join(current_file_path_backup[0:1])
                         else:
                             parent_directory = ('/').join(current_file_path_backup[0:i + 1])
-                        path = ('/').join(current_file_path[:i])
+                            path = ('/').join(current_file_path_backup[0:i + 1])
+                        path = path + '/' + name
                         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
                         ic_new = Directory(new_id,
                                            name,
