@@ -86,38 +86,50 @@ def get_filtered_files():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
-@app.route('/get_filter_activity', methods=['GET'])
+@app.route('/get_filter_activity', methods=['POST'])
 def get_filter_activity():
     resp = Response()
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        filter_file = gtr.get_input_file_fixed()
-        # TODO!
-        # details = [x.to_json() for x in result.history]
-        # file_name = result.name + result.type
-        # path = result.path
-        # share_link = 'http://bohm.cloud/get_shared_file/' + file_name
-        # comments = [x.to_json() for x in result.comments]
-        response = {
-            'html': render_template("activity/filter_folders.html",
-                                    project_name=session.get("project")["name"],
-                                    search=filter_file,
-                                    details = {},
-                                    comments = {},
-                                    # details=details,
-                                    # file_name=file_name,
-                                    # path=path,
-                                    # share_link=share_link,
-                                    # comments=comments,
-                                    # parent_id=result.parent_id,
-                                    # ic_id=result.ic_id
-                                    ),
-            'data': []
-        }
-        # print(response)
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+        request_data = json.loads(request.get_data())
+        name = request_data['name']
+        print(request_data)
+
+        if name == 'Projects':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        if db.connect(db_adapter):
+            project_name = session['project']['name']
+            result = db.get_ic_object(db_adapter, project_name, request_data, name)
+            if result:
+                filter_file = gtr.get_input_file_fixed()
+                details = [x.to_json() for x in result.history]
+                file_name = result.name
+                path = result.path
+                share_link = ''
+                comments = [x.to_json() for x in result.comments]
+
+
+                response = {
+                    'html': render_template("activity/filter_folders.html",
+                                            project_name=session.get("project")["name"],
+                                            search=filter_file,
+                                            details = details,
+                                            comments = comments,
+                                            file_name=file_name,
+                                            path=path,
+                                            share_link=share_link,
+                                            parent_id=result.parent_id,
+                                            ic_id=result.ic_id
+                                            ),
+                    'data': []
+                }
+                # print(response)
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])

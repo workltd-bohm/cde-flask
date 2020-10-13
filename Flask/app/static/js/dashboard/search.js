@@ -1,13 +1,20 @@
 SEARCH_HISTORY = {};
 
-function OpenFilterActivity(open=false){
+function OpenFilterActivity(json, open=false){
 
     $.ajax({
         url: "/get_filter_activity",
-        type: 'GET',
-//        data: JSON.stringify({bid_id: data}),
+        type: 'POST',
+        data: JSON.stringify({
+            name: json.name,
+            parent_id: json.parent_id,
+            ic_id: json.ic_id
+        }),
         timeout: 5000,
         success: function(data){
+            //console.log(data);
+            if(data == 'Success')
+                return true;
             data = JSON.parse(data);
             if(data){
                 OpenActivity(data.html, null, open);

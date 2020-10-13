@@ -184,8 +184,10 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message, self._ic
 
-    def find_ic(self, s_project, file_name, ic=None):
-        if ic.ic_id == s_project['position']['parent_id']:
+    def find_ic(self, request_data, file_name, ic=None):
+        if request_data['parent_id'] == 'root':
+            return ic
+        if ic.ic_id == request_data['parent_id']:
             for sub_f in ic.sub_folders:
                 sub_f_name = sub_f.name
                 if not sub_f.is_directory:
@@ -196,12 +198,15 @@ class Project:
                     break
         else:
             for x in ic.sub_folders:
-                self.find_ic(s_project, file_name, x)
+                self.find_ic(request_data, file_name, x)
                 if self._added:
                     break
         return self._current_ic
 
     def add_comment(self, request, comment, ic=None):
+        if request['parent_id'] == 'root':
+            ic.comments.append(comment)
+            return msg.COMMENT_SUCCESSFULLY_ADDED
         if ic.ic_id == request['parent_id']:
             for sub_f in ic.sub_folders:
                 if sub_f.ic_id == request['ic_id']:

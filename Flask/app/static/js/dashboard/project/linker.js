@@ -25,8 +25,9 @@ function WrapOpenFile(data, open=true){
     var tmp = data.values.data;
     console.log(tmp);
     if(tmp.is_directory){
+    console.log(tmp);
         //OpenActivity(null, null, open);
-        OpenFilterActivity(open);
+        OpenFilterActivity(tmp, open);
     }else{
         console.log("tmp",open);
         PreviewOpen(OpenFile, tmp, null, open);

@@ -13,11 +13,11 @@ import app.model.messages as msg
 class DBMongoAdapter:
 
     def __init__(self):
+        self._client = MongoClient('localhost:27017')
         self._db = None
 
     def connect(self):
         try:
-            self._client = MongoClient('localhost:27017')
             self._db = self._client.slDB
             self._fs = gridfs.GridFS(self._db)
         except ConnectionFailure(message='', error_labels=None):
@@ -77,6 +77,7 @@ class DBMongoAdapter:
         return message
 
     def _close_connection(self):
+        #print('close')
         self._client.close()
 
     def upload_folder_structure(self, project, user):
@@ -322,14 +323,14 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
-    def get_file_object(self, s_project, file_name):
+    def get_ic_object(self, project_name, request_data, file_name):
         col = self._db.Projects
-        project_query = {'project_name': s_project['name']}
+        project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         ic = None
         if project_json:
             project = Project.json_to_obj(project_json)
-            ic = project.find_ic(s_project, file_name, project.root_ic)
+            ic = project.find_ic(request_data, file_name, project.root_ic)
         return ic
 
     def get_post_file(self, request_json):

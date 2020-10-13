@@ -2,12 +2,15 @@
 
 function OpenFile(form, json, file, open){
     LoadStartPreview();
+    console.log(json);
     $.ajax({
         url: "/get_open_file",
         type: 'POST',
         data: JSON.stringify({
             name: json.name,
-            type: json.type
+            type: json.type,
+            parent_id: json.parent_id,
+            ic_id: json.ic_id
         }),
         timeout: 5000,
         success: function(data){

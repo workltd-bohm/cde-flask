@@ -60,8 +60,8 @@ def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 
 
-def get_file_object(db_adapter, s_project, file_name):
-    return db_adapter.get_file_object(s_project, file_name)
+def get_ic_object(db_adapter, project_name, request_data, file_name):
+    return db_adapter.get_ic_object(project_name, request_data, file_name)
 
 
 def get_post_file(db_adapter, request_json):

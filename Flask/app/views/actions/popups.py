@@ -15,15 +15,14 @@ def get_open_file():
         print(request_data)
 
         if db.connect(db_adapter):
-            s_project = session['project']
-            result = db.get_file_object(db_adapter, s_project, name + type)
+            project_name = session['project']['name']
+            result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
                 details = [x.to_json() for x in result.history]
                 file_name = result.name + result.type
                 path = result.path
                 share_link = 'http://bohm.cloud/get_shared_file/' + file_name
                 comments = [x.to_json() for x in result.comments]
-                print('>>>>>>>>>>>>', comments)
 
                 response = {
                     'html': render_template("popup/open_file.html",
@@ -35,7 +34,7 @@ def get_open_file():
                                             path=path,
                                             share_link=share_link,
                                             comments=comments,
-                                            project_name=s_project['name'],
+                                            project_name=project_name,
                                             parent_id=result.parent_id,
                                             ic_id=result.ic_id,
                                             ),

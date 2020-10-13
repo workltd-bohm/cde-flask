@@ -75,7 +75,7 @@ function sendComment(el){
         timeout: 5000,
         success: function(data){
 //            input_json = JSON.parse(data);
-            console.log(data);
+            //console.log(data);
             div.append(data);
             $('#comment').val('');
             div.scrollTop(div[0].scrollHeight);
