@@ -22,6 +22,8 @@ function OpenFile(form, json, file, open){
 
             OpenActivity(activity, null, open);
 
+            FilterSwap('#filter-details');
+
             LoadStopPreview();
         },
         error: function($jqXHR, textStatus, errorThrown) {

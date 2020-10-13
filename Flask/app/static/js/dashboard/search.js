@@ -18,6 +18,7 @@ function OpenFilterActivity(json, open=false){
             data = JSON.parse(data);
             if(data){
                 OpenActivity(data.html, null, open);
+                FilterSwap('#filter-details');
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
