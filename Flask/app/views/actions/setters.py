@@ -229,7 +229,7 @@ def upload_existing_project():
 def upload_project():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        root_obj = dirs.path_to_obj('app')
+        root_obj = dirs.path_to_obj('root')
         project = Project("default", "test-project", root_obj)
         user = {'id': session.get('user')['id'], 'role': 'OWNER'}
         print(root_obj)
