@@ -22,7 +22,7 @@ function OpenFile(form, json, file, open){
 
             OpenActivity(activity, null, open);
 
-            FilterSwap('#filter-details');
+            FilterSwap('details');
 
             LoadStopPreview();
         },

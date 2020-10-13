@@ -18,7 +18,7 @@ function OpenFilterActivity(json, open=false){
             data = JSON.parse(data);
             if(data){
                 OpenActivity(data.html, null, open);
-                FilterSwap('#filter-details');
+                FilterSwap('details');
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -57,7 +57,9 @@ function FilterOut(obj){
 
 function FilterSwap(target){
     $(".project-view").children().hide();
-    $(target).show();
+    $(".project-box").removeClass("selected");
+    $("#filter-"+target).show();
+    $("#filter-"+target+"-tab").addClass("selected");
 }
 
 function SearchOpen(data){

@@ -18,7 +18,7 @@
     cursor: pointer;
 }
 
-.project-box:selection {
+.project-box.selected {
     background: #000;
     cursor: pointer;
     color: #fff
