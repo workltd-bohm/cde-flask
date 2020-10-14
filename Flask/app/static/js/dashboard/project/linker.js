@@ -23,9 +23,8 @@ function WrapCreateFolder(data){
 
 function WrapOpenFile(data, open=true){
     var tmp = data.values.data;
-    console.log(tmp);
     if(tmp.is_directory){
-    console.log(tmp);
+        console.log("dir",tmp);
         //OpenActivity(null, null, open);
         OpenFilterActivity(tmp, open);
     }else{

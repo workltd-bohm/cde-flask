@@ -81,7 +81,7 @@ function OverlayCreate(obj, data, parent, planet=false) {
         .attr("class","star overlay")
 
     if(!data.values.sun) data.overlay.object.attr("transform","rotate("+(-g_root.deg)+")");
-    if(!data.values.sun) g_OverlayRadius = g_PlanetRadius;
+    if(!data.values.sun) g_OverlayRadius = g_PlanetRadius*1.2;
     else g_OverlayRadius = g_SunRadius;
 
     g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
