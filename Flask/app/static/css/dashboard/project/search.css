@@ -14,14 +14,13 @@
 }
 
 .project-box:hover{
-    background: #777;
+    border-bottom: 4px solid gray;
     cursor: pointer;
 }
 
 .project-box.selected {
-    background: #000;
+    border-bottom: 4px solid black;
     cursor: pointer;
-    color: #fff
 }
 
 .project-view{
