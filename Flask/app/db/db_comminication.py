@@ -88,6 +88,10 @@ def upload_post_file(db_adapter, request_json, file):
     return db_adapter.upload_post_file(request_json, file)
 
 
+def remove_post_file(db_adapter, request_json):
+    return db_adapter.remove_post_file(request_json)
+
+
 def update_post_file(db_adapter, file, post_id, user):
     return db_adapter.update_post_file(file, post_id, user)
 

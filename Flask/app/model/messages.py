@@ -43,3 +43,5 @@ SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
+
+FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}

@@ -29,7 +29,7 @@ class Product:
     def quantity(self, value):
         self._quantity = value
 
-    def to_json(self, post):
+    def to_json(self):
         return {
                 'product_id': self._product_id,
                 'name':self._name,

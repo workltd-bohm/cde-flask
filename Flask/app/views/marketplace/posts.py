@@ -262,12 +262,47 @@ def upload_post_file():
     return resp
 
 
+@app.route('/remove_post_file', methods=['POST'])
+def remove_post_file():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+
+        print(request.form['data'])
+        request_json = json.loads(request.form['data'])
+        request_json['user'] = session['user']['username']
+
+        if db.connect(db_adapter):
+            result = db.remove_post_file(db_adapter, request_json)
+            if id:
+                print(">>", result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = 400
+                resp.data = 'not found'
+                return resp
+        else:
+            print(">", str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/get_post_image/<path:file_name>', methods=['POST', 'GET'])
 def get_post_image(file_name):
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_json = {
-                        'post_id': request.args.get('post_id'),
+                        #'post_id': request.args.get('post_id'),
                         'file_name': file_name
         }
         print('POST data: %s ' % request_json)
@@ -285,6 +320,10 @@ def get_post_image(file_name):
                      attachment_filename=result['file_name'])
             else:
                 print("not_found")
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()

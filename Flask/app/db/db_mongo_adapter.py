@@ -403,6 +403,7 @@ class DBMongoAdapter:
         stored_id = str(col.insert_one({"file_id": "default",
                                         "post_id": request_json['user'],
                                         "file_name": request_json['file_name'],
+                                        "type": request_json['type'],
                                         "file": file,}).inserted_id)
         col.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(stored_id)}})
@@ -410,6 +411,27 @@ class DBMongoAdapter:
 
         self._close_connection()
         return message, str(stored_id)
+
+    def remove_post_file(self, request_json):
+        col = self._db.Marketplace.Posts.Files
+        file_query = {'file_name': request_json['file_name']}
+        col.delete_one(file_query)
+        message = msg.FILE_SUCCESSFULLY_DELETED
+        if 'post_id' in request_json:
+            col_post = self._db.Marketplace.Posts
+            posts_query = {'post_id': request_json['post_id']}
+            post_json = col_post.find_one(posts_query, {'_id': 0})
+            if post_json:
+                post = Post.json_to_obj(post_json)
+                if 'image' in request_json['type']:
+                    post.documents['image'].remove(request_json['file_name'])
+                if 'doc' in request_json['type']:
+                    post.documents['doc'].remove(request_json['file_name'])
+                col_post.update_one(posts_query, {'$set': post.to_json()})
+                message = msg.FILE_SUCCESSFULLY_DELETED
+
+        self._close_connection()
+        return message
 
     def update_post_file(self, file, post_id, user):
         col = self._db.Marketplace.Posts.Files

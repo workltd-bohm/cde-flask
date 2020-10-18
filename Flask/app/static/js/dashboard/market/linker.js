@@ -188,6 +188,13 @@ function ViewPost(obj, data){
                 data.data.image.forEach(async function(img) {
                     let url = '/get_post_image/' + img + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
+                    blob.name = img;
+                    previewImage(blob);
+                });
+                data.data.doc.forEach(async function(doc) {
+                    let url = '/get_post_image/' + doc + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    blob.name = doc;
                     previewFile(blob);
                 });
             }
@@ -217,7 +224,16 @@ function EditPost(obj, data){
                 data.data[0].image.forEach(async function(img) {
                     let url = '/get_post_image/' + img + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    previewFile(blob);
+                    blob.name = img;
+                    blob.post_id = post_id;
+                    previewEditImage(blob);
+                });
+                data.data[0].doc.forEach(async function(doc) {
+                    let url = '/get_post_image/' + doc + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    blob.name = doc;
+                    blob.post_id = post_id;
+                    previewEditFile(blob);
                 });
             }
             MakeSnackbar("Editor");
