@@ -163,8 +163,8 @@
 }
 
 .edit-box.selected {
-    margin: 2%;
-    float: none;
+    /* margin: 2%;
+    float: none; */
     background: #5264AE;
 }
 
