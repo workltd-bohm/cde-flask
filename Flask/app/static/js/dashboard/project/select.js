@@ -8,7 +8,7 @@ g_OverSelect = [
     { name : "SHARE", icon : "share", link : WrapShare},
     { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
     { name : "COLOR", icon : "color_lens", link : ColorPicker},
-    { name : "COPY", icon : "color_lens", link : WrapCopy},
+    { name : "COPY", icon : "content_copy", link : WrapCopy},
 ]
 
 function SelectionCreate(obj, data, parent) {
