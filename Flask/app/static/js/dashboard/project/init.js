@@ -37,6 +37,8 @@ const PATH_TEXT_PADDING = 3;
 
 const OVERLAY_SUN_RATIO = 4;
 const OVERLAY_MARG = 2;
+const OVERLAY_SELECT_RATIO = 1.2;
+const OVERLAY_SELECT_PLANET_RATIO = 1.2;
 
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
@@ -71,6 +73,7 @@ var g_project = {
         clck_stop : 0,
         hist_path : null,
         overlay : null,
+        selection : null,
         history : null,
         warp : 0,
         start : Date.now()
@@ -126,6 +129,7 @@ function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
+    if(g_project.selection) g_project.selection.remove();
     g_project = {...g_project_per};
     if(hard)SESSION = {};
 }

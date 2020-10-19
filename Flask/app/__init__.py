@@ -30,6 +30,7 @@ from app.views.actions import getters
 from app.views.actions import setters
 from app.views.actions import user
 from app.views.actions import search
+from app.views.actions import selection
 
 from app.views.marketplace import make
 from app.views.marketplace import posts

@@ -51,6 +51,25 @@ circle.overlay.select {
     fill: rgba(0, 0, 0, 0.0);
 }
 
+circle.selection.pattern {
+    fill: rgba(18, 18, 18, 0.5);
+}
+circle.selection.pattern.single {
+    fill: rgba(255, 136, 0, 0.3);
+}
+circle.selection.pattern.file {
+    fill: rgba(255, 238, 0, 0.3);
+}
+circle.selection.pattern.folder {
+    fill: rgba(0, 140, 255, 0.3);
+}
+circle.selection.pattern.mix {
+    fill: rgba(30, 255, 0, 0.3);
+}
+circle.selection.select {
+    fill: rgba(0, 0, 0, 0.0);
+}
+
 text.text_back {
     fill: rgb(0, 0, 0);
     filter: url("#filter_shadow");

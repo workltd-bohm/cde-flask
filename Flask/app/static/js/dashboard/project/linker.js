@@ -22,7 +22,9 @@ function WrapCreateFolder(data){
 }
 
 function WrapOpenFile(data, open=true){
-    var tmp = data.values.data;
+    var o = Object.values(CHECKED);
+    var tmp = (o.length > 0)? o[0] : data.values.data;
+    console.log(tmp)
     if(tmp.is_directory){
         console.log("dir",tmp);
         //OpenActivity(null, null, open);
@@ -43,7 +45,8 @@ function WrapCreateFile(data){
 }
 
 function WrapRename(data){
-    var tmp = data.values.data;
+    var o = Object.values(CHECKED);
+    var tmp = (o.length > 0)? o[0] : data.values.data;
     //console.log(tmp);
     PopupOpen(RenameFile, tmp);
 }
@@ -54,10 +57,26 @@ function WrapDelete(data){
 }
 
 function WrapMove(data){
-    
+    //var o = Object.values(CHECKED);
+    //var multi = [];
+    //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+}
+
+function WrapCopy(){
+    //var o = Object.values(CHECKED);
+    //var multi = [];
+    //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+}
+
+function WrapPaste(){
+
 }
 
 function WrapShare(data){
+    //var o = Object.values(CHECKED);
+    //var multi = [];
+    //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+
     var tmp = data.values.data;
 
     var dummy = document.createElement('input'),

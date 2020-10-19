@@ -271,11 +271,20 @@ function RenameFile(form, json){
 // ------------------------------------------
 
 function DeleteFile(form, json){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({
+        parent_id: o[i].parent_id,
+        ic_id: o[i].ic_id,
+        parent_path: o[i].parent,
+        delete_name: o[i].name,
+        is_directory: o[i].is_directory,
+    });
     LoadStart();
     $.ajax({
-        url: "/get_delete_ic",
+        url: (o.length > 0)? "get_delete_ic_multi" : "/get_delete_ic",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify((o.length > 0)? multi : {
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,
@@ -300,8 +309,11 @@ function DeleteFile(form, json){
 }
 
 function DownloadFile(path){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
     LoadStart();
-    var url = "/get_file/" + path;
+    var url = (o.length > 0)? "/get_file_multi" : "/get_file/" + path; // TODO
     var link = document.createElement('a');
     link.href = url;
     link.download = path;

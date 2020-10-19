@@ -81,7 +81,7 @@ function OverlayCreate(obj, data, parent, planet=false) {
         .attr("class","star overlay")
 
     if(!data.values.sun) data.overlay.object.attr("transform","rotate("+(-g_root.deg)+")");
-    if(!data.values.sun) g_OverlayRadius = g_PlanetRadius*1.2;
+    if(!data.values.sun) g_OverlayRadius = g_PlanetRadius*OVERLAY_SELECT_PLANET_RATIO;
     else g_OverlayRadius = g_SunRadius;
 
     g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
@@ -106,10 +106,10 @@ function OverlayCreate(obj, data, parent, planet=false) {
         .attr("class","overlay select")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_OverlayRadius*1.2)
+        .attr("r", g_OverlayRadius*OVERLAY_SELECT_RATIO)
         .on("mouseleave",function(d){
             //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){
+            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){ // TODO FIX
                 data.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;
@@ -198,7 +198,8 @@ function AddItem(obj, data, parent, position=0) {
         })
         .on("mouseleave",function(d){
             data.values.back.text.selectAll("text").html("");
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){
+            //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
+            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){ // TODO FIX
                 parent.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;
@@ -222,7 +223,7 @@ function AddItem(obj, data, parent, position=0) {
 function AddOverText(data, fix=false) {
     var newobj = data.overlay;
     newobj.text = newobj.object.append("g")
-        .attr("class", "text")
+        .attr("class", "overlay text")
     newobj.text.append("text")
         .attr("class", "text_back")
         .attr("x",0)

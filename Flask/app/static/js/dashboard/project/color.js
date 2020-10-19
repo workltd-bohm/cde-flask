@@ -54,10 +54,13 @@ function ColorPicker(data) {
   };
 
 function SetColor(data, fill){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, color: data.color});
     $.ajax({
-        url: "/set_color",
+        url: (o.length > 0)? "/set_color_multi" : "/set_color",
         type: 'POST',
-        data: JSON.stringify({ic_id: data.ic_id, color: data.color}),
+        data: JSON.stringify((o.length > 0)? multi : {ic_id: data.ic_id, color: data.color}),
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);

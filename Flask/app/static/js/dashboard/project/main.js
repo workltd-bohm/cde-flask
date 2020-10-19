@@ -176,7 +176,7 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
             if(!g_project.overlay && g_root.zoom){
-                console.log(g_root.universe.data.overlay_type)
+                //console.log(g_root.universe.data.overlay_type)
                 switch(g_root.universe.data.overlay_type){
                     case "ic":
                     case "search": OverlayCreate(d3.select(this), d, data, true); break;
