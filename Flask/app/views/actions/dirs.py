@@ -3,6 +3,10 @@ import io
 import json
 import uuid
 from datetime import datetime
+import zipfile
+import shutil
+from threading import Thread
+import time
 
 from app import *
 
@@ -65,6 +69,62 @@ def get_shared_file(file_name):
                      attachment_filename=result.file_name)
             else:
                 print("not_found")
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_folder/<path:parent_id>/<path:folder_name>', methods=['POST', 'GET'])
+def get_folder(parent_id, folder_name):
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        project_name = session.get("project")["name"]
+        request_json = {
+                        'parent_id': parent_id,
+                        'folder_name': folder_name}
+        print('POST data: %s ' % request_json)
+        if db.connect(db_adapter):
+            u = session['user']
+            response = db.get_project(db_adapter, project_name, u)
+            project = Project.json_to_obj(response)
+            ic = project.find_ic(request_json, folder_name, project.root_ic)
+            print(ic.to_json())
+            path = os.getcwd() + '\\'
+            try:
+                if not os.path.exists(path + 'tmp\\'):
+                    os.mkdir(path + 'tmp\\')
+                if not os.path.exists(path + 'tmp\\' + u['id']):
+                    os.mkdir(path + 'tmp\\' + u['id'])
+            except OSError as err:
+                print("Creation of the directory %s failed" % path + '\n' + err)
+            path = os.getcwd() + '\\tmp\\' + u['id'] + '\\'
+            json_to_temp_folder_struct(path, ic)
+            # zip_buffer = io.BytesIO()
+            zipf = zipfile.ZipFile('tmp/' + u['id'] + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
+            # zip_buffer.seek(0)
+            print('Zipping: %s' % 'tmp/' + u['id'] + '/' + ic.name)
+            zipdir('tmp/' + u['id'] + '/' + ic.name, zipf)
+            zipf.close()
+            print(ic.name + '.zip')
+
+            resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '\\' + ic.name + '.zip',
+                             mimetype='zip',
+                             attachment_filename=ic.name + '.zip',
+                             as_attachment=True)
+
+            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '\\tmp\\' + u['id']})
+            thread.start()
+
+            return resp
+
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()
@@ -319,8 +379,42 @@ def path_to_dict(path):
     return d
 
 
+def json_to_temp_folder_struct(path, ic):
+    if ic.is_directory:
+        try:
+            os.mkdir(path + ic.name)
+        except OSError:
+            print("Creation of the directory %s failed" % path)
+        for sub_folder in ic.sub_folders:
+            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder)
+    else:
+        if db.connect(db_adapter):
+            result = db.get_file(db_adapter, ic.name + ic.type)
+            if result:
+                # print(result.file_name)
+                response = result.read()
+                f = open(path + ic.name + ic.type, "wb+")
+                f.write(response)
+                f.close()
+            else:
+                print(str(msg.STORED_FILE_NOT_FOUND))
+
+
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+
+
 def set_project_data(data):
     if "project" in data:
         session.get("project").update(data["project"])
         session.modified = True
         print(session.get("project"))
+
+
+def remove_folder(path):
+    time.sleep(30)
+    # Delete the zip file if not needed
+    shutil.rmtree(path)

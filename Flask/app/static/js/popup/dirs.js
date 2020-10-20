@@ -328,3 +328,18 @@ function DownloadFile(path){
 //    window.open(url, "_blank");
     LoadStop();
 }
+
+function DownloadFolder(path, name){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+    LoadStart();
+    var url = (o.length > 0)? "/get_folder_multi" : "/get_folder/" + path; // TODO
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = name + '.zip';
+    link.dispatchEvent(new MouseEvent('click'));
+
+//    window.open(url, "_blank");
+    LoadStop();
+}

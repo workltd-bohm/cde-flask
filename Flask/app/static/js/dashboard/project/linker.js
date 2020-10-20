@@ -93,8 +93,15 @@ function WrapShare(data){
 
 function WrapDownload(data){
     var tmp = data.values.data;
+    console.log(tmp)
 
-    DownloadFile(tmp.name + tmp.type)
+    if(tmp.is_directory){
+        console.log(tmp.ic_id)
+        console.log(tmp.parent_id)
+        DownloadFolder(tmp.parent_id + '/' + tmp.name, tmp.name)
+    }else{
+        DownloadFile(tmp.name + tmp.type)
+    }
 }
 
 function WrapShareProject(data){
