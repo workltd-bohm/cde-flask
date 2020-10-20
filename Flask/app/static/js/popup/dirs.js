@@ -293,10 +293,16 @@ function DeleteFile(form, json){
         }),
         timeout: 5000,
         success: function(data){
-            input_json2 = JSON.parse(data);
-            html = input_json2['html'];
-            form.empty();
-            form.append(html);
+            try {
+                input_json2 = JSON.parse(data);
+                html = input_json2['html'];
+                form.empty();
+                form.append(html);
+            } catch (e) {
+                MakeSnackbar(data);
+                location.reload();
+            }
+
 
             LoadStop();
         },
