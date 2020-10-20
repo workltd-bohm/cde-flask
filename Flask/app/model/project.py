@@ -88,13 +88,15 @@ class Project:
                 #path = request_data['path']
                 parent = request_data['path'] #[:path.rfind("/")]
                 new_name = request_data['new_name']
+                new_name_backup = new_name
                 if not y.is_directory:
                     name = y.name   + y.type
                     new_name = '.'.join(new_name.split('.')[:-1])
+
                 if name == request_data['old_name']:
                     details = Details(user, 'Renamed',
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
-                                      name + ' to ' + new_name + y.type)
+                                      name + ' to ' + new_name_backup)
                     y.history.append(details)
                     y.name = new_name
                     y.path = parent + '/' + request_data['new_name']
