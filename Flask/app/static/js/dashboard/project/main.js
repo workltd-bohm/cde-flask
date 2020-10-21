@@ -219,25 +219,36 @@ function AddChildren(obj, data, parent, position=0){
 
 // -------------------------------------------------------
 
-function AddTspan(target, newobj, text){
+function AddTspan(target, newobj, text, prefix=null){
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+    text = text.slice(0, TEXT_MAX_TEXT);
+    if(text.length >= TEXT_MAX_TEXT)
+        text += "...";
+
     var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
     newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;
     var spacing = parseFloat($(target.node()).css("fontSize"));
+
     for(var i = 0; i <= slice; i++){
         target.append("tspan")
         .attr('x', 0)
         .attr('y', (i-(slice)/2)*spacing) //TEXT_SPACING)
         .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
     }
+    if(prefix){
+        target.append("tspan")
+        .attr('x', 0)
+        .attr('y', (slice+1-(slice)/2)*spacing) //TEXT_SPACING)
+        .html(prefix.slice(0)) // 1 to remove "."
+    }
 }
 
 function AddText(data, cls="", fix=false) {
     var newobj = data.values;
     var newName = data.name;
-    if(data.type){
-        newName = data.name + data.type
-    }
+    // if(data.type){
+    //     newName = data.name + data.type
+    // }
     newobj.text_len = newName.length;
     newobj.text = newobj.object.append("g")
         .attr("class", cls+" text")
@@ -247,14 +258,14 @@ function AddText(data, cls="", fix=false) {
         .attr("y",0)
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
-    AddTspan(tmp, newobj, newName);
+    AddTspan(tmp, newobj, newName, data.type? data.type : null );
     tmp = newobj.text.append("text")
         .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
-    AddTspan(tmp, newobj, newName);
+    AddTspan(tmp, newobj, newName, data.type? data.type : null);
 }
 
 function SunFadeout(data){

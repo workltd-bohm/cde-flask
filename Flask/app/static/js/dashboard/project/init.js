@@ -44,6 +44,7 @@ const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
 const TEXT_MOVE_COEF = 4;
 const TEXT_MAX_LENGHT = 10;
+const TEXT_MAX_TEXT = 20;
 
 
 // ----------------------------------------------------
