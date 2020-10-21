@@ -5,12 +5,12 @@ circle.pattern.path {
 }
 
 circle.pattern.star {
-    /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
-    fill : url("#patern_sun_fix");
-     /*fill: #565656;*/
+     /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
+    /*fill : url("#patern_sun_fix"); */
+     fill: #121212;
     /*stroke: none;*/
-    /* stroke: rgba(250,250,250,0.015);
-    stroke-width: 1;*/
+     stroke: rgba(250,250,250,0.15);
+    stroke-width: 1;
 }
 circle.pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
@@ -86,13 +86,13 @@ text.text_front {
 }
 
 g.star.object > g.text > text {
-    font-size: 40px;
+    font-size: 20px;
 }
 g.star.overlay > g.text > text {
     font-size: 20px;
 }
 g.planet.object > g.text > text {
-    font-size: 18px;
+    font-size: 14px;
 }
 g.path.draw > g.text > text {
     font-size: 12px;
