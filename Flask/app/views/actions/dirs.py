@@ -19,7 +19,7 @@ def get_file(file_name):
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
-                        'file_name':file_name}
+                        'file_name': file_name}
         print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
@@ -98,29 +98,30 @@ def get_folder(parent_id, folder_name):
             ic = project.find_ic(request_json, folder_name, project.root_ic)
             print(ic.to_json())
             path = os.getcwd() + '\\'
+            millis = int(round(time.time() * 1000))
             try:
                 if not os.path.exists(path + 'tmp\\'):
                     os.mkdir(path + 'tmp\\')
-                if not os.path.exists(path + 'tmp\\' + u['id']):
-                    os.mkdir(path + 'tmp\\' + u['id'])
+                if not os.path.exists(path + 'tmp\\' + u['id'] + '_' + str(millis)):
+                    os.mkdir(path + 'tmp\\' + u['id'] + '_' + str(millis))
             except OSError as err:
                 print("Creation of the directory %s failed" % path + '\n' + err)
-            path = os.getcwd() + '\\tmp\\' + u['id'] + '\\'
+            path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
             json_to_temp_folder_struct(path, ic)
-            # zip_buffer = io.BytesIO()
-            zipf = zipfile.ZipFile('tmp/' + u['id'] + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
-            # zip_buffer.seek(0)
-            print('Zipping: %s' % 'tmp/' + u['id'] + '/' + ic.name)
-            zipdir('tmp/' + u['id'] + '/' + ic.name, zipf)
+
+            zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
+
+            print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name)
+            zipdir('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name, zipf)
             zipf.close()
             print(ic.name + '.zip')
 
-            resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '\\' + ic.name + '.zip',
+            resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\' + ic.name + '.zip',
                              mimetype='zip',
                              attachment_filename=ic.name + '.zip',
                              as_attachment=True)
 
-            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '\\tmp\\' + u['id']})
+            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis)})
             thread.start()
 
             return resp

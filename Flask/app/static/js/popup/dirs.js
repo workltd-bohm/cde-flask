@@ -314,32 +314,52 @@ function DeleteFile(form, json){
     });
 }
 
-function DownloadFile(path){
-    var o = Object.values(CHECKED);
-    var multi = [];
-    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+function DownloadMulti(path, multi){
     LoadStart();
-    var url = (o.length > 0)? "/get_file_multi" : "/get_file/" + path; // TODO
     var link = document.createElement('a');
-    link.href = url;
-    link.download = path;
+    link.href = path + JSON.stringify(multi);
+    link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
 //    window.open(url, "_blank");
     LoadStop();
 }
 
-function DownloadFolder(path, name){
-    var o = Object.values(CHECKED);
-    var multi = [];
-    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+function DownloadIC(path, name){
+    console.log(path);
     LoadStart();
-    var url = (o.length > 0)? "/get_folder_multi" : "/get_folder/" + path; // TODO
     var link = document.createElement('a');
-    link.href = url;
-    link.download = name + '.zip';
+    link.href = path;
+    link.download = name;
     link.dispatchEvent(new MouseEvent('click'));
 
 //    window.open(url, "_blank");
     LoadStop();
+}
+
+function DownloadICs(json){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({parent_id: o[i].parent_id,
+                                                    ic_name: (!o[i].is_directory)? o[i].name + o[i].type : o[i].name});
+    console.log(multi);
+    if (o.length > 0){
+        if (o.length == 1){
+            console.log(o[0]);
+            if(o[0].is_directory){
+                DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
+            }else{
+                DownloadIC("/get_file/" + o[0].name + o[0].type, o[0].name + o[0].type);
+            }
+        }else{
+            DownloadMulti("/get_ic_multi/", multi);
+        }
+    }
+    else{
+        if(json.is_directory){
+            DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
+        }else{
+            DownloadIC("/get_file/" + json.name + json.type, json.name + json.type);
+        }
+    }
 }
