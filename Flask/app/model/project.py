@@ -49,6 +49,14 @@ class Project:
     def added(self, value):
         self._added = value
 
+    @property
+    def current_ic(self):
+        return self._current_ic
+
+    @current_ic.setter
+    def current_ic(self, value):
+        self._current_ic = value
+
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic

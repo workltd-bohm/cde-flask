@@ -142,11 +142,12 @@ def get_ic_multi(json_obj):
             except OSError as err:
                 print("Creation of the directory %s failed" % path + '\n' + err)
             for req in request_data:
+                project.current_ic = None
+                project.added = False
                 ic = project.find_ic(req, req['ic_name'], project.root_ic)
-                print(ic.to_json())
-
-                path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\BOHM_download\\'
-                dirs.json_to_temp_folder_struct(path, ic)
+                if ic:
+                    path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\BOHM_download\\'
+                    dirs.json_to_temp_folder_struct(path, ic)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip', 'w', zipfile.ZIP_DEFLATED)
             # zip_buffer.seek(0)
