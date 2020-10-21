@@ -403,7 +403,9 @@ def json_to_temp_folder_struct(path, ic):
 
 def zipdir(path, ziph):
     # ziph is zipfile handle
-    for root, dirs, files in os.walk(path):
+    for root, folders, files in os.walk(path):
+        for folder in folders:
+            ziph.write(os.path.join(root, folder), os.path.relpath(os.path.join(root, folder), os.path.join(path, '..')))
         for file in files:
             ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
 
