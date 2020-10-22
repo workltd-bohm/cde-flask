@@ -45,3 +45,5 @@ PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "co
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
 
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
+
+USER_NO_RIGHTS = {"message": "User does not have rights to share!", "code": 404}

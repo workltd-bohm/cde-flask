@@ -49,6 +49,7 @@ function SharePopup(form){
             html = input_json['html'];
             form.empty();
             form.append(html);
+            autocomplete(document.getElementById("user_name"), input_json['data']);
             LoadStop();
         })
         .fail(function($jqXHR, textStatus, errorThrown){

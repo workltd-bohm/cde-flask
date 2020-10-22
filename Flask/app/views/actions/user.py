@@ -2,6 +2,7 @@ import json
 
 from app import *
 
+
 @app.route('/make_user_profile_activity', methods=['POST'])
 def make_user_profile_activity():
     resp = Response()
@@ -27,6 +28,7 @@ def make_user_profile_activity():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/update_user', methods=['POST'])
 def update_user():

@@ -43,6 +43,17 @@ class DBMongoAdapter:
         self._close_connection()
         return message, user
 
+    def get_all_users(self):
+        col = self._db.Users
+        result = col.find()
+        # print(result)
+        usernames = []
+        if result:
+            for user in result:
+                usernames.append(user['username'])
+        self._close_connection()
+        return usernames
+
     def set_user(self, user):
         col = self._db.Users
         user_query = {'email': user.email}
@@ -518,10 +529,20 @@ class DBMongoAdapter:
     def share_project(self, request_data, user):
         col_users = self._db.Users.Roles
         col = self._db.Users
+        user_query = {'user_id': user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        if u:
+            for pr in u['projects']:
+                if request_data['project_id'] == pr['project_id']:
+                    if pr['role'] != 1:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
         # TODO: check does user has the rights to share
         user_query = {'username': request_data['user_name']}
         result = col.find_one(user_query, {'_id': 0})
-        message = msg.DEFAULT_ERROR
         if result:
             user_id = result['id']
             user_query = {'user_id': user_id}

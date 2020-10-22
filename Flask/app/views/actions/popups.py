@@ -165,6 +165,7 @@ def get_new_folder():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
     print('Data posting path: %s' % request.path)
@@ -210,6 +211,7 @@ def get_new_file():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_rename_ic', methods=['POST'])
 def get_rename_ic():
     print('Data posting path: %s' % request.path)
@@ -252,6 +254,7 @@ def get_rename_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_delete_ic', methods=['POST'])
 def get_delete_ic():
     print('Data posting path: %s' % request.path)
@@ -292,6 +295,7 @@ def get_delete_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_share', methods=['GET'])
 def get_share():
     print('Data posting path: %s' % request.path)
@@ -303,14 +307,13 @@ def get_share():
             user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             if result:
-                print('>>>>>>>', result['project_id'])
+                usernames = db.get_all_users(db_adapter)
                 response = {
                     'html': render_template("popup/share_project.html",
-                            project_id=result["project_id"]
-                        ),
-                    'data':[]
+                                            project_id=result["project_id"]
+                                            ),
+                    'data': usernames
                 }
-                print('>>>>>>>', response)
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)

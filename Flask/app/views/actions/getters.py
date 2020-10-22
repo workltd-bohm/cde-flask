@@ -245,6 +245,7 @@ def get_root_market():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 def get_input_file_fixed():
     doc = open('app/static/file/input.json', 'r')
     file = json.loads(doc.read())

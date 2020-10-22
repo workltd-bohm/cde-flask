@@ -83,6 +83,7 @@ def create_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
     print('Data posting path: %s' % request.path)

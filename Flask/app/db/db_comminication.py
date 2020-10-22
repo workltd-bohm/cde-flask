@@ -10,11 +10,17 @@ def get_user(db_adapter, identifier):
     return db_adapter.get_user(identifier)
 
 
+def get_all_users(db_adapter):
+    return db_adapter.get_all_users()
+
+
 def set_user(db_adapter, user):
     return db_adapter.set_user(user)
 
+
 def edit_user(db_adapter, user):
     return db_adapter.edit_user(user)
+
 
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
