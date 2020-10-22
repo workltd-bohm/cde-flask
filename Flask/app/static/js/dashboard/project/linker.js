@@ -78,6 +78,7 @@ function WrapShare(data){
     //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
 
     var tmp = data.values.data;
+    tmp.project_name = SESSION["name"];
 
     var dummy = document.createElement('input'),
     text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
