@@ -166,6 +166,10 @@ function AddItem(obj, data, parent, position=0) {
 
     data.values.rotation = position*360/data.values.back.items.length-90;
 
+    if (data.name == "SELECT") {
+        g_OverlayItem = g_SunRadius/OVERLAY_SUN_RATIO;
+        g_OverlayRadius = g_PlanetRadius+g_OverlayItem+OVERLAY_MARG;
+    }
     data.values.this.attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_OverlayRadius-g_OverlayItem-OVERLAY_MARG)+", 0), rotate("+(-data.values.rotation)+")");
 
     // data.item.picture = data.values.this.append("circle")
@@ -181,10 +185,10 @@ function AddItem(obj, data, parent, position=0) {
         .attr("class", "item foregin")
 
 
-    var defaultColor = (data.values.data.color) ? data.values.data.color : $(".foregin .material-icons").css("color");
+    var defaultColor = (data.values.data.color && data.values.data.values.sun) ? data.values.data.color : $(".foregin .material-icons").css("color");
 
     data.values.picture.append("i")
-        .attr("class", "item material-icons")
+        .attr("class", "item material-icons"+((data.values.data.values.sun)?" sun" : " planet"))
         .style("color", defaultColor)
         .style("font-size", g_OverlayItem+"px")
         .html(data.icon)

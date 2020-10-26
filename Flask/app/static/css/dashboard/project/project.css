@@ -12,6 +12,15 @@ circle.pattern.star {
      stroke: rgba(250,250,250,0.25);
     stroke-width: 1;
 }
+circle.background.planet {
+    fill : url("#patern_planet_file");
+}
+circle.background.planet.dir {
+    fill : url("#patern_planet_folder");
+}
+circle.background.planet.empty {
+    fill : url("#patern_planet_empty");
+}
 circle.pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
@@ -19,17 +28,19 @@ circle.pattern.planet {
     /*stroke: none;*/
     stroke: rgba(250, 250, 250, 0.7);
     stroke-width: 2;
+    opacity: 50%;
 }
 circle.pattern.planet.dir{
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
+    opacity: 50%;
 }
 circle.pattern.planet.empty{
     /*stroke: rgba(190, 30, 20, 0.5);*/
     stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 1;
     stroke-dasharray: 3;
-
+    opacity: 50%;
 }
 
 circle.shader {

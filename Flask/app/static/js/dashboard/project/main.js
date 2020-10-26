@@ -152,6 +152,10 @@ function AddChildren(obj, data, parent, position=0){
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
+    data.values.background = data.values.object.append("circle")
+        .attr("class", "planet background"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
+        .attr("r", g_PlanetRadius);
+
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
         .attr("r", g_PlanetRadius);
@@ -223,7 +227,7 @@ function AddTspan(target, newobj, text, prefix=null){
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
     text = text.slice(0, TEXT_MAX_TEXT);
     if(text.length >= TEXT_MAX_TEXT)
-        text += "...";
+        text = text.slice(0, TEXT_MAX_TEXT - 4) + "...";
 
     var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
     newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;

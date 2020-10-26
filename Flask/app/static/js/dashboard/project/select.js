@@ -126,12 +126,12 @@ function AddSelection(obj, data, parent, position=0) {
         // .attr("id", data.link)
         .attr("r", g_OverlayItem/2)
         .on("mouseover",function(d){
-            data.values.back.text.remove();
-            AddSelectText(data.values.data, false, [data.name]);
+            //data.values.back.text.remove();
+            AddSelectText(data.values.data, false, [data.name], true);
         })
         .on("mouseleave",function(d){
-            data.values.back.text.remove();
-            AddSelectText(data.values.data, false, [data.values.back.select_text, " selected"]);
+            //data.values.back.text.remove();
+            AddSelectText(data.values.data, false, [data.values.back.select_text, " selected"], true);
         })
         .on("mousedown",function(d){
             // ClickStart(function(data){
@@ -148,11 +148,13 @@ function AddSelection(obj, data, parent, position=0) {
 
 }
 
-function AddSelectText(data, fix=false, array=[]) {
+function AddSelectText(data, fix=false, array=[], exist=false) {
     var newobj = data.selection;
-    
-    newobj.text = newobj.object.append("g")
-        .attr("class", "selection text")
+    if(!exist)
+        newobj.text = newobj.object.append("g")
+            .attr("class", "selection text")
+    else
+        newobj.text.selectAll("text").remove();
     var tmp = newobj.text.append("text")
         .attr("class", "text_back")
         .attr("x",0)
