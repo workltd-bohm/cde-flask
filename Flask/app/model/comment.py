@@ -39,6 +39,6 @@ class Comments:
     @staticmethod
     def json_to_obj(json_file):
         return Comments(json_file['user'],
-                       json_file['comment'],
-                       json_file['date']
-                       )
+                        json_file['comment'],
+                        json_file['date']
+                        )

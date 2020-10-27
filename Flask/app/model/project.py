@@ -1,6 +1,8 @@
 from .details import Details
 from .comment import Comments
 from .directory import Directory
+from .site import Site
+from .building import Building
 from .file import File
 import app.model.messages as msg
 from datetime import datetime
@@ -12,6 +14,12 @@ class Project:
         self._project_id = project_id
         self._name = name
         self._root_ic = root_ic
+        self._description = ''
+        self._code = ''
+        self._number = ''
+        self._status = ''
+        self._site = Site('', '', '', '', '')
+        self._building = Building('', '')
         self._added = False
         self._deleted = False
         self._message = ""
@@ -56,6 +64,54 @@ class Project:
     @current_ic.setter
     def current_ic(self, value):
         self._current_ic = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
+
+    @property
+    def code(self):
+        return self._code
+
+    @code.setter
+    def code(self, value):
+        self._code = value
+
+    @property
+    def number(self):
+        return self._number
+
+    @number.setter
+    def number(self, value):
+        self._number = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
+
+    @property
+    def site(self):
+        return self._site
+
+    @site.setter
+    def site(self, value):
+        self._site = value
+
+    @property
+    def building(self):
+        return self._building
+
+    @building.setter
+    def building(self, value):
+        self._building = value
 
     def update_file(self, file, ic=None):
         if not ic:
@@ -237,7 +293,13 @@ class Project:
         return {
             'project_id': self._project_id,
             'project_name': self._name,
-            'root_ic': self._root_ic.to_json()
+            'root_ic': self._root_ic.to_json(),
+            'description': self._description,
+            'code': self._code,
+            'number': self._number,
+            'status': self._status,
+            'site': self._site.to_json(),
+            'building': self._building.to_json()
         }
 
     @staticmethod
@@ -281,7 +343,14 @@ class Project:
     def json_to_obj(json_file):
         root = Project.json_folders_to_obj(json_file['root_ic'])
 
-        return Project(json_file['project_id'], json_file['project_name'], root)
+        project = Project(json_file['project_id'], json_file['project_name'], root)
+        project.description = json_file['description']
+        project.code = json_file['code']
+        project.number = json_file['number']
+        project.status = json_file['status']
+        project.site = Site.json_to_obj(json_file['site'])
+        project.building = Building.json_to_obj(json_file['building'])
+        return project
 
     def extract_files(self, ic, files):
         for x in ic.sub_folders:
@@ -301,33 +370,3 @@ class Project:
                 # print('++++++', new_ic_array)
                 if self._added:
                     break
-
-
-    #
-    # def add_ic_old(self, ic_new, ic=None):
-    #     if ic.is_directory:
-    #         print(ic.ic_id)
-    #         print(ic_new.parent_id)
-    #         new_path = ic_new.parent
-    #         if not ic_new.is_directory:
-    #             new_path = '/'.join(ic_new.path.split('/')[:-1])
-    #         if ic.path == new_path:
-    #             already_exists = False
-    #             for sub_f in ic.sub_folders:
-    #                 if sub_f.name == ic_new.name:
-    #                     already_exists = True
-    #                     self._added = True
-    #                     self._message = msg.IC_ALREADY_EXISTS
-    #             if not already_exists:
-    #                 ic_new.parent_id = ic.ic_id
-    #                 ic.sub_folders.append(ic_new)
-    #                 self._message = msg.IC_SUCCESSFULLY_ADDED
-    #             self._added = True
-    #         else:
-    #             for x in ic.sub_folders:
-    #                 self.add_ic(ic_new, x)
-    #                 if self._added:
-    #                     break
-    #     if not self._added:
-    #         self._message = msg.IC_PATH_NOT_FOUND
-    #     return self._message
