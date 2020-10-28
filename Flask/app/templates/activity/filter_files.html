@@ -69,10 +69,13 @@
         </div>
       </div>
       <div id="filter-post" style="display: none;">
-        <br>
-        <button class="activity-post-button" onclick="NewPost(this);">Create New Post</button>
-        <br>
-        <button class="activity-post-button">Add to existing Post</button>
+          <form id="filter-form-post">
+            <input type="hidden" id="project_name_post" value="{{ project_name }}" required />
+            <br>
+            <button type="button" class="activity-post-button" onclick="MarketGet('Posts', NewPost, [this, {'ic_id': '{{ ic_id }}', 'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 'name': '{{ name }}' }])">Create New Post</button>
+            <br>
+            <button type="button" class="activity-post-button" onclick="MarketGet('Posts', EditPost, [this, '{{ post_id }}'])">Add to existing Post</button>
+          </form>
       </div>
     </div>
 </div>

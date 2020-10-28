@@ -162,11 +162,17 @@ def make_ticket_post():
 def make_ticket_post_new():
     resp = Response()
     print('Data posting path: %s' % request.path)
+    request_json = json.loads(request.get_data())
+    print(request_json)
+    description = ''
+    if request_json['data']:
+        description = request_json['data']['name']
     if main.IsLogin():
         response = {
             'html': render_template("dashboard/market/post_new_form.html",
-                # TODO
-            ),
+                                    username=session['user']['username'],
+                                    description=description
+                                    ),
             'data': []
         }
         #print(response)
@@ -221,7 +227,7 @@ def make_view_post():
                                         date=result[0]["date_expired"],
                                         location=result[0]["location"],
                                         status=status.Status(int(result[0]["status"])).name,
-                                        dview = result[0]['documents']['3d-view'],
+                                        dview=result[0]['documents']['3d-view'],
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
                                         offer=0
@@ -239,7 +245,6 @@ def make_view_post():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
@@ -254,6 +259,7 @@ def make_edit_post():
     if main.IsLogin():
         if db.connect(db_adapter):
             result = db.get_single_post(db_adapter, request_json)
+            print(result[0]['documents']['doc'])
             # res = json.loads(result[0])
             print(">>>>", result[0])
             response = {

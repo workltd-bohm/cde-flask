@@ -1,17 +1,37 @@
 g_post_type = {new: '/make_activity_post_new',
                edit: '/make_activity_post_edit'}
 
-function NewPost(obj){
+function NewPost(obj, request_data=''){
     var tmp = obj;
+    console.log(request_data);
     $.ajax({
         url: "/make_new_post",
         type: 'POST',
+        data: JSON.stringify({data: request_data}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);
             if(data){
                 OpenEditor(data.html, data.data);
                 OpenActivityEditPost(tmp, g_post_type.new );
+                if(request_data != ''){
+                    a = [request_data.name]
+                    a.forEach(async function(doc) {
+                        let url = '/get_post_image/' + doc + '?post_id=default';
+                        let blob = await fetch(url).then(r => r.blob());
+                        blob.name = doc;
+                        previewEditFile(blob);
+                    });
+
+//                    console.log('here');
+//                    console.log(request_data);
+//                    let url = '/get_post_image/' + request_data.name + '?post_id=default';
+//                    console.log(url);
+//                    let blob = fetch(url).then(r => r.blob());
+//                    blob.name = request_data.name;
+//                    console.log(blob);
+//                    previewEditFile(blob);
+                }
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

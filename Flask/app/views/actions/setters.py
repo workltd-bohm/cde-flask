@@ -5,6 +5,7 @@ from datetime import datetime
 
 from app import *
 
+
 @app.route('/clear_projects')
 def clear_projects():
     print('Data posting path: %s' % request.path)

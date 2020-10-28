@@ -29,15 +29,16 @@ def get_open_file():
                                             preview='/get_shared_file/' + name + type
                                             ),
                     'activity': render_template("activity/filter_files.html",
-                                            details=details,
-                                            file_name=file_name,
-                                            path=path,
-                                            share_link=share_link,
-                                            comments=comments,
-                                            project_name=project_name,
-                                            parent_id=result.parent_id,
-                                            ic_id=result.ic_id,
-                                            ),
+                                                details=details,
+                                                file_name=file_name,
+                                                path=path,
+                                                share_link=share_link,
+                                                comments=comments,
+                                                project_name=project_name,
+                                                parent_id=result.parent_id,
+                                                ic_id=result.ic_id,
+                                                name=name+type
+                                                ),
                     'data': []
                 }
                 resp = Response()

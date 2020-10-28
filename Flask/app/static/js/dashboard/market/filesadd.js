@@ -152,6 +152,7 @@ function previewFile(file) {
 function previewEditFile(file) {
 //  console.log(file);
   let reader = new FileReader();
+  console.log(file);
   reader.readAsDataURL(file);
   reader.onloadend = function() {
     let div = document.createElement('div');

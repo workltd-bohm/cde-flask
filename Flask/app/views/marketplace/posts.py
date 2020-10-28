@@ -309,15 +309,15 @@ def get_post_image(file_name):
         if db.connect(db_adapter):
             result = db.get_post_file(db_adapter, request_json)
             if result:
-                print(result['file_name'])
-                resp = Response(result['file'])
+                print(result.file_name)
+                resp = Response(result.file_name)
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
-                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
+                    'Content-Disposition', 'attachment', filename='%s' % result.file_name)
                 resp.status_code = msg.DEFAULT_OK['code']
                 return send_file(
-                     io.BytesIO(result['file']),
-                     attachment_filename=result['file_name'])
+                    io.BytesIO(result.read()),
+                    attachment_filename=result.file_name)
             else:
                 print("not_found")
                 resp = Response()

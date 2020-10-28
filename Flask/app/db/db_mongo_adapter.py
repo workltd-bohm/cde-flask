@@ -207,11 +207,11 @@ class DBMongoAdapter:
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 file_obj.stored_id = str(self._fs.put(file,
-                                    file_name=file_obj.name+file_obj.type,
-                                    parent=file_obj.parent,
-                                    parent_id=file_obj.parent_id,
-                                    description=file_obj.description
-                                    ))
+                                                      file_name=file_obj.name+file_obj.type,
+                                                      parent=file_obj.parent,
+                                                      parent_id=file_obj.parent_id,
+                                                      description=file_obj.description
+                                                      ))
                 # col_file.update_one({'file_id': 'default'},
                 #                     {'$set': {'file_id': str(file_obj.stored_id)}})
                 add, ic = project.add_ic(file_obj, project.root_ic)
@@ -345,9 +345,14 @@ class DBMongoAdapter:
         return ic
 
     def get_post_file(self, request_json):
-        col = self._db.Marketplace.Posts.Files
+        # col = self._db.fs.files
+        # file_query = request_json
+        # stored_file = col.find_one(file_query, {'_id': 0})
+        # self._close_connection()
+        stored_file = None
         file_query = request_json
-        stored_file = col.find_one(file_query, {'_id': 0})
+        for grid_out in self._fs.find(file_query, no_cursor_timeout=True):
+            stored_file = grid_out
         self._close_connection()
         return stored_file
 
@@ -407,26 +412,39 @@ class DBMongoAdapter:
         return res
 
     def upload_post_file(self, request_json, file):
-        col = self._db.Marketplace.Posts.Files
+        col = self._db.fs.files
         # file_query = {'file_name': request_json['file_name']}
         # file_json = col.find_one(file_query, {'_id': 0})
         # if file_json is None:
-        stored_id = str(col.insert_one({"file_id": "default",
-                                        "post_id": request_json['user'],
-                                        "file_name": request_json['file_name'],
-                                        "type": request_json['type'],
-                                        "file": file,}).inserted_id)
-        col.update_one({'file_id': 'default'},
-                                    {'$set': {'file_id': str(stored_id)}})
-        message = msg.IC_SUCCESSFULLY_ADDED
+        file_query = {'file_name': request_json['file_name']}
+        file_json = self._fs.find_one(file_query)
+        stored_id = ''
+        message = msg.DEFAULT_ERROR
+        if file_json is None:
+            stored_id = str(self._fs.put(file,
+                                         file_id='default',
+                                         post_id=request_json['user'],
+                                         file_name=request_json['file_name'],
+                                         type=request_json['type']
+                                         ))
+        # stored_id = str(col.insert_one({"file_id": "default",
+        #                                 "post_id": request_json['user'],
+        #                                 "file_name": request_json['file_name'],
+        #                                 "type": request_json['type'],
+        #                                 "file": file}).inserted_id)
+            col.update_one({'file_id': 'default'},
+                           {'$set': {'file_id': str(stored_id)}})
+            message = msg.IC_SUCCESSFULLY_ADDED
 
         self._close_connection()
         return message, str(stored_id)
 
     def remove_post_file(self, request_json):
-        col = self._db.Marketplace.Posts.Files
+        col = self._db.fs.files
+        col_file_chunks = self._db.fs.chunks
         file_query = {'file_name': request_json['file_name']}
-        col.delete_one(file_query)
+        col.delete_many(file_query)
+        col_file_chunks.delete_many(file_query)
         message = msg.FILE_SUCCESSFULLY_DELETED
         if 'post_id' in request_json:
             col_post = self._db.Marketplace.Posts
@@ -445,7 +463,7 @@ class DBMongoAdapter:
         return message
 
     def update_post_file(self, file, post_id, user):
-        col = self._db.Marketplace.Posts.Files
+        col = self._db.fs.files
         file_query = {'file_name': file, 'post_id': user['username']}
         col.update_one(file_query,
                        {'$set': {'post_id': post_id}})

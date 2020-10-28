@@ -22,6 +22,7 @@ def input():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_session', methods=['POST'])
 def get_session():
     resp = Response()
@@ -34,6 +35,7 @@ def get_session():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/set_project', methods=['POST'])
 def set_project():
@@ -50,6 +52,7 @@ def set_project():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_project', methods=['POST'])
 def get_project():
