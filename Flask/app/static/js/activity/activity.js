@@ -88,3 +88,34 @@ function sendComment(el){
     });
 
 }
+
+function addLink(el){
+    var key = window.event.keyCode;
+    if(key != 13)
+        return true;
+    if (key === 13 && el.shiftKey){
+        return true;
+    }
+    link = $('#3d-view-link').val();
+    console.log(link);
+    $.ajax({
+        url: "/load_viewer",
+        type: 'POST',
+        data: JSON.stringify({
+            link: link
+        }),
+        timeout: 5000,
+        success: function(data){
+            input_json = JSON.parse(data);
+            console.log(input_json);
+            OpenViewer(input_json['html'], input_json['data']);
+            $('#3d-view-link').val('');
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+
+}

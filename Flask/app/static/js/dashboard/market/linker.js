@@ -22,15 +22,6 @@ function NewPost(obj, request_data=''){
                         blob.name = doc;
                         previewEditFile(blob);
                     });
-
-//                    console.log('here');
-//                    console.log(request_data);
-//                    let url = '/get_post_image/' + request_data.name + '?post_id=default';
-//                    console.log(url);
-//                    let blob = fetch(url).then(r => r.blob());
-//                    blob.name = request_data.name;
-//                    console.log(blob);
-//                    previewEditFile(blob);
                 }
             }
         },

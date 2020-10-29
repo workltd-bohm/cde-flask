@@ -52,7 +52,6 @@ def get_open_file():
         resp.data = str(msg.DB_FAILURE['message'])
         return resp
 
-
     else:
         return redirect('/')
 
@@ -94,7 +93,7 @@ def get_new_project():
     if main.IsLogin():
         response = {
             'html': render_template("popup/new_project_popup.html"),
-            'data':[]
+            'data': []
         }
         print(response)
         resp = Response()
@@ -114,7 +113,7 @@ def get_upload_project():
     if main.IsLogin():
         response = {
             'html': render_template("popup/upload_folder_popup.html"),
-            'data':[]
+            'data': []
         }
         print(response)
         resp = Response()
@@ -140,12 +139,12 @@ def get_new_folder():
             if result:
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -182,16 +181,16 @@ def get_new_file():
                 filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
-                            project_path=request_data["project_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            project_code=user['project_code'],
-                            company_code=user['company_code'],
-                            is_file=request_data["is_file"],
-                            inputs=filter_file
-                        ),
-                    'data':[]
+                                            project_path=request_data["project_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            project_code=user['project_code'],
+                                            company_code=user['company_code'],
+                                            is_file=request_data["is_file"],
+                                            inputs=filter_file
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -226,15 +225,15 @@ def get_rename_ic():
                 filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            old_name=request_data["old_name"],
-                            is_directory = True if request_data["is_directory"] else False,
-                            inputs=filter_file
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            old_name=request_data["old_name"],
+                                            is_directory=True if request_data["is_directory"] else False,
+                                            inputs=filter_file
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -268,14 +267,14 @@ def get_delete_ic():
             if result:
                 response = {
                     'html': render_template("popup/delete_ic_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            delete_name=request_data["delete_name"],
-                            is_directory = True if request_data["is_directory"] else False
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            delete_name=request_data["delete_name"],
+                                            is_directory=True if request_data["is_directory"] else False
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']

@@ -165,14 +165,36 @@ function SelectMarket(){
     });
 }
 
+function Select3D(){
+    ClearProject(true);
+    SwitchDash(2);
+    $.ajax({
+        url: "/get_viewer",
+        type: 'POST',
+        data: JSON.stringify({project: {section: "3d"}}),
+        timeout: 5000,
+        success: function(data){
+            response = JSON.parse(data);
+            if(response){
+                OpenActivity(response['html'], null, open);
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
 // -------------------------------------------------------
 
 function SwitchDash(id){
     ClearActivity();
     switch(id){
-        case 0: $SVG.fadeIn(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
-        case 1: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeIn(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
-        default: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); break;
+        case 0: $SVG.fadeIn(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
+        case 1: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeIn(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
+        case 2: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeIn(ANIM_FADE_ANIM); break;
+        default: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
     }
 }
 

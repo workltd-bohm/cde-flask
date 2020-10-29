@@ -345,10 +345,6 @@ class DBMongoAdapter:
         return ic
 
     def get_post_file(self, request_json):
-        # col = self._db.fs.files
-        # file_query = request_json
-        # stored_file = col.find_one(file_query, {'_id': 0})
-        # self._close_connection()
         stored_file = None
         file_query = request_json
         for grid_out in self._fs.find(file_query, no_cursor_timeout=True):
