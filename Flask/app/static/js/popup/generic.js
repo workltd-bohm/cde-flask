@@ -5,6 +5,7 @@ $( document ).ready(function(){
     });
 
     $("div.pero > .content > .zatvori").click(function(d){
+        GetForm().empty();
         $(this).parent().parent().hide();
     });
 });

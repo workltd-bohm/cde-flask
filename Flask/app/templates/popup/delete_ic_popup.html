@@ -6,8 +6,8 @@
   <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
   <input type="hidden" name="delete_name" value="{{ delete_name }}" required />
   <input type="hidden" name="is_directory" value="{{ is_directory }}" required />
-  <div class="form__group field">
-    <label for="rename_new_name" class="form__label">Are you sure?</label>
+  <div class="form__group field" style="height: 100px;">
+    <label for="rename_new_name" class="form__label" >Are you sure?</label>
   </div>
 </div>
-<input type="button" value="Delete" onclick="FormSubmit('delete_ic', null, true, CreateProject)"/>
+<input type="submit" value="Delete" onclick="FormSubmit('delete_ic', null, true, CreateProject)"/>
