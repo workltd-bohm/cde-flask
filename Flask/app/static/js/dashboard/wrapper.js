@@ -21,6 +21,16 @@ $( document ).ready(function(){
     CheckSession();
 });
 
+$(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        target = $("input[type=submit]");
+        if(target.length > 0) {
+            console.log("onclick activate");
+            $("input[type=submit]").trigger( "click" );
+        }
+    }
+});
+
 function CheckSession(){
     $.ajax({
         url: "/get_session",
