@@ -15,14 +15,16 @@ function NewPost(obj, request_data=''){
                 OpenEditor(data.html, data.data);
                 OpenActivityEditPost(tmp, g_post_type.new );
                 if(request_data != ''){
-                    a = [request_data.name]
+                    a = [request_data]
                     documents = []
                     images = []
                     a.forEach(async function(doc) {
-                        let url = '/get_post_image/' + doc + '?post_id=default';
+                        console.log(doc);
+                        let url = '/get_post_image/' + doc['stored_id'] + '?post_id=default';
                         let blob = await fetch(url).then(r => r.blob());
-                        blob.name = doc;
-                        documents.push(doc);
+                        blob.name = doc['name'];
+                        blob.id = doc['stored_id'];
+                        documents.push({id: doc['stored_id'], name: doc['name']});
                         previewEditFile(blob);
                     });
                 }
@@ -202,15 +204,17 @@ function ViewPost(obj, data){
                 ClearActivity(false);
                 OpenActivityEditBid(tmp);
                 data.data.image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    blob.name = img;
+                    blob.name = img['name'];
+                    blob.id = img['id'];
                     previewImage(blob);
                 });
                 data.data.doc.forEach(async function(doc) {
-                    let url = '/get_post_image/' + doc + '?post_id=' + post_id;
+                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    blob.name = doc;
+                    blob.name = doc['name'];
+                    blob.id = doc['id'];
                     previewFile(blob);
                 });
             }
@@ -223,7 +227,7 @@ function ViewPost(obj, data){
     });
 }
 
-function EditPost(obj, data, name=''){
+function EditPost(obj, data, json=''){
     var tmp = obj;
     let post_id = data;
     $.ajax({
@@ -240,24 +244,27 @@ function EditPost(obj, data, name=''){
                 documents = []
                 images = []
                 data.data[0].image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    blob.name = img;
+                    blob.name = img['name'];
+                    blob.id = img['id'];
                     blob.post_id = post_id;
-                    images.push(img);
+                    images.push({id: img['id'], name: img['name']});
                     previewEditImage(blob);
                 });
                 console.log(data.data[0].doc);
-                if(name != ''){
-                    data.data[0].doc.push(name);
+                if(json != ''){
+                    data.data[0].doc.push({id: json.stored_id, name: json.name});
                 }
                 console.log(data.data[0].doc);
                 data.data[0].doc.forEach(async function(doc) {
-                    let url = '/get_post_image/' + doc + '?post_id=' + post_id;
+//                    doc = JSON.parse(doc)
+                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    blob.name = doc;
+                    blob.name = doc['name'];
+                    blob.id = doc['id'];
                     blob.post_id = post_id;
-                    documents.push(doc);
+                    documents.push({id: doc['id'], name: doc['name']});
                     previewEditFile(blob);
                 });
             }

@@ -19,6 +19,9 @@ def create_post():
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json.update({'date_expired': time.strftime("%d.%m.%Y-%H:%M:%S")})
         request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'], 'image': request_json['image']}
+        request_json.pop('3d-view', None)
+        request_json.pop('doc', None)
+        request_json.pop('image', None)
         request_json['bids'] = []
         request_json['current_best_bid'] = None
         request_json['comments'] = []
@@ -68,6 +71,10 @@ def edit_post():
         request_json.pop('3d-view', None)
         request_json.pop('doc', None)
         request_json.pop('image', None)
+        request_json['bids'] = []
+        request_json['current_best_bid'] = None
+        request_json['comments'] = []
+        request_json['status'] = 0
 
     if main.IsLogin():
         if db.connect(db_adapter):
@@ -215,7 +222,7 @@ def get_bids_for_post():
 def upload_post_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        print(request.files['file'])
+        # print(request.files['file'])
         if 'file' not in request.files:
             print('No file part')
             resp = Response()
@@ -225,7 +232,7 @@ def upload_post_file():
 
         file = request.files['file'].read()
         # print(file)
-        print(request.form['data'])
+        # print(request.form['data'])
         request_json = json.loads(request.form['data'])
         request_json['user'] = session['user']['username']
 
@@ -235,7 +242,7 @@ def upload_post_file():
                 print(">>", result["message"])
                 resp = Response()
                 resp.status_code = result["code"]
-                resp.data = result["message"]
+                resp.data = json.dumps({'id': id, 'message': result["message"]})
                 return resp
             else:
                 resp = Response()
@@ -290,19 +297,19 @@ def remove_post_file():
     return resp
 
 
-@app.route('/get_post_image/<path:file_name>', methods=['POST', 'GET'])
-def get_post_image(file_name):
+@app.route('/get_post_image/<path:file_id>', methods=['POST', 'GET'])
+def get_post_image(file_id):
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_json = {
                         #'post_id': request.args.get('post_id'),
-                        'file_name': file_name
+                        'file_id': file_id
         }
-        print('POST data: %s ' % request_json)
+        # print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_post_file(db_adapter, request_json)
             if result:
-                print(result.file_name)
+                # print(result.file_name)
                 resp = Response(result.file_name)
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(

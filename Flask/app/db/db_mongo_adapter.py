@@ -186,12 +186,12 @@ class DBMongoAdapter:
                                                           "file": file,
                                                           "description": file_obj.description})
                                      .inserted_id)
-            col.update_one({'file_id': 'default'},
-                           {'$set': {'file_id': str(file_obj.stored_id)}})
+            col_file.update_one({'file_id': 'default'},
+                                {'$set': {'file_id': str(file_obj.stored_id)}})
             # print(file_obj.to_json())
             project.update_file(file_obj)
             # print(project.to_json())
-            col_file.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            col.update_one({'project_name': project.name}, {'$set': project.to_json()})
             project_uploaded = True
         self._close_connection()
         return project_uploaded
@@ -199,6 +199,7 @@ class DBMongoAdapter:
     def upload_file(self, project_name, file_obj, file):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -207,13 +208,16 @@ class DBMongoAdapter:
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 file_obj.stored_id = str(self._fs.put(file,
+                                                      file_id='default',
                                                       file_name=file_obj.name+file_obj.type,
                                                       parent=file_obj.parent,
                                                       parent_id=file_obj.parent_id,
                                                       description=file_obj.description
                                                       ))
-                # col_file.update_one({'file_id': 'default'},
-                #                     {'$set': {'file_id': str(file_obj.stored_id)}})
+                # col.update_one({'file_id': 'default'},
+                #                {'$set': {'file_id': str(stored_id)}})
+                col_file.update_one({'file_id': 'default'},
+                                    {'$set': {'file_id': str(file_obj.stored_id)}})
                 add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
@@ -420,28 +424,20 @@ class DBMongoAdapter:
 
     def upload_post_file(self, request_json, file):
         col = self._db.fs.files
-        # file_query = {'file_name': request_json['file_name']}
-        # file_json = col.find_one(file_query, {'_id': 0})
-        # if file_json is None:
         file_query = {'file_name': request_json['file_name']}
         file_json = self._fs.find_one(file_query)
         stored_id = ''
-        message = msg.DEFAULT_ERROR
-        if file_json is None:
-            stored_id = str(self._fs.put(file,
-                                         file_id='default',
-                                         post_id=request_json['user'],
-                                         file_name=request_json['file_name'],
-                                         type=request_json['type']
-                                         ))
-        # stored_id = str(col.insert_one({"file_id": "default",
-        #                                 "post_id": request_json['user'],
-        #                                 "file_name": request_json['file_name'],
-        #                                 "type": request_json['type'],
-        #                                 "file": file}).inserted_id)
-            col.update_one({'file_id': 'default'},
-                           {'$set': {'file_id': str(stored_id)}})
-            message = msg.IC_SUCCESSFULLY_ADDED
+        # message = msg.DEFAULT_ERROR
+        # if file_json is None:
+        stored_id = str(self._fs.put(file,
+                                     file_id='default',
+                                     post_id=request_json['user'],
+                                     file_name=request_json['file_name'],
+                                     type=request_json['type']
+                                     ))
+        col.update_one({'file_id': 'default'},
+                       {'$set': {'file_id': str(stored_id)}})
+        message = msg.IC_SUCCESSFULLY_ADDED
 
         self._close_connection()
         return message, str(stored_id)
@@ -449,7 +445,8 @@ class DBMongoAdapter:
     def remove_post_file(self, request_json):
         col = self._db.fs.files
         col_file_chunks = self._db.fs.chunks
-        file_query = {'file_name': request_json['file_name']}
+        file_query = {#'file_name': request_json['file_name'],
+                      'file_id': request_json['file_id']}
         col.delete_many(file_query)
         col_file_chunks.delete_many(file_query)
         message = msg.FILE_SUCCESSFULLY_DELETED
@@ -458,11 +455,12 @@ class DBMongoAdapter:
             posts_query = {'post_id': request_json['post_id']}
             post_json = col_post.find_one(posts_query, {'_id': 0})
             if post_json:
+                print('****', post_json)
                 post = Post.json_to_obj(post_json)
                 if 'image' in request_json['type']:
-                    post.documents['image'].remove(request_json['file_name'])
+                    post.documents['image'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
                 if 'doc' in request_json['type']:
-                    post.documents['doc'].remove(request_json['file_name'])
+                    post.documents['doc'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
                 col_post.update_one(posts_query, {'$set': post.to_json()})
                 message = msg.FILE_SUCCESSFULLY_DELETED
 

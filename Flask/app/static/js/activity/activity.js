@@ -149,5 +149,5 @@ function PostList(form, json){
 function PostListPopupResults(obj, json){
     PopupClose();
     var sel = document.getElementById('posts');
-    MarketGet('Posts', EditPost, [obj, sel.value, json.name])
+    MarketGet('Posts', EditPost, [obj, sel.value, json])
 }

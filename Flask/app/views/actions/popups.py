@@ -37,6 +37,7 @@ def get_open_file():
                                                 project_name=project_name,
                                                 parent_id=result.parent_id,
                                                 ic_id=result.ic_id,
+                                                stored_id=result.stored_id,
                                                 name=name+type
                                                 ),
                     'data': []

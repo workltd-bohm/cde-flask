@@ -76,12 +76,12 @@ function uploadPostFile(file, fileType) {
         timeout: 5000,
         success: function(data){
             LoadStop();
-            //MakeSnackbar(data);
+            input_json = JSON.parse(data);
             if(fileType == 'image'){
-                images.push(file.name);
+                images.push({id: input_json['id'], name: file.name});
             }
             if(fileType == 'doc'){
-                documents.push(file.name);
+                documents.push({id: input_json['id'], name: file.name});
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -118,7 +118,7 @@ function previewEditImage(file) {
     btn.className = 'file-preview-button';
     btn.textContent = "x";
     btn.addEventListener("click", function(e) {
-        file.t = 'image'
+        file.t = 'image';
         removeFile(file);
     });
     div.appendChild(img);
@@ -136,9 +136,9 @@ function previewFile(file) {
     div.id = file.name;
     div.className = 'file-preview-div';
     var a = document.createElement('a');
-    a.href = "/get_post_image/" + file.name + "?post_id=default";
+    a.href = "/get_post_image/" + file.id + "?post_id=default";
     if('post_id' in file){
-        a.href = "/get_post_image/" + file.name + "?post_id=" + file.post_id;
+        a.href = "/get_post_image/" + file.id + "?post_id=" + file.post_id;
     }
     a.className = 'file-preview-name';
     var link = document.createTextNode(file.name);
@@ -159,9 +159,9 @@ function previewEditFile(file) {
     div.id = file.name;
     div.className = 'file-preview-div';
     var a = document.createElement('a');
-    a.href = "/get_post_image/" + file.name + "?post_id=default";
+    a.href = "/get_post_image/" + file.id + "?post_id=default";
     if('post_id' in file){
-        a.href = "/get_post_image/" + file.name + "?post_id=" + file.post_id;
+        a.href = "/get_post_image/" + file.id + "?post_id=" + file.post_id;
     }
     a.className = 'file-preview-name';
     var link = document.createTextNode(file.name);
@@ -183,9 +183,9 @@ function previewEditFile(file) {
 function removeFile(file){
   var url = 'remove_post_file';
   var formData = new FormData();
-  d = {file_name: file.name, type: file.type};
+  d = {file_id: file.id, file_name: file.name, type: file.t};
   if('post_id' in file){
-    d = {file_name: file.name, post_id: file.post_id, type: file.t};
+    d = {file_id: file.id, file_name: file.name, post_id: file.post_id, type: file.t};
   }
 
   formData.append('data', JSON.stringify(d));
@@ -202,7 +202,13 @@ function removeFile(file){
         success: function(data){
             LoadStop();
             //MakeSnackbar(data);
+            if(file.t == 'image'){
+                images.splice(images.findIndex(v => v.id === file.id), 1);
+            }else{
+                documents.splice(documents.findIndex(v => v.id === file.id), 1);
+            }
             document.getElementById(file.name).remove();
+
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
