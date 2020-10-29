@@ -82,6 +82,10 @@ def create_post(db_adapter, request_json):
     return db_adapter.create_post(request_json)
 
 
+def edit_post(db_adapter, request_json):
+    return db_adapter.edit_post(request_json)
+
+
 def get_all_posts(db_adapter):
     return db_adapter.get_all_posts()
 

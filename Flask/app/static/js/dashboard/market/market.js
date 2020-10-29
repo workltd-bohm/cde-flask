@@ -37,7 +37,11 @@ function MarketOpen(type, data, run=null, run_data=null){ // type depricated?
     //         break;
     // }
     if(run != null){
-        run(run_data[0], run_data[1]);
+        if(run.name == 'NewPost'){
+            run(run_data[0], run_data[1]);
+        }else{
+            run(run_data[0], run_data[1], run_data[2]);
+        }
     }else{
         CreateTicket(data.one, null, null, GetID);
         for (var obj of JSON.parse(data.many)){

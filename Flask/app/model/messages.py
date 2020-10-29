@@ -33,6 +33,8 @@ IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
 
 POST_ALREADY_EXISTS = {"message": "Post with the given ID already exists", "code": 409}
 POST_CREATED = {"message": "Post created successfully", "code": 200}
+POST_NOT_FOUND = {"message": "Post with the given ID not found", "code": 404}
+POST_EDITED = {"message": "Post edited successfully", "code": 200}
 
 BID_ALREADY_EXISTS = {"message": "Bid with the given ID already exists", "code": 409}
 BID_CREATED = {"message": "Bid created successfully", "code": 200}

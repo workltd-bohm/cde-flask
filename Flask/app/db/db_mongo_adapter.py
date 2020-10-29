@@ -384,6 +384,17 @@ class DBMongoAdapter:
         self._close_connection()
         return message, str(post_id)
 
+    def edit_post(self, request_json):
+        col = self._db.Marketplace.Posts
+        posts_query = {'post_id': request_json['post_id']}
+        message = msg.POST_NOT_FOUND
+        if col.find_one(posts_query, {'_id': 0}):
+            col.update_one(posts_query,
+                           {'$set': request_json})
+            message = msg.POST_EDITED
+        self._close_connection()
+        return message
+
     def get_all_posts(self):
         col = self._db.Marketplace.Posts
         result = col.find()

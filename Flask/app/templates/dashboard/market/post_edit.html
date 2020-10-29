@@ -1,4 +1,5 @@
 <form class="ticket-form">
+    <input type="hidden" name="post_id" value="{{ post_id }}">
     <input type="hidden" name="bids" value="{{ bids }}">
     <div class="edit-section upper">
         <div class="edit-section left">
@@ -81,10 +82,24 @@
                 </div>
             </div>
             <div id="docs" class="edit-view" style="display: none;">
-                <div id="file-preview"></div>
+                <div class="drop-area" id="drop-area-doc">
+                  <form class="my-form">
+                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+                    <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
+                    <label class="button" for="doc">Select file(s)</label>
+                  </form>
+                    <div id="file-preview"></div>
+                </div>
             </div>
             <div id="images" class="edit-view" style="display: none;">
-                <div id="gallery"></div>
+                <div class="drop-area" id="drop-area-image">
+                  <form class="my-form">
+                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+                    <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
+                    <label class="button" for="image">Select file(s)</label>
+                  </form>
+                    <div id="gallery"></div>
+                </div>
             </div>
         </div>
     </div>
