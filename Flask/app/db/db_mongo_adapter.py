@@ -212,7 +212,8 @@ class DBMongoAdapter:
                                                       file_name=file_obj.name+file_obj.type,
                                                       parent=file_obj.parent,
                                                       parent_id=file_obj.parent_id,
-                                                      description=file_obj.description
+                                                      description=file_obj.description,
+                                                      from_project=True
                                                       ))
                 # col.update_one({'file_id': 'default'},
                 #                {'$set': {'file_id': str(stored_id)}})
@@ -433,7 +434,8 @@ class DBMongoAdapter:
                                      file_id='default',
                                      post_id=request_json['user'],
                                      file_name=request_json['file_name'],
-                                     type=request_json['type']
+                                     type=request_json['type'],
+                                     from_project=False
                                      ))
         col.update_one({'file_id': 'default'},
                        {'$set': {'file_id': str(stored_id)}})
@@ -447,22 +449,25 @@ class DBMongoAdapter:
         col_file_chunks = self._db.fs.chunks
         file_query = {#'file_name': request_json['file_name'],
                       'file_id': request_json['file_id']}
-        col.delete_many(file_query)
-        col_file_chunks.delete_many(file_query)
-        message = msg.FILE_SUCCESSFULLY_DELETED
+        file_json = self._fs.find_one(file_query)
+        message = msg.STORED_FILE_NOT_FOUND
+        if file_json and not file_json.from_project:
+            col.delete_many(file_query)
+            col_file_chunks.delete_many(file_query)
+            message = msg.FILE_SUCCESSFULLY_DELETED
         if 'post_id' in request_json:
             col_post = self._db.Marketplace.Posts
             posts_query = {'post_id': request_json['post_id']}
             post_json = col_post.find_one(posts_query, {'_id': 0})
             if post_json:
-                print('****', post_json)
+                # print('****', post_json)
                 post = Post.json_to_obj(post_json)
                 if 'image' in request_json['type']:
                     post.documents['image'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
                 if 'doc' in request_json['type']:
                     post.documents['doc'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
                 col_post.update_one(posts_query, {'$set': post.to_json()})
-                message = msg.FILE_SUCCESSFULLY_DELETED
+                message = msg.FILE_SUCCESSFULLY_DELETED_FORM_POST
 
         self._close_connection()
         return message
