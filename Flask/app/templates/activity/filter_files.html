@@ -53,7 +53,7 @@
             <div class="comments-div">
                 <div class="activity-tab-div-comment">
                   {% for comment in comments %}
-                    <p><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
+                    <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
                     <div class="comments_field">
                         <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ comment['comment'] }}</p>
                         <p class="details_date" style="margin-left:20px; margin-right:10px;">{{ comment['date'] }}</p>

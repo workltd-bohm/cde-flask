@@ -179,7 +179,7 @@ def get_user_profile():
             }
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project" : False})
+            resp.data = json.dumps({"json": response, "project": False})
             return resp
 
         else:

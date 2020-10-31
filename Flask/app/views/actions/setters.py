@@ -314,7 +314,9 @@ def send_comment():
         request_data = json.loads(request.get_data())
         print(request_data)
         if db.connect(db_adapter):
-            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+            u = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
             comment = Comments(u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
             result = db.add_comment(db_adapter, request_data, comment)
             if result:
@@ -322,8 +324,9 @@ def send_comment():
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = render_template("activity/single_comment.html",
-                                                comment=comment.to_json()
-                                                )
+                                            comment=comment.to_json(),
+                                            picture=u['picture']
+                                            )
                 return resp
         else:
             print(str(msg.DB_FAILURE))

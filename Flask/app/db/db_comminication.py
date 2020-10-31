@@ -22,6 +22,10 @@ def edit_user(db_adapter, user):
     return db_adapter.edit_user(user)
 
 
+def upload_profile_image(db_adapter, request_json, file):
+    return db_adapter.upload_profile_image(request_json, file)
+
+
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
 

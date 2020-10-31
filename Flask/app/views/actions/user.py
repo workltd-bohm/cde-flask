@@ -1,4 +1,5 @@
 import json
+import io
 
 from app import *
 
@@ -11,13 +12,14 @@ def make_user_profile_activity():
         user_data = session.get('user')
         response = {
             'html': render_template("dashboard/user/user_profile_activity.html",
-                id=user_data["id"],
-                username=user_data["username"],
-                email=user_data["email"],
-                company_code=user_data["company_code"],
-                company_name=user_data["company_name"],
-                company_role=user_data["company_role"],
-            ),
+                                    id=user_data["id"],
+                                    picture=user_data["picture"],
+                                    username=user_data["username"],
+                                    email=user_data["email"],
+                                    company_code=user_data["company_code"],
+                                    company_name=user_data["company_name"],
+                                    company_role=user_data["company_role"],
+                                    ),
             'head': "User Profile",
             'data': []
         }
@@ -70,4 +72,44 @@ def update_user():
     print(str(msg.DB_FAILURE))
     resp.status_code = msg.DB_FAILURE['code']
     resp.data = str(msg.DB_FAILURE['message'])
+    return resp
+
+
+@app.route('/get_profile_image/<path:image_id>', methods=['POST', 'GET'])
+def get_profile_image(image_id):
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_json = {
+            # 'post_id': request.args.get('post_id'),
+            'file_id': image_id
+        }
+        # print('POST data: %s ' % request_json)
+        if db.connect(db_adapter):
+            result = db.get_post_file(db_adapter, request_json)
+            if result:
+                print(result.file_name)
+                resp = Response(result.file_name)
+                # response.headers.set('Content-Type', 'mime/jpeg')
+                resp.headers.set(
+                    'Content-Disposition', 'attachment', filename='%s' % result.file_name)
+                resp.status_code = msg.DEFAULT_OK['code']
+                return send_file(
+                    io.BytesIO(result.read()),
+                    attachment_filename=result.file_name)
+            else:
+                print("not_found")
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp

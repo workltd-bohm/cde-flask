@@ -346,6 +346,7 @@ def set_dir():
 
 # ----------------------------------------------------
 
+
 def path_to_obj(path, parent=False, parent_id=""):
     p = Path(path)
     name = p.stem

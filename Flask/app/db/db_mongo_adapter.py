@@ -78,6 +78,22 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def upload_profile_image(self, request_json, file):
+        col = self._db.fs.files
+        stored_id = str(self._fs.put(file,
+                                     file_id='default',
+                                     user=request_json['user'],
+                                     file_name=request_json['file_name'],
+                                     type=request_json['type'],
+                                     from_project=False
+                                     ))
+        col.update_one({'file_id': 'default'},
+                       {'$set': {'file_id': str(stored_id)}})
+        message = msg.IC_SUCCESSFULLY_ADDED
+
+        self._close_connection()
+        return message, str(stored_id)
+
     def confirm_account(self, user):
         col = self._db.Users
         message = msg.USER_NOT_FOUND
