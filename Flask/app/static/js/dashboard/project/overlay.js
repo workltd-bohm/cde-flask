@@ -109,7 +109,7 @@ function OverlayCreate(obj, data, parent, planet=false) {
         .attr("r", g_OverlayRadius*OVERLAY_SELECT_RATIO)
         .on("mouseleave",function(d){
             //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){ // TODO FIX
+            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
                 data.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;
@@ -185,13 +185,15 @@ function AddItem(obj, data, parent, position=0) {
         .attr("class", "item foregin")
 
 
-    var defaultColor = (data.values.data.color && data.values.data.values.sun) ? data.values.data.color : $(".foregin .material-icons").css("color");
+    var defaultColor = null; //$(".foregin .material-icons .planet").css("color");
+    if(data.values.data.color && data.values.data.values.sun) defaultColor = data.values.data.color;
 
-    data.values.picture.append("i")
+    var tmp = data.values.picture.append("i")
         .attr("class", "item material-icons"+((data.values.data.values.sun)?" sun" : " planet"))
-        .style("color", defaultColor)
         .style("font-size", g_OverlayItem+"px")
         .html(data.icon)
+
+    if(defaultColor) tmp.style("color", defaultColor)
 
     data.values.select = data.values.this.append("circle")
         .attr("class","item select")
@@ -203,7 +205,8 @@ function AddItem(obj, data, parent, position=0) {
         .on("mouseleave",function(d){
             data.values.back.text.selectAll("text").html("");
             //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
-            if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) > g_OverlayRadius){ // TODO FIX
+            //if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
+            if (data.name != "COLOR"){
                 parent.values.text.style("opacity", 100);
                 g_project.overlay.remove();
                 g_project.overlay = false;

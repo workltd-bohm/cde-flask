@@ -13,13 +13,13 @@ circle.pattern.star {
     stroke-width: 1;
 }
 circle.background.planet {
-    fill : url("#patern_planet_file");
+    /* fill : url("#patern_planet_file"); */
 }
 circle.background.planet.dir {
-    fill : url("#patern_planet_folder");
+    /* fill : url("#patern_planet_folder"); */
 }
 circle.background.planet.empty {
-    fill : url("#patern_planet_empty");
+    /* fill : url("#patern_planet_empty"); */
 }
 circle.pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
@@ -113,6 +113,14 @@ g.path.draw > g.text > text {
     text-align: center;
     vertical-align: middle;
 }
-.foregin .material-icons{
+.foregin .material-icons.sun{
     color: #bcbcbc;
+}
+.foregin .material-icons.planet{
+    color: #ffffff;
+    background-color: black;
+}
+.foregin .material-icons.planet.select{
+    color: #ffffff;
+    background-color: #00000000;
 }

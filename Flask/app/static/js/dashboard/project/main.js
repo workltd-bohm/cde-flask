@@ -213,9 +213,9 @@ function AddChildren(obj, data, parent, position=0){
         .style("opacity", 0)
 
     data.values.checked.append("xhtml:div")
-        .attr("class", "planet foregin")
+        .attr("class", "planet foregin select")
         .append("i")
-        .attr("class", "planet material-icons")
+        .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItem+"px")
         .html("check_circle")
 
