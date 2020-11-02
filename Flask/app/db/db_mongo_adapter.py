@@ -8,7 +8,7 @@ from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
 import app.model.messages as msg
-
+import json
 
 class DBMongoAdapter:
 
@@ -618,7 +618,78 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
-    def clear_db(self):
+    def add_tag(self, request_data, tags):
+        col = self._db.Projects
+        col_tags = self._db.Tags
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.add_tag(request_data, tags, project.root_ic)
+            if message == msg.COMMENT_SUCCESSFULLY_ADDED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tags = request_data['tags']
+                tag_json = {}
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i] in tags:
+                            if request_tags[i].startswith('#'):
+                                already_exists = False
+                                for ic in tags[request_tags[i]]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        already_exists = True
+                                        break
+                                if not already_exists:
+                                    tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
+                                                                  'project_name': request_data['project_name'],
+                                                                  'parent_id': request_data['parent_id']})
+
+                                col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                                # ta = col_tags.find()
+                                # ta = list(ta)
+                                # print('>>>>>+++', ta)
+                                break
+                        else:
+                            if request_tags[i].startswith('#'):
+                                tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
+                                                              'project_name': request_data['project_name'],
+                                                              'parent_id': request_data['parent_id']}]
+
+                                col_tags.update({'id': tags['id']}, {'$set': tag_json})
+                                # ta = col_tags.find({'id': tags['id']})
+                                # ta = list(ta)
+                                # print('>>>>>---', ta)
+                else:
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i].startswith('#'):
+                            tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
+                                                          'project_name': request_data['project_name'],
+                                                          'parent_id': request_data['parent_id']}]
+                    tag_json['id'] = 'tags_collection'
+                    col_tags.insert_one(tag_json)
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def get_all_tags(self):
+        col = self._db.Tags
+        result = col.find()
+        print(result)
+        tags = []
+        if result:
+            for tag in result:
+                tags.append(tag)
+        print(tags)
+        self._close_connection()
+        return tags
+
+    def clear_db(self, user):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
         self._db.Marketplace.Posts.drop()
@@ -626,6 +697,7 @@ class DBMongoAdapter:
         self._db.Roles.drop()
         self._db.Users.Roles.drop()
         self._db.Marketplace.Posts.Files.drop()
+        self._db.Tags.drop()
         self._db.fs.files.drop()
         self._db.fs.chunks.drop()
         # self._db.Users.drop()
@@ -633,6 +705,7 @@ class DBMongoAdapter:
         col_users = self._db.Users.Roles
         col = self._db.Users
         # TODO: check does user has the rights to share
+        col.update_one({'email': user['email']}, {'$set': {'picture': ''}})
         result = col.find()
         for user in result:
             user_query = {'user_id': user['id']}

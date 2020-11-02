@@ -142,5 +142,13 @@ def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
 
-def clear_db(db_adapter):
-    return db_adapter.clear_db()
+def add_tag(db_adapter, request_data, tags):
+    return db_adapter.add_tag(request_data, tags)
+
+
+def get_all_tags(db_adapter):
+    return db_adapter.get_all_tags()
+
+
+def clear_db(db_adapter, user):
+    return db_adapter.clear_db(user)

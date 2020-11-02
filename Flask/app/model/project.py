@@ -1,5 +1,6 @@
 from .details import Details
 from .comment import Comments
+from .tag import Tags
 from .directory import Directory
 from .site import Site
 from .building import Building
@@ -289,6 +290,40 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
+    def add_tag(self, request, tags, ic=None):
+        if request['parent_id'] == 'root':
+            for i in range(1, len(tags)):
+                if tags[i].startswith('#'):
+                    t = Tags(tags[i], '')
+                    if i < len(tags)-1:
+                        if not tags[i + 1].startswith('#'):
+                            t.color = tags[i+1]
+                            i = i+1
+                    ic.tags.append(t)
+            return msg.TAG_SUCCESSFULLY_ADDED
+        if ic.ic_id == request['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.ic_id == request['ic_id']:
+                    for i in range(1, len(tags)):
+                        if tags[i].startswith('#'):
+                            t = Tags(tags[i])
+                            if i < len(tags)-1:
+                                if not tags[i + 1].startswith('#'):
+                                    t.color = tags[i + 1]
+                                    i = i + 1
+                            sub_f.tags.append(t)
+                    self._message = msg.TAG_SUCCESSFULLY_ADDED
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.add_tag(request, tags, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
     def to_json(self):
         return {
             'project_id': self._project_id,
@@ -313,6 +348,7 @@ class Project:
                              json_file['parent_id'],
                              json_file['color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
+                             [Tags.json_to_obj(x) for x in json_file['tags']],
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
         else:
             root = File(json_file['ic_id'],
@@ -325,6 +361,7 @@ class Project:
                         json_file['parent_id'],
                         json_file['color'],
                         [Comments.json_to_obj(x) for x in json_file['comments']],
+                        [Tags.json_to_obj(x) for x in json_file['tags']],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         json_file['stored_id'],
                         json_file['description'])

@@ -172,6 +172,7 @@ def upload_file():
                         '',
                         [],
                         [],
+                        [],
                         '',
                         'description') # request_json['description'])
         # try:
@@ -221,14 +222,15 @@ def create_dir():
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
         folder = Directory(str(uuid.uuid1()),
-                    request_data['new_name'],
-                    request_data['parent_path'],
-                    [details],
-                    request_data['parent_path'] + '/' + request_data['new_name'],
-                    request_data['ic_id'],
-                    '',
-                    [],
-                    [])
+                           request_data['new_name'],
+                           request_data['parent_path'],
+                           [details],
+                           request_data['parent_path'] + '/' + request_data['new_name'],
+                           request_data['ic_id'],
+                           '',
+                           [],
+                           [],
+                           [])
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
             if result:
@@ -363,10 +365,11 @@ def path_to_obj(path, parent=False, parent_id=""):
                          parent_id,
                          '',
                          [],
+                         [],
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [],  '', '')
     return root
 
 

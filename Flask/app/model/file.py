@@ -4,8 +4,8 @@ from .information_container import IC
 class File(IC):
 
     def __init__(self, file_id, name, original_name, directory, file_history, path, type, parent_id, color,
-                 comments, sub_folders, stored_id="", description=''):
-        super().__init__(file_id, name, directory, file_history, path, parent_id, color, comments, sub_folders)
+                 comments, tags, sub_folders, stored_id="", description=''):
+        super().__init__(file_id, name, directory, file_history, path, parent_id, color, comments, tags, sub_folders)
         self._original_name = original_name
         self._type = type
         self._stored_id = stored_id
@@ -143,6 +143,7 @@ class File(IC):
             'color': self._color,
             'overlay_type': self._overlay_type,
             'comments': [x.to_json() for x in self._comments],
+            'tags': [x.to_json() for x in self._tags],
             'sub_folders': [x.to_json() for x in self._sub_folders],
             'stored_id': self._stored_id,
             'description': self._description,
@@ -170,6 +171,7 @@ class File(IC):
                     json_file['parent_id'],
                     json_file['color'],
                     [x.json_to_obj() for x in json_file['comments']],
+                    [x.json_to_obj() for x in json_file['tags']],
                     [x.json_to_obj() for x in json_file['sub_folders']],
                     json_file['stored_id'],
                     json_file['description'],

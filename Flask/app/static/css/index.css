@@ -277,3 +277,35 @@ body {
   font-weight: bold;
   color: navy;
 }
+
+.terminal{
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    border: 2px solid transparent;
+  -webkit-animation: pulse 3s;
+  -webkit-animation-iteration-count: infinite;
+  animation: pulse 3s;
+  animation-iteration-count: infinite;
+  background: gray;
+  outline: 0;
+}
+
+@-webkit-keyframes pulse {
+  from { border-color: transparent; }
+  50% { border-color: red; }
+  to { border-color: transparent; }
+}
+@keyframes pulse {
+  from { border-color: transparent; }
+  50% { border-color: red; }
+  to { border-color: transparent; }
+}
+
+.terminal-table{
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 15px;
+    white-space:pre-wrap;
+    word-wrap:break-word
+}

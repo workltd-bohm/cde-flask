@@ -19,6 +19,7 @@ def get_open_file():
             result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
                 details = [x.to_json() for x in result.history]
+                tags = [x.to_json() for x in result.tags]
                 file_name = result.name + result.type
                 path = result.path
                 share_link = 'http://bohm.cloud/get_shared_file/' + file_name
@@ -30,6 +31,7 @@ def get_open_file():
                                             ),
                     'activity': render_template("activity/filter_files.html",
                                                 details=details,
+                                                tags=tags,
                                                 file_name=file_name,
                                                 path=path,
                                                 share_link=share_link,
@@ -328,6 +330,60 @@ def get_share():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_help')
+def get_help():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        data = [
+            {'new_folder': 'opens new folder popup'},
+            {'create_file': 'opens create file popup'},
+            {'open': 'opens preview'},
+            {'rename': 'renames information container'},
+            {'tag #tag_name color': 'tag - adding a tag(s) to the information container \n'
+                                    'tag_name (mandatory) - set tag name \n'
+                                    'color (optional - default is white) - set the tag color\n'
+                                    'example - tag #some_tag black #some_other_tag green'}
+        ]
+        response = {
+            'html': render_template("popup/help.html",
+                                    data=data),
+            'data': []
+        }
+        print(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_help_suggest')
+def get_help_suggest():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        response = {
+            'data': ['new_folder',
+                     'create_file',
+                     'open',
+                     'rename',
+                     ]
+        }
+        print(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']

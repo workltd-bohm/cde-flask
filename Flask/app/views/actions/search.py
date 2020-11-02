@@ -2,6 +2,7 @@ from app import *
 
 import app.views.actions.getters as gtr
 
+
 def filter_out(request_json, files):
     filtered = []
     for file in files:
@@ -86,6 +87,7 @@ def get_filtered_files():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_filter_activity', methods=['POST'])
 def get_filter_activity():
     resp = Response()
@@ -106,17 +108,18 @@ def get_filter_activity():
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 details = [x.to_json() for x in result.history]
+                tags = [x.to_json() for x in result.tags]
                 file_name = result.name
                 path = result.path
                 share_link = ''
                 comments = [x.to_json() for x in result.comments]
 
-
                 response = {
                     'html': render_template("activity/filter_folders.html",
                                             project_name=session.get("project")["name"],
                                             search=filter_file,
-                                            details = details,
+                                            details=details,
+                                            tags=tags,
                                             comments = comments,
                                             file_name=file_name,
                                             path=path,

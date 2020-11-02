@@ -200,7 +200,7 @@ function RenameFile(form, json){
 //    console.log(json);
     LoadStart();
     var newOldName = json.name;
-    if(json.hasOwnProperty("type")){
+    if(json.hasOwnProperty("type") && json.type != null){
 //        console.log(data.name);
         newOldName = json.name + json.type
     }
@@ -231,7 +231,8 @@ function RenameFile(form, json){
                 document.getElementById('company_code').value = json.company_code;
 //                document.getElementById('name').value = json.original_name;
                 var file = {};
-                file.name = json.original_name + json.type;
+                file.name = json.name + json.type;
+//                console.log(json);
 
                 FileDataInit();
                 OnFileUpload(file);

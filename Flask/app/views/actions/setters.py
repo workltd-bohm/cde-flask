@@ -11,8 +11,9 @@ def clear_projects():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         if db.connect(db_adapter):
-            db.clear_db(db_adapter)
+            db.clear_db(db_adapter, session['user'])
             session.get("project")["name"] = ''
+            session.get("user")["picture"] = ''
             session.modified = True
         else:
             print(str(msg.DB_FAILURE))
@@ -60,6 +61,7 @@ def create_project():
                       request_data['project_name'],
                       'root',
                       '',
+                      [],
                       [],
                       [])
         project = Project("default", request_data['project_name'], root_obj)
@@ -140,6 +142,7 @@ def upload_existing_project():
                                            parent_id,
                                            '',
                                            [],
+                                           [],
                                            []
                                            )
 
@@ -162,7 +165,7 @@ def upload_existing_project():
                                           ('').join(['.', file_name.split('.')[-1]]))
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], [], '', '')
+                                           [], [], [], '', '')
 
                         project.added = False
                         encoded = file
@@ -199,6 +202,7 @@ def upload_existing_project():
                                                path,
                                                parent_id,
                                                '',
+                                               [],
                                                [],
                                                []
                                                )
@@ -327,6 +331,30 @@ def send_comment():
                                             comment=comment.to_json(),
                                             picture=u['picture']
                                             )
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+
+@app.route('/add_tag', methods=['POST'])
+def add_tag():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            result = db.add_tag(db_adapter, request_data, request_data['tags'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
                 return resp
         else:
             print(str(msg.DB_FAILURE))

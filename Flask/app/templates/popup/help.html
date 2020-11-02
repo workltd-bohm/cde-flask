@@ -1,0 +1,16 @@
+<h3>Help</h3>
+
+<table style="width:100%;">
+  <tr>
+    <th class="terminal-table">Reserved word</th>
+    <th class="terminal-table">Meaning</th>
+  </tr>
+    {% for d in data %}
+        {% for key, value in d.items() %}
+          <tr>
+            <td class="terminal-table">{{ key }}</td>
+            <td class="terminal-table">{{ value }}</td>
+          </tr>
+        {% endfor %}
+    {% endfor %}
+</table>

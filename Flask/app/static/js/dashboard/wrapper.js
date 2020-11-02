@@ -62,7 +62,25 @@ function CheckSession(){
 }
 
 function SendProject(data){
-    SESSION["position"] = {parent_id: data.parent_id, ic_id: data.ic_id};
+    console.log('hererere');
+    console.log(data);
+    SESSION["position"] = { project_name: data.path.split('/')[0],
+                            parent_id: data.parent_id,
+                            ic_id: data.ic_id,
+                            path: data.path,
+                            is_directory: data.is_directory,
+                            name: data.name,
+                            type: data.type ? data.type : null,
+                            parent: data.parent,
+                            project_code: data.project_code,
+                            company_code: data.company_code,
+                            project_volume_or_system: data.project_volume_or_system,
+                            project_level: data.project_level,
+                            type_of_information: data.type_of_information,
+                            role_code: data.role_code,
+                            file_number: data.file_number,
+                            status: data.status,
+                            revision: data.revision};
     SEARCH_HISTORY = data;
     $.ajax({
         url: "/set_project",

@@ -1,12 +1,13 @@
 class IC:
 
-    def __init__(self, ic_id, name, parent, history, path, parent_id, color, comments, sub_folders):
+    def __init__(self, ic_id, name, parent, history, path, parent_id, color, comments, tags, sub_folders):
         self._ic_id = ic_id
         self._name = name
         self._parent = parent
         self._history = history
         self._path = path
         self._comments = comments
+        self._tags = tags
         self._sub_folders = sub_folders
         self._is_directory = True
         self._parent_id = parent_id
@@ -70,6 +71,14 @@ class IC:
         self._comments = value
 
     @property
+    def tags(self):
+        return self._tags
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = value
+
+    @property
     def sub_folders(self):
         return self._sub_folders
 
@@ -105,6 +114,7 @@ class IC:
             'color': self._color,
             'overlay_type': self._overlay_type,
             'comments': [x.to_json() for x in self._comments],
+            'tags': [x.to_json() for x in self._tags],
             'sub_folders': [x.to_json() for x in self._sub_folders]
         }
 
@@ -118,4 +128,5 @@ class IC:
                   json_file['parent_id'],
                   json_file['color'],
                   [x.json_to_obj() for x in json_file['comments']],
+                  [x.json_to_obj() for x in json_file['tags']],
                   [x.json_to_obj() for x in json_file['sub_folders']])

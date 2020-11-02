@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/activity/user.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/popup/generic.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/popup/file_manipulation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popup/share.css') }}">
 
     <script src="{{ url_for('static', filename='js/common/jquery-3.5.1.min.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/common/d3.v3.min.js') }}" charset="utf-8"></script>
@@ -20,10 +21,9 @@
 
     <script src="{{ url_for('static', filename='js/index.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/activity/activity.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/terminal.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/popup/share.js') }}" charset="utf-8"></script>
 </head>
-    <!-- <script type="text/javascript">
-       var user = '{ { user|tojson } }'
-    </script> -->
 
     <body>
       <table id="index">
@@ -36,28 +36,7 @@
       {{ popup|safe }}
       {{ preview|safe }}
 
-<!--    <div class="mainopShadow"></div>-->
-
-<!--    <div class="fab">-->
-<!--      <div class="mainop">-->
-<!--        <i id="addIcon" class="material-icons">add</i>-->
-<!--      </div>-->
-<!--      <div id="forms" class="minifab op5">-->
-<!--        <i class="material-icons minifabIcon">touch_app</i>-->
-<!--      </div>-->
-<!--      <div id="drawings" class="minifab op4">-->
-<!--        <i class="material-icons minifabIcon">arrow_circle_down</i>-->
-<!--      </div>-->
-<!--      <div id="slides" class="minifab op3">-->
-<!--        <i class="material-icons minifabIcon">arrow_circle_up</i>-->
-<!--      </div>-->
-<!--      <div id="sheets" class="minifab op2">-->
-<!--        <i class="material-icons minifabIcon">create_new_folder</i>-->
-<!--      </div>-->
-<!--      <div id="docs" class="minifab op1">-->
-<!--        <i class="material-icons minifabIcon">add_circle_outline</i>-->
-<!--      </div>-->
-<!--    </div>-->
+      <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" placeholder="waiting">
 
       <div id="snackbar"></div>
     </body>
