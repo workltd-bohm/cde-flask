@@ -18,9 +18,21 @@
           <form id="filter-form-details">
             <h6 class="tab-title">Tags</h6>
             <div class="activity-tab-container">
+                <br>
                 {% for tag in tags %}
-                    <p><i style="margin-left:5px; color: {{ tag['color'] }}">{{ tag['tag'] }}</i></p>
+                <div class="tag-container">
+                    <div class="tag" style="background-color: {{ tag['color'] }}">
+                        <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                            {{ tag['tag'] }}
+                        </i>
+
+                    </div>
+                    <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}' )">x</span>
+                </div>
                 {% endfor %}
+                <br>
+                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                <br>
             </div>
 
             <h6 class="tab-title">IC details</h6>
