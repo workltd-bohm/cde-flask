@@ -132,3 +132,18 @@
     width: 80%;
     margin-top: 10px;
 }
+
+.tag{
+    display: inline;
+    border: none;
+    border-radius: 25%;
+    margin-left:5px;
+}
+
+.tag i{
+    margin: 5px;
+}
+
+.add-tag{
+    margin: 15px;
+}

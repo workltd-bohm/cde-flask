@@ -36,7 +36,11 @@
       {{ popup|safe }}
       {{ preview|safe }}
 
-      <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" placeholder="waiting">
+      <input type="text" class="terminal-sign" value=">" readonly>
+      <div class="terminal-div">
+        <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" placeholder="">
+        <i>_</i>
+      </div>
 
       <div id="snackbar"></div>
     </body>

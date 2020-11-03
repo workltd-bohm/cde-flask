@@ -129,3 +129,17 @@ function addTag(terminal){
         }
     });
 }
+
+function addTagListen(el){
+    var key = window.event.keyCode;
+    if(key != 13)
+        return true;
+    if (key === 13 && el.shiftKey){
+        return true;
+    }
+    terminal = $('#add-tag').val().split(' ');
+
+    $('#add-tag').val('');
+    terminal.unshift("Tag");
+    addTag(terminal);
+}
