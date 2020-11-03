@@ -364,3 +364,27 @@ def add_tag():
             return resp
 
     return redirect('/')
+
+
+@app.route('/remove_tag', methods=['POST'])
+def remove_tag():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            result = db.remove_tag(db_adapter, request_data, request_data['tag'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')

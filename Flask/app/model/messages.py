@@ -10,6 +10,7 @@ DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 
 COMMENT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 TAG_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+TAG_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}

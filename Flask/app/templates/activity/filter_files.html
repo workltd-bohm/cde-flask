@@ -20,11 +20,15 @@
             <div class="activity-tab-container">
                 <br>
                 {% for tag in tags %}
+                <div class="tag-container">
                     <div class="tag" style="background-color: {{ tag['color'] }}">
                         <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
                             {{ tag['tag'] }}
                         </i>
+
                     </div>
+                    <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}' )">x</span>
+                </div>
                 {% endfor %}
                 <br>
                 <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">

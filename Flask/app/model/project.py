@@ -324,6 +324,32 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
+    def remove_tag(self, request, tag, ic=None):
+        if request['parent_id'] == 'root':
+            for t in ic.tags:
+                if t.tsg == tag:
+                    ic.tags.remove(t)
+                    break
+            return msg.TAG_SUCCESSFULLY_REMOVED
+        if ic.ic_id == request['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.ic_id == request['ic_id']:
+                    for t in sub_f.tags:
+                        if t.tag == tag:
+                            sub_f.tags.remove(t)
+                            break
+                    self._message = msg.TAG_SUCCESSFULLY_REMOVED
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.remove_tag(request, tag, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
     def to_json(self):
         return {
             'project_id': self._project_id,

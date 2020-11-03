@@ -143,3 +143,29 @@ function addTagListen(el){
     terminal.unshift("Tag");
     addTag(terminal);
 }
+
+function removeTag(tagName){
+    LoadStart();
+    $.ajax({
+        url: "/remove_tag",
+        type: 'POST',
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            tag: tagName
+        }),
+        timeout: 5000,
+        success: function(data){
+            MakeSnackbar(data);
+            LoadStop();
+            location.reload();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+        }
+    });
+}

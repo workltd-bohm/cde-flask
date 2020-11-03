@@ -626,7 +626,7 @@ class DBMongoAdapter:
         if project_json:
             project = Project.json_to_obj(project_json)
             message = project.add_tag(request_data, tags, project.root_ic)
-            if message == msg.COMMENT_SUCCESSFULLY_ADDED:
+            if message == msg.TAG_SUCCESSFULLY_ADDED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
                 tags = col_tags.find()
                 results = list(tags)
@@ -671,6 +671,34 @@ class DBMongoAdapter:
                                                           'parent_id': request_data['parent_id']}]
                     tag_json['id'] = 'tags_collection'
                     col_tags.insert_one(tag_json)
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def remove_tag(self, request_data, tag):
+        col = self._db.Projects
+        col_tags = self._db.Tags
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.remove_tag(request_data, tag, project.root_ic)
+            if message == msg.TAG_SUCCESSFULLY_REMOVED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tag = request_data['tag']
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    if request_tag in tags:
+                        tags[request_tag].remove({'ic_id': request_data['ic_id'],
+                                                  'project_name': request_data['project_name'],
+                                                  'parent_id': request_data['parent_id']})
+
+                        col_tags.update_one({'id': tags['id']}, {'$set': tags})
 
         else:
             message = msg.PROJECT_NOT_FOUND
