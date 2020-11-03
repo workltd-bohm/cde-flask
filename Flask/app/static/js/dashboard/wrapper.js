@@ -23,11 +23,12 @@ $( document ).ready(function(){
 
 $(document).on('keypress',function(e) {
     if(e.which == 13) {
-        target = $("input[type=submit]");
+        target = $("input[type=button]");
         if(target.length > 0) {
             console.log("onclick activate");
-            $("input[type=submit]").trigger( "click" );
+            $("input[type=button]").trigger( "click" );
         }
+        return false;
     }
 });
 

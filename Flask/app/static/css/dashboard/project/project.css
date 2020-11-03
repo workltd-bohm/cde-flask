@@ -95,6 +95,14 @@ text.text_front {
     fill: rgb(250, 250, 250);
     text-anchor: middle;
 }
+text.text_allgroup {
+    fill: rgb(250, 250, 250);
+    font-size: 20px;
+    cursor: pointer;
+}
+rect.text_allgroup {
+    fill: rgb(250, 250, 250);
+}
 
 g.star.object > g.text > text {
     font-size: 20px;
@@ -123,4 +131,8 @@ g.path.draw > g.text > text {
 .foregin .material-icons.planet.select{
     color: #ffffff;
     background-color: #00000000;
+}
+
+.foregin .material-icons.history{
+    color: #bcbcbc;
 }

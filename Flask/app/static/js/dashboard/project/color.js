@@ -43,7 +43,7 @@ function ColorPicker(data) {
         .on("click", function() {
             var fill = d3.select(this).attr("fill");
             data.values.data.color = fill;
-            $(".foregin .material-icons").css("color", fill);
+            // $(".foregin .material-icons").css("color", fill); change color before reload?
             SetColor(data.values.data);
             wheel.remove();
         });
@@ -57,6 +57,7 @@ function SetColor(data, fill){
     var o = Object.values(CHECKED);
     var multi = [];
     for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, color: data.color});
+    LoadStart();
     $.ajax({
         url: (o.length > 0)? "/set_color_multi" : "/set_color",
         type: 'POST',
@@ -65,8 +66,9 @@ function SetColor(data, fill){
         success: function(data){
             MakeSnackbar(data);
             if(o.length > 0){
-                location.reload();
+                CreateProject();
             }
+            LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );

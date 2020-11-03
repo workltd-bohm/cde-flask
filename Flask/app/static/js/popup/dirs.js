@@ -301,7 +301,7 @@ function DeleteFile(form, json){
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                location.reload();
+                CreateProject();
             }
 
 

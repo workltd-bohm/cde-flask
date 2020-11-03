@@ -203,7 +203,7 @@ function sendFile(files, folders, current) {
                 console.log(data);
                 if(data == "Project successfully uploaded"){
 //                    counter = 1;
-                    location.reload();
+                    CreateProject();
                     MakeSnackbar(data);
                 }
             }

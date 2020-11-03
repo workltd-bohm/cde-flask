@@ -77,7 +77,7 @@ function SelectionCreate(obj, data, parent) {
         .attr("class","selection select")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_OverlayRadius*1.2)
+        .attr("r", g_OverlayRadius*CHECKED_SELECT_RATIO)
 
     AddSelectText(data, false, [data.selection.select_text, " selected"]);
 
@@ -90,6 +90,51 @@ function SelectionCreate(obj, data, parent) {
         .append("g")
         .attr("class","item")
         .each(function(d, i){AddSelection(d3.select(this), d, data, i);});
+
+    data.selection.allgroup = data.selection.object.append("g")
+        .attr("class","selection allgroup")
+        .attr("transform","translate(0, "+(-g_OverlayRadius*CHECKED_ALLGROUP_OFFSET)+")");
+
+    data.selection.allgroup.append("rect")
+        .attr("class", "selection text_allgroup")
+        .attr("x",0)
+        .attr("y",-25)
+        .attr("width",2)
+        .attr("height",40)
+
+    data.selection.allgroup.append("text")
+        .attr("class", "selection text_back")
+        .attr("x",-10)
+        .attr("y",0)
+        .style("text-anchor", "end")
+        .html("Select All")
+
+    data.selection.allgroup.append("text")
+        .attr("class", "selection text_allgroup")
+        .attr("x",-10)
+        .attr("y",0)
+        .style("text-anchor", "end")
+        .html("Select All")
+        .on("mouseup",function(d){
+            SelectAllPlanets(data);
+        });
+
+    data.selection.allgroup.append("text")
+        .attr("class", "selection text_back")
+        .attr("x",10)
+        .attr("y",0)
+        .style("text-anchor", "start")
+        .html("Clear All")
+
+    data.selection.allgroup.append("text")
+        .attr("class", "selection text_allgroup")
+        .attr("x",10)
+        .attr("y",0)
+        .style("text-anchor", "start")
+        .html("Clear All")
+        .on("mouseup",function(d){
+            DeselectAllPlanets(data);
+        });
 
 }
 

@@ -35,11 +35,18 @@ const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
 const PATH_TEXT_PADDING = 3;
 
+const HISTORY_SUN_RATIO = 4;
+const HISTORY_ORBIT_COEF = 1.1;
+const HISTORY_TEXT_PADDING = 3;
+
 const OVERLAY_SUN_RATIO = 5;
 const OVERLAY_MARG = 2;
 const OVERLAY_SELECT_RATIO = 1.1;
 const OVARLAY_DESELECT_RATIO = 0.7;
 const OVERLAY_SELECT_PLANET_RATIO = 1;
+
+const CHECKED_SELECT_RATIO = 1.2;
+const CHECKED_ALLGROUP_OFFSET = 2.5;
 
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
@@ -74,9 +81,11 @@ var g_project = {
         clck_start : 0,
         clck_stop : 0,
         hist_path : null,
+        paths_path : null,
         overlay : null,
         selection : null,
         history : null,
+        paths : null,
         warp : 0,
         start : Date.now()
     };
@@ -87,6 +96,7 @@ var g_SunRadius = 0;
 var g_PlanetRadius = 0;
 var g_PlanetRadius_old = 0;
 var g_PathRadius = 0;
+var g_HistRadius = 0;
 var g_OverlayRadius = 0;
 var g_OverlayItem = 0;
 
@@ -130,6 +140,7 @@ var g_root = {
 function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
+    if(g_project.paths_path) g_project.paths_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     if(g_project.selection) g_project.selection.remove();
     g_project = {...g_project_per};

@@ -22,7 +22,7 @@ function CreateSpace(data) {
         .data([data])
         .enter()
         .append("g")
-        .attr("class","star")
+        .attr("class","star dom")
         .style("opacity", 0) // must - old not deleted yet
         .transition() // must - old not deleted yet
         .delay(100) // must - old not deleted yet
@@ -96,7 +96,7 @@ function AddSun(obj, data){
             .data(data.sub_folders)
             .enter()
             .append("g")
-            .attr("class","planet")
+            .attr("class","planet dom")
             .each(function(d, i){AddChildren(d3.select(this), d, data, i);});
     }
 
@@ -333,7 +333,7 @@ function SunFadeout(data){
 function GetWarp(data){
     if(!g_project.warp) {
         //console.log(g_root.universe.data)
-        //console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_project.skip, g_project.search,g_project.paths)
         if(!g_project.search)
             switch(g_root.universe.data.overlay_type){
                 case "search": 
@@ -341,11 +341,11 @@ function GetWarp(data){
                 default: break;
             }
         else{
-            //console.log(g_project.skip, g_project.search,g_project.history)
+            //console.log(g_project.skip, g_project.search,g_project.paths)
             // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
             //     console.log(1)
-            //     g_project.history = g_project.skip.hist_path.this;
-            //     g_project.skip.hist_path.child.selectAll("g").remove();
+            //     g_project.paths = g_project.skip.paths_path.this;
+            //     g_project.skip.paths_path.child.selectAll("g").remove();
             // }
             
             // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
@@ -362,7 +362,7 @@ function GetWarp(data){
         if (g_project.skip) g_project.skip.values.parent.remove()
         if (data) g_project.skip = data;
         
-        //console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_project.skip, g_project.search,g_project.paths)
         switch(g_root.universe.data.overlay_type){
             case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
@@ -404,6 +404,12 @@ function AnimateUniverse() {
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
     }
+
+    if(g_project.hist_path)
+        g_project.hist_path.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","translate("+(g_project.width)+","+(g_PathRadius*HISTORY_ORBIT_COEF)+")")
 }
 
 function AnimateStar(data) {
@@ -515,6 +521,8 @@ function DashboardCreate(data, project_position=null) {
     //g_project.project_position = project_position;
 
     PathCreation(data);
+
+    HistoryCreation(data);
 
     ProjectPosiotionSet(g_root.universe.data);
 
