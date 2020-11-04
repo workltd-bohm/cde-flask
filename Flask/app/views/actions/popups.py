@@ -342,7 +342,8 @@ def get_help():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         data = [
-            {'new_folder': 'opens new folder popup'},
+            {'new_folder name': 'opens new folder popup\n'
+                                'name (optional) - set the folder name without opening the popup'},
             {'create_file': 'opens create file popup'},
             {'open': 'opens preview'},
             {'rename': 'renames information container'},
