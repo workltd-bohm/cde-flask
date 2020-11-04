@@ -17,7 +17,7 @@
         <div class="scroll">
           <form id="filter-form-details">
             <h6 class="tab-title">Tags</h6>
-            <div class="activity-tab-container">
+            <div class="activity-tab-container" id="activity-tag-container">
                 <br>
                 {% for tag in tags %}
                 <div class="tag-container">
@@ -25,7 +25,6 @@
                         <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
                             {{ tag['tag'] }}
                         </i>
-
                     </div>
                     <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}' )">x</span>
                 </div>
