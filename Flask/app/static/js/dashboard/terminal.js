@@ -35,7 +35,18 @@ function terminalListen(el){
     console.log(SESSION);
 
     if(terminal[0] == 'new_folder'){
-        PopupOpen(NewFolder, SESSION['position']);
+        if(terminal.length > 1){
+            args = {parent_id: SESSION['position'].parent_id,
+                    ic_id: SESSION['position'].ic_id,
+                    project_name: SESSION['position'].project_name,
+                    parent_path: SESSION['position'].path,
+                    new_name: terminal[1]
+                    }
+            FormSubmit('create_dir', args, true, CreateProject);
+        }else{
+            PopupOpen(NewFolder, SESSION['position']);
+        }
+
     }
     if(terminal[0] == 'create_file'){
         OpenFileDialog(SESSION['position'])
@@ -60,6 +71,13 @@ function terminalListen(el){
     }
 
 
+}
+
+function RemoveLastDirectoryPartOf(the_url)
+{
+    var the_arr = the_url.split('/');
+    the_arr.pop();
+    return( the_arr.join('/') );
 }
 
 function Help(form){
@@ -119,8 +137,10 @@ function addTag(terminal){
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);
+            LoadTag(terminal);
             LoadStop();
-            location.reload();
+
+//            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -168,4 +188,52 @@ function removeTag(tagName){
             LoadStop();
         }
     });
+}
+
+function LoadTag(terminal){
+    activityTagContainer = document.getElementById('activity-tag-container');
+    for(i=1; i<terminal.length; i++){
+        if(terminal[i].startsWith('#')){
+            var tag = terminal[i];
+            var color = 'white';
+            if(i < terminal.length-1){
+                if(!terminal[i+1].startsWith('#')){
+                    color = terminal[i+1];
+                    i++;
+                }
+            }
+
+            tagContainer = document.createElement("div");
+            tagContainer.className = "tag-container";
+
+            tagDiv = document.createElement("div");
+            tagDiv.className = "tag";
+            tagDiv.style.cssText = "background-color: " + color + ";";
+
+            tagI = document.createElement("i");
+            var iColor = 'white;';
+            if(color == 'white'){
+               iColor = 'black;';
+            }
+            tagI.style.cssText = "color: " + iColor + ";";
+            tagI.innerHTML = tag;
+
+            tagSpan = document.createElement("span");
+            tagSpan.className = "remove-tag";
+            tagSpan.onclick = function(){
+                removeTag(tag);
+                tagContainer.parentNode.removeChild(tagContainer);
+            };
+            tagSpan.innerHTML = 'x';
+//            tagSpan.style.cssText = "display: none;";
+
+            tagDiv.append(tagI);
+            tagContainer.append(tagDiv);
+            tagContainer.append(tagSpan);
+
+            activityTagContainer.prepend(tagContainer);
+        }
+    }
+
+
 }

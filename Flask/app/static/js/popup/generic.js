@@ -78,7 +78,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
 
-            SESSION["position"] = {parent_id: d["parent_id"], ic_id: d["ic_id"]};
+            SESSION["position"] = {parent_id: args["parent_id"], ic_id: args["ic_id"]};
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

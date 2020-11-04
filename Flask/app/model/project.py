@@ -294,7 +294,7 @@ class Project:
         if request['parent_id'] == 'root':
             for i in range(1, len(tags)):
                 if tags[i].startswith('#'):
-                    t = Tags(tags[i], '')
+                    t = Tags(tags[i])
                     if i < len(tags)-1:
                         if not tags[i + 1].startswith('#'):
                             t.color = tags[i+1]
