@@ -378,6 +378,7 @@ def get_help_suggest():
                      'create_file',
                      'open',
                      'rename',
+                     'tag'
                      ]
         }
         print(response)

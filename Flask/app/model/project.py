@@ -299,7 +299,12 @@ class Project:
                         if not tags[i + 1].startswith('#'):
                             t.color = tags[i+1]
                             i = i+1
-                    ic.tags.append(t)
+                    already_in = False
+                    for ic_tags in ic.tags:
+                        if ic_tags.tag == t.tag and ic_tags.color == t.color:
+                            already_in = True
+                    if not already_in:
+                        ic.tags.append(t)
             return msg.TAG_SUCCESSFULLY_ADDED
         if ic.ic_id == request['parent_id']:
             for sub_f in ic.sub_folders:
@@ -311,7 +316,12 @@ class Project:
                                 if not tags[i + 1].startswith('#'):
                                     t.color = tags[i + 1]
                                     i = i + 1
-                            sub_f.tags.append(t)
+                            already_in = False
+                            for ic_tags in sub_f.tags:
+                                if ic_tags.tag == t.tag and ic_tags.color == t.color:
+                                    already_in = True
+                            if not already_in:
+                                sub_f.tags.append(t)
                     self._message = msg.TAG_SUCCESSFULLY_ADDED
                     self._added = True
                     break

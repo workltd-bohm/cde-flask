@@ -708,12 +708,12 @@ class DBMongoAdapter:
     def get_all_tags(self):
         col = self._db.Tags
         result = col.find()
-        print(result)
         tags = []
         if result:
             for tag in result:
-                tags.append(tag)
-        print(tags)
+                tag.pop('_id', None)
+                for key in tag:
+                    tags.append(key)
         self._close_connection()
         return tags
 
