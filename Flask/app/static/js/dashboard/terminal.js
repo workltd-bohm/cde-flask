@@ -160,7 +160,9 @@ function addTagListen(el){
     terminal = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
-    terminal.unshift("Tag");
+    if(terminal[0] != "Tag"){
+        terminal.unshift("Tag");
+    }
     addTag(terminal);
 }
 
@@ -180,7 +182,9 @@ function removeTag(tagName){
         success: function(data){
             MakeSnackbar(data);
             LoadStop();
-            location.reload();
+            t = document.getElementById(tagName);
+            t.parentNode.removeChild(t);
+//            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );
@@ -203,8 +207,11 @@ function LoadTag(terminal){
                 }
             }
 
+            activityTagContainer.style.cssText = "display: inline;";
+
             tagContainer = document.createElement("div");
             tagContainer.className = "tag-container";
+            tagContainer.id = tag;
 
             tagDiv = document.createElement("div");
             tagDiv.className = "tag";
@@ -222,16 +229,15 @@ function LoadTag(terminal){
             tagSpan.className = "remove-tag";
             tagSpan.onclick = function(){
                 removeTag(tag);
-                tagContainer.parentNode.removeChild(tagContainer);
             };
             tagSpan.innerHTML = 'x';
 //            tagSpan.style.cssText = "display: none;";
 
-            tagDiv.append(tagI);
-            tagContainer.append(tagDiv);
-            tagContainer.append(tagSpan);
+            tagDiv.appendChild(tagI);
+            tagContainer.appendChild(tagDiv);
+            tagContainer.appendChild(tagSpan);
 
-            activityTagContainer.prepend(tagContainer);
+            activityTagContainer.appendChild(tagContainer);
         }
     }
 

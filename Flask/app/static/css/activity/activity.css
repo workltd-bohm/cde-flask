@@ -170,3 +170,7 @@
     display: inline;
     cursor: pointer;
 }
+
+.activity-tab-container-inside{
+    display: inline;
+}
