@@ -7,6 +7,8 @@ var SESSION = {};
 
 var CHECKED = {};
 
+var MULTI = [];
+
 const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 

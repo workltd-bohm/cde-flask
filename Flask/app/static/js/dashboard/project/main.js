@@ -196,12 +196,14 @@ function AddChildren(obj, data, parent, position=0){
             }, data);
         })
         .on("mouseup",function(d){
-            var func = function(){};
-            switch(g_root.universe.data.overlay_type){
-                case "user" : func = GetWarp; break;
-                default : func = SunFadeout; break;
+            if (!g_project.selection){
+                var func = function(){};
+                switch(g_root.universe.data.overlay_type){
+                    case "user" : func = GetWarp; break;
+                    default : func = SunFadeout; break;
+                }
+                ClickStop(func, data, true);
             }
-            ClickStop(func, data, true);
         });
 
     data.values.checked = data.values.this.append("foreignObject")

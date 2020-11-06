@@ -281,11 +281,19 @@ function DeleteFile(form, json){
         delete_name: o[i].name,
         is_directory: o[i].is_directory,
     });
+    if (o.length > 0) MULTI = {
+        parent_id: json.parent_id,
+        ic_id: json.ic_id,
+        multi : multi,
+    };
+    
     LoadStart();
     $.ajax({
-        url: (o.length > 0)? "get_delete_ic_multi" : "/get_delete_ic",
+        url: "/get_delete_ic",
         type: 'POST',
-        data: JSON.stringify((o.length > 0)? multi : {
+        data: JSON.stringify((o.length > 0)? {
+            is_multi: true,
+        } : {
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,
