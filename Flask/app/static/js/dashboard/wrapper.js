@@ -63,7 +63,6 @@ function CheckSession(){
 }
 
 function SendProject(data){
-    console.log('hererere');
     console.log(data);
     SESSION["position"] = { project_name: data.path.split('/')[0],
                             parent_id: data.parent_id,

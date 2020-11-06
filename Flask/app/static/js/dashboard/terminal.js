@@ -1,7 +1,20 @@
 var alreadyIn = false;
 var suggest = false;
 var currentArr = [];
+var tagsArr = [];
+var keyWordsArr = [];
 var currentActiveArr = '';
+var currField = '';
+
+function onFocus(){
+    terInput = $('#terminal-input').val();
+    if(terInput.split(' ').length > 1){
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
+    }
+    else{
+        if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
+    }
+}
 
 key = $(window).keydown(function(e){
 //    console.log(e.keyCode);
@@ -10,50 +23,11 @@ key = $(window).keydown(function(e){
         e.preventDefault();
         $('#terminal-input').focus();
         if(terInput.split(' ').length > 1){
-            if(currentActiveArr == 'suggests') getTags(false);
-            if(currentActiveArr == '') getTags();
-            alreadyIn = true;
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
         }
         else{
-            if(currentActiveArr == 'tags') get_help_suggest(false);
-            if(currentActiveArr == '') get_help_suggest();
-            suggest = true;
+            if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
         }
-    }
-    else{
-
-        if(terInput == '' || terInput.split(' ').length == 1) {
-            suggest=false;
-            alreadyIn = false;
-        }
-        if(!suggest){
-            get_help_suggest();
-            suggest = true;
-        }
-
-        key = e.key;
-        if((((e.shiftKey || e.metaKey) && e.keyCode === 51) || ((terInput + key) == 'tag ')) && !alreadyIn){
-//            console.log(e);
-//            console.log(e.keyCode);
-//            console.log($('#terminal-input').val() + e.key);
-            alreadyIn = true;
-            suggest = false;
-
-            if(currentActiveArr == 'suggests') getTags(false);
-            if(currentActiveArr == '') getTags();
-        }
-        if(e.keyCode === 8 && terInput.split(' ').length == 1){
-            if(currentActiveArr == 'tags') get_help_suggest(false);
-            if(currentActiveArr == '') get_help_suggest();
-            suggest = true;
-            alreadyIn = false;
-        }
-        if(terInput.split(' ')[0].toLowerCase() == 'tag'){
-            if(currentActiveArr == 'suggests') getTags(false);
-            if(currentActiveArr == '') getTags();
-            alreadyIn = true;
-        }
-
     }
 });
 
@@ -135,38 +109,63 @@ function Help(form){
         });
 }
 
-function getTags(autocom=true){
-    $.get( "/get_all_tags")
-        .done(function( data ) {
-            input_json = JSON.parse(data);
-//            console.log(input_json['data']);
-            currentArr = input_json['data'];
-            currentActiveArr = 'tags';
-            if(autocom){
-                terminalAutocomplete(document.getElementById("terminal-input"), input_json['data']);
-            }
-        })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
-        });
+function getTags(field){
+    if(tagsArr.length > 0){
+        currentArr = tagsArr;
+        currentActiveArr = 'tags';
+        if(currField != field){
+            terminalAutocomplete(field, input_json['data']);
+            currField = field;
+        }
+    }else{
+        $.get( "/get_all_tags")
+            .done(function( data ) {
+                input_json = JSON.parse(data);
+    //            console.log(input_json['data']);
+                currentArr = input_json['data'];
+                tagsArr = input_json['data'];
+                currentActiveArr = 'tags';
+//                if(field == ''){
+//                    field = document.getElementById("terminal-input");
+//                    addTagActive = false;
+//                }
+//                else{
+//                    addTagActive = true;
+//                }
+                terminalAutocomplete(field, input_json['data']);
+                currField = field;
+
+
+            })
+            .fail(function($jqXHR, textStatus, errorThrown){
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                MakeSnackbar(textStatus);
+            });
+   }
 }
 
-function get_help_suggest(autocom=true){
-    $.get( "/get_help_suggest")
-        .done(function( data ) {
-            input_json = JSON.parse(data);
-//            console.log(input_json['data']);
-            currentArr = input_json['data'];
-            currentActiveArr = 'suggests';
-            if(autocom){
-                terminalAutocomplete(document.getElementById("terminal-input"), input_json['data']);
-            }
-        })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
-            MakeSnackbar(textStatus);
-        });
+function get_help_suggest(field=''){
+    if(keyWordsArr.length > 0){
+        currentArr = keyWordsArr;
+        currentActiveArr = 'suggests';
+    }else{
+        $.get( "/get_help_suggest")
+            .done(function( data ) {
+                input_json = JSON.parse(data);
+    //            console.log(input_json['data']);
+                currentArr = input_json['data'];
+                keyWordsArr = input_json['data'];
+                currentActiveArr = 'suggests';
+                if(field == ''){
+                    field = document.getElementById("terminal-input");
+                }
+                terminalAutocomplete(field, input_json['data']);
+            })
+            .fail(function($jqXHR, textStatus, errorThrown){
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                MakeSnackbar(textStatus);
+            });
+    }
 }
 
 function addTag(terminal){
@@ -197,7 +196,12 @@ function addTag(terminal){
     });
 }
 
+var addTagActive = false;
 function addTagListen(el){
+    if(!addTagActive){
+        getTags(document.getElementById("add-tag"));
+
+    }
     var key = window.event.keyCode;
     if(key != 13)
         return true;
@@ -306,6 +310,18 @@ function terminalAutocomplete(inp, arr) {
   inp.addEventListener("input", function(e) {
       valArray = this.value.split(' ');
       var a, b, i, val = valArray[valArray.length-1];
+      if(valArray.length > 1 || val.toLowerCase() == 'tag' ||
+                                val.toLowerCase() == 'new_folder' ||
+                                val.startsWith('#'))
+        {
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
+//            alreadyIn = true;
+        }
+        else{
+//            if(currentActiveArr == 'tags') get_help_suggest(false);
+            if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
+//            suggest = true;
+        }
       terminalCloseAllLists();
       if (!val) { return false;}
       currentFocus = -1;
@@ -338,26 +354,41 @@ function terminalAutocomplete(inp, arr) {
       }
   });
 inp.addEventListener("keydown", function(e) {
+//      console.log(e.keyCode);
       var x = document.getElementById(this.id + "autocomplete-list");
       if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 32) {
+          currValArray = $('#terminal-input').val().split(' ');
+          if(currValArray[0].startsWith('#')){
+            console.log(currValArray);
+            search(currValArray);
+          }
+      }
       if (e.keyCode == 40) {
         currentFocus++;
         terminalAddActive(x);
-//        console.log(x);
-//        console.log('ovde1');
       } else if (e.keyCode == 38) {
         currentFocus--;
         terminalAddActive(x);
-//        console.log(x);
-//        console.log('ovde2');
       } else if (e.keyCode == 13) {
-        e.preventDefault();
-//        console.log('ovde3');
-//        console.log(currentFocus);
+
+        if(!x){
+            $(this).keydown();
+        }else{
+            if(x.length > 0){
+                e.preventDefault();
+            }
+        }
         if (currentFocus > -1) {
           if (x) {
-//              console.log(x);
-//              console.log('ovde4');
+              currValArray = $('#terminal-input').val().split(' ');
+              currValArray.splice(currValArray.length-1);
+              currVal = x[currentFocus].getElementsByTagName('input')[0].value;
+              currValArray.push(currVal);
+              if(currValArray[0].startsWith('#')){
+                console.log(currValArray);
+                search(currValArray);
+              }
               x[currentFocus].click();
           }else{
             curr = $('#terminal-input').val().split(' ')[0].toLowerCase()
@@ -398,4 +429,25 @@ inp.addEventListener("keydown", function(e) {
   document.addEventListener("click", function (e) {
       terminalCloseAllLists(e.target);
   });
+}
+
+var searchArr = [];
+function search(currValArray){
+    if(!arraysEqual(searchArr, currValArray)){
+        console.log('search');
+        searchArr = currValArray;
+    }else{
+        console.log('skipping search');
+    }
+}
+
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }
