@@ -347,7 +347,10 @@ def add_tag():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        if request_data['project_name'] == '':
+            request_data['project_name'] = session['project']['name']
         print(request_data)
+
         if db.connect(db_adapter):
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:

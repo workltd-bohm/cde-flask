@@ -47,7 +47,7 @@ function terminalListen(el){
     $('#terminal-input').val('');
 
 //    console.log(terminal);
-    console.log(SESSION['name']);
+    console.log(SESSION);
 
     if(terminal[0] == 'new_folder'){
         if(terminal.length > 1){
