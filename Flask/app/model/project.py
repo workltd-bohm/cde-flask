@@ -270,6 +270,22 @@ class Project:
                     break
         return self._current_ic
 
+    def find_ic_by_id(self, request_data, ic_id, ic=None):
+        if request_data['parent_id'] == 'root':
+            return ic
+        if ic.ic_id == request_data['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.ic_id == ic_id:
+                    self._current_ic = sub_f
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.find_ic_by_id(request_data, ic_id, x)
+                if self._added:
+                    break
+        return self._current_ic
+
     def add_comment(self, request, comment, ic=None):
         if request['parent_id'] == 'root':
             ic.comments.append(comment)

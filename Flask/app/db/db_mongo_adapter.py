@@ -717,6 +717,18 @@ class DBMongoAdapter:
         self._close_connection()
         return tags
 
+    def get_all_tags_with_ics(self):
+        col = self._db.Tags
+        result = col.find()
+        tags = list(result)
+        # tags.pop('_id', None)
+        # if result:
+        #     for tag in result:
+        #         tag.pop('_id', None)
+        #         tags.append(tag)
+        self._close_connection()
+        return tags
+
     def clear_db(self, user):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()

@@ -61,7 +61,8 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     var d = {parent_id: '', ic_id:''};
     form.serializeArray().map(function(x){d[x.name] = x.value;}); 
     if (!args) args = d;
-    // console.log(args);
+//    console.log(args);
+//    console.log(d);
 
     LoadStart();
     $.ajax({
@@ -77,8 +78,11 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
 //            console.log(data);
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
-
-            SESSION["position"] = {parent_id: args["parent_id"], ic_id: args["ic_id"]};
+            pom = (args instanceof FormData)? d : args;
+//            for (var value of args.values()) {
+//               console.log(value);
+//            }
+            SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"]};
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

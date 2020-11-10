@@ -16,7 +16,7 @@ function onFocus(){
     }
 }
 
-key = $(window).keydown(function(e){
+$(window).keydown(function(e){
 //    console.log(e.keyCode);
     terInput = $('#terminal-input').val();
     if ((e.ctrlKey || e.metaKey) && e.keyCode === 70) {
@@ -39,12 +39,15 @@ function terminalListen(el){
     if (key === 13 && el.shiftKey){
         return true;
     }
+    if ($('#terminal-input').val() == ''){
+        return true;
+    }
     terminal = $('#terminal-input').val().split(' ');
 
     $('#terminal-input').val('');
 
 //    console.log(terminal);
-//    console.log(SESSION);
+    console.log(SESSION['name']);
 
     if(terminal[0] == 'new_folder'){
         if(terminal.length > 1){
@@ -77,8 +80,6 @@ function terminalListen(el){
         PopupOpen(Help);
     }
     if(terminal[0] == 'tag'){
-//        console.log(terminal);
-//        console.log(SESSION);
         addTag(terminal);
     }
 
@@ -208,13 +209,13 @@ function addTagListen(el){
     if (key === 13 && el.shiftKey){
         return true;
     }
-    terminal = $('#add-tag').val().split(' ');
+    tagsValue = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
-    if(terminal[0] != "tag"){
-        terminal.unshift("tag");
+    if(tagsValue[0] != "tag"){
+        tagsValue.unshift("tag");
     }
-    addTag(terminal);
+    addTag(tagsValue);
 }
 
 function removeTag(tagName){
@@ -270,6 +271,8 @@ function LoadTag(terminal){
 
             if(!alreadyInside){
 
+                addTagInArrayIfMissing(tag, tagsArr);
+
                 activityTagContainer.style.cssText = "display: inline;";
 
                 tagContainer = document.createElement("div");
@@ -305,8 +308,12 @@ function LoadTag(terminal){
     }
 }
 
+function addTagInArrayIfMissing(element, array){
+    array.indexOf(element) === -1 ? array.push(element) : console.log("This item already exists in the local array");
+}
+
 function terminalAutocomplete(inp, arr) {
-  var currentFocus=0;
+  var currentFocus=-1;
   inp.addEventListener("input", function(e) {
       valArray = this.value.split(' ');
       var a, b, i, val = valArray[valArray.length-1];
@@ -331,9 +338,11 @@ function terminalAutocomplete(inp, arr) {
       this.parentNode.appendChild(a);
       arr = currentArr;
 //      console.log(arr);
+      count = 0;
       for (i = 0; i < arr.length; i++) {
-//        if(i < 5){
+        if(count < 10){
             if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+              count++;
               b = document.createElement("DIV");
               b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
               b.innerHTML += arr[i].substr(val.length);
@@ -350,7 +359,7 @@ function terminalAutocomplete(inp, arr) {
               });
               a.appendChild(b);
             }
-//        }
+        }
       }
   });
 inp.addEventListener("keydown", function(e) {
@@ -358,10 +367,12 @@ inp.addEventListener("keydown", function(e) {
       var x = document.getElementById(this.id + "autocomplete-list");
       if (x) x = x.getElementsByTagName("div");
       if (e.keyCode == 32) {
-          currValArray = $('#terminal-input').val().split(' ');
-          if(currValArray[0].startsWith('#')){
-            console.log(currValArray);
-            search(currValArray);
+          if($('#terminal-input').is(":focus")){
+              currValArray = $('#terminal-input').val().split(' ');
+              if(currValArray[0].startsWith('#')){
+                console.log(currValArray);
+                search(currValArray);
+              }
           }
       }
       if (e.keyCode == 40) {
@@ -381,13 +392,15 @@ inp.addEventListener("keydown", function(e) {
         }
         if (currentFocus > -1) {
           if (x) {
-              currValArray = $('#terminal-input').val().split(' ');
-              currValArray.splice(currValArray.length-1);
-              currVal = x[currentFocus].getElementsByTagName('input')[0].value;
-              currValArray.push(currVal);
-              if(currValArray[0].startsWith('#')){
-                console.log(currValArray);
-                search(currValArray);
+              if($('#terminal-input').is(":focus")){
+                  currValArray = $('#terminal-input').val().split(' ');
+                  currValArray.splice(currValArray.length-1);
+                  currVal = x[currentFocus].getElementsByTagName('input')[0].value;
+                  currValArray.push(currVal);
+                  if(currValArray[0].startsWith('#')){
+                    console.log(currValArray);
+                    search(currValArray);
+                  }
               }
               x[currentFocus].click();
           }else{
@@ -433,9 +446,35 @@ inp.addEventListener("keydown", function(e) {
 
 var searchArr = [];
 function search(currValArray){
+//    tempArr = currValArray;
     if(!arraysEqual(searchArr, currValArray)){
         console.log('search');
         searchArr = currValArray;
+//        LoadStart();
+        $.ajax({
+            url: "/search",
+            type: 'POST',
+            data: JSON.stringify({
+                project_name: SESSION['position'].project_name,
+                search_tags: searchArr
+            }),
+            timeout: 5000,
+            success: function(data){
+                data = JSON.parse(data);
+                if(data){
+                    data = data.root_ic;
+                    g_root.universe.data = data;
+                    g_project.skip = SEARCH_HISTORY;
+                    GetWarp(data);
+                    g_project.search = data;
+                }
+            },
+            error: function($jqXHR, textStatus, errorThrown) {
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                MakeSnackbar($jqXHR.responseText);
+                LoadStop();
+            }
+        });
     }else{
         console.log('skipping search');
     }

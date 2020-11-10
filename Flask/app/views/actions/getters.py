@@ -60,6 +60,7 @@ def get_project():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        print(request_data)
         dirs.set_project_data(request_data)
         if "name" not in session.get("project"):
             print(str(msg.NO_PROJECT_SELECTED))

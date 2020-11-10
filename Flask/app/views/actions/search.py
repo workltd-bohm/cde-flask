@@ -61,13 +61,13 @@ def get_filtered_files():
                 }
                 for file in filtered:
                     proj_obj = {
-                        "ic_id": file.to_json()['ic_id'],
-                        "parent_id": file.to_json()['parent_id'],
-                        "name": file.to_json()['name'],
+                        "ic_id": file.ic_id,
+                        "parent_id": file.parent_id,
+                        "name": file.name,
                         "parent": "Search",
                         "history": [],
-                        "path": "Search/"+file.to_json()['name'] + file.to_json()['type'],
-                        "type": file.to_json()['type'],
+                        "path": "Search/"+file.name + file.type,
+                        "type": file.type,
                         "overlay_type": "search_target",
                         "is_directory": False,
                     }
@@ -129,6 +129,78 @@ def get_filter_activity():
                                             ),
                     'data': []
                 }
+                # print(response)
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    resp = Response()
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+
+        if db.connect(db_adapter):
+            result = db.get_all_tags_with_ics(db_adapter)
+            # print(result)
+            if result:
+                ics = []
+                for tag in request_data['search_tags']:
+                    if not ics:
+                        ics = result[0][tag]
+                        continue
+                    new_ics = []
+                    for tag_ic in result[0][tag]:
+                        for ic in ics:
+                            if ic['ic_id'] == tag_ic['ic_id']:
+                                new_ics.append(tag_ic)
+                                break
+                    ics = new_ics
+                # response = {
+                #     'html': '',
+                #     'data': ics
+                # }
+                response = {
+                    "project_name": "Search",
+                    "root_ic": {
+                        "ic_id": "",
+                        "name": "Search",
+                        "history": [],
+                        "path": ".",
+                        "overlay_type": "search",
+                        "is_directory": True,
+                        "sub_folders": []
+                    }
+                }
+                if request_data['project_name'] == '':
+                    request_data['project_name'] = session['project']['name']
+                result = db.get_project(db_adapter, request_data['project_name'], session['user'])
+                project = Project.json_to_obj(result)
+
+                for ic in ics:
+                    project.current_ic = None
+                    file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
+                    path = file.name if file.is_directory else file.name + file.type
+                    ic_type = '' if file.is_directory else file.type
+                    proj_obj = {
+                        "ic_id": file.ic_id,
+                        "parent_id": file.parent_id,
+                        "name": file.name,
+                        "parent": "Search",
+                        "history": [],
+                        "path": "Search/" + path,
+                        "type": ic_type,
+                        "overlay_type": "search_target",
+                        "is_directory": False,
+                    }
+                    response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)

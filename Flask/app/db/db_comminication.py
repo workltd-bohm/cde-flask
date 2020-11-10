@@ -154,5 +154,9 @@ def get_all_tags(db_adapter):
     return db_adapter.get_all_tags()
 
 
+def get_all_tags_with_ics(db_adapter):
+    return db_adapter.get_all_tags_with_ics()
+
+
 def clear_db(db_adapter, user):
     return db_adapter.clear_db(user)
