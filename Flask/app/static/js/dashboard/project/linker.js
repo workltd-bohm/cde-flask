@@ -62,15 +62,15 @@ function WrapDelete(data){
 }
 
 function WrapMove(data){
-    //var o = Object.values(CHECKED);
-    //var multi = [];
-    //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+    var tmp = data.values.data;
+    MoveObject(tmp, false);
+    MoveCreate(tmp.values.back.values.this, tmp.values.back);
 }
 
-function WrapCopy(){
-    //var o = Object.values(CHECKED);
-    //var multi = [];
-    //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
+function WrapCopy(data){
+    var tmp = data.values.data;
+    MoveObject(tmp, true);
+    MoveCreate(tmp.values.back.values.this, tmp.values.back);
 }
 
 function WrapPaste(){

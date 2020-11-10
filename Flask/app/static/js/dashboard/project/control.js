@@ -138,8 +138,10 @@ function SelectPlanet(data){
     if (Object.keys(CHECKED).length > 0) SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
     else {
         data.values.data.values.back.values.text.style("opacity", 100);
-        g_project.selection.remove();
-        g_project.selection = false;
+        if(g_project.selection){
+            g_project.selection.remove();
+            g_project.selection = false;
+        }
     }
 
     data.values.data.values.text.style("opacity", 100);
@@ -167,8 +169,10 @@ function DeselectAllPlanets(data){
     });
 
     data.values.data.values.back.values.text.style("opacity", 100);
-    g_project.selection.remove();
-    g_project.selection = false;
+    if(g_project.selection){
+        g_project.selection.remove();
+        g_project.selection = false;
+    }
 }
 
 // -------------------------------------------------------

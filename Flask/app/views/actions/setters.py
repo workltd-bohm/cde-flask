@@ -388,3 +388,18 @@ def remove_tag():
             return resp
 
     return redirect('/')
+
+
+@app.route('/activate_undo', methods=['POST'])
+def activate_undo():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        undo = session.get("undo")
+        session.get("project")["undo"] = False
+        session.modified = True
+        print(undo)
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_OK['code']
+    resp.data = str(msg.DEFAULT_OK['message'])
+    return resp

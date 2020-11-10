@@ -35,6 +35,8 @@ function PopupOpen(run=null, data=null, file=null){
 }
 
 function PopupClose(){
+    var form = GetForm();
+    $(form).empty();
     LoadStop();
     $("div.pero").hide();
     ClearActivity();
@@ -83,6 +85,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
 //               console.log(value);
 //            }
             SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"]};
+            if (job != 'select_project') SESSION["undo"] = true;
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

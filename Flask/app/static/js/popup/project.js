@@ -203,8 +203,10 @@ function sendFile(files, folders, current) {
                 console.log(data);
                 if(data == "Project successfully uploaded"){
 //                    counter = 1;
-                    CreateProject();
+                    CheckSession();
+                    //CreateProject();
                     MakeSnackbar(data);
+                    PopupClose();
                 }
             }
             else{

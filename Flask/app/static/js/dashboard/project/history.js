@@ -1,7 +1,19 @@
 
+g_TypeUndo = {
+    name: "Undo",
+    icon: "replay",
+    link : SubmitUndo,
+};
+
+g_TypeRecycle = {
+    name: "Recycle",
+    icon: "delete",
+    link : function(d){},
+};
+
 // -------------------------------------------------------
 
-function DrawUndo(obj, data){
+function DrawHistory(obj, data, type){
     data.hist_path = {};
     data.hist_path.this = obj;
     data.hist_path.back = g_project.history;
@@ -23,9 +35,9 @@ function DrawUndo(obj, data){
         .append("i")
         .attr("class", "history material-icons picture")
         .style("font-size", g_HistRadius+"px")
-        .html("replay")
+        .html(type.icon)
 
-    AddHistText(data, "Undo", fix=true);
+    AddHistText(data, type.name, fix=true);
 
     data.hist_path.select = data.hist_path.object.append("circle")
         .attr("class","history select")
@@ -33,28 +45,26 @@ function DrawUndo(obj, data){
         .attr("cy", 0)
         .attr("r", g_HistRadius)
         .on("mouseup",function(d){
-            //SubmitUndo();
+            type.link(data);
         });
 
 }
 
-// function SubmitUndo(data){
-//     $.ajax({
-//         url: "/activate_undo",
-//         type: 'POST',
-//         timeout: 5000,
-//         success: function(data){
-//             MakeSnackbar(data);
-//             if(o.length > 0){
-//                 CreateProject();
-//             }
-//         },
-//         error: function($jqXHR, textStatus, errorThrown) {
-//             console.log( errorThrown + ": " + $jqXHR.responseText );
-//             MakeSnackbar($jqXHR.responseText);
-//         }
-//     });
-// }
+function SubmitUndo(data){
+    $.ajax({
+        url: "/activate_undo",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            MakeSnackbar(data);
+            CheckSession();//CreateProject();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
 
 function AddUndo(data){
     if(!g_project.history){
@@ -63,7 +73,17 @@ function AddUndo(data){
     }
 
     var d = data;
-    DrawUndo(g_project.history, d);
+    DrawHistory(g_project.history, d, g_TypeUndo);
+}
+
+function AddRecycle(data){
+    if(!g_project.history){
+        g_project.history = g_project.hist_path.append("g")
+            .attr("class","paths")
+    }
+
+    var d = data;
+    DrawHistory(g_project.history, d, g_TypeRecycle);
 }
 
 function HistoryCreation(data){
@@ -71,7 +91,7 @@ function HistoryCreation(data){
         .attr("id","History")
         .attr("transform","translate("+(g_project.width)+","+(g_PathRadius*HISTORY_ORBIT_COEF)+")")
 
-    //if(SESSION["history"]) // Save in session.get("project")["history"] to show button
+    if(SESSION["undo"])
         AddUndo(new Object);
 }
 

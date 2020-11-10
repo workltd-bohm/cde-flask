@@ -11,7 +11,7 @@ g_OverSelect = [
     { name : "COPY", icon : "content_copy", link : WrapCopy},
 ]
 
-function SelectionCreate(obj, data, parent) {
+function SelectionCreate(obj, data) {
     // if(g_project.overlay){
     //     g_project.overlay.remove();
     //     g_project.overlay = false;
@@ -23,7 +23,6 @@ function SelectionCreate(obj, data, parent) {
 
     data.selection = {};
     data.selection.this = obj;
-    data.selection.back = parent;
 
     var type = [...g_OverSelect];
     var file = 0;

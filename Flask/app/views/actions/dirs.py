@@ -155,7 +155,7 @@ def upload_file():
         # print(file)
         print(request.form['data'])
         request_json = json.loads(request.form['data'])  # test_json_request
-        set_project_data(request_json)
+        set_project_data(request_json, True)
         directory = request_json['parent_path']
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
@@ -217,7 +217,7 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        set_project_data(request_data)
+        set_project_data(request_data, True)
         print(request_data)
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
@@ -257,7 +257,7 @@ def rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        set_project_data(request_data)
+        set_project_data(request_data, True)
         print(request_data)
         if db.connect(db_adapter):
             rename = {
@@ -297,7 +297,7 @@ def delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
-        set_project_data(delete_ic_data)
+        set_project_data(delete_ic_data, True)
         delete_ic_data['user_id'] = session['user']['id']
         print(delete_ic_data)
         if db.connect(db_adapter):
@@ -414,12 +414,27 @@ def zipdir(path, ziph):
             ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
 
 
-def set_project_data(data):
+def set_project_data(data, save=False):
     if "project" in data:
         session.get("project").update(data["project"])
-        session.modified = True
-        print(session.get("project"))
 
+    if save:
+        project_name = session.get("project")["name"]
+        user = session.get('user')
+        session["undo"] = {}
+        session.get("project")["undo"] = False
+        if db.connect(db_adapter):
+                result = db.get_project(db_adapter, project_name, user)
+                if result:
+                    session.get("undo")["data"] = result
+                    session.get("undo")["position"] = session.get("project")["position"]
+                    session.get("undo")["project_name"] = session.get("project")["name"]
+                    session.get("undo")["user"] = session.get('user')
+                    session.get("project")["undo"] = True
+
+    print(session.get("project"))
+    if save: print(session.get("undo"))
+    session.modified = True
 
 def remove_folder(path):
     time.sleep(30)
