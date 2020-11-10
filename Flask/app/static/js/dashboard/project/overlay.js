@@ -120,17 +120,19 @@ function OverlayCreate(obj, data, parent, planet=false) {
         })
         .on("mouseup",function(d){
             if(!data.values.sun){
-                var func = function(){};
-                switch(g_root.universe.data.overlay_type){
-                    case "user" : func = GetWarp; break;
-                    default : func = SunFadeout; break;
+                if (!g_project.selection){
+                    var func = function(){};
+                    switch(g_root.universe.data.overlay_type){
+                        case "user" : func = GetWarp; break;
+                        default : func = SunFadeout; break;
+                    }
+                    ClickStop(function(data){
+                        data.values.text.style("opacity", 100);
+                        g_project.overlay.remove();
+                        g_project.overlay = false;
+                        func(data);
+                    }, data, true);
                 }
-                ClickStop(function(data){
-                    data.values.text.style("opacity", 100);
-                    g_project.overlay.remove();
-                    g_project.overlay = false;
-                    func(data);
-                }, data, true);
             }
         });
 

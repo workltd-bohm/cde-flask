@@ -12,9 +12,9 @@
   </div>
 </div>
 <div class="activity-tab-div">
+    <div class="scroll">
     <div class="project-view">
       <div id="filter-details" style="display: none;">
-        <div class="scroll">
           <form id="filter-form-details">
             <h6 class="tab-title">Tags</h6>
             <div class="activity-tab-container">
@@ -62,10 +62,8 @@
                 <br>
             </div>
           </form>
-        </div>
       </div>
       <div id="filter-comments" style="display: none;">
-        <div class="scroll">
           <form id="filter-form-comments">
             <input type="hidden" id="project_name" value="{{ project_name }}" required />
             <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
@@ -86,7 +84,6 @@
                 </div>
             </div>
           </form>
-        </div>
       </div>
       <div id="filter-post" style="display: none;">
           <form id="filter-form-post">
@@ -97,5 +94,6 @@
             <button type="button" class="activity-post-button" onclick="OpenPostListPopup({'ic_id': '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 'name': '{{ name }}' });">Add to existing Post</button>
           </form>
       </div>
+    </div>
     </div>
 </div>

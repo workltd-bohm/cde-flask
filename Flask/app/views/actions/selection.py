@@ -75,11 +75,11 @@ def get_delete_ic_multi():
         delete_ic_array = json.loads(request.get_data())
         dirs.set_project_data(delete_ic_array)
         print(delete_ic_array)
-        if db.connect(db_adapter):
+        if db.connect(db_adapter) and "multi" in delete_ic_array:
             user_id = session['user']['id']
             project_name = session.get("project")["name"]
             result = ''
-            for delete_ic_data in delete_ic_array:
+            for delete_ic_data in delete_ic_array["multi"]:
                 delete_ic_data['user_id'] = user_id
                 delete_ic_data['project_name'] = project_name
                 result = db.delete_ic(db_adapter, delete_ic_data)
