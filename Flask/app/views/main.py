@@ -30,4 +30,5 @@ def index():
                            activity=activity,
                            popup=popup,
                            preview=preview,
-                           user=user)
+                           user=user,
+                           sign=user['username'][0])

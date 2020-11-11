@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>BOHM</title>
 <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
@@ -36,10 +36,11 @@
       {{ popup|safe }}
       {{ preview|safe }}
 
-      <input type="text" class="terminal-sign" value=">" readonly>
+<!--      <input type="text" class="terminal-sign" value=">" readonly>-->
+      <div  class="terminal-sign"><b>{{ sign }}</b></div>
       <div class="terminal-div">
-        <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" onfocus="onFocus();" placeholder="">
-        <i>_</i>
+        <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" onfocus="onFocus();" placeholder="ASK AND YOU SHALL RECEIVE">
+<!--        <i>_</i>-->
       </div>
 
       <div id="snackbar"></div>
