@@ -387,6 +387,7 @@ inp.addEventListener("keydown", function(e) {
             $(this).keydown();
         }else{
             if(x.length > 0){
+                terminalCloseAllLists();
                 e.preventDefault();
             }
         }

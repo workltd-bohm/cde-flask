@@ -353,7 +353,7 @@ class Project:
     def remove_tag(self, request, tag, ic=None):
         if request['parent_id'] == 'root':
             for t in ic.tags:
-                if t.tsg == tag:
+                if t.tag == tag:
                     ic.tags.remove(t)
                     break
             return msg.TAG_SUCCESSFULLY_REMOVED
