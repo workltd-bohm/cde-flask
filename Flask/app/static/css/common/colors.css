@@ -9,8 +9,11 @@
 
 
     --side-menu: #e8e8e8;
+    --left-side-menu: #121212;
+    --side-menu-text: #b8b8b8;
 
-    --side-menu-logo-bg: #e8e8e8;
+    --side-menu-logo-bg: #121212;
+    --side-menu-logo-bg-right: #e8e8e8;
 
     --dashboard-bg: #121212;
 
