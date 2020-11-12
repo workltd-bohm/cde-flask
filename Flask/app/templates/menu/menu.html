@@ -15,10 +15,11 @@
     <li class="menu-link" onclick="SelectProject()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_project.png')}}"/><p>Project</p></li>
     <li class="menu-link" onclick="SelectMarket()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_market.png')}}"/><p>Market</p></li>
     <li class="menu-link" onclick="Select3D()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_3d.png')}}"/><p>3D View</p></li>
-    <!-- <li class="menu-link" onclick="OpenFilterActivity()"><i class="material-icons w3-xxlarge">search</i><p>Search</p></li> -->
-    <li class="menu-link" href="/logout"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_exit.png')}}"/><p>Logout</p></li>
-    <li class="menu-link" href="/clear_projects"><img class="side-menu-icon"src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/><p>clear_db</p></li>
-    <li class="menu-link" href="/upload_project"><i class="material-icons w3-xxlarge">&#xE87A;</i><p>upload_project</p></li>
+<!--    <li class="menu-link" href="/upload_project"><i class="material-icons w3-xxlarge">&#xE87A;</i><p>upload_project</p></li>-->
+  </ul>
+  <ul class="menu icon-menu">
+    <li class="menu-link" href="/clear_projects"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/><p>clear_db</p></li>
+    <li class="menu-link" href="/logout"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_exit.png')}}"/><p>Logout</p></li>
   </ul>
 </td>
 <script src="{{ url_for('static', filename='js/menu/menu.js') }}" charset="utf-8"></script>

@@ -7,9 +7,9 @@
   z-index: 2;
   height: 100%;
   transition: all 0.3s;
-  -webkit-box-shadow: 10px 0px 10px rgba(255,255,255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
+  /*-webkit-box-shadow: 10px 0px 10px rgba(255,255,255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
   -moz-box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
-  box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
+  box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);*/
   text-align: center;
   overflow: hidden;
 }
@@ -269,9 +269,24 @@
 
 .menu-left{
     background-color: var(--left-side-menu);
+    height: 100%;
+}
+
+.icon-menu{
+    height: 100%;
+    vertical-align: bottom;
 }
 
 .side-menu-icon{
-    height: 35px;
-    width: 35px;
+    height: 2.3vw;
+    width: 2.3vw;
+    opacity: 70%;
+}
+
+.down{
+    bottom: 5%;
+}
+
+.side-menu-icon:hover{
+    opacity: 100%;
 }
