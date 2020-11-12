@@ -49,6 +49,7 @@ function SharePopup(form){
             html = input_json['html'];
             form.empty();
             form.append(html);
+            autocomplete(document.getElementById("user_name"), input_json['data']);
             LoadStop();
         })
         .fail(function($jqXHR, textStatus, errorThrown){
@@ -202,8 +203,10 @@ function sendFile(files, folders, current) {
                 console.log(data);
                 if(data == "Project successfully uploaded"){
 //                    counter = 1;
-                    location.reload();
+                    CheckSession();
+                    //CreateProject();
                     MakeSnackbar(data);
+                    PopupClose();
                 }
             }
             else{

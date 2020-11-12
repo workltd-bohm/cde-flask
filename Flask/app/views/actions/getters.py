@@ -22,6 +22,7 @@ def input():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_session', methods=['POST'])
 def get_session():
     resp = Response()
@@ -34,6 +35,7 @@ def get_session():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/set_project', methods=['POST'])
 def set_project():
@@ -51,12 +53,14 @@ def set_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 @app.route('/get_project', methods=['POST'])
 def get_project():
     print('Data posting path: %s' % request.path)
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        print(request_data)
         dirs.set_project_data(request_data)
         if "name" not in session.get("project"):
             print(str(msg.NO_PROJECT_SELECTED))
@@ -176,7 +180,7 @@ def get_user_profile():
             }
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project" : False})
+            resp.data = json.dumps({"json": response, "project": False})
             return resp
 
         else:
@@ -244,6 +248,61 @@ def get_root_market():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+@app.route('/get_viewer', methods=['POST'])
+def get_viewer():
+    print('Data posting path: %s' % request.path)
+    resp = Response()
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        response = {
+            'html': render_template("dashboard/viewer/activity.html",
+                                    # TODO
+                                    ),
+            'data': []
+        }
+        # print(response)
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_all_tags', methods=['GET'])
+def get_all_tags():
+    print('Data posting path: %s' % request.path)
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            result = db.get_all_tags(db_adapter)
+            if result:
+                response = {
+                    'data': result
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps({'data': []})
+                return resp
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
 
 def get_input_file_fixed():
     doc = open('app/static/file/input.json', 'r')

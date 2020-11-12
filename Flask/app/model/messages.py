@@ -9,6 +9,8 @@ ACCOUNT_CHANGED = {"message": "Account changed", "code": 200}
 DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 
 COMMENT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+TAG_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+TAG_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}
@@ -33,6 +35,8 @@ IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
 
 POST_ALREADY_EXISTS = {"message": "Post with the given ID already exists", "code": 409}
 POST_CREATED = {"message": "Post created successfully", "code": 200}
+POST_NOT_FOUND = {"message": "Post with the given ID not found", "code": 404}
+POST_EDITED = {"message": "Post edited successfully", "code": 200}
 
 BID_ALREADY_EXISTS = {"message": "Bid with the given ID already exists", "code": 409}
 BID_CREATED = {"message": "Bid created successfully", "code": 200}
@@ -43,3 +47,8 @@ SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
+
+FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
+FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}
+
+USER_NO_RIGHTS = {"message": "User does not have rights to share!", "code": 404}

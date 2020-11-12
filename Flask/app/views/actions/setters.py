@@ -5,13 +5,15 @@ from datetime import datetime
 
 from app import *
 
+
 @app.route('/clear_projects')
 def clear_projects():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         if db.connect(db_adapter):
-            db.clear_db(db_adapter)
+            db.clear_db(db_adapter, session['user'])
             session.get("project")["name"] = ''
+            session.get("user")["picture"] = ''
             session.modified = True
         else:
             print(str(msg.DB_FAILURE))
@@ -60,6 +62,7 @@ def create_project():
                       'root',
                       '',
                       [],
+                      [],
                       [])
         project = Project("default", request_data['project_name'], root_obj)
         # print(project.to_json())
@@ -82,6 +85,7 @@ def create_project():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
@@ -124,9 +128,11 @@ def upload_existing_project():
                         new_id = str(uuid.uuid1())
                         if i < 1:
                             parent_directory = ('/').join(current_file_path_backup[0:1])
+                            path = ('/').join(current_file_path_backup[0:1])
                         else:
                             parent_directory = ('/').join(current_file_path_backup[0:i + 1])
-                        path = ('/').join(current_file_path[:i])
+                            path = ('/').join(current_file_path_backup[0:i + 1])
+                        path = path + '/' + name
                         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
                         ic_new = Directory(new_id,
                                            name,
@@ -135,6 +141,7 @@ def upload_existing_project():
                                            path,
                                            parent_id,
                                            '',
+                                           [],
                                            [],
                                            []
                                            )
@@ -158,7 +165,7 @@ def upload_existing_project():
                                           ('').join(['.', file_name.split('.')[-1]]))
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], [], '', '')
+                                           [], [], [], '', '')
 
                         project.added = False
                         encoded = file
@@ -196,6 +203,7 @@ def upload_existing_project():
                                                parent_id,
                                                '',
                                                [],
+                                               [],
                                                []
                                                )
 
@@ -229,7 +237,7 @@ def upload_existing_project():
 def upload_project():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        root_obj = dirs.path_to_obj('app')
+        root_obj = dirs.path_to_obj('root')
         project = Project("default", "test-project", root_obj)
         user = {'id': session.get('user')['id'], 'role': 'OWNER'}
         print(root_obj)
@@ -310,7 +318,9 @@ def send_comment():
         request_data = json.loads(request.get_data())
         print(request_data)
         if db.connect(db_adapter):
-            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+            u = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
             comment = Comments(u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
             result = db.add_comment(db_adapter, request_data, comment)
             if result:
@@ -318,8 +328,9 @@ def send_comment():
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = render_template("activity/single_comment.html",
-                                                comment=comment.to_json()
-                                                )
+                                            comment=comment.to_json(),
+                                            picture=u['picture']
+                                            )
                 return resp
         else:
             print(str(msg.DB_FAILURE))
@@ -329,3 +340,69 @@ def send_comment():
             return resp
 
     return redirect('/')
+
+
+@app.route('/add_tag', methods=['POST'])
+def add_tag():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        if request_data['project_name'] == '':
+            request_data['project_name'] = session['project']['name']
+        print(request_data)
+
+        if db.connect(db_adapter):
+            result = db.add_tag(db_adapter, request_data, request_data['tags'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+
+@app.route('/remove_tag', methods=['POST'])
+def remove_tag():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print(request_data)
+        if db.connect(db_adapter):
+            result = db.remove_tag(db_adapter, request_data, request_data['tag'])
+            if result:
+                print(result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+
+@app.route('/activate_undo', methods=['POST'])
+def activate_undo():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        undo = session.get("undo")
+        session.get("project")["undo"] = False
+        session.modified = True
+        print(undo)
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_OK['code']
+    resp.data = str(msg.DEFAULT_OK['message'])
+    return resp

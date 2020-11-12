@@ -19,7 +19,7 @@ g_marketTypes = {
 
 var g_template = null;
 
-function MarketOpen(type, data){ // type depricated?
+function MarketOpen(type, data, run=null, run_data=null){ // type depricated?
     console.log(type);
 
     // switch(type){
@@ -36,10 +36,17 @@ function MarketOpen(type, data){ // type depricated?
     //         GetTicketTemplate(data.many, g_marketTypes.posts.many, UpdateAllPostTicket, GetPostId);
     //         break;
     // }
-
-    CreateTicket(data.one, null, null, GetID);
-    for (var obj of JSON.parse(data.many)){
-        CreateTicket(obj.html, obj, null, GetID);
+    if(run != null){
+        if(run.name == 'NewPost'){
+            run(run_data[0], run_data[1]);
+        }else{
+            run(run_data[0], run_data[1], run_data[2]);
+        }
+    }else{
+        CreateTicket(data.one, null, null, GetID);
+        for (var obj of JSON.parse(data.many)){
+            CreateTicket(obj.html, obj, null, GetID);
+        }
     }
 
 }
@@ -134,7 +141,7 @@ function GetBidId(json){
 }
 
 
-function MarketGet(choose_market){
+function MarketGet(choose_market, run=null, run_data=null){
     ClearMarket();
     SwitchDash(1);
     $.ajax({
@@ -145,7 +152,7 @@ function MarketGet(choose_market){
         success: function(data){
             data = JSON.parse(data);
             if(data){
-                MarketOpen(choose_market, data);
+                MarketOpen(choose_market, data, run, run_data);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -169,5 +176,7 @@ function ClearMarket(){
 
 function TabSwap(target){
     $(".edit-section.view").children().hide();
-    $(target).show();
+    $(".edit-box").removeClass("selected");
+    $("#" + target).show();
+    $("#edit-box-" + target).addClass("selected");
 }

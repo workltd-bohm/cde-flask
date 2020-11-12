@@ -1,40 +1,28 @@
 
 
-function OpenFile(form, json, file){
+function OpenFile(form, json, file, open){
     LoadStartPreview();
+    console.log(json);
     $.ajax({
         url: "/get_open_file",
         type: 'POST',
         data: JSON.stringify({
             name: json.name,
-            type: json.type
+            type: json.type,
+            parent_id: json.parent_id,
+            ic_id: json.ic_id
         }),
         timeout: 5000,
         success: function(data){
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
-            form.empty();
-            form.append(html);
+            activity = input_json2['activity'];
+            if(form) form.empty();
+            if(form) form.append(html);
 
-//            OpenActivity(null, 'Details');
-            ExtractActivity(null, 'Details');
-            $('#filter-details-tab').show();
-            $('#filter-comments-tab').show();
-            $('#filter-details').show();
-            $('#filter-comments').show();
-            $('#filter-search-tab').hide();
-            $('#filter-search').hide();
-            FilterSwap('#filter-details');
+            OpenActivity(activity, null, open);
 
-            details = input_json2['details'];
-
-            ClearActivityTab($('#filter-details'));
-            AppendActivityTab($('#filter-details'), details);
-
-            comments = input_json2['comments'];
-
-            ClearActivityTab($('#filter-comments'));
-            AppendActivityTab($('#filter-comments'), comments);
+            FilterSwap('details');
 
             LoadStopPreview();
         },
@@ -212,7 +200,7 @@ function RenameFile(form, json){
 //    console.log(json);
     LoadStart();
     var newOldName = json.name;
-    if(json.hasOwnProperty("type")){
+    if(json.hasOwnProperty("type") && json.type != null){
 //        console.log(data.name);
         newOldName = json.name + json.type
     }
@@ -243,7 +231,8 @@ function RenameFile(form, json){
                 document.getElementById('company_code').value = json.company_code;
 //                document.getElementById('name').value = json.original_name;
                 var file = {};
-                file.name = json.original_name + json.type;
+                file.name = json.name + json.type;
+//                console.log(json);
 
                 FileDataInit();
                 OnFileUpload(file);
@@ -283,11 +272,28 @@ function RenameFile(form, json){
 // ------------------------------------------
 
 function DeleteFile(form, json){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({
+        parent_id: o[i].parent_id,
+        ic_id: o[i].ic_id,
+        parent_path: o[i].parent,
+        delete_name: o[i].name,
+        is_directory: o[i].is_directory,
+    });
+    if (o.length > 0) MULTI = {
+        parent_id: json.parent_id,
+        ic_id: json.ic_id,
+        multi : multi,
+    };
+    
     LoadStart();
     $.ajax({
         url: "/get_delete_ic",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify((o.length > 0)? {
+            is_multi: true,
+        } : {
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,
@@ -296,10 +302,16 @@ function DeleteFile(form, json){
         }),
         timeout: 5000,
         success: function(data){
-            input_json2 = JSON.parse(data);
-            html = input_json2['html'];
-            form.empty();
-            form.append(html);
+            try {
+                input_json2 = JSON.parse(data);
+                html = input_json2['html'];
+                form.empty();
+                form.append(html);
+            } catch (e) {
+                MakeSnackbar(data);
+                CreateProject();
+            }
+
 
             LoadStop();
         },
@@ -311,14 +323,52 @@ function DeleteFile(form, json){
     });
 }
 
-function DownloadFile(path){
+function DownloadMulti(path, multi){
     LoadStart();
-    var url = "/get_file/" + path;
     var link = document.createElement('a');
-    link.href = url;
-    link.download = path;
+    link.href = path + JSON.stringify(multi);
+    link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
 //    window.open(url, "_blank");
     LoadStop();
+}
+
+function DownloadIC(path, name){
+    console.log(path);
+    LoadStart();
+    var link = document.createElement('a');
+    link.href = path;
+    link.download = name;
+    link.dispatchEvent(new MouseEvent('click'));
+
+//    window.open(url, "_blank");
+    LoadStop();
+}
+
+function DownloadICs(json){
+    var o = Object.values(CHECKED);
+    var multi = [];
+    for (var i = 0; i < o.length; i++) multi.push({parent_id: o[i].parent_id,
+                                                    ic_name: (!o[i].is_directory)? o[i].name + o[i].type : o[i].name});
+    console.log(multi);
+    if (o.length > 0){
+        if (o.length == 1){
+            console.log(o[0]);
+            if(o[0].is_directory){
+                DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
+            }else{
+                DownloadIC("/get_file/" + o[0].name + o[0].type, o[0].name + o[0].type);
+            }
+        }else{
+            DownloadMulti("/get_ic_multi/", multi);
+        }
+    }
+    else{
+        if(json.is_directory){
+            DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
+        }else{
+            DownloadIC("/get_file/" + json.name + json.type, json.name + json.type);
+        }
+    }
 }

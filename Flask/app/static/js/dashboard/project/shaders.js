@@ -92,4 +92,46 @@ var g_PatternPlanetRotate = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_PLANET);
 
+var g_PatternPlanetFile = SWGDefs.append("pattern")
+    .attr("id", "patern_planet_file")
+    .attr("x", "0%")
+    .attr("y", "-0%")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox","0 0 1 1")
+    .append("image")
+    .attr("x", "0")
+    .attr("y", "0")
+    .attr("width", "1")
+    .attr("height", "1")
+    .attr("xlink:href", IMG_PATH_PLANET_FILE);
+
+var g_PatternPlanetFolder = SWGDefs.append("pattern")
+    .attr("id", "patern_planet_folder")
+    .attr("x", "0%")
+    .attr("y", "-0%")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox","0 0 1 1")
+    .append("image")
+    .attr("x", "0")
+    .attr("y", "0")
+    .attr("width", "1")
+    .attr("height", "1")
+    .attr("xlink:href", IMG_PATH_PLANET_FOLDER);
+
+var g_PatternPlanetEmpty = SWGDefs.append("pattern")
+    .attr("id", "patern_planet_empty")
+    .attr("x", "0%")
+    .attr("y", "-0%")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox","0 0 1 1")
+    .append("image")
+    .attr("x", "0")
+    .attr("y", "0")
+    .attr("width", "1")
+    .attr("height", "1")
+    .attr("xlink:href", IMG_PATH_PLANET_EMPTY);
+
 // -------------------------------------------------------

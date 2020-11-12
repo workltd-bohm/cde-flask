@@ -1,5 +1,8 @@
 import app.controller.send_email as email
+import random
+import os
 from app import *
+import base64
 
 
 @app.route('/login')
@@ -26,6 +29,8 @@ def login_data():
             json_user = user # .to_json()
             json_user.pop('password', None)
             json_user.update({'project_code': 'SV'}) # temp, until drawn from project
+            if json_user['picture'] == '':
+                json_user.update({'picture': set_random_profile_picture(json_user['username'])})
             session['user'] = json_user
             session['project'] = {}
             session.modified = True
@@ -54,7 +59,8 @@ def signup_data():
     if db.connect(db_adapter):
         user = User()
         user.create_user(json_data)
-        message , user = db.set_user(db_adapter, user)
+        user.picture = set_random_profile_picture(user.username)
+        message, user = db.set_user(db_adapter, user)
         print(user)
 
         if user is not None:
@@ -87,3 +93,15 @@ def confirm_account():
         print(resp)
 
     return resp['message']
+
+
+def set_random_profile_picture(username):
+    path = "app/static/img/user_profile/"
+    files = os.listdir(path)
+    img = random.choice(files)
+    request_json = {'file_name': img, 'type': img.split('.')[:-1], 'user': username}
+    file = open(path + img, "rb")
+    message, file_id = db.upload_profile_image(db_adapter, request_json, file)
+    if message == msg.IC_SUCCESSFULLY_ADDED:
+        return file_id
+    return ''

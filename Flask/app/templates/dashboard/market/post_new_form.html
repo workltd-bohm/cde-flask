@@ -2,7 +2,7 @@
     <div class="edit-section upper">
         <div class="edit-section left">
             <div class="group edit-box hover">
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" value="{{ username }}" required>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Who</label>
@@ -15,7 +15,7 @@
             </div>
             <div class="group edit-box hover">
     <!--            <input type="text" id="description" class="textarea" required>-->
-                <textarea rows="8" name="description" required></textarea>
+                <textarea rows="8" name="description" value="{{ description }}" required></textarea>
                 <span class="highlight"></span>
                 <span class="bar"></span>
                 <label>Product description</label>
@@ -57,13 +57,13 @@
     </div>
     <div class="edit-section lower">
         <div class="edit-section tab">
-            <div class="edit-box" onclick="TabSwap('#3d-view')">
+            <div class="edit-box" id="edit-box-3d-view" onclick="TabSwap('3d-view')">
                 <h4>3D VIEW</h4>
             </div>
-            <div class="edit-box" onclick="TabSwap('#docs')">
+            <div class="edit-box" id="edit-box-docs" onclick="TabSwap('docs')">
                 <h4>DOCUMENTS</h4>
             </div>
-            <div class="edit-box" onclick="TabSwap('#images')">
+            <div class="edit-box" id="edit-box-images" onclick="TabSwap('images')">
                 <h4>IMAGES</h4>
             </div>
         </div>
@@ -80,10 +80,10 @@
                 <div class="drop-area" id="drop-area-doc">
                   <form class="my-form">
                     <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
-                    <input type="file" id="doc" name="doc" multiple accept="image/*" onchange="handleFiles(this.files, 'doc')">
+                    <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
                     <label class="button" for="doc">Select file(s)</label>
                   </form>
-<!--                    <div id="gallery"></div>-->
+                    <div id="file-preview"></div>
                 </div>
             </div>
             <div id="images" class="edit-view" style="display: none;">

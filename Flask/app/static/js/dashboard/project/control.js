@@ -26,9 +26,10 @@ function WindowResize(){
     g_PlanetRadius_old = g_PlanetRadius;
 
     g_PathRadius = g_SunRadius/PATH_SUN_RATIO;
+    g_HistRadius = g_SunRadius/HISTORY_SUN_RATIO;
 
     g_OverlayRadius = g_SunRadius;
-    g_OverlayItem = g_SunRadius/OVERLAY_SUN_RATIO;
+    g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
@@ -132,6 +133,45 @@ function SelectPlanet(data){
         data.values.data.checked = true;
         data.values.data.values.checked.style("opacity", 100);
         CHECKED[data.values.data.ic_id] = data.values.data;
+    }
+    //console.log(CHECKED)
+    if (Object.keys(CHECKED).length > 0) SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+    else {
+        data.values.data.values.back.values.text.style("opacity", 100);
+        if(g_project.selection){
+            g_project.selection.remove();
+            g_project.selection = false;
+        }
+    }
+
+    data.values.data.values.text.style("opacity", 100);
+    g_project.overlay.remove();
+    g_project.overlay = false;
+}
+
+function SelectAllPlanets(data){
+    d3.selectAll("g.planet.dom").each(function(d){
+        //console.log(d);
+        d.checked = true;
+        d.values.checked.style("opacity", 100);
+        CHECKED[d.ic_id] = d;
+    });
+    SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+}
+
+function DeselectAllPlanets(data){
+    CHECKED = {};
+
+    d3.selectAll("g.planet.dom").each(function(d){
+        //console.log(d);
+        d.checked = false;
+        d.values.checked.style("opacity", 0);
+    });
+
+    data.values.data.values.back.values.text.style("opacity", 100);
+    if(g_project.selection){
+        g_project.selection.remove();
+        g_project.selection = false;
     }
 }
 

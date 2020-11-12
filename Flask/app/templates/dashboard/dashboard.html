@@ -6,14 +6,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/market/market.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/market/post.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/market/files.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard/viewer/viewer.css') }}">
     <script>
         const IMG_PATH_SUN = "{{ url_for('static', filename='img/brush23.png') }}";
         const IMG_PATH_PLANET = "{{ url_for('static', filename='img/cell.png') }}";
+        const IMG_PATH_PLANET_FILE = "{{ url_for('static', filename='img/brush_11clean.png') }}";
+        const IMG_PATH_PLANET_FOLDER = "{{ url_for('static', filename='img/brush_12clean.png') }}";
+        const IMG_PATH_PLANET_EMPTY = "{{ url_for('static', filename='img/brush23.png') }}";
         const PROJECT_PATH = "{{ url_for('static', filename='js/dashboard/data.json') }}";
     </script>
     <svg id="PROJECT"></svg>
     <div id="MARKET"></div>
     <div id="EDITOR"></div>
+    <div id="3D_VIEWER"></div>
     <script src="{{ url_for('static', filename='js/dashboard/wrapper.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/search.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/project/user.js') }}" charset="utf-8"></script>
@@ -23,12 +28,17 @@
     <script src="{{ url_for('static', filename='js/dashboard/project/control.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/project/main.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/project/paths.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/project/history.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/project/color.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/project/overlay.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/project/select.js') }}" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='js/dashboard/project/move.js') }}" charset="utf-8"></script>
 
     <script src="{{ url_for('static', filename='js/dashboard/market/linker.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/market/market.js') }}" charset="utf-8"></script>
     <script src="{{ url_for('static', filename='js/dashboard/market/filesadd.js') }}" charset="utf-8"></script>
+
+    <script src="{{ url_for('static', filename='js/dashboard/3dviewer/viewer.js') }}" charset="utf-8"></script>
     <script>
     </script>
 </td>

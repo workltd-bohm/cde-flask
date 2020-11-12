@@ -1,6 +1,6 @@
 
 function OpenActivity(html, head=null, open=true){
-  ACTIVITY.html(html);
+  if (html) ACTIVITY.html(html);
     if (head) {
       ACTIVITY_HEAD.html(head);
     }
@@ -75,7 +75,7 @@ function sendComment(el){
         timeout: 5000,
         success: function(data){
 //            input_json = JSON.parse(data);
-            console.log(data);
+            //console.log(data);
             div.append(data);
             $('#comment').val('');
             div.scrollTop(div[0].scrollHeight);
@@ -87,4 +87,67 @@ function sendComment(el){
         }
     });
 
+}
+
+function addLink(el){
+    var key = window.event.keyCode;
+    if(key != 13)
+        return true;
+    if (key === 13 && el.shiftKey){
+        return true;
+    }
+    link = $('#3d-view-link').val();
+    console.log(link);
+    $.ajax({
+        url: "/load_viewer",
+        type: 'POST',
+        data: JSON.stringify({
+            link: link
+        }),
+        timeout: 5000,
+        success: function(data){
+            input_json = JSON.parse(data);
+            console.log(input_json);
+            OpenViewer(input_json['html'], input_json['data']);
+            $('#3d-view-link').val('');
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+
+}
+
+function OpenPostListPopup(json){
+    PopupOpen(PostList, json);
+}
+
+function PostList(form, json){
+    LoadStart();
+    $.ajax({
+        url: "/get_my_posts_popup",
+        type: 'POST',
+        data: JSON.stringify(json),
+        timeout: 5000,
+        success: function(data){
+            input_json = JSON.parse(data);
+            html = input_json['html'];
+            form.empty();
+            form.append(html);
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
+
+function PostListPopupResults(obj, json){
+    PopupClose();
+    var sel = document.getElementById('posts');
+    MarketGet('Posts', EditPost, [obj, sel.value, json])
 }

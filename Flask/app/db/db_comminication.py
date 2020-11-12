@@ -10,11 +10,21 @@ def get_user(db_adapter, identifier):
     return db_adapter.get_user(identifier)
 
 
+def get_all_users(db_adapter):
+    return db_adapter.get_all_users()
+
+
 def set_user(db_adapter, user):
     return db_adapter.set_user(user)
 
+
 def edit_user(db_adapter, user):
     return db_adapter.edit_user(user)
+
+
+def upload_profile_image(db_adapter, request_json, file):
+    return db_adapter.upload_profile_image(request_json, file)
+
 
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
@@ -60,8 +70,8 @@ def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 
 
-def get_file_object(db_adapter, s_project, file_name):
-    return db_adapter.get_file_object(s_project, file_name)
+def get_ic_object(db_adapter, project_name, request_data, file_name):
+    return db_adapter.get_ic_object(project_name, request_data, file_name)
 
 
 def get_post_file(db_adapter, request_json):
@@ -76,6 +86,10 @@ def create_post(db_adapter, request_json):
     return db_adapter.create_post(request_json)
 
 
+def edit_post(db_adapter, request_json):
+    return db_adapter.edit_post(request_json)
+
+
 def get_all_posts(db_adapter):
     return db_adapter.get_all_posts()
 
@@ -86,6 +100,10 @@ def get_my_posts(db_adapter, user):
 
 def upload_post_file(db_adapter, request_json, file):
     return db_adapter.upload_post_file(request_json, file)
+
+
+def remove_post_file(db_adapter, request_json):
+    return db_adapter.remove_post_file(request_json)
 
 
 def update_post_file(db_adapter, file, post_id, user):
@@ -124,5 +142,21 @@ def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
 
-def clear_db(db_adapter):
-    return db_adapter.clear_db()
+def add_tag(db_adapter, request_data, tags):
+    return db_adapter.add_tag(request_data, tags)
+
+
+def remove_tag(db_adapter, request_data, tag):
+    return db_adapter.remove_tag(request_data, tag)
+
+
+def get_all_tags(db_adapter):
+    return db_adapter.get_all_tags()
+
+
+def get_all_tags_with_ics(db_adapter):
+    return db_adapter.get_all_tags_with_ics()
+
+
+def clear_db(db_adapter, user):
+    return db_adapter.clear_db(user)

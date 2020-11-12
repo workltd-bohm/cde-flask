@@ -1,3 +1,5 @@
+@import url("../../common/colors.css");
+
 .drop-area {
   border: 2px dashed #ccc;
   border-radius: 20px;
@@ -40,4 +42,28 @@ p {
 }
 #doc {
   display: none;
+}
+#file-preview {
+  margin-top: 10px;
+  color: var(--file-preview-text);
+}
+.file-preview-div {
+    position:relative;
+}
+.file-preview-name{
+    display:inline-block;
+}
+.file-preview-button{
+    display:inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    background-color:rgba(192,192,192,0.5);
+}
+.file-preview-button:hover{
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    background-color:rgba(192,192,192,0.1);
+    cursor: pointer;
 }

@@ -15,8 +15,6 @@ function CreateSpace(data) {
 
     g_project.overlay = false;
 
-    // g_project.project_position = data.path;
-
     g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
@@ -24,7 +22,7 @@ function CreateSpace(data) {
         .data([data])
         .enter()
         .append("g")
-        .attr("class","star")
+        .attr("class","star dom")
         .style("opacity", 0) // must - old not deleted yet
         .transition() // must - old not deleted yet
         .delay(100) // must - old not deleted yet
@@ -38,8 +36,11 @@ function AddSun(obj, data){
     data.values.this = obj;
     data.values.parent = obj;
     data.values.back = data;
+    data.values.data = data;
     data.values.rotation = 1;
     data.values.sun = true;
+
+    g_root.universe.data.overlay_type == "ic" ? WrapOpenFile(data, false):1;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");
@@ -74,7 +75,7 @@ function AddSun(obj, data){
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
         .on("mouseover",function(d){
-            if(!g_project.overlay && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+            if(!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
             // ClickStart(function(data){
@@ -95,7 +96,7 @@ function AddSun(obj, data){
             .data(data.sub_folders)
             .enter()
             .append("g")
-            .attr("class","planet")
+            .attr("class","planet dom")
             .each(function(d, i){AddChildren(d3.select(this), d, data, i);});
     }
 
@@ -118,6 +119,9 @@ function AddSun(obj, data){
     //             // NONE
     //         }, data);
     //     });
+
+    if(g_project.move) MoveCreate(data.values.this, data.values.back);
+
 }
 
 function AddChildren(obj, data, parent, position=0){
@@ -151,6 +155,10 @@ function AddChildren(obj, data, parent, position=0){
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
+    data.values.background = data.values.object.append("circle")
+        .attr("class", "planet background"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
+        .attr("r", g_PlanetRadius);
+
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern"+(data.is_directory ? " dir"+(data.sub_folders == 0 ? " empty":""):""))
         .attr("r", g_PlanetRadius);
@@ -174,8 +182,13 @@ function AddChildren(obj, data, parent, position=0){
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
-            if(!g_project.overlay && g_root.zoom){
-                g_root.universe.data.overlay_type == "ic" ? OverlayCreate(d3.select(this), d, data, true):1;
+            if(!g_project.overlay && !g_project.move && g_root.zoom){
+                //console.log(g_root.universe.data.overlay_type)
+                switch(g_root.universe.data.overlay_type){
+                    case "ic":
+                    case "search": OverlayCreate(d3.select(this), d, data, true); break;
+                    default: break;
+                }
             }
         })
         .on("mousedown",function(d){
@@ -186,12 +199,14 @@ function AddChildren(obj, data, parent, position=0){
             }, data);
         })
         .on("mouseup",function(d){
-            var func = function(){};
-            switch(g_root.universe.data.overlay_type){
-                case "user" : func = GetWarp; break;
-                default : func = SunFadeout; break;
+            if (!g_project.selection){
+                var func = function(){};
+                switch(g_root.universe.data.overlay_type){
+                    case "user" : func = GetWarp; break;
+                    default : func = SunFadeout; break;
+                }
+                ClickStop(func, data, true);
             }
-            ClickStop(func, data, true);
         });
 
     data.values.checked = data.values.this.append("foreignObject")
@@ -203,34 +218,46 @@ function AddChildren(obj, data, parent, position=0){
         .style("opacity", 0)
 
     data.values.checked.append("xhtml:div")
-        .attr("class", "planet foregin")
+        .attr("class", "planet foregin select")
         .append("i")
-        .attr("class", "material-icons")
+        .attr("class", "planet material-icons select")
+        .style("font-size", g_OverlayItem+"px")
         .html("check_circle")
 
 }
 
 // -------------------------------------------------------
 
-function AddTspan(target, newobj, text){
+function AddTspan(target, newobj, text, prefix=null){
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+    text = text.slice(0, TEXT_MAX_TEXT);
+    if(text.length >= TEXT_MAX_TEXT)
+        text = text.slice(0, TEXT_MAX_TEXT - 4) + "...";
+
     var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
     newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;
     var spacing = parseFloat($(target.node()).css("fontSize"));
+
     for(var i = 0; i <= slice; i++){
         target.append("tspan")
         .attr('x', 0)
         .attr('y', (i-(slice)/2)*spacing) //TEXT_SPACING)
         .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
     }
+    if(prefix){
+        target.append("tspan")
+        .attr('x', 0)
+        .attr('y', (slice+1-(slice)/2)*spacing) //TEXT_SPACING)
+        .html(prefix.slice(0)) // 1 to remove "."
+    }
 }
 
 function AddText(data, cls="", fix=false) {
     var newobj = data.values;
     var newName = data.name;
-    if(data.type){
-        newName = data.name + data.type
-    }
+    // if(data.type){
+    //     newName = data.name + data.type
+    // }
     newobj.text_len = newName.length;
     newobj.text = newobj.object.append("g")
         .attr("class", cls+" text")
@@ -240,14 +267,14 @@ function AddText(data, cls="", fix=false) {
         .attr("y",0)
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
-    AddTspan(tmp, newobj, newName);
+    AddTspan(tmp, newobj, newName, data.type? data.type : null );
     tmp = newobj.text.append("text")
         .attr("class", cls+" text_front")
         .attr("x",0)
         .attr("y",0)
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
-    AddTspan(tmp, newobj, newName);
+    AddTspan(tmp, newobj, newName, data.type? data.type : null);
 }
 
 function SunFadeout(data){
@@ -311,7 +338,7 @@ function SunFadeout(data){
 function GetWarp(data){
     if(!g_project.warp) {
         //console.log(g_root.universe.data)
-        //console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_project.skip, g_project.search,g_project.paths)
         if(!g_project.search)
             switch(g_root.universe.data.overlay_type){
                 case "search": 
@@ -319,11 +346,11 @@ function GetWarp(data){
                 default: break;
             }
         else{
-            //console.log(g_project.skip, g_project.search,g_project.history)
+            //console.log(g_project.skip, g_project.search,g_project.paths)
             // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
             //     console.log(1)
-            //     g_project.history = g_project.skip.hist_path.this;
-            //     g_project.skip.hist_path.child.selectAll("g").remove();
+            //     g_project.paths = g_project.skip.paths_path.this;
+            //     g_project.skip.paths_path.child.selectAll("g").remove();
             // }
             
             // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
@@ -340,7 +367,7 @@ function GetWarp(data){
         if (g_project.skip) g_project.skip.values.parent.remove()
         if (data) g_project.skip = data;
         
-        //console.log(g_project.skip, g_project.search,g_project.history)
+        //console.log(g_project.skip, g_project.search,g_project.paths)
         switch(g_root.universe.data.overlay_type){
             case "user": UserActivity(g_project.skip); break;
             case "ic": CreateSpace(g_project.skip); break;
@@ -382,6 +409,12 @@ function AnimateUniverse() {
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform","translate("+(g_root.x)+","+(g_root.y)+"), scale("+(g_root.scale)+")") //, rotate("+(g_root.deg)+")")
     }
+
+    if(g_project.hist_path)
+        g_project.hist_path.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform","translate("+(g_project.width)+","+(g_PathRadius*HISTORY_ORBIT_COEF)+")")
 }
 
 function AnimateStar(data) {
@@ -405,8 +438,10 @@ function AnimatePlanet(data) {
 
         data.values.children.selectAll("g.planet").each(function(data){
             var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
-            var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
-            var pos =  rot_x*TEXT_MOVE_COEF*data.values.text_len;
+            // var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
+            //var anchor =  (rot_x > 0) ? "start" : "end";
+            var anchor = "middle";
+            var pos =  0; //rot_x*TEXT_MOVE_COEF*data.values.text_len;
             data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()
                 .ease("linear")
@@ -491,6 +526,8 @@ function DashboardCreate(data, project_position=null) {
     //g_project.project_position = project_position;
 
     PathCreation(data);
+
+    HistoryCreation(data);
 
     ProjectPosiotionSet(g_root.universe.data);
 

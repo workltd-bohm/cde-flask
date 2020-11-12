@@ -1,7 +1,7 @@
 <h3>Share project</h3>
 <div class="scroll">
   <div class="form__group field">
-    <input type="text" class="form__field" id="user_name" required />
+    <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
     <label for="user_name" class="form__label">User</label>
   </div>
 
@@ -17,4 +17,4 @@
   </div>
   <br>
 </div>
-<input type="button" value="Add user" onclick="ShareProject('{{ project_id }}')" />
+<input type="button" value="Share" onclick="ShareProject('{{ project_id }}')" />

@@ -7,9 +7,9 @@
   z-index: 2;
   height: 100%;
   transition: all 0.3s;
-  -webkit-box-shadow: 10px 0px 10px rgba(255,255,255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
+  /*-webkit-box-shadow: 10px 0px 10px rgba(255,255,255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
   -moz-box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
-  box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
+  box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);*/
   text-align: center;
   overflow: hidden;
 }
@@ -33,7 +33,7 @@
 
 .menu-fixed .material-icons.back {
   display: none;
-  color: black;
+  color: gray;
   float: left;
   left: 10px;
   top: 10px;
@@ -112,7 +112,7 @@
 /*This is the "logo" at the moment the name "Supper Leggera"*/
 .menu-fixed .logo p {
   display: none;
-  color: #000;
+  color: #bbb;
   font-size: 26px;
   padding-bottom: 0;
   font-weight: 700;
@@ -135,6 +135,12 @@
   transition: all 0.2s;
   box-sizing: initial;
 }
+
+.menu-right .logo  span {
+    background: var(--side-menu);
+  /*border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
+}
+
 .menu-fixed .logo:hover ~ p {
   transition: all 0.3s;
 }
@@ -153,6 +159,7 @@
 .menu-fixed .logo:hover > span.reverse {
   transform: rotateZ(-180deg) translateX(10px);
   -webkit-transform: rotateZ(-180deg) translateX(10px);
+  background: var(--side-menu-logo-bg-right);
 }
 
 .menu-fixed .logo:hover > span::after {
@@ -167,6 +174,10 @@
   left: -15px;
   position: absolute;
   top: -8px;
+}
+
+.menu-left .logo:hover > span::after {
+  border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
 }
 
 /*This is the little text under the Logo text - not used at the moment*/
@@ -219,7 +230,7 @@
   display: none;
   z-index: 1;
   margin: auto;
-  color: #000; /*This is the color of the text next to the icon (in an expnaded menu)*/
+  color: var(--side-menu-text); /*This is the color of the text next to the icon (in an expnaded menu)*/
   font-size: 18px;
   font-weight: 500;
   position: absolute;
@@ -254,4 +265,28 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   background: linear-gradient(180deg, #1B2734 5.11%, #000000 100%);
   z-index: 1;
+}
+
+.menu-left{
+    background-color: var(--left-side-menu);
+    height: 100%;
+}
+
+.icon-menu{
+    height: 100%;
+    vertical-align: bottom;
+}
+
+.side-menu-icon{
+    height: 2.3vw;
+    width: 2.3vw;
+    opacity: 70%;
+}
+
+.down{
+    bottom: 5%;
+}
+
+.side-menu-icon:hover{
+    opacity: 100%;
 }

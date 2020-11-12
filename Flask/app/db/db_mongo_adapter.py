@@ -8,16 +8,16 @@ from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
 import app.model.messages as msg
-
+import json
 
 class DBMongoAdapter:
 
     def __init__(self):
+        self._client = MongoClient('localhost:27017')
         self._db = None
 
     def connect(self):
         try:
-            self._client = MongoClient('localhost:27017')
             self._db = self._client.slDB
             self._fs = gridfs.GridFS(self._db)
         except ConnectionFailure(message='', error_labels=None):
@@ -43,6 +43,17 @@ class DBMongoAdapter:
         self._close_connection()
         return message, user
 
+    def get_all_users(self):
+        col = self._db.Users
+        result = col.find()
+        # print(result)
+        usernames = []
+        if result:
+            for user in result:
+                usernames.append(user['username'])
+        self._close_connection()
+        return usernames
+
     def set_user(self, user):
         col = self._db.Users
         user_query = {'email': user.email}
@@ -67,6 +78,22 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def upload_profile_image(self, request_json, file):
+        col = self._db.fs.files
+        stored_id = str(self._fs.put(file,
+                                     file_id='default',
+                                     user=request_json['user'],
+                                     file_name=request_json['file_name'],
+                                     type=request_json['type'],
+                                     from_project=False
+                                     ))
+        col.update_one({'file_id': 'default'},
+                       {'$set': {'file_id': str(stored_id)}})
+        message = msg.IC_SUCCESSFULLY_ADDED
+
+        self._close_connection()
+        return message, str(stored_id)
+
     def confirm_account(self, user):
         col = self._db.Users
         message = msg.USER_NOT_FOUND
@@ -77,6 +104,7 @@ class DBMongoAdapter:
         return message
 
     def _close_connection(self):
+        #print('close')
         self._client.close()
 
     def upload_folder_structure(self, project, user):
@@ -174,12 +202,12 @@ class DBMongoAdapter:
                                                           "file": file,
                                                           "description": file_obj.description})
                                      .inserted_id)
-            col.update_one({'file_id': 'default'},
-                           {'$set': {'file_id': str(file_obj.stored_id)}})
+            col_file.update_one({'file_id': 'default'},
+                                {'$set': {'file_id': str(file_obj.stored_id)}})
             # print(file_obj.to_json())
             project.update_file(file_obj)
             # print(project.to_json())
-            col_file.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            col.update_one({'project_name': project.name}, {'$set': project.to_json()})
             project_uploaded = True
         self._close_connection()
         return project_uploaded
@@ -187,6 +215,7 @@ class DBMongoAdapter:
     def upload_file(self, project_name, file_obj, file):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -195,13 +224,17 @@ class DBMongoAdapter:
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 file_obj.stored_id = str(self._fs.put(file,
-                                    file_name=file_obj.name+file_obj.type,
-                                    parent=file_obj.parent,
-                                    parent_id=file_obj.parent_id,
-                                    description=file_obj.description
-                                    ))
-                # col_file.update_one({'file_id': 'default'},
-                #                     {'$set': {'file_id': str(file_obj.stored_id)}})
+                                                      file_id='default',
+                                                      file_name=file_obj.name+file_obj.type,
+                                                      parent=file_obj.parent,
+                                                      parent_id=file_obj.parent_id,
+                                                      description=file_obj.description,
+                                                      from_project=True
+                                                      ))
+                # col.update_one({'file_id': 'default'},
+                #                {'$set': {'file_id': str(stored_id)}})
+                col_file.update_one({'file_id': 'default'},
+                                    {'$set': {'file_id': str(file_obj.stored_id)}})
                 add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
@@ -322,20 +355,21 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
-    def get_file_object(self, s_project, file_name):
+    def get_ic_object(self, project_name, request_data, file_name):
         col = self._db.Projects
-        project_query = {'project_name': s_project['name']}
+        project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         ic = None
         if project_json:
             project = Project.json_to_obj(project_json)
-            ic = project.find_ic(s_project, file_name, project.root_ic)
+            ic = project.find_ic(request_data, file_name, project.root_ic)
         return ic
 
     def get_post_file(self, request_json):
-        col = self._db.Marketplace.Posts.Files
+        stored_file = None
         file_query = request_json
-        stored_file = col.find_one(file_query, {'_id': 0})
+        for grid_out in self._fs.find(file_query, no_cursor_timeout=True):
+            stored_file = grid_out
         self._close_connection()
         return stored_file
 
@@ -371,6 +405,17 @@ class DBMongoAdapter:
         self._close_connection()
         return message, str(post_id)
 
+    def edit_post(self, request_json):
+        col = self._db.Marketplace.Posts
+        posts_query = {'post_id': request_json['post_id']}
+        message = msg.POST_NOT_FOUND
+        if col.find_one(posts_query, {'_id': 0}):
+            col.update_one(posts_query,
+                           {'$set': request_json})
+            message = msg.POST_EDITED
+        self._close_connection()
+        return message
+
     def get_all_posts(self):
         col = self._db.Marketplace.Posts
         result = col.find()
@@ -395,23 +440,56 @@ class DBMongoAdapter:
         return res
 
     def upload_post_file(self, request_json, file):
-        col = self._db.Marketplace.Posts.Files
-        # file_query = {'file_name': request_json['file_name']}
-        # file_json = col.find_one(file_query, {'_id': 0})
+        col = self._db.fs.files
+        file_query = {'file_name': request_json['file_name']}
+        file_json = self._fs.find_one(file_query)
+        stored_id = ''
+        # message = msg.DEFAULT_ERROR
         # if file_json is None:
-        stored_id = str(col.insert_one({"file_id": "default",
-                                        "post_id": request_json['user'],
-                                        "file_name": request_json['file_name'],
-                                        "file": file,}).inserted_id)
+        stored_id = str(self._fs.put(file,
+                                     file_id='default',
+                                     post_id=request_json['user'],
+                                     file_name=request_json['file_name'],
+                                     type=request_json['type'],
+                                     from_project=False
+                                     ))
         col.update_one({'file_id': 'default'},
-                                    {'$set': {'file_id': str(stored_id)}})
+                       {'$set': {'file_id': str(stored_id)}})
         message = msg.IC_SUCCESSFULLY_ADDED
 
         self._close_connection()
         return message, str(stored_id)
 
+    def remove_post_file(self, request_json):
+        col = self._db.fs.files
+        col_file_chunks = self._db.fs.chunks
+        file_query = {#'file_name': request_json['file_name'],
+                      'file_id': request_json['file_id']}
+        file_json = self._fs.find_one(file_query)
+        message = msg.STORED_FILE_NOT_FOUND
+        if file_json and not file_json.from_project:
+            col.delete_many(file_query)
+            col_file_chunks.delete_many(file_query)
+            message = msg.FILE_SUCCESSFULLY_DELETED
+        if 'post_id' in request_json:
+            col_post = self._db.Marketplace.Posts
+            posts_query = {'post_id': request_json['post_id']}
+            post_json = col_post.find_one(posts_query, {'_id': 0})
+            if post_json:
+                # print('****', post_json)
+                post = Post.json_to_obj(post_json)
+                if 'image' in request_json['type']:
+                    post.documents['image'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
+                if 'doc' in request_json['type']:
+                    post.documents['doc'].remove({'id': request_json['file_id'], 'name': request_json['file_name']})
+                col_post.update_one(posts_query, {'$set': post.to_json()})
+                message = msg.FILE_SUCCESSFULLY_DELETED_FORM_POST
+
+        self._close_connection()
+        return message
+
     def update_post_file(self, file, post_id, user):
-        col = self._db.Marketplace.Posts.Files
+        col = self._db.fs.files
         file_query = {'file_name': file, 'post_id': user['username']}
         col.update_one(file_query,
                        {'$set': {'post_id': post_id}})
@@ -495,10 +573,20 @@ class DBMongoAdapter:
     def share_project(self, request_data, user):
         col_users = self._db.Users.Roles
         col = self._db.Users
+        user_query = {'user_id': user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        if u:
+            for pr in u['projects']:
+                if request_data['project_id'] == pr['project_id']:
+                    if pr['role'] != 1:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
         # TODO: check does user has the rights to share
         user_query = {'username': request_data['user_name']}
         result = col.find_one(user_query, {'_id': 0})
-        message = msg.DEFAULT_ERROR
         if result:
             user_id = result['id']
             user_query = {'user_id': user_id}
@@ -530,7 +618,118 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
-    def clear_db(self):
+    def add_tag(self, request_data, tags):
+        col = self._db.Projects
+        col_tags = self._db.Tags
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.add_tag(request_data, tags, project.root_ic)
+            if message == msg.TAG_SUCCESSFULLY_ADDED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tags = request_data['tags']
+                tag_json = {}
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i] in tags:
+                            if request_tags[i].startswith('#'):
+                                already_exists = False
+                                for ic in tags[request_tags[i]]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        already_exists = True
+                                        break
+                                if not already_exists:
+                                    tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
+                                                                  'project_name': request_data['project_name'],
+                                                                  'parent_id': request_data['parent_id']})
+
+                                col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                                # ta = col_tags.find()
+                                # ta = list(ta)
+                                # print('>>>>>+++', ta)
+                                break
+                        else:
+                            if request_tags[i].startswith('#'):
+                                tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
+                                                              'project_name': request_data['project_name'],
+                                                              'parent_id': request_data['parent_id']}]
+
+                                col_tags.update({'id': tags['id']}, {'$set': tag_json})
+                                # ta = col_tags.find({'id': tags['id']})
+                                # ta = list(ta)
+                                # print('>>>>>---', ta)
+                else:
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i].startswith('#'):
+                            tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
+                                                          'project_name': request_data['project_name'],
+                                                          'parent_id': request_data['parent_id']}]
+                    tag_json['id'] = 'tags_collection'
+                    col_tags.insert_one(tag_json)
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def remove_tag(self, request_data, tag):
+        col = self._db.Projects
+        col_tags = self._db.Tags
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.remove_tag(request_data, tag, project.root_ic)
+            if message == msg.TAG_SUCCESSFULLY_REMOVED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tag = request_data['tag']
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    if request_tag in tags:
+                        tags[request_tag].remove({'ic_id': request_data['ic_id'],
+                                                  'project_name': request_data['project_name'],
+                                                  'parent_id': request_data['parent_id']})
+
+                        col_tags.update_one({'id': tags['id']}, {'$set': tags})
+
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def get_all_tags(self):
+        col = self._db.Tags
+        result = col.find()
+        tags = []
+        if result:
+            for tag in result:
+                tag.pop('_id', None)
+                for key in tag:
+                    tags.append(key)
+        self._close_connection()
+        return tags
+
+    def get_all_tags_with_ics(self):
+        col = self._db.Tags
+        result = col.find()
+        tags = list(result)
+        # tags.pop('_id', None)
+        # if result:
+        #     for tag in result:
+        #         tag.pop('_id', None)
+        #         tags.append(tag)
+        self._close_connection()
+        return tags
+
+    def clear_db(self, user):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
         self._db.Marketplace.Posts.drop()
@@ -538,6 +737,7 @@ class DBMongoAdapter:
         self._db.Roles.drop()
         self._db.Users.Roles.drop()
         self._db.Marketplace.Posts.Files.drop()
+        self._db.Tags.drop()
         self._db.fs.files.drop()
         self._db.fs.chunks.drop()
         # self._db.Users.drop()
@@ -545,6 +745,7 @@ class DBMongoAdapter:
         col_users = self._db.Users.Roles
         col = self._db.Users
         # TODO: check does user has the rights to share
+        col.update_one({'email': user['email']}, {'$set': {'picture': ''}})
         result = col.find()
         for user in result:
             user_query = {'user_id': user['id']}

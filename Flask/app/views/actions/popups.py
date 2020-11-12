@@ -15,31 +15,32 @@ def get_open_file():
         print(request_data)
 
         if db.connect(db_adapter):
-            s_project = session['project']
-            result = db.get_file_object(db_adapter, s_project, name + type)
+            project_name = session['project']['name']
+            result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
                 details = [x.to_json() for x in result.history]
+                tags = [x.to_json() for x in result.tags]
                 file_name = result.name + result.type
                 path = result.path
                 share_link = 'http://bohm.cloud/get_shared_file/' + file_name
                 comments = [x.to_json() for x in result.comments]
-                print('>>>>>>>>>>>>', comments)
 
                 response = {
                     'html': render_template("popup/open_file.html",
                                             preview='/get_shared_file/' + name + type
                                             ),
-                    'details': render_template("activity/details.html",
-                                               details=details,
-                                               file_name=file_name,
-                                               path=path,
-                                               share_link=share_link
-                                               ),
-                    'comments': render_template("activity/comments.html",
+                    'activity': render_template("activity/filter_files.html",
+                                                details=details,
+                                                tags=tags,
+                                                file_name=file_name,
+                                                path=path,
+                                                share_link=share_link,
                                                 comments=comments,
-                                                project_name=s_project['name'],
+                                                project_name=project_name,
                                                 parent_id=result.parent_id,
-                                                ic_id=result.ic_id
+                                                ic_id=result.ic_id,
+                                                stored_id=result.stored_id,
+                                                name=name+type
                                                 ),
                     'data': []
                 }
@@ -47,13 +48,12 @@ def get_open_file():
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
                 return resp
-        else:
-            print(str(msg.DB_FAILURE))
-            resp = Response()
-            resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message'])
-            return resp
 
+        print(str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
 
     else:
         return redirect('/')
@@ -96,7 +96,7 @@ def get_new_project():
     if main.IsLogin():
         response = {
             'html': render_template("popup/new_project_popup.html"),
-            'data':[]
+            'data': []
         }
         print(response)
         resp = Response()
@@ -116,7 +116,7 @@ def get_upload_project():
     if main.IsLogin():
         response = {
             'html': render_template("popup/upload_folder_popup.html"),
-            'data':[]
+            'data': []
         }
         print(response)
         resp = Response()
@@ -142,12 +142,12 @@ def get_new_folder():
             if result:
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -167,6 +167,7 @@ def get_new_folder():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
@@ -183,16 +184,16 @@ def get_new_file():
                 filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
-                            project_path=request_data["project_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            project_code=user['project_code'],
-                            company_code=user['company_code'],
-                            is_file=request_data["is_file"],
-                            inputs=filter_file
-                        ),
-                    'data':[]
+                                            project_path=request_data["project_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            project_code=user['project_code'],
+                                            company_code=user['company_code'],
+                                            is_file=request_data["is_file"],
+                                            inputs=filter_file
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -212,6 +213,7 @@ def get_new_file():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_rename_ic', methods=['POST'])
 def get_rename_ic():
@@ -226,15 +228,15 @@ def get_rename_ic():
                 filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            old_name=request_data["old_name"],
-                            is_directory = True if request_data["is_directory"] else False,
-                            inputs=filter_file
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            old_name=request_data["old_name"],
+                                            is_directory=True if request_data["is_directory"] else False,
+                                            inputs=filter_file
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -254,6 +256,7 @@ def get_rename_ic():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_delete_ic', methods=['POST'])
 def get_delete_ic():
@@ -261,20 +264,27 @@ def get_delete_ic():
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
+        is_multi = True if "is_multi" in request_data else False
         print(request_data)
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)
             if result:
                 response = {
                     'html': render_template("popup/delete_ic_popup.html",
-                            parent_path=request_data["parent_path"],
-                            parent_id=request_data["parent_id"],
-                            ic_id=request_data["ic_id"],
-                            project_name=project_name,
-                            delete_name=request_data["delete_name"],
-                            is_directory = True if request_data["is_directory"] else False
-                        ),
-                    'data':[]
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            delete_name=request_data["delete_name"],
+                                            is_directory=True if request_data["is_directory"] else False,
+                                            multi=is_multi,
+                                            )
+                    if not is_multi else
+                            render_template("popup/delete_ic_popup.html",
+                                            multi=is_multi,
+                                            delete_name="Selections",
+                                            ),
+                    'data': []
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -294,6 +304,7 @@ def get_delete_ic():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
 
 @app.route('/get_share', methods=['GET'])
 def get_share():
@@ -306,14 +317,13 @@ def get_share():
             user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             if result:
-                print('>>>>>>>', result['project_id'])
+                usernames = db.get_all_users(db_adapter)
                 response = {
                     'html': render_template("popup/share_project.html",
-                            project_id=result["project_id"]
-                        ),
-                    'data':[]
+                                            project_id=result["project_id"]
+                                            ),
+                    'data': usernames
                 }
-                print('>>>>>>>', response)
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
@@ -327,6 +337,62 @@ def get_share():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_help')
+def get_help():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        data = [
+            {'new_folder name': 'opens new folder popup\n'
+                                'name (optional) - set the folder name without opening the popup'},
+            {'create_file': 'opens create file popup'},
+            {'open': 'opens preview'},
+            {'rename': 'renames information container'},
+            {'tag #tag_name color': 'tag - adding a tag(s) to the information container \n'
+                                    'tag_name (mandatory) - set tag name \n'
+                                    'color (optional - default is white) - set the tag color\n'
+                                    'example - tag #some_tag black #some_other_tag green'}
+        ]
+        response = {
+            'html': render_template("popup/help.html",
+                                    data=data),
+            'data': []
+        }
+        print(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_help_suggest')
+def get_help_suggest():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        response = {
+            'data': ['new_folder',
+                     'create_file',
+                     'open',
+                     'rename',
+                     'tag'
+                     ]
+        }
+        print(response)
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(response)
+        return resp
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']

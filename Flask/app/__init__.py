@@ -1,4 +1,5 @@
-from flask import Flask, make_response,json, request, Response, render_template, session, redirect, url_for, send_file
+from flask import Flask, make_response,json, request, Response, render_template, session, redirect, url_for, \
+    send_file, send_from_directory
 
 import app.config as cfg
 import app.db.db_comminication as db
@@ -30,10 +31,13 @@ from app.views.actions import getters
 from app.views.actions import setters
 from app.views.actions import user
 from app.views.actions import search
+from app.views.actions import selection
 
 from app.views.marketplace import make
 from app.views.marketplace import posts
 from app.views.marketplace import bids
+
+from app.views.viewer import create
 
 app.test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',

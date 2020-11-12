@@ -1,4 +1,4 @@
-<td class="menu-fixed" id="index-menu">
+<td class="menu-fixed menu-left" id="index-menu">
   <a class="close" name="menu">
     <i class="material-icons back">&#xE314;</i>
   </a>
@@ -11,13 +11,15 @@
   </a>
   <hr>
   <ul class="menu">
-    <li class="menu-link" onclick="UserProfile()"><i class="material-icons w3-xxlarge">account_circle</i><p>{{ username }}</p></li>
-    <li class="menu-link" onclick="SelectProject()"><i class="material-icons w3-xxlarge">touch_app</i><p>Project</p></li>
-    <li class="menu-link" onclick="SelectMarket()"><i class="material-icons w3-xxlarge">&#xE8CC;</i><p>Market</p></li>
-    <!-- <li class="menu-link" onclick="OpenFilterActivity()"><i class="material-icons w3-xxlarge">search</i><p>Search</p></li> -->
-    <li class="menu-link" href="/logout"><i class="material-icons w3-xxlarge">follow_the_signs</i><p>Logout</p></li>
-    <li class="menu-link" href="/clear_projects"><i class="material-icons w3-xxlarge">delete</i><p>clear_db</p></li>
-    <li class="menu-link" href="/upload_project"><i class="material-icons w3-xxlarge">&#xE87A;</i><p>upload_project</p></li>
+    <li class="menu-link" onclick="UserProfile()"><img class="profile-icon" src="/get_profile_image/{{ picture }}"/><p>{{ username }}</p></li>
+    <li class="menu-link" onclick="SelectProject()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_project.png')}}"/><p>Project</p></li>
+    <li class="menu-link" onclick="SelectMarket()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_market.png')}}"/><p>Market</p></li>
+    <li class="menu-link" onclick="Select3D()"><img class="side-menu-icon" src="{{url_for('static', filename='img/side_menu/icon_3d.png')}}"/><p>3D View</p></li>
+<!--    <li class="menu-link" href="/upload_project"><i class="material-icons w3-xxlarge">&#xE87A;</i><p>upload_project</p></li>-->
+  </ul>
+  <ul class="menu icon-menu">
+    <li class="menu-link" href="/clear_projects"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/><p>clear_db</p></li>
+    <li class="menu-link" href="/logout"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_exit.png')}}"/><p>Logout</p></li>
   </ul>
 </td>
 <script src="{{ url_for('static', filename='js/menu/menu.js') }}" charset="utf-8"></script>

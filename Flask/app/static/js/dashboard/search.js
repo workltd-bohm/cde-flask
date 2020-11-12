@@ -1,21 +1,24 @@
 SEARCH_HISTORY = {};
 
-function OpenFilterActivity(){
+function OpenFilterActivity(json, open=false){
 
     $.ajax({
         url: "/get_filter_activity",
-        type: 'GET',
-//        data: JSON.stringify({bid_id: data}),
+        type: 'POST',
+        data: JSON.stringify({
+            name: json.name,
+            parent_id: json.parent_id,
+            ic_id: json.ic_id
+        }),
         timeout: 5000,
         success: function(data){
+            //console.log(data);
+            if(data == 'Success')
+                return true;
             data = JSON.parse(data);
             if(data){
-                OpenActivity(data.html, null, false);
-                FilterSwap('#filter-search');
-                $('#filter-details-tab').hide();
-                $('#filter-comments-tab').hide();
-                $('#filter-details').hide();
-                $('#filter-comments').hide();
+                OpenActivity(data.html, null, open);
+                FilterSwap('details');
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -54,7 +57,9 @@ function FilterOut(obj){
 
 function FilterSwap(target){
     $(".project-view").children().hide();
-    $(target).show();
+    $(".project-box").removeClass("selected");
+    $("#filter-"+target).show();
+    $("#filter-"+target+"-tab").addClass("selected");
 }
 
 function SearchOpen(data){

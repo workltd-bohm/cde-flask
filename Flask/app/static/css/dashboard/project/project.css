@@ -1,30 +1,46 @@
 circle.pattern.path {
     fill: #121212;
-    stroke: rgba(250,250,250,0.8);
+    stroke: rgba(250,250,250,0.2);
     stroke-width: 2;
 }
 
 circle.pattern.star {
-    /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
-    fill : url("#patern_sun_fix");
-     /*fill: #565656;*/
+     /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
+    /*fill : url("#patern_sun_fix"); */
+     fill: #121212;
     /*stroke: none;*/
-    /* stroke: rgba(250,250,250,0.015);
-    stroke-width: 1;*/
+     stroke: rgba(250,250,250,0.25);
+    stroke-width: 1;
+}
+circle.background.planet {
+    /* fill : url("#patern_planet_file"); */
+}
+circle.background.planet.dir {
+    /* fill : url("#patern_planet_folder"); */
+}
+circle.background.planet.empty {
+    /* fill : url("#patern_planet_empty"); */
 }
 circle.pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
     fill: #565656;
     /*stroke: none;*/
-    stroke: rgba(190, 190, 190, 0.5);
-    stroke-width: 4;
+    stroke: rgba(250, 250, 250, 0.7);
+    stroke-width: 2;
+    opacity: 50%;
 }
 circle.pattern.planet.dir{
-    stroke: rgba(30, 118, 190, 0.5);
+    /*stroke: rgba(30, 118, 190, 0.5);*/
+    stroke: none;
+    opacity: 50%;
 }
 circle.pattern.planet.empty{
-    stroke: rgba(190, 30, 20, 0.5);
+    /*stroke: rgba(190, 30, 20, 0.5);*/
+    stroke: rgba(250, 250, 250, 0.5);
+    stroke-width: 1;
+    stroke-dasharray: 3;
+    opacity: 50%;
 }
 
 circle.shader {
@@ -51,6 +67,25 @@ circle.overlay.select {
     fill: rgba(0, 0, 0, 0.0);
 }
 
+circle.selection.pattern {
+    fill: rgba(18, 18, 18, 0.5);
+}
+circle.selection.pattern.single {
+    fill: rgba(255, 136, 0, 0.3);
+}
+circle.selection.pattern.file {
+    fill: rgba(255, 238, 0, 0.3);
+}
+circle.selection.pattern.folder {
+    fill: rgba(0, 140, 255, 0.3);
+}
+circle.selection.pattern.mix {
+    fill: rgba(30, 255, 0, 0.3);
+}
+circle.selection.select {
+    fill: rgba(0, 0, 0, 0.0);
+}
+
 text.text_back {
     fill: rgb(0, 0, 0);
     filter: url("#filter_shadow");
@@ -60,23 +95,44 @@ text.text_front {
     fill: rgb(250, 250, 250);
     text-anchor: middle;
 }
+text.text_allgroup {
+    fill: rgb(250, 250, 250);
+    font-size: 20px;
+    cursor: pointer;
+}
+rect.text_allgroup {
+    fill: rgb(250, 250, 250);
+}
 
 g.star.object > g.text > text {
-    font-size: 40px;
+    font-size: 20px;
 }
 g.star.overlay > g.text > text {
     font-size: 20px;
 }
 g.planet.object > g.text > text {
-    font-size: 18px;
+    font-size: 12px;
 }
 g.path.draw > g.text > text {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .foregin {
     text-align: center;
+    vertical-align: middle;
 }
-.foregin .material-icons{
+.foregin .material-icons.sun{
+    color: #bcbcbc;
+}
+.foregin .material-icons.planet{
+    color: #ffffff;
+    background-color: black;
+}
+.foregin .material-icons.planet.select{
+    color: #ffffff;
+    background-color: #00000000;
+}
+
+.foregin .material-icons.history{
     color: #bcbcbc;
 }

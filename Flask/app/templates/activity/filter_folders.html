@@ -1,0 +1,107 @@
+
+
+<div class="project-tab">
+  <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+    <p>Details</p>
+  </div>
+  <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
+    <p>Comments</p>
+  </div>
+  <div class="project-box" id="filter-search-tab" onclick="FilterSwap('search')">
+    <p>Filters</p>
+  </div>
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+    <div class="project-view">
+      <div id="filter-details" style="display: none;">
+          <form id="filter-form-details">
+            <h6 class="tab-title">Tags</h6>
+            <div class="activity-tab-container">
+                <div class="activity-tab-container-inside" id="activity-tag-container">
+                    <br>
+                    {% for tag in tags %}
+                    <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                        <div class="tag" style="background-color: {{ tag['color'] }}">
+                            <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                                {{ tag['tag'] }}
+                            </i>
+                        </div>
+                        <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }} {{ tag['color'] }}', this )">x</span>
+                    </div>
+                    {% endfor %}
+                    <br>
+                </div>
+                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                <br>
+            </div>
+
+            <h6 class="tab-title">IC details</h6>
+            <div class="activity-tab-container">
+                <br>
+                <p><b>IC name:</b></p>
+                <p><i style="margin-left:5px;">{{ file_name }}</i></p>
+                <p><b>Path:</b></p>
+                <p><i style="margin-left:5px;">{{ path }}</i></p>
+                <p><b>Share link:</b></p>
+                <p><i style="margin-left:5px;">{{ share_link }}</i></p>
+                <br>
+            </div>
+            
+            <h6 class="tab-title">History</h6>
+            <div class="activity-tab-container">
+                <br>
+                {% for detail in details %}
+                  <div class="details_field">
+                      <p><b class="details_event_user">{{ detail['user']['username'] }}</b> <i class="details_event_name">{{ detail['event_name'] }}</i></p>
+                      <p class="details_event" style="margin-left:5px;">{{ detail['event_value'] }}</p>
+                      <p class="details_date" style="margin-left:5px;">{{ detail['date'] }}</p>
+                      <hr style="border-top: 1px solid gray; margin-left:12px; margin-right:18px;">
+                  </div>
+                {% endfor %}
+                <br>
+            </div>
+          </form>
+      </div>
+      <div id="filter-comments" style="display: none;">
+          <form id="filter-form-comments">
+            <input type="hidden" id="project_name" value="{{ project_name }}" required />
+            <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
+            <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
+            <div class="comments-div">
+                <div class="activity-tab-div-comment">
+                  {% for comment in comments %}
+                    <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
+                    <div class="comments_field">
+                        <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ comment['comment'] }}</p>
+                        <p class="details_date" style="margin-left:20px; margin-right:10px;">{{ comment['date'] }}</p>
+                    </div>
+                  {% endfor %}
+                </div>
+                <br>
+                <div class="comment-div">
+                  <textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="   Add comment..."></textarea><br>
+                </div>
+            </div>
+          </form>
+      </div>
+      <div id="filter-search" style="display: none;">
+        <form id="filter-form-search" onchange="FilterOut('#filter-form-search')">
+            <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
+
+                {% for key, value in search.items() %}
+                  <div class="form__group field">
+                      <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                          <option></option>
+                          {% for v in value.elements %}
+                            <option value="{{ v }}">{{ v }}</option>
+                          {% endfor %}
+                      </select>
+                      <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                  </div>
+                {% endfor %}
+            </div>
+          </form>
+    </div>
+    </div>
+</div>

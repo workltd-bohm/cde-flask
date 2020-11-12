@@ -3,6 +3,10 @@ import io
 import json
 import uuid
 from datetime import datetime
+import zipfile
+import shutil
+from threading import Thread
+import time
 
 from app import *
 
@@ -15,7 +19,7 @@ def get_file(file_name):
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
-                        'file_name':file_name}
+                        'file_name': file_name}
         print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
@@ -78,6 +82,63 @@ def get_shared_file(file_name):
     return resp
 
 
+@app.route('/get_folder/<path:parent_id>/<path:folder_name>', methods=['POST', 'GET'])
+def get_folder(parent_id, folder_name):
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        project_name = session.get("project")["name"]
+        request_json = {
+                        'parent_id': parent_id,
+                        'folder_name': folder_name}
+        print('POST data: %s ' % request_json)
+        if db.connect(db_adapter):
+            u = session['user']
+            response = db.get_project(db_adapter, project_name, u)
+            project = Project.json_to_obj(response)
+            ic = project.find_ic(request_json, folder_name, project.root_ic)
+            print(ic.to_json())
+            path = os.getcwd() + '\\'
+            millis = int(round(time.time() * 1000))
+            try:
+                if not os.path.exists(path + 'tmp\\'):
+                    os.mkdir(path + 'tmp\\')
+                if not os.path.exists(path + 'tmp\\' + u['id'] + '_' + str(millis)):
+                    os.mkdir(path + 'tmp\\' + u['id'] + '_' + str(millis))
+            except OSError as err:
+                print("Creation of the directory %s failed" % path + '\n' + err)
+            path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
+            json_to_temp_folder_struct(path, ic)
+
+            zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
+
+            print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name)
+            zipdir('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name, zipf)
+            zipf.close()
+            print(ic.name + '.zip')
+
+            resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\' + ic.name + '.zip',
+                             mimetype='zip',
+                             attachment_filename=ic.name + '.zip',
+                             as_attachment=True)
+
+            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis)})
+            thread.start()
+
+            return resp
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     print('Data posting path: %s' % request.path)
@@ -94,7 +155,7 @@ def upload_file():
         # print(file)
         print(request.form['data'])
         request_json = json.loads(request.form['data'])  # test_json_request
-        set_project_data(request_json)
+        set_project_data(request_json, True)
         directory = request_json['parent_path']
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
@@ -109,6 +170,7 @@ def upload_file():
                         "." + request_json['new_name'].split('.')[-1],
                         request_json['ic_id'],
                         '',
+                        [],
                         [],
                         [],
                         '',
@@ -155,19 +217,20 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        set_project_data(request_data)
+        set_project_data(request_data, True)
         print(request_data)
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
         folder = Directory(str(uuid.uuid1()),
-                    request_data['new_name'],
-                    request_data['parent_path'],
-                    [details],
-                    request_data['parent_path'] + '/' + request_data['new_name'],
-                    request_data['ic_id'],
-                    '',
-                    [],
-                    [])
+                           request_data['new_name'],
+                           request_data['parent_path'],
+                           [details],
+                           request_data['parent_path'] + '/' + request_data['new_name'],
+                           request_data['ic_id'],
+                           '',
+                           [],
+                           [],
+                           [])
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
             if result:
@@ -194,7 +257,7 @@ def rename_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        set_project_data(request_data)
+        set_project_data(request_data, True)
         print(request_data)
         if db.connect(db_adapter):
             rename = {
@@ -234,7 +297,7 @@ def delete_ic():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
-        set_project_data(delete_ic_data)
+        set_project_data(delete_ic_data, True)
         delete_ic_data['user_id'] = session['user']['id']
         print(delete_ic_data)
         if db.connect(db_adapter):
@@ -285,6 +348,7 @@ def set_dir():
 
 # ----------------------------------------------------
 
+
 def path_to_obj(path, parent=False, parent_id=""):
     p = Path(path)
     name = p.stem
@@ -301,10 +365,11 @@ def path_to_obj(path, parent=False, parent_id=""):
                          parent_id,
                          '',
                          [],
+                         [],
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [],  '', '')
     return root
 
 
@@ -319,8 +384,59 @@ def path_to_dict(path):
     return d
 
 
-def set_project_data(data):
+def json_to_temp_folder_struct(path, ic):
+    if ic.is_directory:
+        try:
+            os.mkdir(path + ic.name)
+        except OSError:
+            print("Creation of the directory %s failed" % path)
+        for sub_folder in ic.sub_folders:
+            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder)
+    else:
+        if db.connect(db_adapter):
+            result = db.get_file(db_adapter, ic.name + ic.type)
+            if result:
+                # print(result.file_name)
+                response = result.read()
+                f = open(path + ic.name + ic.type, "wb+")
+                f.write(response)
+                f.close()
+            else:
+                print(str(msg.STORED_FILE_NOT_FOUND))
+
+
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, folders, files in os.walk(path):
+        for folder in folders:
+            ziph.write(os.path.join(root, folder), os.path.relpath(os.path.join(root, folder), os.path.join(path, '..')))
+        for file in files:
+            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
+
+
+def set_project_data(data, save=False):
     if "project" in data:
         session.get("project").update(data["project"])
-        session.modified = True
-        print(session.get("project"))
+
+    if save:
+        project_name = session.get("project")["name"]
+        user = session.get('user')
+        session["undo"] = {}
+        session.get("project")["undo"] = False
+        if db.connect(db_adapter):
+                result = db.get_project(db_adapter, project_name, user)
+                if result:
+                    session.get("undo")["data"] = result
+                    session.get("undo")["position"] = session.get("project")["position"]
+                    session.get("undo")["project_name"] = session.get("project")["name"]
+                    session.get("undo")["user"] = session.get('user')
+                    session.get("project")["undo"] = True
+
+    print(session.get("project"))
+    if save: print(session.get("undo"))
+    session.modified = True
+
+def remove_folder(path):
+    time.sleep(30)
+    # Delete the zip file if not needed
+    shutil.rmtree(path)

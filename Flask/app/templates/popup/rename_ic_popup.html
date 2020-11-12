@@ -29,7 +29,7 @@
     {% endfor %}
 
     <div class="form__group_popup rectangle">
-      <input class="" name="name" id='name' value="Default" oninput="updateName(9, this)" />
+      <input class="" name="name" id='name' value="{{ old_name }}" oninput="updateName(9, this)" />
       <label for="name" class="form__label_popup">Name</label>
     </div>
     <div class="form__group_popup circle">

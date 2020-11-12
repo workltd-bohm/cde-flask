@@ -1,4 +1,5 @@
 <form class="ticket-form">
+    <input type="hidden" name="post_id" value="{{ post_id }}">
     <input type="hidden" name="bids" value="{{ bids }}">
     <div class="edit-section upper">
         <div class="edit-section left">
@@ -61,13 +62,13 @@
     </div>
     <div class="edit-section lower">
         <div class="edit-section tab">
-            <div class="edit-box" onclick="TabSwap('#3d-view')">
+            <div class="edit-box" id="edit-box-3d-view" onclick="TabSwap('3d-view')">
                 <h4>3D VIEW</h4>
             </div>
-            <div class="edit-box" onclick="TabSwap('#docs')">
+            <div class="edit-box" id="edit-box-docs" onclick="TabSwap('docs')">
                 <h4>DOCUMENTS</h4>
             </div>
-            <div class="edit-box" onclick="TabSwap('#images')">
+            <div class="edit-box" id="edit-box-images" onclick="TabSwap('images')">
                 <h4>IMAGES</h4>
             </div>
         </div>
@@ -81,15 +82,24 @@
                 </div>
             </div>
             <div id="docs" class="edit-view" style="display: none;">
-                <div class="group edit-box hover">
-                    <input type="text" name="doc" value="{{ doc }}">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Document</label>
+                <div class="drop-area" id="drop-area-doc">
+                  <form class="my-form">
+                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+                    <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
+                    <label class="button" for="doc">Select file(s)</label>
+                  </form>
+                    <div id="file-preview"></div>
                 </div>
             </div>
             <div id="images" class="edit-view" style="display: none;">
-                <div id="gallery"></div>
+                <div class="drop-area" id="drop-area-image">
+                  <form class="my-form">
+                    <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+                    <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
+                    <label class="button" for="image">Select file(s)</label>
+                  </form>
+                    <div id="gallery"></div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 from app import *
 
 from datetime import datetime
+import uuid
 import io
 
 
@@ -14,10 +15,13 @@ def create_post():
         time = datetime.strptime(request_json["date_expired"], '%Y-%m-%dT%H:%M')
         request_json['post_id'] = 'default'
         request_json['user_owner'] = session['user']
-        request_json['product'] = {"quantity": request_json['product'], 'product_id': '321', 'name': 'default name'}
+        request_json['product'] = {"quantity": request_json['product'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json.update({'date_expired': time.strftime("%d.%m.%Y-%H:%M:%S")})
         request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'], 'image': request_json['image']}
+        request_json.pop('3d-view', None)
+        request_json.pop('doc', None)
+        request_json.pop('image', None)
         request_json['bids'] = []
         request_json['current_best_bid'] = None
         request_json['comments'] = []
@@ -56,39 +60,35 @@ def create_post():
 def edit_post():
     resp = Response()
     print('Data posting path: %s' % request.path)
-    request_data = json.loads(request.get_data())
-    print(request_data)
-    # if request.get_data():
-    #     print(request.get_data())
-    #     request_json = json.loads(request.get_data())
-    #     request_json['post_id'] = 'default'
-    #     request_json['user_owner'] = session['user']
-    #     request_json['product'] = {"quantity": request_json['product'], 'product_id': '321', 'name': 'default name'}
-    #     request_json['date_created'] = '06.09.2020-12:41:25'
-    #     request_json['documents'] = ''
-    #     request_json['bids'] = []
-    #     request_json['current_best_bid'] = None
-    #     request_json['comments'] = []
-    #     request_json['status'] = 0
+    request_json = json.loads(request.get_data())
+    print(request_json)
+    if request.get_data():
+        request_json['user_owner'] = session['user']
+        request_json['product'] = {"quantity": request_json['quantity'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
+        request_json['date_edited'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
+        request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'],
+                                     'image': request_json['image']}
+        request_json.pop('3d-view', None)
+        request_json.pop('doc', None)
+        request_json.pop('image', None)
+        request_json['bids'] = []
+        request_json['current_best_bid'] = None
+        request_json['comments'] = []
+        request_json['status'] = 0
 
     if main.IsLogin():
-    #     request_json['user_owner'] = session.get('user')
-    #     print(request_json)
-    #     if db.connect(db_adapter):
-    #         result = db.create_post(db_adapter, request_json)
-    #         if result:
-    #             print(">>", result["message"])
-    #             resp.status_code = result["code"]
-    #             resp.data = result["message"]
-    #             return resp
-    #     else:
-    #         print(">", str(msg.DB_FAILURE))
-    #         resp.status_code = msg.DB_FAILURE['code']
-    #         resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
-    #         return resp
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = str(msg.DEFAULT_OK['message'])
-        return resp
+        if db.connect(db_adapter):
+            result = db.edit_post(db_adapter, request_json)
+            if result:
+                print(">>", result["message"])
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
+        else:
+            print(">", str(msg.DB_FAILURE))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
     
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -222,7 +222,7 @@ def get_bids_for_post():
 def upload_post_file():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
-        print(request.files['file'])
+        # print(request.files['file'])
         if 'file' not in request.files:
             print('No file part')
             resp = Response()
@@ -232,12 +232,47 @@ def upload_post_file():
 
         file = request.files['file'].read()
         # print(file)
-        print(request.form['data'])
+        # print(request.form['data'])
         request_json = json.loads(request.form['data'])
         request_json['user'] = session['user']['username']
 
         if db.connect(db_adapter):
             result, id = db.upload_post_file(db_adapter, request_json, file)
+            if id:
+                print(">>", result["message"])
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = json.dumps({'id': id, 'message': result["message"]})
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = 400
+                resp.data = 'not found'
+                return resp
+        else:
+            print(">", str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/remove_post_file', methods=['POST'])
+def remove_post_file():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+
+        print(request.form['data'])
+        request_json = json.loads(request.form['data'])
+        request_json['user'] = session['user']['username']
+
+        if db.connect(db_adapter):
+            result = db.remove_post_file(db_adapter, request_json)
             if id:
                 print(">>", result["message"])
                 resp = Response()
@@ -262,29 +297,33 @@ def upload_post_file():
     return resp
 
 
-@app.route('/get_post_image/<path:file_name>', methods=['POST', 'GET'])
-def get_post_image(file_name):
+@app.route('/get_post_image/<path:file_id>', methods=['POST', 'GET'])
+def get_post_image(file_id):
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_json = {
-                        'post_id': request.args.get('post_id'),
-                        'file_name': file_name
+                        #'post_id': request.args.get('post_id'),
+                        'file_id': file_id
         }
-        print('POST data: %s ' % request_json)
+        # print('POST data: %s ' % request_json)
         if db.connect(db_adapter):
             result = db.get_post_file(db_adapter, request_json)
             if result:
-                print(result['file_name'])
-                resp = Response(result['file'])
+                # print(result.file_name)
+                resp = Response(result.file_name)
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
-                    'Content-Disposition', 'attachment', filename='%s' % result['file_name'])
+                    'Content-Disposition', 'attachment', filename='%s' % result.file_name)
                 resp.status_code = msg.DEFAULT_OK['code']
                 return send_file(
-                     io.BytesIO(result['file']),
-                     attachment_filename=result['file_name'])
+                    io.BytesIO(result.read()),
+                    attachment_filename=result.file_name)
             else:
                 print("not_found")
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
         else:
             print(str(msg.DB_FAILURE))
             resp = Response()

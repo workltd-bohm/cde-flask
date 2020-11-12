@@ -1,17 +1,33 @@
 g_post_type = {new: '/make_activity_post_new',
                edit: '/make_activity_post_edit'}
 
-function NewPost(obj){
+function NewPost(obj, request_data=''){
     var tmp = obj;
+    console.log(request_data);
     $.ajax({
         url: "/make_new_post",
         type: 'POST',
+        data: JSON.stringify({data: request_data}),
         timeout: 5000,
         success: function(data){
             data = JSON.parse(data);
             if(data){
                 OpenEditor(data.html, data.data);
                 OpenActivityEditPost(tmp, g_post_type.new );
+                if(request_data != ''){
+                    a = [request_data]
+                    documents = []
+                    images = []
+                    a.forEach(async function(doc) {
+                        console.log(doc);
+                        let url = '/get_post_image/' + doc['stored_id'] + '?post_id=default';
+                        let blob = await fetch(url).then(r => r.blob());
+                        blob.name = doc['name'];
+                        blob.id = doc['stored_id'];
+                        documents.push({id: doc['stored_id'], name: doc['name']});
+                        previewEditFile(blob);
+                    });
+                }
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -61,7 +77,9 @@ function UpdatePost(obj, data){
     var form = $("#EDITOR > .ticket-form");
     if(!CheckAval(form)) return; 
     var args = {};
-    form.serializeArray().map(function(x){args[x.name] = x.value;}); 
+    form.serializeArray().map(function(x){args[x.name] = x.value;});
+    args['image'] = images;
+    args['doc'] = documents;
     console.log(args)
 
     $.ajax({
@@ -186,8 +204,17 @@ function ViewPost(obj, data){
                 ClearActivity(false);
                 OpenActivityEditBid(tmp);
                 data.data.image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
+                    blob.name = img['name'];
+                    blob.id = img['id'];
+                    previewImage(blob);
+                });
+                data.data.doc.forEach(async function(doc) {
+                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    blob.name = doc['name'];
+                    blob.id = doc['id'];
                     previewFile(blob);
                 });
             }
@@ -200,7 +227,7 @@ function ViewPost(obj, data){
     });
 }
 
-function EditPost(obj, data){
+function EditPost(obj, data, json=''){
     var tmp = obj;
     let post_id = data;
     $.ajax({
@@ -214,10 +241,31 @@ function EditPost(obj, data){
                 console.log(data)
                 OpenEditor(data.html, data.data);
                 OpenActivityEditPost(tmp, g_post_type.edit, data.data[0]);
+                documents = []
+                images = []
                 data.data[0].image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img + '?post_id=' + post_id;
+                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
                     let blob = await fetch(url).then(r => r.blob());
-                    previewFile(blob);
+                    blob.name = img['name'];
+                    blob.id = img['id'];
+                    blob.post_id = post_id;
+                    images.push({id: img['id'], name: img['name']});
+                    previewEditImage(blob);
+                });
+                console.log(data.data[0].doc);
+                if(json != ''){
+                    data.data[0].doc.push({id: json.stored_id, name: json.name});
+                }
+                console.log(data.data[0].doc);
+                data.data[0].doc.forEach(async function(doc) {
+//                    doc = JSON.parse(doc)
+                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
+                    let blob = await fetch(url).then(r => r.blob());
+                    blob.name = doc['name'];
+                    blob.id = doc['id'];
+                    blob.post_id = post_id;
+                    documents.push({id: doc['id'], name: doc['name']});
+                    previewEditFile(blob);
                 });
             }
             MakeSnackbar("Editor");

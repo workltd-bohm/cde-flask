@@ -5,6 +5,7 @@ $( document ).ready(function(){
     });
 
     $("div.pero > .content > .zatvori").click(function(d){
+        GetForm().empty();
         $(this).parent().parent().hide();
     });
 });
@@ -34,6 +35,8 @@ function PopupOpen(run=null, data=null, file=null){
 }
 
 function PopupClose(){
+    var form = GetForm();
+    $(form).empty();
     LoadStop();
     $("div.pero").hide();
     ClearActivity();
@@ -60,7 +63,8 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
     var d = {parent_id: '', ic_id:''};
     form.serializeArray().map(function(x){d[x.name] = x.value;}); 
     if (!args) args = d;
-    // console.log(args);
+//    console.log(args);
+//    console.log(d);
 
     LoadStart();
     $.ajax({
@@ -76,8 +80,12 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
 //            console.log(data);
             if(fill) $("div.content > .form").html(data);
             else PopupClose();
-
-            SESSION["position"] = {parent_id: d["parent_id"], ic_id: d["ic_id"]};
+            pom = (args instanceof FormData)? d : args;
+//            for (var value of args.values()) {
+//               console.log(value);
+//            }
+            SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"]};
+            if (job != 'select_project') SESSION["undo"] = true;
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

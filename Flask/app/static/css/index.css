@@ -18,7 +18,7 @@ td {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #121212;
+  background-color: var(--dashboard-bg);
   font-family: 'Roboto', sans-serif;
   /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
   overflow: auto;
@@ -276,4 +276,99 @@ body {
 #result li span {
   font-weight: bold;
   color: navy;
+}
+
+.terminal-sign{
+    width:1.5vw;
+	height:1.5vw;
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    background: #bbb;
+    /*background: transparent;
+    color: green;*/
+    color: #000;
+    border-radius: 50%;
+    border: none;
+    font-family: monospace;
+    text-align: center;
+    font-size: 20px;
+}
+
+.terminal-div{
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    border: none;
+    width: 35%;
+    /*border: 2px solid transparent;
+  -webkit-animation: pulse 3s;
+  -webkit-animation-iteration-count: infinite;
+  animation: pulse 3s;
+  animation-iteration-count: infinite;*/
+  border-bottom: 1px solid white;
+  background: transparent;
+  color: green;
+  outline: 0;
+  font-family: monospace;
+  caret-color: green;
+}
+
+.terminal{
+  /*-webkit-animation: pulse 3s;
+  -webkit-animation-iteration-count: infinite;
+  animation: pulse 3s;
+  animation-iteration-count: infinite;*/
+  width: 100%;
+  border: none;
+
+  background: transparent;
+  /*color: green;*/
+  color: #bbb;
+  font-size: 17px;
+  outline: 0;
+  font-family: monospace;
+  /*caret-color: green;*/
+  caret-color: #bbb;
+  margin-left: 45px;
+  margin-bottom: 5px;
+}
+
+.terminal-div	i {
+	position: absolute;
+	background-color: transparent;
+	left: 5px;
+	top: 10%;
+	animation-name: blink;
+	animation-duration: 1200ms;
+	animation-iteration-count: infinite;
+	opacity: 1;
+}
+
+.terminal-div input:focus + i {
+	display: none;
+}
+
+@keyframes blink {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}
+
+@-webkit-keyframes pulse {
+  from { border-color: transparent; }
+  50% { border-color: red; }
+  to { border-color: transparent; }
+}
+@keyframes pulse {
+  from { border-color: transparent; }
+  50% { border-color: red; }
+  to { border-color: transparent; }
+}
+
+.terminal-table{
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 15px;
+    white-space:pre-wrap;
+    word-wrap:break-word;
 }

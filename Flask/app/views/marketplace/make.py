@@ -162,11 +162,17 @@ def make_ticket_post():
 def make_ticket_post_new():
     resp = Response()
     print('Data posting path: %s' % request.path)
+    request_json = json.loads(request.get_data())
+    print(request_json)
+    description = ''
+    if request_json['data']:
+        description = request_json['data']['name']
     if main.IsLogin():
         response = {
             'html': render_template("dashboard/market/post_new_form.html",
-                # TODO
-            ),
+                                    username=session['user']['username'],
+                                    description=description
+                                    ),
             'data': []
         }
         #print(response)
@@ -221,12 +227,13 @@ def make_view_post():
                                         date=result[0]["date_expired"],
                                         location=result[0]["location"],
                                         status=status.Status(int(result[0]["status"])).name,
-                                        dview = result[0]['documents']['3d-view'],
+                                        dview=result[0]['documents']['3d-view'],
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
                                         offer=0
                                         ),
-                'data': {'image': result[0]['documents']['image']}
+                'data': {'image': result[0]['documents']['image'],
+                         'doc': result[0]['documents']['doc']}
             }
             # print(response)
             resp.status_code = msg.DEFAULT_OK['code']
@@ -237,7 +244,6 @@ def make_view_post():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
-
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -253,10 +259,12 @@ def make_edit_post():
     if main.IsLogin():
         if db.connect(db_adapter):
             result = db.get_single_post(db_adapter, request_json)
+            print(result[0]['documents']['doc'])
             # res = json.loads(result[0])
             print(">>>>", result[0])
             response = {
                 'html': render_template("dashboard/market/post_edit.html",
+                                        post_id=request_json['post_id'],
                                         username=result[0]["user_owner"]["username"],
                                         title=result[0]["title"],
                                         description=result[0]["description"],
@@ -267,8 +275,11 @@ def make_edit_post():
                                         dview=result[0]['documents']['3d-view'],
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
+                                        bids=[]
                                         ),
-                'data': [{'bids': result[0]['bids'], 'image': result[0]['documents']['image']}]
+                'data': [{'bids': result[0]['bids'],
+                          'image': result[0]['documents']['image'],
+                          'doc': result[0]['documents']['doc']}]
             }
             # print(response)
             resp.status_code = msg.DEFAULT_OK['code']
@@ -316,11 +327,14 @@ def make_activity_post_edit():
     if main.IsLogin():
         if db.connect(db_adapter):
             bids = []
-            for bid_id in request_json['bids']:
+            req_bids = request_json['bids']
+            if isinstance(request_json['bids'], str):
+                # TODO: fix this
+                req_bids = json.loads(request_json['bids'])
+            for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
             div = []
             for bid in bids:
-                print(">>>> ",bid)
                 div.append(bid['offer'])
             response = {
                 'html': render_template("dashboard/market/post_edit_activity.html",
@@ -343,3 +357,35 @@ def make_activity_post_edit():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
+@app.route('/get_my_posts_popup', methods=['POST'])
+def get_my_posts_popup():
+    resp = Response()
+    print('Data posting path: %s' % request.path)
+    request_json = json.loads(request.get_data())
+    print(request_json)
+
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            result = db.get_my_posts(db_adapter, session.get('user'))
+            print(result)
+            response = {
+                'html': render_template("dashboard/market/popup/my_posts_popup.html",
+                                        posts=result,
+                                        json=request_json
+                                        ),
+                'data': []
+            }
+            # print(response)
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            print(str(msg.DB_FAILURE))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
