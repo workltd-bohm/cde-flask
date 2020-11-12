@@ -154,14 +154,16 @@ def search():
                 ics = []
                 for tag in request_data['search_tags']:
                     if not ics:
-                        ics = result[0][tag]
-                        continue
+                        if tag in result[0]:
+                            ics = result[0][tag]
+                            continue
                     new_ics = []
-                    for tag_ic in result[0][tag]:
-                        for ic in ics:
-                            if ic['ic_id'] == tag_ic['ic_id']:
-                                new_ics.append(tag_ic)
-                                break
+                    if tag in result[0]:
+                        for tag_ic in result[0][tag]:
+                            for ic in ics:
+                                if ic['ic_id'] == tag_ic['ic_id']:
+                                    new_ics.append(tag_ic)
+                                    break
                     ics = new_ics
                 # response = {
                 #     'html': '',
