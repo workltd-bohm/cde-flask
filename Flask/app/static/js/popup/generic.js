@@ -86,6 +86,7 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
 //            }
             SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"]};
             if (job != 'select_project') SESSION["undo"] = true;
+            MULTI = {};
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

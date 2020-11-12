@@ -395,14 +395,33 @@ def remove_tag():
 
 @app.route('/activate_undo', methods=['POST'])
 def activate_undo():
+    resp = Response()
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         undo = session.get("undo")
-        session.get("project")["undo"] = False
-        session.modified = True
-        print(undo)
+        #print(undo)
 
-    resp = Response()
-    resp.status_code = msg.DEFAULT_OK['code']
-    resp.data = str(msg.DEFAULT_OK['message'])
+        position = session.get("project")["position"]
+        project_name = session.get("project")["name"]
+        user = session.get('user')
+
+        if db.connect(db_adapter) and undo["user"] == user and undo["project_name"] == project_name:
+            result = db.get_project(db_adapter, project_name, user)
+            if result and undo["data"]:
+                project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(undo["data"]['root_ic']))
+                print(project.to_json()['root_ic']["sub_folders"])
+                print(undo["data"]['root_ic']["sub_folders"])
+                result, id = db.update_project(db_adapter, project, user)
+                if result:
+                    #session.get("project")["position"] = undo["position"]
+
+                    session["undo"] = {}
+                    session.get("project")["undo"] = False
+                    session.modified = True
+                    resp.status_code = msg.DEFAULT_OK['code']
+                    resp.data = str(msg.DEFAULT_OK['message']) #json.dumps({"json": project.to_json(), "project" : position})
+                    return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp

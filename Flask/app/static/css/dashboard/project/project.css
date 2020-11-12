@@ -86,6 +86,16 @@ circle.selection.select {
     fill: rgba(0, 0, 0, 0.0);
 }
 
+circle.move.pattern.move {
+    fill: rgba(192, 84, 41, 1);
+}
+circle.move.pattern.copy {
+    fill: rgba(192, 41, 41, 1);
+}
+circle.move.select {
+    fill: rgba(0, 0, 0, 0.0);
+}
+
 text.text_back {
     fill: rgb(0, 0, 0);
     filter: url("#filter_shadow");

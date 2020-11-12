@@ -327,6 +327,32 @@ def delete_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+# ----------------------------------------------------
+
+@app.route('/move_ic', methods=['POST'])
+def move_ic():
+    print('Data posting path: %s' % request.path)
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        set_project_data(request_data, True)
+        print(request_data)
+        if db.connect(db_adapter):
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        else:
+            print(str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 # ----------------------------------------------------
 
@@ -418,9 +444,15 @@ def set_project_data(data, save=False):
     if "project" in data:
         session.get("project").update(data["project"])
 
+    project_name = session.get("project")["name"]
+    user = session.get('user')
+    if session.get("undo") and session.get("undo")["user"] == user and session.get("undo")["project_name"] == project_name:
+        session.get("project")["undo"] = True
+    else:
+        session.get("project")["undo"] = False
+    #print(session["undo"])
+
     if save:
-        project_name = session.get("project")["name"]
-        user = session.get('user')
         session["undo"] = {}
         session.get("project")["undo"] = False
         if db.connect(db_adapter):
@@ -433,7 +465,6 @@ def set_project_data(data, save=False):
                     session.get("project")["undo"] = True
 
     print(session.get("project"))
-    if save: print(session.get("undo"))
     session.modified = True
 
 def remove_folder(path):

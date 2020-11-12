@@ -77,7 +77,7 @@ def get_project():
                 project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
                 resp.status_code = msg.DEFAULT_OK['code']
-                resp.data = json.dumps({"json": project.to_json(), "project" : position})
+                resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
                 return resp
             else:
                 print(str(msg.PROJECT_NOT_FOUND))
@@ -133,7 +133,7 @@ def get_root_project():
                     response['root_ic']["sub_folders"].append(proj_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps({"json": response, "project" : False})
+            resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})
             return resp
 
         else:
