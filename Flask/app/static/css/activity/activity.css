@@ -76,6 +76,7 @@
 }
 
 .tab-title{
+    width: 100%;
     text-align: left;
     background-color:var(--side-menu-logo-bg-left);
 }
