@@ -459,3 +459,12 @@ class Project:
                 # print('++++++', new_ic_array)
                 if self._added:
                     break
+
+    def search_by_name(self, name, ic, new_ic_array):
+        print(name, ic.name)
+        if name.lower() in ic.name.lower():
+            new_ic_array.append(ic)
+        for x in ic.sub_folders:
+            if name.lower() in x.name.lower():
+                new_ic_array.append(x)
+            self.search_by_name(name, x, new_ic_array)

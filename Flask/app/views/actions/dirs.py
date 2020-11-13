@@ -175,18 +175,18 @@ def upload_file():
                         [],
                         '',
                         'description') # request_json['description'])
-        # try:
-        file_obj.project_code = request_json['project_code']
-        file_obj.company_code = request_json['company_code']
-        file_obj.project_volume_or_system = request_json['project_volume_or_system']
-        file_obj.project_level = request_json['project_level']
-        file_obj.type_of_information = request_json['type_of_information']
-        file_obj.role_code = request_json['role_code']
-        file_obj.file_number = request_json['file_number']
-        file_obj.status = request_json['status']
-        file_obj.revision = request_json['revision']
-        # except Exception:
-        #     pass
+        try:
+            file_obj.project_code = request_json['project_code']
+            file_obj.company_code = request_json['company_code']
+            file_obj.project_volume_or_system = request_json['project_volume_or_system']
+            file_obj.project_level = request_json['project_level']
+            file_obj.type_of_information = request_json['type_of_information']
+            file_obj.role_code = request_json['role_code']
+            file_obj.file_number = request_json['file_number']
+            file_obj.status = request_json['status']
+            file_obj.revision = request_json['revision']
+        except Exception:
+            pass
         # print(file_obj.to_json())
         if db.connect(db_adapter):
             # with open('app/templates/activity/activity.html', "rb") as f:
@@ -217,6 +217,8 @@ def create_dir():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        if request_data['project_name'] == '':
+            request_data['project_name'] = session['project']['name']
         set_project_data(request_data, True)
         print(request_data)
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
@@ -466,6 +468,7 @@ def set_project_data(data, save=False):
 
     print(session.get("project"))
     session.modified = True
+
 
 def remove_folder(path):
     time.sleep(30)

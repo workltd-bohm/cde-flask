@@ -357,14 +357,18 @@ def get_help():
             {'tag #tag_name color': 'tag - adding a tag(s) to the information container \n'
                                     'tag_name (mandatory) - set tag name \n'
                                     'color (optional - default is white) - set the tag color\n'
-                                    'example - tag #some_tag black #some_other_tag green'}
+                                    'example - tag #some_tag black #some_other_tag green'},
+            {'#tag': 'search by tag. Could be an array of tags separated with space\n'
+                     'example - #some_tag #some_other_tag '},
+            {'ic_name': 'search by name. Could be an array of names. Press space or enter to get search results\n'
+                        'example - part_of_name1 part_of_name2 '},
         ]
         response = {
             'html': render_template("popup/help.html",
                                     data=data),
             'data': []
         }
-        print(response)
+        # print(response)
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = json.dumps(response)
@@ -385,7 +389,8 @@ def get_help_suggest():
                      'create_file',
                      'open',
                      'rename',
-                     'tag'
+                     'tag',
+                     'help'
                      ]
         }
         print(response)

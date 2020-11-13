@@ -82,6 +82,11 @@ function terminalListen(el){
     if(terminal[0] == 'tag'){
         addTag(terminal);
     }
+    if(!keyWordsArr.includes(terminal[0]) && !tagsArr.includes(terminal[0])){
+        console.log(terminal);
+        $('#terminal-input').val(terminal.join(' '));
+        searchByName(terminal);
+    }
 
 
 }
@@ -371,7 +376,11 @@ inp.addEventListener("keydown", function(e) {
               currValArray = $('#terminal-input').val().split(' ');
               if(currValArray[0].startsWith('#')){
                 console.log(currValArray);
-                search(currValArray);
+                searchByTag(currValArray);
+              }
+              if(!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])){
+                console.log(currValArray);
+                searchByName(currValArray);
               }
           }
       }
@@ -400,7 +409,11 @@ inp.addEventListener("keydown", function(e) {
                   currValArray.push(currVal);
                   if(currValArray[0].startsWith('#')){
                     console.log(currValArray);
-                    search(currValArray);
+                    searchByTag(currValArray);
+                  }
+                  if(!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])){
+                    console.log(currValArray);
+                    searchByName(currValArray);
                   }
               }
               x[currentFocus].click();
@@ -446,18 +459,53 @@ inp.addEventListener("keydown", function(e) {
 }
 
 var searchArr = [];
-function search(currValArray){
+function searchByTag(currValArray){
 //    tempArr = currValArray;
     if(!arraysEqual(searchArr, currValArray)){
         console.log('search');
         searchArr = currValArray;
 //        LoadStart();
         $.ajax({
-            url: "/search",
+            url: "/search_by_tags",
             type: 'POST',
             data: JSON.stringify({
                 project_name: SESSION['position'].project_name,
                 search_tags: searchArr
+            }),
+            timeout: 5000,
+            success: function(data){
+                data = JSON.parse(data);
+                if(data){
+                    data = data.root_ic;
+                    g_root.universe.data = data;
+                    g_project.skip = SEARCH_HISTORY;
+                    GetWarp(data);
+                    g_project.search = data;
+                }
+            },
+            error: function($jqXHR, textStatus, errorThrown) {
+                console.log( errorThrown + ": " + $jqXHR.responseText );
+                MakeSnackbar($jqXHR.responseText);
+                LoadStop();
+            }
+        });
+    }else{
+        console.log('skipping search');
+    }
+}
+
+function searchByName(currValArray){
+//    tempArr = currValArray;
+    if(!arraysEqual(searchArr, currValArray)){
+        console.log('search');
+        searchArr = currValArray;
+//        LoadStart();
+        $.ajax({
+            url: "/search_by_name",
+            type: 'POST',
+            data: JSON.stringify({
+                project_name: SESSION['position'].project_name,
+                search_names: searchArr
             }),
             timeout: 5000,
             success: function(data){

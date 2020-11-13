@@ -51,6 +51,17 @@ function NewFolder(form, json){
             html = input_json['html'];
             form.empty();
             form.append(html);
+
+            listing = document.getElementById('listing');
+            box = document.getElementById('box');
+            dropArea = document.getElementById("dropArea");
+            dropArea.addEventListener("dragover", dragHandler);
+            dropArea.addEventListener("dragleave", dragLeave);
+            dropArea.addEventListener("change", filesDroped);
+            dropArea.addEventListener("drop", filesDroped);
+
+            folders_only = true;
+
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
