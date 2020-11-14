@@ -260,6 +260,7 @@ def set_color():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):

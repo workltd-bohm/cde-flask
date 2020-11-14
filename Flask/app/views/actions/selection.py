@@ -11,6 +11,7 @@ def set_color_multi():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
         print(request_data)
         if db.connect(db_adapter):
@@ -45,6 +46,7 @@ def copy_multi():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
         print(request_data)
 
@@ -59,6 +61,7 @@ def move_multi():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
         print(request_data)
 
@@ -73,7 +76,7 @@ def get_delete_ic_multi():
     print('Data posting path: %s' % request.path)
     if main.IsLogin():
         delete_ic_array = json.loads(request.get_data())
-        dirs.set_project_data(delete_ic_array)
+        dirs.set_project_data(delete_ic_array, True)
         print(delete_ic_array)
         if db.connect(db_adapter) and "multi" in delete_ic_array:
             user_id = session['user']['id']

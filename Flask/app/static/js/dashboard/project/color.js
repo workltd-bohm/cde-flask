@@ -65,9 +65,8 @@ function SetColor(data, fill){
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);
-            if(o.length > 0){
-                CreateProject();
-            }
+            SESSION["undo"] = true;
+            CreateProject();
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {

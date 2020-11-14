@@ -33,7 +33,8 @@ const PLANET_SCROLL_ZOOM = 2;
 
 const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
-const PATH_TEXT_PADDING = 3;
+const PATH_TEXT_PADDING = 11;
+const PATH_TEXT_MAX_TEXT = 20;
 
 const HISTORY_SUN_RATIO = 4;
 const HISTORY_ORBIT_COEF = 1.1;
@@ -81,6 +82,7 @@ var g_project = {
         clck_start : 0,
         clck_stop : 0,
         hist_path : null,
+        hist_path_len : 0,
         paths_path : null,
         overlay : null,
         selection : null,
