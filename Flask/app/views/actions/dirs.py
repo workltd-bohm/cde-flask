@@ -15,27 +15,27 @@ from pathlib import Path
 
 @app.route('/get_file/<path:file_name>', methods=['POST', 'GET'])
 def get_file(file_name):
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
                         'file_name': file_name}
-        print('POST data: %s ' % request_json)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
             if result:
-                print(result.file_name)
+                # logger.log(LOG_LEVEL, result.file_name)
                 response = make_response(result.read())
                 # response.mimetype = result.file_name.split('.')[-1]
                 return response
             else:
-                print(str(msg.STORED_FILE_NOT_FOUND))
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
                 resp = Response()
                 resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
                 resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -49,16 +49,16 @@ def get_file(file_name):
 
 @app.route('/get_shared_file/<path:file_name>', methods=['POST', 'GET'])
 def get_shared_file(file_name):
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
                         'file_name':file_name}
-        print('POST data: %s ' % request_json)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, request_json['file_name'])
             if result:
-                print(result.file_name)
+                # logger.log(LOG_LEVEL, result.file_name)
                 resp = Response(result.file_name)
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
@@ -68,9 +68,13 @@ def get_shared_file(file_name):
                      io.BytesIO(result.read()),
                      attachment_filename=result.file_name)
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -84,19 +88,19 @@ def get_shared_file(file_name):
 
 @app.route('/get_folder/<path:parent_id>/<path:folder_name>', methods=['POST', 'GET'])
 def get_folder(parent_id, folder_name):
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         project_name = session.get("project")["name"]
         request_json = {
                         'parent_id': parent_id,
                         'folder_name': folder_name}
-        print('POST data: %s ' % request_json)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
             project = Project.json_to_obj(response)
             ic = project.find_ic(request_json, folder_name, project.root_ic)
-            print(ic.to_json())
+
             path = os.getcwd() + '\\'
             millis = int(round(time.time() * 1000))
             try:
@@ -105,16 +109,16 @@ def get_folder(parent_id, folder_name):
                 if not os.path.exists(path + 'tmp\\' + u['id'] + '_' + str(millis)):
                     os.mkdir(path + 'tmp\\' + u['id'] + '_' + str(millis))
             except OSError as err:
-                print("Creation of the directory %s failed" % path + '\n' + err)
+                logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
             path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
             json_to_temp_folder_struct(path, ic)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
 
-            print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name)
+            # print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name)
             zipdir('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name, zipf)
             zipf.close()
-            print(ic.name + '.zip')
+            # print(ic.name + '.zip')
 
             resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\' + ic.name + '.zip',
                              mimetype='zip',
@@ -127,7 +131,7 @@ def get_folder(parent_id, folder_name):
             return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -141,19 +145,18 @@ def get_folder(parent_id, folder_name):
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         # print(json.loads(request.get_data()))
         if 'file' not in request.files:
-            print('No file part')
+            logger.log(LOG_LEVEL, 'No file part: '.format(str(msg.DEFAULT_ERROR['message'])))
             resp = Response()
             resp.status_code = msg.DEFAULT_ERROR['code']
             resp.data = str(msg.DEFAULT_ERROR['message'])
             return resp
 
         file = request.files['file'].read()
-        # print(file)
-        print(request.form['data'])
+        logger.log(LOG_LEVEL, 'Request data: {}'.format(request.form['data']))
         request_json = json.loads(request.form['data'])  # test_json_request
         set_project_data(request_json, True)
         directory = request_json['parent_path']
@@ -194,13 +197,13 @@ def upload_file():
             encoded = file
             result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
             if result:
-                print(">>", result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(">", str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -214,13 +217,13 @@ def upload_file():
 
 @app.route('/create_dir', methods=['POST'])
 def create_dir():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         if request_data['project_name'] == '':
             request_data['project_name'] = session['project']['name']
         set_project_data(request_data, True)
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
         folder = Directory(str(uuid.uuid1()),
@@ -236,13 +239,13 @@ def create_dir():
         if db.connect(db_adapter):
             result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -256,11 +259,11 @@ def create_dir():
 
 @app.route('/rename_ic', methods=['POST'])
 def rename_ic():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         set_project_data(request_data, True)
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             rename = {
                 "project_name": request_data["project_name"],
@@ -273,16 +276,13 @@ def rename_ic():
             }
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
             result = db.rename_ic(db_adapter, rename, u)
-            if result:
-                print(result["message"])
-                resp = Response()
-                resp.status_code = result["code"]
-                resp.data = result["message"]
-                return resp
-            else:
-                print("not_successful - name already exists in the DB")
+            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -296,29 +296,25 @@ def rename_ic():
 
 @app.route('/delete_ic', methods=['POST'])
 def delete_ic():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         delete_ic_data = json.loads(request.get_data())
         set_project_data(delete_ic_data, True)
         delete_ic_data['user_id'] = session['user']['id']
-        print(delete_ic_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(delete_ic_data))
         if db.connect(db_adapter):
             result = db.delete_ic(db_adapter, delete_ic_data)
-            if result:
-                if result == msg.PROJECT_SUCCESSFULLY_DELETED:
-                    session.get("project").update({'section': 'project'})
-                    session.get("project").update({'position': None})
-                    session.modified = True
-                print(result["message"])
-                resp = Response()
-                resp.status_code = result["code"]
-                resp.data = result["message"]
-                return resp
-            else:
-                print("not_successful - name already exists in the DB")
-
+            if result == msg.PROJECT_SUCCESSFULLY_DELETED:
+                session.get("project").update({'section': 'project'})
+                session.get("project").update({'position': None})
+                session.modified = True
+            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])

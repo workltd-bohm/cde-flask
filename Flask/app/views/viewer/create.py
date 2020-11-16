@@ -3,7 +3,7 @@ from app import *
 
 @app.route('/load_viewer', methods=['POST'])
 def load_viewer():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())

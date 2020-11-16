@@ -19,7 +19,7 @@ def filter_out(request_json, files):
 
 @app.route('/get_filtered_files', methods=['POST', 'GET'])
 def get_filtered_files():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     project_name = session.get("project")["name"]
     request_json = json.loads(request.get_data())
     # bundle = json.loads(request.get_data())
@@ -27,7 +27,7 @@ def get_filtered_files():
     # path_id = bundle["path_id"]
     # temp_request_json = bundle["data"]
     # if temp_request_json and len(temp_request_json) > 0: request_json = temp_request_json
-    print(request_json)
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
     resp = Response()
     if main.IsLogin():
         if db.connect(db_adapter):
@@ -42,7 +42,7 @@ def get_filtered_files():
                 for ic in new_ic_array:
                     if ic:
                         new_ic = ic
-                print(new_ic.to_json())
+                # print(new_ic.to_json())
                 p.extract_files(new_ic, files)
                 filtered = filter_out(request_json['data'], files)
 
@@ -77,7 +77,7 @@ def get_filtered_files():
                 resp.data = json.dumps(response)
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
 
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -91,11 +91,11 @@ def get_filtered_files():
 @app.route('/get_filter_activity', methods=['POST'])
 def get_filter_activity():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         name = request_data['name']
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         if name == 'Projects':
             resp.status_code = msg.DEFAULT_OK['code']
@@ -142,10 +142,10 @@ def get_filter_activity():
 @app.route('/search_by_tags', methods=['POST'])
 def search_by_tags():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         if db.connect(db_adapter):
             result = db.get_all_tags_with_ics(db_adapter)
@@ -212,10 +212,10 @@ def search_by_tags():
 @app.route('/search_by_name', methods=['POST'])
 def search_by_name():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         if db.connect(db_adapter):
             if request_data['project_name'] == '':
@@ -249,9 +249,9 @@ def search_by_name():
                     }
                 }
 
-                print(ics)
+                # print(ics)
                 for ic in ics:
-                    print(ic.name)
+                    # print(ic.name)
                     path = ic.name if ic.is_directory else ic.name + ic.type
                     ic_type = '' if ic.is_directory else ic.type
                     proj_obj = {

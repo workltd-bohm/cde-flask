@@ -9,7 +9,7 @@ def IsLogin():
 
 @app.route('/')
 def index():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if not IsLogin(): return redirect('/login')
     user = session.get('user')
     # user.update({'project_code': 'SV', 'company_code': 'WRK'})

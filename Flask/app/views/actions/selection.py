@@ -8,12 +8,12 @@ import time
 
 @app.route('/set_color_multi', methods=['POST'])
 def set_color_multi():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = ''
             for req in request_data:
@@ -29,7 +29,7 @@ def set_color_multi():
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -43,12 +43,12 @@ def set_color_multi():
 
 @app.route('/copy_multi', methods=['POST'])
 def copy_multi():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -58,12 +58,12 @@ def copy_multi():
 
 @app.route('/move_multi', methods=['POST'])
 def move_multi():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -73,11 +73,11 @@ def move_multi():
 
 @app.route('/get_delete_ic_multi', methods=['POST'])
 def get_delete_ic_multi():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         delete_ic_array = json.loads(request.get_data())
-        dirs.set_project_data(delete_ic_array, True)
-        print(delete_ic_array)
+        dirs.set_project_data(delete_ic_array)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(delete_ic_array))
         if db.connect(db_adapter) and "multi" in delete_ic_array:
             user_id = session['user']['id']
             project_name = session.get("project")["name"]
@@ -87,7 +87,7 @@ def get_delete_ic_multi():
                 delete_ic_data['project_name'] = project_name
                 result = db.delete_ic(db_adapter, delete_ic_data)
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
@@ -96,7 +96,7 @@ def get_delete_ic_multi():
                 print("not_successful - name already exists in the DB")
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -110,11 +110,11 @@ def get_delete_ic_multi():
 
 @app.route('/share_multi', methods=['POST'])
 def share_multi():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -124,11 +124,11 @@ def share_multi():
 
 @app.route('/get_ic_multi/<path:json_obj>', methods=['POST', 'GET'])
 def get_ic_multi(json_obj):
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(json_obj)
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
@@ -144,6 +144,7 @@ def get_ic_multi(json_obj):
                     os.mkdir(path + 'tmp\\' + u['id'] + '_' + str(millis) + '\\BOHM_download')
             except OSError as err:
                 print("Creation of the directory %s failed" % path + '\n' + err)
+                logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
             for req in request_data:
                 project.current_ic = None
                 project.added = False
@@ -154,7 +155,7 @@ def get_ic_multi(json_obj):
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip', 'w', zipfile.ZIP_DEFLATED)
             # zip_buffer.seek(0)
-            print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip')
+            # print('Zipping: %s' % 'tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip')
             dirs.zipdir('tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download', zipf)
             zipf.close()
 

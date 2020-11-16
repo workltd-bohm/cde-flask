@@ -7,7 +7,7 @@ from app import *
 
 @app.route('/input')
 def input():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         doc = open('app/static/file/input.json', 'r')
         file = doc.read()
@@ -26,7 +26,7 @@ def input():
 @app.route('/get_session', methods=['POST'])
 def get_session():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin() and session.get("project"):
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = json.dumps(session.get("project"))
@@ -40,7 +40,7 @@ def get_session():
 @app.route('/set_project', methods=['POST'])
 def set_project():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data)
@@ -56,14 +56,14 @@ def set_project():
 
 @app.route('/get_project', methods=['POST'])
 def get_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         dirs.set_project_data(request_data)
         if "name" not in session.get("project"):
-            print(str(msg.NO_PROJECT_SELECTED))
+            logger.log(LOG_LEVEL, str(msg.NO_PROJECT_SELECTED))
             resp.status_code = msg.NO_PROJECT_SELECTED['code']
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
@@ -80,12 +80,12 @@ def get_project():
                 resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
                 return resp
             else:
-                print(str(msg.PROJECT_NOT_FOUND))
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))
                 resp.status_code = msg.PROJECT_NOT_FOUND['code']
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
@@ -97,7 +97,7 @@ def get_project():
 
 @app.route('/get_root_project', methods=['POST'])
 def get_root_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -137,7 +137,7 @@ def get_root_project():
             return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
@@ -149,7 +149,7 @@ def get_root_project():
 
 @app.route('/get_user_profile', methods=['POST'])
 def get_user_profile():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -184,7 +184,7 @@ def get_user_profile():
             return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
@@ -196,7 +196,7 @@ def get_user_profile():
 
 @app.route('/get_root_market', methods=['POST'])
 def get_root_market():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -240,7 +240,7 @@ def get_root_market():
             return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
@@ -252,7 +252,7 @@ def get_root_market():
 
 @app.route('/get_viewer', methods=['POST'])
 def get_viewer():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -274,7 +274,7 @@ def get_viewer():
 
 @app.route('/get_all_tags', methods=['GET'])
 def get_all_tags():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
         if db.connect(db_adapter):
@@ -294,7 +294,7 @@ def get_all_tags():
                 return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp

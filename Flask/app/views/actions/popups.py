@@ -7,12 +7,12 @@ import app.views.actions.getters as gtr
 
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         name = request_data['name']
         type = request_data['type']
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
@@ -49,7 +49,7 @@ def get_open_file():
                 resp.data = json.dumps(response)
                 return resp
 
-        print(str(msg.DB_FAILURE))
+        logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
         resp = Response()
         resp.status_code = msg.DB_FAILURE['code']
         resp.data = str(msg.DB_FAILURE['message'])
@@ -61,7 +61,7 @@ def get_open_file():
 
 @app.route('/get_all_projects')
 def get_all_projects():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)
@@ -70,15 +70,19 @@ def get_all_projects():
                 response['html'] = render_template("popup/choose_project_popup.html")
                 for project in result:
                     response['data'].append(project['project_name'])
-                print(">>>", response)
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -92,13 +96,12 @@ def get_all_projects():
 
 @app.route('/get_new_project')
 def get_new_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         response = {
             'html': render_template("popup/new_project_popup.html"),
             'data': []
         }
-        print(response)
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = json.dumps(response)
@@ -112,13 +115,12 @@ def get_new_project():
 
 @app.route('/get_upload_project')
 def get_upload_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         response = {
             'html': render_template("popup/upload_folder_popup.html"),
             'data': []
         }
-        print(response)
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = json.dumps(response)
@@ -132,11 +134,11 @@ def get_upload_project():
 
 @app.route('/get_new_folder', methods=['POST'])
 def get_new_folder():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, session.get('user'))
             if result:
@@ -154,10 +156,14 @@ def get_new_folder():
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -171,11 +177,11 @@ def get_new_folder():
 
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
@@ -200,10 +206,14 @@ def get_new_file():
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -217,11 +227,11 @@ def get_new_file():
 
 @app.route('/get_rename_ic', methods=['POST'])
 def get_rename_ic():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
@@ -243,10 +253,14 @@ def get_rename_ic():
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -260,12 +274,12 @@ def get_rename_ic():
 
 @app.route('/get_delete_ic', methods=['POST'])
 def get_delete_ic():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
         is_multi = True if "is_multi" in request_data else False
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.get_all_projects(db_adapter)
             if result:
@@ -291,10 +305,14 @@ def get_delete_ic():
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -308,7 +326,7 @@ def get_delete_ic():
 
 @app.route('/get_share', methods=['GET'])
 def get_share():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         # request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
@@ -329,10 +347,14 @@ def get_share():
                 resp.data = json.dumps(response)
                 return resp
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -346,7 +368,7 @@ def get_share():
 
 @app.route('/get_help')
 def get_help():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         data = [
             {'new_folder name': 'opens new folder popup\n'
@@ -382,7 +404,7 @@ def get_help():
 
 @app.route('/get_help_suggest')
 def get_help_suggest():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         response = {
             'data': ['new_folder',
@@ -393,7 +415,6 @@ def get_help_suggest():
                      'help'
                      ]
         }
-        print(response)
         resp = Response()
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = json.dumps(response)
