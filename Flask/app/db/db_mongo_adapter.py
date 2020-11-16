@@ -313,17 +313,15 @@ class DBMongoAdapter:
                 col_file_chunks.delete_many(file_query)
                 col_users = self._db.Users.Roles
                 user_query = {'user_id': delete_ic_data['user_id']}
-                result = col_users.find_one(user_query, {'_id': 0})
+                pr_query = {'project_id': delete_ic_data['ic_id']}
+                result = col_users.find()
                 if result:
-                    remove = -1
-                    for count, p in enumerate(result['projects']):
-                        if p['project_id'] == project_json['project_id']:
-                            remove = count
-                            break
-                    if remove != -1:
-                        del result['projects'][remove]
-                        col_users.update_one(user_query,
-                                       {'$set': {'projects': result['projects']}})
+                    for u in result:
+                        for pr in u['projects']:
+                            if pr['project_id'] == project_json['project_id']:
+                                del result['projects'][count]
+                                col_users.update_one(user_query,
+                                                     {'$set': {'projects': result['projects']}})
                 delete = msg.PROJECT_SUCCESSFULLY_DELETED
             else:
                 project = Project.json_to_obj(project_json)
