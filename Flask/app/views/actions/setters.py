@@ -30,7 +30,7 @@ def select_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         session.get("project")["name"] = request_data['choose_project']
         session.modified = True
         resp = Response()
@@ -49,7 +49,7 @@ def create_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         user = session.get('user')
         name_id = str(uuid.uuid1())
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
