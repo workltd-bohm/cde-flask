@@ -82,10 +82,11 @@ function FormSubmit(job, args=null, stay=false, func=null, fill=false){
             else PopupClose();
             pom = (args instanceof FormData)? d : args;
 //            for (var value of args.values()) {
-//               console.log(value);
+              console.log(pom);
 //            }
-            SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"]};
+            SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"], path: pom["path"]};
             if (job != 'select_project') SESSION["undo"] = true;
+            MULTI = {};
             if(data == 'Project successfully deleted'){
                 SESSION["position"] = null;
                 func = SelectProject;

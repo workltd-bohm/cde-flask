@@ -65,8 +65,8 @@ function CheckSession(){
 }
 
 function SendProject(data){
-    console.log(data);
-    console.log(SESSION);
+    //console.log(data);
+    //console.log(SESSION);
     SESSION["position"] = { project_name: data.path.split('/')[0],
                             parent_id: data.parent_id,
                             ic_id: data.ic_id,
@@ -110,6 +110,7 @@ function UserProfile(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
+                if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -131,6 +132,7 @@ function SelectProject(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
+                if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -163,6 +165,7 @@ function CreateProject(position=null){
             data = JSON.parse(data);
             //console.log(data)
             if(data){
+                if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
             }
@@ -186,6 +189,7 @@ function SelectMarket(){
         success: function(data){
             data = JSON.parse(data);
             if(data){
+                if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },

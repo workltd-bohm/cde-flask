@@ -66,6 +66,24 @@ function SubmitUndo(data){
     });
 }
 
+function AddHistText(data, text, fix=false) {
+    var newobj = data.hist_path;
+    newobj.text = newobj.object.append("g")
+        .attr("class", "hist_path text")
+    newobj.text.append("text")
+        .attr("class", "text_back")
+        .attr("x",0)
+        .attr("y",g_HistRadius)
+        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        .html(text);
+    newobj.text.append("text")
+        .attr("class", "text_front")
+        .attr("x",0)
+        .attr("y",g_HistRadius)
+        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
+        .html(text);
+}
+
 function AddUndo(data){
     if(!g_project.history){
         g_project.history = g_project.hist_path.append("g")
@@ -93,22 +111,4 @@ function HistoryCreation(data){
 
     if(SESSION["undo"])
         AddUndo(new Object);
-}
-
-function AddHistText(data, text, fix=false) {
-    var newobj = data.hist_path;
-    newobj.text = newobj.object.append("g")
-        .attr("class", "hist_path text")
-    newobj.text.append("text")
-        .attr("class", "text_back")
-        .attr("x",0)
-        .attr("y",g_HistRadius)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(text);
-    newobj.text.append("text")
-        .attr("class", "text_front")
-        .attr("x",0)
-        .attr("y",g_HistRadius)
-        .attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
-        .html(text);
 }

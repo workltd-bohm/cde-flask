@@ -16,6 +16,12 @@ from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
 
+from app.logs import logger
+
+LOG_LEVEL = cfg.config['basic'].LOG_LEVEL
+logger.Logger().set_logging(LOG_LEVEL, cfg.config['basic'].LOG_FILE)
+logger = logger.Logger().get_logger()
+
 db_adapter = cfg.config['basic'].DB
 
 app = Flask(__name__, static_folder='static', static_url_path='')

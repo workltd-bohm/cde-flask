@@ -7,7 +7,7 @@ from app import *
 @app.route('/make_user_profile_activity', methods=['POST'])
 def make_user_profile_activity():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         user_data = session.get('user')
         response = {
@@ -35,7 +35,7 @@ def make_user_profile_activity():
 @app.route('/update_user', methods=['POST'])
 def update_user():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         json_data = json.loads(request.get_data())
         user_data = session.get('user')
@@ -58,7 +58,6 @@ def update_user():
                         json_user.pop('password', None)
                         json_user['project_code'] = 'SV' # temp, until drawn from project
                         session['user'] = json_user
-                        print(session['user'])
                         session.modified = True
 
                 resp.status_code = message['code']
@@ -69,7 +68,7 @@ def update_user():
             resp.data = str(msg.USER_NOT_FOUND['message'])
             return resp
 
-    print(str(msg.DB_FAILURE))
+    logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
     resp.status_code = msg.DB_FAILURE['code']
     resp.data = str(msg.DB_FAILURE['message'])
     return resp
@@ -77,7 +76,7 @@ def update_user():
 
 @app.route('/get_profile_image/<path:image_id>', methods=['POST', 'GET'])
 def get_profile_image(image_id):
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
             # 'post_id': request.args.get('post_id'),
@@ -87,7 +86,6 @@ def get_profile_image(image_id):
         if db.connect(db_adapter):
             result = db.get_post_file(db_adapter, request_json)
             if result:
-                print(result.file_name)
                 resp = Response(result.file_name)
                 # response.headers.set('Content-Type', 'mime/jpeg')
                 resp.headers.set(
@@ -97,7 +95,7 @@ def get_profile_image(image_id):
                     io.BytesIO(result.read()),
                     attachment_filename=result.file_name)
             else:
-                print("not_found")
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
                 resp = Response()
                 resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
                 resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])

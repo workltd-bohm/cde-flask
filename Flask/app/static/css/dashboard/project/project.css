@@ -1,10 +1,26 @@
-circle.pattern.path {
+.background.star {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+.background.planet {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+.background.planet.dir {
+    /* fill : url("#patern_planet_folder"); */
+    fill: none;
+}
+.background.planet.empty {
+    /* fill : url("#patern_planet_empty"); */
+    fill: none;
+}
+
+.pattern.path {
     fill: #121212;
     stroke: rgba(250,250,250,0.2);
     stroke-width: 2;
 }
-
-circle.pattern.star {
+.pattern.star {
      /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
     /*fill : url("#patern_sun_fix"); */
      fill: #121212;
@@ -12,16 +28,7 @@ circle.pattern.star {
      stroke: rgba(250,250,250,0.25);
     stroke-width: 1;
 }
-circle.background.planet {
-    /* fill : url("#patern_planet_file"); */
-}
-circle.background.planet.dir {
-    /* fill : url("#patern_planet_folder"); */
-}
-circle.background.planet.empty {
-    /* fill : url("#patern_planet_empty"); */
-}
-circle.pattern.planet {
+.pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
     fill: #565656;
@@ -30,12 +37,12 @@ circle.pattern.planet {
     stroke-width: 2;
     opacity: 50%;
 }
-circle.pattern.planet.dir{
+.pattern.planet.dir{
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
     opacity: 50%;
 }
-circle.pattern.planet.empty{
+.pattern.planet.empty{
     /*stroke: rgba(190, 30, 20, 0.5);*/
     stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 1;
@@ -43,49 +50,75 @@ circle.pattern.planet.empty{
     opacity: 50%;
 }
 
-circle.shader {
+.shader.star {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+.shader.planet {
     fill : url("#gradient_shadow");
     stroke: 0;
     stroke-width: 0;
 }
 
-circle.select {
+.gloss.star {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+.gloss.planet {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+
+.select {
     fill: rgba(0, 0, 0, 0);
     stroke: none;
 }
-circle.select:hover {
+.select:hover {
     cursor: pointer;
     fill: rgba(230,254,255,0.3);
 }
 
-circle.overlay.pattern {
+.overlay.pattern {
     fill: rgba(18, 18, 18, 0.5);
     /* stroke: rgb(204, 204, 204); */
     /* stroke-opacity: 0.9; */
 }
-circle.overlay.select {
+.overlay.select {
     fill: rgba(0, 0, 0, 0.0);
 }
 
-circle.selection.pattern {
+.selection.pattern {
     fill: rgba(18, 18, 18, 0.5);
 }
-circle.selection.pattern.single {
+.selection.pattern.single {
     fill: rgba(255, 136, 0, 0.3);
 }
-circle.selection.pattern.file {
+.selection.pattern.file {
     fill: rgba(255, 238, 0, 0.3);
 }
-circle.selection.pattern.folder {
+.selection.pattern.folder {
     fill: rgba(0, 140, 255, 0.3);
 }
-circle.selection.pattern.mix {
+.selection.pattern.mix {
     fill: rgba(30, 255, 0, 0.3);
 }
-circle.selection.select {
+.selection.select {
     fill: rgba(0, 0, 0, 0.0);
 }
 
+.move.pattern.move {
+    fill: rgba(192, 84, 41, 1);
+}
+.move.pattern.copy {
+    fill: rgba(192, 41, 41, 1);
+}
+.move.select {
+    fill: rgba(0, 0, 0, 0.0);
+}
+
+text{
+    font-family: 'Courier New', Courier, monospace;
+}
 text.text_back {
     fill: rgb(0, 0, 0);
     filter: url("#filter_shadow");
@@ -114,7 +147,9 @@ g.planet.object > g.text > text {
     font-size: 12px;
 }
 g.path.draw > g.text > text {
-    font-size: 11px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    text-anchor: start;
 }
 
 .foregin {

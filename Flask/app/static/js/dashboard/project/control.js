@@ -161,6 +161,7 @@ function SelectAllPlanets(data){
 
 function DeselectAllPlanets(data){
     CHECKED = {};
+    MULTI = {};
 
     d3.selectAll("g.planet.dom").each(function(d){
         //console.log(d);

@@ -5,30 +5,30 @@ from datetime import datetime
 
 @app.route('/create_bid', methods=['POST', 'GET'])
 def create_bid():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     request_json = app.test_json_request_create_bid
     if request.get_data():
-        print(request.get_data())
         request_json = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
+
         request_json['bid_id'] = "default"
         request_json.update({'offer': request_json['offer'] + ' ' + request_json['per']})
         request_json.update({'status': status.Status[request_json["status"]].value})
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json['description'] = ""
-    print(request_json)
     if main.IsLogin():
         request_json['user'] = session.get('user')
-        print(request_json)
+        logger.log(LOG_LEVEL, 'POST data updated: {}'.format(request_json))
         if db.connect(db_adapter):
             result = db.create_bid(db_adapter, request_json)
             if result:
-                print(">>", result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(">", str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -43,9 +43,9 @@ def create_bid():
 @app.route('/edit_bid', methods=['POST'])
 def edit_bid():
     resp = Response()
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     request_data = json.loads(request.get_data())
-    print(request_data)
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     # if request.get_data():
     #     print(request.get_data())
     #     request_json = json.loads(request.get_data())
@@ -85,11 +85,11 @@ def edit_bid():
 
 @app.route('/get_all_bids', methods=['POST', 'GET'])
 def get_all_bids():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         if db.connect(db_adapter):
             result = db.get_all_bids(db_adapter)
-            print(">>>", json.dumps(result))
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(json.dumps(result)))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
@@ -105,7 +105,7 @@ def get_all_bids():
             resp.data = json.dumps(result)
             return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -119,13 +119,13 @@ def get_all_bids():
 
 @app.route('/get_my_bids', methods=['POST', 'GET'])
 def get_my_bids():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         if db.connect(db_adapter):
             request_data = json.loads(request.get_data())
             dirs.set_project_data(request_data)
             result = db.get_my_bids(db_adapter, session.get('user'))
-            print(">>>", json.dumps(result))
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(json.dumps(result)))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
@@ -142,7 +142,7 @@ def get_my_bids():
             resp.data = json.dumps(result)
             return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -156,20 +156,20 @@ def get_my_bids():
 
 @app.route('/get_single_bid', methods=['POST', 'GET'])
 def get_single_bid():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     request_json = app.test_json_request_get_single_bid
     if request.get_data(): request_json.update(json.loads(request.get_data()))
-    print(request_json)
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
         if db.connect(db_adapter):
             result = db.get_single_bid(db_adapter, request_json)
-            print(">>>", json.dumps(result))
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(json.dumps(result)))
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps(result) #, default=str)
             return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")

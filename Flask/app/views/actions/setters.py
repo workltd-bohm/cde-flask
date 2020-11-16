@@ -8,7 +8,7 @@ from app import *
 
 @app.route('/clear_projects')
 def clear_projects():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         if db.connect(db_adapter):
             db.clear_db(db_adapter, session['user'])
@@ -16,7 +16,7 @@ def clear_projects():
             session.get("user")["picture"] = ''
             session.modified = True
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -27,10 +27,10 @@ def clear_projects():
 
 @app.route('/select_project', methods=['POST'])
 def select_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
-        print(request.get_data())
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         session.get("project")["name"] = request_data['choose_project']
         session.modified = True
         resp = Response()
@@ -46,10 +46,10 @@ def select_project():
 
 @app.route('/create_project', methods=['POST'])
 def create_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
-        print(request.get_data())
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         user = session.get('user')
         name_id = str(uuid.uuid1())
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
@@ -69,13 +69,13 @@ def create_project():
         if db.connect(db_adapter):
             result, id = db.upload_project(db_adapter, project, user)
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -89,7 +89,7 @@ def create_project():
 
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     # print('>>>>>>>>>>>>>>>>>', request.args)
     # print('>>>>>>>>>>>>>>>>>', request.form)
 
@@ -102,7 +102,7 @@ def upload_existing_project():
             project = db.get_project(db_adapter, path.split('/')[0], user)
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
             if not project:
-                print(str(msg.PROJECT_NOT_FOUND['message']))
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
                 resp = Response()
                 resp.status_code = msg.PROJECT_NOT_FOUND['code']
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
@@ -114,8 +114,8 @@ def upload_existing_project():
                     counter = request.form['counter']
                     total = request.form['total']
                     original_path = path
-                    print(path)
-                    print(str((int(counter) / int(total)) * 100) + '%')
+                    logger.log(LOG_LEVEL, 'Path: {}'.format(path))
+                    logger.log(LOG_LEVEL, 'Percentage: {}'.format(str((int(counter) / int(total)) * 100) + '%'))
                     current_file_path_old = path.split('/')
                     file_name = current_file_path_old[-1]
                     current_file_path_backup = current_file_path_old[:]
@@ -170,9 +170,9 @@ def upload_existing_project():
                         project.added = False
                         encoded = file
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
-                        print(ic_new_file.name)
+
                         if result != msg.IC_SUCCESSFULLY_ADDED:
-                            print(">>", result["message"])
+                            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                             resp = Response()
                             resp.status_code = result['code']
                             resp.data = result['message']
@@ -182,7 +182,7 @@ def upload_existing_project():
                 else:
                     folders = json.loads(request.form['folders'])
                     for folder in folders:
-                        print('folder', folder)
+                        logger.log(LOG_LEVEL, 'Folder: {}'.format(folder))
                         current_dir_path = folder['path'].split('/')[1:]
                         parent_id = project.root_ic.ic_id
                         parent_ic = project.root_ic
@@ -213,19 +213,19 @@ def upload_existing_project():
                             message, ic = project.update_ic(ic_new, parent_ic)
                             # message, ic = db.create_folder(db_adapter, project.name, ic_new)
                             parent_ic = ic_new
-                            print(message['message'])
+                            logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
                             if message == msg.IC_ALREADY_EXISTS:
                                 parent_id = ic.ic_id
                                 parent_ic = ic
                         message = db.update_project(db_adapter, project, user)
-                        print(message)
+                        logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
 
                     resp = Response()
                     resp.status_code = msg.PROJECT_SUCCESSFULLY_UPLOADED['code']
                     resp.data = msg.PROJECT_SUCCESSFULLY_UPLOADED['message']
                     return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -235,18 +235,18 @@ def upload_existing_project():
 
 @app.route('/upload_project')
 def upload_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         root_obj = dirs.path_to_obj('root')
         project = Project("default", "test-project", root_obj)
         user = {'id': session.get('user')['id'], 'role': 'OWNER'}
-        print(root_obj)
+        # print(root_obj)
         if db.connect(db_adapter):
             result, id = db.upload_project(db_adapter, project, user)
             if result:
-                print(result)
+                logger.log(LOG_LEVEL, result)
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -257,11 +257,12 @@ def upload_project():
 
 @app.route('/set_color', methods=['POST'])
 def set_color():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             color_change = {
                 "project_name": project_name,
@@ -275,7 +276,7 @@ def set_color():
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -289,20 +290,20 @@ def set_color():
 
 @app.route('/share_project', methods=['POST'])
 def share_project():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.share_project(db_adapter, request_data, session['user'])
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result["message"]
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -313,10 +314,10 @@ def share_project():
 
 @app.route('/send_comment', methods=['POST'])
 def send_comment():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             u = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
@@ -324,7 +325,7 @@ def send_comment():
             comment = Comments(u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
             result = db.add_comment(db_adapter, request_data, comment)
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = render_template("activity/single_comment.html",
@@ -333,7 +334,7 @@ def send_comment():
                                             )
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -344,23 +345,23 @@ def send_comment():
 
 @app.route('/add_tag', methods=['POST'])
 def add_tag():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
         if request_data['project_name'] == '':
             request_data['project_name'] = session['project']['name']
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         if db.connect(db_adapter):
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result['message']
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -371,20 +372,20 @@ def add_tag():
 
 @app.route('/remove_tag', methods=['POST'])
 def remove_tag():
-    print('Data posting path: %s' % request.path)
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        print(request_data)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.remove_tag(db_adapter, request_data, request_data['tag'])
             if result:
-                print(result["message"])
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
                 resp.status_code = result["code"]
                 resp.data = result['message']
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
@@ -395,14 +396,33 @@ def remove_tag():
 
 @app.route('/activate_undo', methods=['POST'])
 def activate_undo():
-    print('Data posting path: %s' % request.path)
+    resp = Response()
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         undo = session.get("undo")
-        session.get("project")["undo"] = False
-        session.modified = True
-        print(undo)
+        #print(undo)
 
-    resp = Response()
-    resp.status_code = msg.DEFAULT_OK['code']
-    resp.data = str(msg.DEFAULT_OK['message'])
+        position = session.get("project")["position"]
+        project_name = session.get("project")["name"]
+        user = session.get('user')
+
+        if db.connect(db_adapter) and undo["user"] == user and undo["project_name"] == project_name:
+            result = db.get_project(db_adapter, project_name, user)
+            if result and undo["data"]:
+                project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(undo["data"]['root_ic']))
+                # print(project.to_json()['root_ic']["sub_folders"])
+                # print(undo["data"]['root_ic']["sub_folders"])
+                result, id = db.update_project(db_adapter, project, user)
+                if result:
+                    #session.get("project")["position"] = undo["position"]
+
+                    session["undo"] = {}
+                    session.get("project")["undo"] = False
+                    session.modified = True
+                    resp.status_code = msg.DEFAULT_OK['code']
+                    resp.data = str(msg.DEFAULT_OK['message']) #json.dumps({"json": project.to_json(), "project" : position})
+                    return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp

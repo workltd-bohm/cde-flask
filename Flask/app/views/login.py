@@ -18,10 +18,9 @@ def logout():
 
 @app.route('/login_data', methods=['POST'])
 def login_data():
-    print('Data posting path: %s' % request.path)
-    # print('POST data: %s ' % request.get_data())
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     json_data = json.loads(request.get_data())
-    print('POST data: %s ' % json_data)
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
 
     if db.connect(db_adapter):
         response, user = db.get_user(db_adapter, json_data)
@@ -41,7 +40,7 @@ def login_data():
             resp.data = response['message']
             return resp
     else:
-        print(str(msg.DB_FAILURE))
+        logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
         resp = Response()
         resp.status_code = msg.DB_FAILURE['code']
         resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
@@ -50,10 +49,9 @@ def login_data():
 
 @app.route('/signup_data', methods=['POST'])
 def signup_data():
-    print('Data posting path: %s' % request.path)
-    # print('POST data: %s ' % request.get_data())
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     json_data = json.loads(request.get_data())
-    print('POST data: %s ' % json_data)
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
 
     resp = Response()
     if db.connect(db_adapter):
@@ -61,7 +59,7 @@ def signup_data():
         user.create_user(json_data)
         user.picture = set_random_profile_picture(user.username)
         message, user = db.set_user(db_adapter, user)
-        print(user)
+        logger.log(LOG_LEVEL, 'User: {}'.format(user))
 
         if user is not None:
             email.send_an_email(user.username, user.email)
@@ -73,7 +71,7 @@ def signup_data():
             resp.data = str(message['message'])
             return resp
     else:
-        print(str(msg.DB_FAILURE))
+        logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
         resp.status_code = msg.DB_FAILURE['code']
         resp.data = str(msg.DB_FAILURE['message'])
         return resp
@@ -81,16 +79,16 @@ def signup_data():
 
 @app.route('/confirm_account', methods=['GET'])
 def confirm_account():
-    print('Data posting path: %s' % request.path)
-    print('Username: %s ' % request.args.get('username'))
-    print('Email: %s ' % request.args.get('email'))
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    # print('Username: %s ' % request.args.get('username'))
+    # print('Email: %s ' % request.args.get('email'))
 
     user = {"username": request.args.get('username'), "email": request.args.get('email')}
 
     resp = msg.USER_NOT_FOUND
     if db.connect(db_adapter):
         resp = db.confirm_account(db_adapter, user)
-        print(resp)
+        logger.log(LOG_LEVEL, 'Response message: {}'.format(resp))
 
     return resp['message']
 

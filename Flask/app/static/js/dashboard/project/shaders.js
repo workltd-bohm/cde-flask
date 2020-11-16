@@ -10,8 +10,8 @@ var g_GradientShadow = SWGDefs.append("radialGradient")
     .attr("fx", "15%")
     .attr("fy", "50%");
 g_GradientShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0.1)");
-g_GradientShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.5)");
-g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,1)");
+g_GradientShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.25)");
+g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.3)");
 
 var g_FilterShadow = SWGDefs.append("filter")
     .attr("id", "filter_shadow")
