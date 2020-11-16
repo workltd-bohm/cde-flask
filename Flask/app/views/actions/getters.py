@@ -120,8 +120,9 @@ def get_root_project():
                 }
             }
             result = db.get_my_projects(db_adapter, user)
-            if result:
-                for project in result:
+            # if result:
+            for project in result:
+                if project:
                     proj_obj = {
                         "ic_id": "",
                         "name": project["project_name"],
