@@ -109,3 +109,10 @@ function MakeSnackbar(data){
     $("#snackbar").show();
     setTimeout(function(){ $("#snackbar").hide(); }, 3000);
 }
+
+function FilterSwap(target){
+    $(".popup-view").children().hide();
+    $(".popup-box").removeClass("selected");
+    $("#popup-"+target).show();
+    $("#popup-"+target+"-tab").addClass("selected");
+}

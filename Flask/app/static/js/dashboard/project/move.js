@@ -19,7 +19,7 @@ function MoveCreate(obj, data) {
     g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
     data.move.object.append("circle")
-        .attr("class","move pattern " + (MULTI.copy? "copy": "move"))
+        .attr("class","move pattern " + (MULTI.to_copy? "copy": "move"))
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_OverlayRadius)
@@ -30,7 +30,7 @@ function MoveCreate(obj, data) {
         .attr("cy", 0)
         .attr("r", g_OverlayRadius*CHECKED_SELECT_RATIO)
 
-    AddMoveText(data, MULTI.copy? "COPY":"MOVE");
+    AddMoveText(data, MULTI.to_copy? "COPY":"MOVE");
 
     data.move.children = data.move.object.append("g")
         .attr("class","move items")
@@ -105,7 +105,7 @@ function ApllyMove(data){
     MULTI.to_ic_id = data.ic_id,
     LoadStart();
     $.ajax({
-        url: "/move_ic",
+        url: "/move_ic_multi",
         type: 'POST',
         data: JSON.stringify(MULTI),
         timeout: 5000,

@@ -295,7 +295,7 @@ function DeleteFile(form, json){
     if (o.length > 0) MULTI = {
         parent_id: json.parent_id,
         ic_id: json.ic_id,
-        multi : multi,
+        targets : multi,
     };
     
     LoadStart();

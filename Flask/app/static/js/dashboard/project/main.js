@@ -189,7 +189,7 @@ function AddChildren(obj, data, parent, position=0){
     AddText(data, "planet");
     if(g_root.slider) {
         data.values.text.selectAll("text")
-            .attr("text-anchor","left")
+            .style("text-anchor", "start")
             .attr("transform","translate("+(g_SunRadius/PLANET_SCROLL_TEXT)+")");
     }
 
@@ -247,19 +247,26 @@ function AddChildren(obj, data, parent, position=0){
 
 function AddTspan(target, newobj, text, prefix=null){
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
-    text = text.slice(0, TEXT_MAX_TEXT);
-    if(text.length >= TEXT_MAX_TEXT)
-        text = text.slice(0, TEXT_MAX_TEXT - 4) + "...";
+    var max_text = TEXT_MAX_TEXT;
+    var max_text_len = TEXT_MAX_LENGHT;
+    if(g_root.slider){
+        max_text = TEXT_MAX_SCROLL_TEXT;
+        max_text_len = TEXT_MAX_SCROLL_LENGHT;
+    }
 
-    var slice = ((text.length/TEXT_MAX_LENGHT) | 0); // + 1;
-    newobj.text_len = (slice > 0) ? TEXT_MAX_LENGHT : newobj.text_len;
+    text = text.slice(0, max_text);
+    if(text.length >= max_text)
+        text = text.slice(0, max_text - 4) + "...";
+
+    var slice = ((text.length/max_text_len) | 0); // + 1;
+    newobj.text_len = (slice > 0) ? max_text_len : newobj.text_len;
     var spacing = parseFloat($(target.node()).css("fontSize"));
 
     for(var i = 0; i <= slice; i++){
         target.append("tspan")
         .attr('x', 0)
         .attr('y', (i-(slice)/2)*spacing) //TEXT_SPACING)
-        .html(text.slice(i*TEXT_MAX_LENGHT, (i+1)*TEXT_MAX_LENGHT))
+        .html(text.slice(i*max_text_len, (i+1)*max_text_len))
     }
     if(prefix){
         target.append("tspan")
