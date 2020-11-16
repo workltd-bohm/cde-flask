@@ -317,11 +317,11 @@ class DBMongoAdapter:
                 result = col_users.find()
                 if result:
                     for u in result:
-                        for pr in u['projects']:
+                        for count, pr in enumerate(u['projects']):
                             if pr['project_id'] == project_json['project_id']:
-                                del result['projects'][count]
+                                del u['projects'][count]
                                 col_users.update_one(user_query,
-                                                     {'$set': {'projects': result['projects']}})
+                                                     {'$set': {'projects': u['projects']}})
                 delete = msg.PROJECT_SUCCESSFULLY_DELETED
             else:
                 project = Project.json_to_obj(project_json)
