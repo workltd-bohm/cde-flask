@@ -142,6 +142,7 @@ def get_folder(parent_id, folder_name):
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 def upload_file_process(request_json, file=None):
     logger.log(LOG_LEVEL, "Upload File Process")
     directory = request_json['parent_path']
@@ -224,6 +225,7 @@ def upload_file():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 def create_dir_process(request_data):
     logger.log(LOG_LEVEL, "Create Dir Process")
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
@@ -252,6 +254,7 @@ def create_dir_process(request_data):
         resp.status_code = msg.DB_FAILURE['code']
         resp.data = str(msg.DB_FAILURE['message'])
         return resp
+
 
 @app.route('/create_dir', methods=['POST'])
 def create_dir():

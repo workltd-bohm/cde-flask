@@ -110,7 +110,7 @@ function MakeSnackbar(data){
     setTimeout(function(){ $("#snackbar").hide(); }, 3000);
 }
 
-function FilterSwap(target){
+function TabSwap(target){
     $(".popup-view").children().hide();
     $(".popup-box").removeClass("selected");
     $("#popup-"+target).show();

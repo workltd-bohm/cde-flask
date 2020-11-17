@@ -54,7 +54,7 @@ function NewFolder(form, json){
 
             listing = document.getElementById('listing');
             box = document.getElementById('box');
-            dropArea = document.getElementById("dropArea");
+            dropArea = document.getElementById("dropAreaFolders");
             dropArea.addEventListener("dragover", dragHandler);
             dropArea.addEventListener("dragleave", dragLeave);
             dropArea.addEventListener("change", filesDroped);

@@ -1,9 +1,9 @@
 <h3>New Files</h3>
 <div class="popup-tab">
-  <div class="popup-box" id="filter-newfile-tab" onclick="FilterSwap('newfile')">
+  <div class="popup-box" id="filter-newfile-tab" onclick="TabSwap('newfile')">
     <p>New Folder</p>
   </div>
-  <div class="popup-box" id="filter-upload-tab" onclick="FilterSwap('upload')">
+  <div class="popup-box" id="filter-upload-tab" onclick="TabSwap('upload')">
     <p>Upload Files</p>
   </div>
 </div>
@@ -35,12 +35,12 @@
   <div class="popup-view">
     <div id="popup-upload" style="display: none;">
 
-      <div id="dropArea" class="area">
-      <label for="file">
+      <div id="dropAreaFolders" class="area">
+
         <p>Drop your folder here!</p>
       <input id="file" type="file" title="If you want to select folder, empty folders inside will not be uploaded.
       In order to enable that functionality, please use drag&drop" directory allowdirs webkitdirectory/>
-      </label>
+
       </div>
       <br>
       <span id="listing"></span>

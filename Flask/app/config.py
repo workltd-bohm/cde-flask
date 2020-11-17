@@ -14,7 +14,7 @@ class Basic:
     SECRET_KEY = "key"
     DEBUG = True
 
-    LOG_LEVEL = 10
+    LOG_LEVEL = 20
     LOG_FILE = 'app/logs/bohm.log'
 
 # Here production, staging, development, testing config classes could be made
