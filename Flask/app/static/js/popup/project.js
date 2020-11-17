@@ -124,10 +124,10 @@ function sendFilesHelper(files, folders){
 }
 
 function createProject(files, folders){
+    var current = 0;
     if(folders_only){
         sendFile(files, folders, current);
     }else{
-        var current = 0;
         if(files.length > 0){
             project_name = files[current].path.substring(1).split('/')[0];
         }
