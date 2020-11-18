@@ -143,6 +143,64 @@ def get_folder(parent_id, folder_name):
     return resp
 
 
+def upload_file_process(request_json, file=None):
+    logger.log(LOG_LEVEL, "Upload File Process")
+    directory = request_json['parent_path']
+    u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+    # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
+    details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'] +
+                        "." + request_json['new_name'].split('.')[-1])
+    file_obj = File(str(uuid.uuid1()),
+                    '.'.join(request_json['new_name'].split('.')[:-1]),
+                    file.filename if file else request_json["original_name"],
+                    directory,
+                    [details],
+                    directory + '/' + request_json['new_name'],
+                    "." + request_json['new_name'].split('.')[-1],
+                    request_json['ic_id'],
+                    '',
+                    [],
+                    [],
+                    [],
+                    '',
+                    'description') # request_json['description'])
+    try:
+        file_obj.project_code = request_json['project_code']
+        file_obj.company_code = request_json['company_code']
+        file_obj.project_volume_or_system = request_json['project_volume_or_system']
+        file_obj.project_level = request_json['project_level']
+        file_obj.type_of_information = request_json['type_of_information']
+        file_obj.role_code = request_json['role_code']
+        file_obj.file_number = request_json['file_number']
+        file_obj.status = request_json['status']
+        file_obj.revision = request_json['revision']
+    except Exception:
+        pass
+    # print(file_obj.to_json())
+    if db.connect(db_adapter):
+        # with open('app/templates/activity/activity.html', "rb") as f:
+        #     encoded = Binary(f.read())  # request_json['file']
+        if file:
+            encoded = file.read()
+            result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
+        else:
+            file_obj.stored_id = request_json["stored_id"]
+            result, ic = db.create_folder(db_adapter, request_json['project_name'], file_obj)
+            #result = db.upload_file(db_adapter, request_json['project_name'], file_obj)
+        if result:
+            logger.log(LOG_LEVEL, ">> {}".format(result["message"]))
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+    else:
+        logger.log(LOG_LEVEL, "> {}".format(str(msg.DB_FAILURE)))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
+
+
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -155,64 +213,47 @@ def upload_file():
             resp.data = str(msg.DEFAULT_ERROR['message'])
             return resp
 
-        file = request.files['file'].read()
+        file = request.files['file']
         logger.log(LOG_LEVEL, 'Request data: {}'.format(request.form['data']))
         request_json = json.loads(request.form['data'])  # test_json_request
         set_project_data(request_json, True)
-        directory = request_json['parent_path']
-        u = {'user_id': session['user']['id'], 'username': session['user']['username']}
-        # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
-        details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'] +
-                          "." + request_json['new_name'].split('.')[-1])
-        file_obj = File(str(uuid.uuid1()),
-                        '.'.join(request_json['new_name'].split('.')[:-1]),
-                        request.files['file'].filename,
-                        directory,
-                        [details],
-                        directory + '/' + request_json['new_name'],
-                        "." + request_json['new_name'].split('.')[-1],
-                        request_json['ic_id'],
-                        '',
-                        [],
-                        [],
-                        [],
-                        '',
-                        'description') # request_json['description'])
-        try:
-            file_obj.project_code = request_json['project_code']
-            file_obj.company_code = request_json['company_code']
-            file_obj.project_volume_or_system = request_json['project_volume_or_system']
-            file_obj.project_level = request_json['project_level']
-            file_obj.type_of_information = request_json['type_of_information']
-            file_obj.role_code = request_json['role_code']
-            file_obj.file_number = request_json['file_number']
-            file_obj.status = request_json['status']
-            file_obj.revision = request_json['revision']
-        except Exception:
-            pass
-        # print(file_obj.to_json())
-        if db.connect(db_adapter):
-            # with open('app/templates/activity/activity.html', "rb") as f:
-            #     encoded = Binary(f.read())  # request_json['file']
-            encoded = file
-            result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
-            if result:
-                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
-                resp = Response()
-                resp.status_code = result["code"]
-                resp.data = result["message"]
-                return resp
-        else:
-            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
-            resp = Response()
-            resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message'])
-            return resp
-    
+        
+        return upload_file_process(request_json, file)
+
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+def create_dir_process(request_data):
+    logger.log(LOG_LEVEL, "Create Dir Process")
+    u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+    details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
+    folder = Directory(str(uuid.uuid1()),
+                        request_data['new_name'],
+                        request_data['parent_path'],
+                        [details],
+                        request_data['parent_path'] + '/' + request_data['new_name'],
+                        request_data['ic_id'],
+                        '',
+                        [],
+                        [],
+                        [])
+    if db.connect(db_adapter):
+        result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
+        if result:
+            #print(result["message"])
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+    else:
+        logger.log(LOG_LEVEL, str(msg.DB_FAILURE))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
 
 
 @app.route('/create_dir', methods=['POST'])
@@ -223,33 +264,9 @@ def create_dir():
         if request_data['project_name'] == '':
             request_data['project_name'] = session['project']['name']
         set_project_data(request_data, True)
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
-        u = {'user_id': session['user']['id'], 'username': session['user']['username']}
-        details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
-        folder = Directory(str(uuid.uuid1()),
-                           request_data['new_name'],
-                           request_data['parent_path'],
-                           [details],
-                           request_data['parent_path'] + '/' + request_data['new_name'],
-                           request_data['ic_id'],
-                           '',
-                           [],
-                           [],
-                           [])
-        if db.connect(db_adapter):
-            result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
-            if result:
-                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
-                resp = Response()
-                resp.status_code = result["code"]
-                resp.data = result["message"]
-                return resp
-        else:
-            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
-            resp = Response()
-            resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message'])
-            return resp
+        #print(request_data)
+        
+        return create_dir_process(request_data)
 
     resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -327,30 +344,30 @@ def delete_ic():
 
 # ----------------------------------------------------
 
-@app.route('/move_ic', methods=['POST'])
-def move_ic():
-    print('Data posting path: %s' % request.path)
-    if main.IsLogin():
-        request_data = json.loads(request.get_data())
-        set_project_data(request_data, True)
-        print(request_data)
-        if db.connect(db_adapter):
-            resp = Response()
-            resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = str(msg.DEFAULT_OK['message'])
-            return resp
+# @app.route('/move_ic', methods=['POST'])
+# def move_ic():
+#     print('Data posting path: %s' % request.path)
+#     if main.IsLogin():
+#         request_data = json.loads(request.get_data())
+#         set_project_data(request_data, True)
+#         print(request_data)
+#         if db.connect(db_adapter):
+#             resp = Response()
+#             resp.status_code = msg.DEFAULT_OK['code']
+#             resp.data = str(msg.DEFAULT_OK['message'])
+#             return resp
 
-        else:
-            print(str(msg.DB_FAILURE))
-            resp = Response()
-            resp.status_code = msg.DB_FAILURE['code']
-            resp.data = str(msg.DB_FAILURE['message'])
-            return resp
+#         else:
+#             print(str(msg.DB_FAILURE))
+#             resp = Response()
+#             resp.status_code = msg.DB_FAILURE['code']
+#             resp.data = str(msg.DB_FAILURE['message'])
+#             return resp
 
-    resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
-    return resp
+#     resp = Response()
+#     resp.status_code = msg.DEFAULT_ERROR['code']
+#     resp.data = str(msg.DEFAULT_ERROR['message'])
+#     return resp
 
 # ----------------------------------------------------
 
@@ -442,13 +459,14 @@ def set_project_data(data, save=False):
     if "project" in data:
         session.get("project").update(data["project"])
 
-    project_name = session.get("project")["name"]
-    user = session.get('user')
-    if session.get("undo") and session.get("undo")["user"] == user and session.get("undo")["project_name"] == project_name:
-        session.get("project")["undo"] = True
-    else:
-        session.get("project")["undo"] = False
-    #print(session["undo"])
+    if "name" in session.get("project"):
+        project_name = session.get("project")["name"]
+        user = session.get('user')
+        if session.get("undo") and session.get("undo")["user"] == user and session.get("undo")["project_name"] == project_name:
+            session.get("project")["undo"] = True
+        else:
+            session.get("project")["undo"] = False
+        #print(session["undo"])
 
     if save:
         session["undo"] = {}
@@ -462,7 +480,7 @@ def set_project_data(data, save=False):
                     session.get("undo")["user"] = session.get('user')
                     session.get("project")["undo"] = True
 
-    print(session.get("project"))
+    #print(session.get("project"))
     session.modified = True
 
 

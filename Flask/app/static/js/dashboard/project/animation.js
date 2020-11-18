@@ -36,7 +36,7 @@ function SunFadeout(data){
     data.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
-        .attr("text-anchor","middle")
+        .style("text-anchor","middle")
         .attr("transform","translate("+(-g_SunRadius/PLANET_SCROLL_TEXT)+")");
     data.values.back.values.children.selectAll("g.planet").each(function(d){
         if(data.values.this[0] != d.values.this[0]) {
@@ -158,12 +158,12 @@ function AnimatePlanet(data) {
             .attr("transform","rotate("+(g_root.deg)+")");
 
         data.values.children.selectAll("g.planet").each(function(data){
-            var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
+            //var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
             // var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
             //var anchor =  (rot_x > 0) ? "start" : "end";
-            var anchor = "middle";
+            //var anchor = "middle";
             var pos =  0; //rot_x*TEXT_MOVE_COEF*data.values.text_len;
-            data.values.text.selectAll("text").style("text-anchor", anchor)
+            //data.values.text.selectAll("text").style("text-anchor", anchor)
             data.values.text.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)

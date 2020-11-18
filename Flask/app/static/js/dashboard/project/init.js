@@ -16,9 +16,9 @@ const ORBIT_SPEED_SCALE = 10;
 
 const SUN_MIN_SIZE = 100;
 const SUN_SIZE_COEF = 4;
-const SUN_SCROLL_X_COEF = 6;
+const SUN_SCROLL_X_COEF = 2;
 const SUN_SCROLL_SIZE_COEF = 0.3;
-const SUN_SCROLL_ZOOM = 2;
+const SUN_SCROLL_ZOOM = 1.2;
 
 const PLANET_MAX_NUMBER_MIN = 9;
 const PLANET_MAX_NUMBER_MAX = 20;
@@ -29,7 +29,7 @@ const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.7;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
-const PLANET_SCROLL_ZOOM = 2;
+const PLANET_SCROLL_ZOOM = 1.2;
 
 const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
@@ -52,8 +52,10 @@ const CHECKED_ALLGROUP_OFFSET = 2.5;
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
 const TEXT_MOVE_COEF = 4;
-const TEXT_MAX_LENGHT = 10;
-const TEXT_MAX_TEXT = 20;
+const TEXT_MAX_LENGHT = 12;
+const TEXT_MAX_SCROLL_LENGHT = 60;
+const TEXT_MAX_TEXT = 30;
+const TEXT_MAX_SCROLL_TEXT = 60;
 
 
 // ----------------------------------------------------

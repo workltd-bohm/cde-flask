@@ -212,7 +212,7 @@ class DBMongoAdapter:
         self._close_connection()
         return project_uploaded
 
-    def upload_file(self, project_name, file_obj, file):
+    def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
@@ -223,14 +223,30 @@ class DBMongoAdapter:
             file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id}
             file_json = self._fs.find_one(file_query)
             if file_json is None:
-                file_obj.stored_id = str(self._fs.put(file,
-                                                      file_id='default',
-                                                      file_name=file_obj.name+file_obj.type,
-                                                      parent=file_obj.parent,
-                                                      parent_id=file_obj.parent_id,
-                                                      description=file_obj.description,
-                                                      from_project=True
-                                                      ))
+                if file:
+                    file_obj.stored_id = str(self._fs.put(file,
+                                                        file_id='default',
+                                                        file_name=file_obj.name+file_obj.type,
+                                                        parent=file_obj.parent,
+                                                        parent_id=file_obj.parent_id,
+                                                        description=file_obj.description,
+                                                        from_project=True
+                                                        ))
+                else:
+                    file_query = {'file_name': file_obj.name+file_obj.type, "file_id": file_obj.stored_id}
+                    #print(file_query)
+                    file_json = col_file.find_one(file_query)
+                    if file_json is not None:
+                        del file_json["_id"]
+                        file_json["file_id"] = "default"
+                        file_json["file_name"] = file_obj.name+file_obj.type
+                        file_json["parent"] = file_obj.parent[0],
+                        file_json["parent_id"] = file_obj.parent_id[0],
+                        file_obj.stored_id = str(col_file.insert_one(file_json)
+                                        .inserted_id)
+                    else:
+                        print(msg.STORED_FILE_NOT_FOUND)
+                        return msg.STORED_FILE_NOT_FOUND
                 # col.update_one({'file_id': 'default'},
                 #                {'$set': {'file_id': str(stored_id)}})
                 col_file.update_one({'file_id': 'default'},
@@ -249,6 +265,23 @@ class DBMongoAdapter:
         return add
 
     def create_folder(self, project_name, folder):
+        ic = None
+        col = self._db.Projects
+        project_query = {'project_name': project_name}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+
+            message, ic = project.add_ic(folder, project.root_ic)
+            if message == msg.IC_SUCCESSFULLY_ADDED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+        else:
+            print(msg.PROJECT_NOT_FOUND)
+            return msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message, ic
+
+    def move_ic(self, project_name, folder):
         ic = None
         col = self._db.Projects
         project_query = {'project_name': project_name}
@@ -331,6 +364,7 @@ class DBMongoAdapter:
                 if not delete_ic_data['is_directory']:
                     ic_deleted = False
                     file_query = {'file_name': delete_ic_data['delete_name']}
+                    print(file_query)
                     file_json = col_file.delete_one(file_query, {'_id': 0})
                     if file_json:
                         ic_deleted = True
