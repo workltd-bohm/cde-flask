@@ -12,9 +12,9 @@ class Basic:
     DB = DBMongoAdapter()
 
     SECRET_KEY = "key"
-    DEBUG = True
+    DEBUG = False
 
-    LOG_LEVEL = 20
+    LOG_LEVEL = 10
     LOG_FILE = 'app/logs/bohm.log'
 
 # Here production, staging, development, testing config classes could be made
