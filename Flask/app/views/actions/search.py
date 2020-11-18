@@ -27,7 +27,7 @@ def get_filtered_files():
     # path_id = bundle["path_id"]
     # temp_request_json = bundle["data"]
     # if temp_request_json and len(temp_request_json) > 0: request_json = temp_request_json
-    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     resp = Response()
     if main.IsLogin():
         if db.connect(db_adapter):

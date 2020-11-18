@@ -125,6 +125,7 @@ function sendFilesHelper(files, folders){
 
 function createProject(files, folders){
     var current = 0;
+    counter = 1;
     if(folders_only){
         sendFile(files, folders, current);
     }else{
@@ -135,7 +136,7 @@ function createProject(files, folders){
             project_name = folders[current].path.substring(1).split('/')[0];
         }
         let data = {project_name: project_name};
-        console.log(data);
+//        console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
         $.ajax({
             url: 'create_project',
@@ -166,10 +167,12 @@ function sendFile(files, folders, current) {
     var formData = new FormData();
     var request = new XMLHttpRequest();
     let path = ''
-    console.log(SESSION);
     if(counter > total){
         path = folders[0].path;
-        if(folders_only) path = SESSION['position'].path + '/' + path;
+        if(folders_only) {
+            path = SESSION['position'].path + '/' + path;
+            folders.forEach(folder => folder.path = SESSION['position'].path + '/' + folder.path)
+        }
         listing.innerHTML = "Uploading " + total + " file(s) is done!<br>Creating folder structure. Please wait";
         box.innerHTML = "";
         interval = setInterval(adjustBox, 500);
@@ -180,7 +183,10 @@ function sendFile(files, folders, current) {
     }
     else{
         path = file.path.substring(1);
-        if(folders_only) path = SESSION['position'].path + '/' + path;
+        if(folders_only) {
+            path = SESSION['position'].path + '/' + path;
+            file.path = path;
+        }
         listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0]  + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
         formData.set('file', file.file); // One object file
@@ -189,7 +195,6 @@ function sendFile(files, folders, current) {
     }
     formData.set('counter', counter);
     formData.set('total', total);
-
 
     $.ajax({
         url: 'upload_existing_project',
@@ -200,7 +205,7 @@ function sendFile(files, folders, current) {
         contentType: false,
     //        timeout: 20000,
         success: function(data){
-            console.log(data);
+//            console.log(data);
 
             if (counter > total) {
                 listing.innerHTML = data;
@@ -209,7 +214,7 @@ function sendFile(files, folders, current) {
                 stopFunction();
                 MakeSnackbar(data);
     //                PopupClose();
-                console.log(data);
+//                console.log(data);
                 if(data == "Project successfully uploaded"){
 //                    counter = 1;
                     CheckSession();
@@ -273,7 +278,7 @@ function filesDroped(event) {
   // do mozilla stuff
   // TODO adjust, call `listDirectory()`, `listFile()`
   function mozReadDirectories(entries, path) {
-    console.log("dir", entries, path);
+//    console.log("dir", entries, path);
     return [].reduce.call(entries, function(promise, entry) {
         return promise.then(function() {
           return Promise.resolve(entry.getFilesAndDirectories() || entry)
@@ -360,7 +365,7 @@ function filesDroped(event) {
 //        console.log('listDirectory', entry);
     var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
 //    var cname = path.split("/").filter(Boolean).join("-");
-    console.log("dir path", path.substring(1))
+//    console.log("dir path", path.substring(1))
     webkitResultDir.push({'path': path.substring(1), 'isDir': true});
 
     return Promise.resolve(webkitResultDir);
@@ -369,7 +374,7 @@ function filesDroped(event) {
   function listFile(file, path) {
     path = path || file.webkitRelativePath || "/" + file.name;
 
-    console.log("file path", path)
+//    console.log("file path", path)
     //console.log(`reading ${file.name}, size: ${file.size}, path:${path}`);
     webkitResult.push({'path': path, 'file': file, 'isDir': false});
     return Promise.resolve(webkitResult)
@@ -380,8 +385,8 @@ function filesDroped(event) {
         return handleEntries(file, index).then(handleFile)
       }))
       .then(function() {
-        console.log("complete", webkitResult);
-        console.log("complete dir", webkitResultDir);
+//        console.log("complete", webkitResult);
+//        console.log("complete dir", webkitResultDir);
         sendFilesHelper(webkitResult, webkitResultDir);
       })
       .catch(function(err) {
@@ -393,7 +398,7 @@ function filesDroped(event) {
     return (event.type === "drop" ? event.dataTransfer : event.target).getFilesAndDirectories()
       .then(function(dir) {
         if (dir[0] instanceof Directory) {
-          console.log(dir)
+//          console.log(dir)
           return mozReadDirectories(dir, dir[0].path || path)
             .then(function(complete) {
               console.log("complete:", complete);

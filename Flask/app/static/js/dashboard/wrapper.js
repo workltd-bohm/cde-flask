@@ -165,6 +165,7 @@ function CreateProject(position=null){
             data = JSON.parse(data);
             //console.log(data)
             if(data){
+                console.log(data);
                 if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
@@ -226,10 +227,38 @@ function Select3D(){
 function SwitchDash(id){
     ClearActivity();
     switch(id){
-        case 0: $SVG.fadeIn(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
-        case 1: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeIn(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
-        case 2: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeIn(ANIM_FADE_ANIM); break;
-        default: $SVG.fadeOut(ANIM_FADE_ANIM); $MARKET.fadeOut(ANIM_FADE_ANIM); $EDITOR.fadeOut(ANIM_FADE_ANIM); $VIEWER.fadeOut(ANIM_FADE_ANIM); break;
+        case 0:
+            $SVG.fadeIn(ANIM_FADE_ANIM);
+            $MARKET.fadeOut(ANIM_FADE_ANIM);
+            $EDITOR.fadeOut(ANIM_FADE_ANIM);
+            $VIEWER.fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-sign').fadeIn(ANIM_FADE_ANIM);
+            $('#terminal-main').fadeIn(ANIM_FADE_ANIM);
+            break;
+        case 1:
+            $SVG.fadeOut(ANIM_FADE_ANIM);
+            $MARKET.fadeIn(ANIM_FADE_ANIM);
+            $EDITOR.fadeOut(ANIM_FADE_ANIM);
+            $VIEWER.fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-sign').fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-main').fadeOut(ANIM_FADE_ANIM);
+            break;
+        case 2:
+            $SVG.fadeOut(ANIM_FADE_ANIM);
+            $MARKET.fadeOut(ANIM_FADE_ANIM);
+            $EDITOR.fadeOut(ANIM_FADE_ANIM);
+            $VIEWER.fadeIn(ANIM_FADE_ANIM);
+            $('#terminal-sign').fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-main').fadeOut(ANIM_FADE_ANIM);
+            break;
+        default:
+            $SVG.fadeOut(ANIM_FADE_ANIM);
+            $MARKET.fadeOut(ANIM_FADE_ANIM);
+            $EDITOR.fadeOut(ANIM_FADE_ANIM);
+            $VIEWER.fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-sign').fadeOut(ANIM_FADE_ANIM);
+            $('#terminal-main').fadeOut(ANIM_FADE_ANIM);
+            break;
     }
 }
 

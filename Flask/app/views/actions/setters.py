@@ -185,16 +185,20 @@ def upload_existing_project():
                     for folder in folders:
                         logger.log(LOG_LEVEL, 'Folder: {}'.format(folder))
                         current_dir_path = folder['path'].split('/')[1:]
+                        current_full_path = folder['path'].split('/')
                         parent_id = project.root_ic.ic_id
                         parent_ic = project.root_ic
                         for i in range(0, len(current_dir_path)):
                             name = current_dir_path[i]
                             new_id = str(uuid.uuid1())
                             if i < 1:
-                                parent_directory = ('/').join(current_dir_path[0:1])
+                                parent_directory = ('/').join(current_full_path[0:1])
+                                path = ('/').join(current_full_path[0:1])
                             else:
-                                parent_directory = ('/').join(current_dir_path[0:i + 1])
-                            path = ('/').join(current_dir_path[:i])
+                                parent_directory = ('/').join(current_full_path[0:i + 1])
+                                path = ('/').join(current_full_path[0:i + 1])
+                            path = path + '/' + name
+
                             details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
                             ic_new = Directory(new_id,
                                                name,
