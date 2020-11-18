@@ -8,7 +8,7 @@ function DrawPath(obj, data){
     data.paths_path.index = g_project.history_num++;
     data.paths_path.start = g_project.hist_path_len;
 
-    console.log(g_project.hist_path_len, data.paths_path.start*PATH_TEXT_PADDING)
+//    console.log(g_project.hist_path_len, data.paths_path.start*PATH_TEXT_PADDING)
     data.paths_path.this.attr("transform","translate("+(data.paths_path.start*PATH_TEXT_PADDING)+", 0)");
 
     data.paths_path.object = data.paths_path.this.append("g").attr("class", "path draw");
@@ -50,7 +50,7 @@ function AddPathText(data, text, fix=false) {
     if(text.length >= PATH_TEXT_MAX_TEXT)
         text = text.slice(0, PATH_TEXT_MAX_TEXT - 4) + "...";
     text = "/"+text;
-    console.log(text.length, text)
+//    console.log(text.length, text)
     g_project.hist_path_len = text.length;
 
     newobj.text = newobj.object.append("g")

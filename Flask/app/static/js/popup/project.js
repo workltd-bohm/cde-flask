@@ -168,6 +168,13 @@ function sendFile(files, folders, current) {
     var request = new XMLHttpRequest();
     let path = ''
     if(counter > total){
+    console.log(folders)
+        if(folders.length == 0) {
+            CheckSession();
+            //CreateProject();
+            PopupClose();
+            return;
+        }
         path = folders[0].path;
         if(folders_only) {
             path = SESSION['position'].path + '/' + path;

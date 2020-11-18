@@ -41,7 +41,7 @@ function CheckSession(){
         timeout: 5000,
         success: function(data){
             SESSION = JSON.parse(data);
-            console.log(SESSION)
+//            console.log(SESSION)
             switch(SESSION["section"]){
                 case "user":{
                     UserProfile();
@@ -165,7 +165,7 @@ function CreateProject(position=null){
             data = JSON.parse(data);
             //console.log(data)
             if(data){
-                console.log(data);
+//                console.log(data);
                 if(data.session) {SESSION = data.session;console.log(SESSION)}
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..

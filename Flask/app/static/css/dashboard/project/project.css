@@ -45,7 +45,7 @@
 .pattern.planet.empty{
     /*stroke: rgba(190, 30, 20, 0.5);*/
     stroke: rgba(250, 250, 250, 0.5);
-    stroke-width: 1;
+    stroke-width: 2;
     stroke-dasharray: 3;
     opacity: 50%;
 }
