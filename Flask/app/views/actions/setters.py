@@ -94,7 +94,8 @@ def upload_existing_project():
     # print('>>>>>>>>>>>>>>>>>', request.form)
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request.form))
 
-    user = session['user']
+    if 'user' in session:
+        user = session['user']
 
     if main.IsLogin():
         if db.connect(db_adapter):
@@ -235,7 +236,7 @@ def upload_existing_project():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
-    return redirect('/')
+    return redirect('/login')
 
 
 @app.route('/upload_project')
