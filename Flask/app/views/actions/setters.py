@@ -171,6 +171,10 @@ def upload_existing_project():
 
                         project.added = False
                         encoded = file
+                        print('+++++++++', len(file))
+                        # TODO: fix this mess
+                        if len(file) == 0:
+                            return request.form['path']
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
                         if result != msg.IC_SUCCESSFULLY_ADDED:
