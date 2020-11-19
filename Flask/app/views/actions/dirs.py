@@ -181,7 +181,7 @@ def upload_file_process(request_json, file=None):
         # with open('app/templates/activity/activity.html', "rb") as f:
         #     encoded = Binary(f.read())  # request_json['file']
         if file:
-            encoded = file.read()
+            encoded = file
             result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         else:
             file_obj.stored_id = request_json["stored_id"]

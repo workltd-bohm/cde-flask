@@ -57,8 +57,10 @@ def upload_file(db_adapter, project, file_obj, file=None):
 def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
 
+
 def move_ic(db_adapter, project_name, folder):
     return db_adapter.move_ic(project_name, folder)
+
 
 def rename_ic(db_adapter, request_data, user):
     return db_adapter.rename_ic(request_data, user)
