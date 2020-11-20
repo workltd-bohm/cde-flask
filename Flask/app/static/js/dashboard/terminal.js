@@ -223,7 +223,7 @@ function addTagListen(el){
     addTag(tagsValue);
 }
 
-function removeTag(tagName){
+function removeTag(tagName, tagColor){
     LoadStart();
     $.ajax({
         url: "/remove_tag",
@@ -233,13 +233,14 @@ function removeTag(tagName){
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
-            tag: tagName
+            tag: tagName,
+            color: tagColor
         }),
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);
             LoadStop();
-            t = document.getElementById(tagName);
+            t = document.getElementById(tagName + ' ' + tagColor);
             t.parentNode.removeChild(t);
 //            location.reload();
         },

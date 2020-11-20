@@ -623,6 +623,8 @@ class DBMongoAdapter:
             user_id = result['id']
             user_query = {'user_id': user_id}
             u = col_users.find_one(user_query, {'_id': 0})
+            if not request_data['role']:
+                request_data['role'] = 'ADMIN'
             u['projects'].append({'project_id': request_data['project_id'],
                                   'role': getattr(Role, request_data['role']).value})
             col_users.update_one(user_query,
