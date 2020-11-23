@@ -4,6 +4,9 @@ import zipfile
 import shutil
 from threading import Thread
 import time
+import uuid
+import copy
+from datetime import datetime
 
 
 @app.route('/set_color_multi', methods=['POST'])
@@ -55,6 +58,25 @@ def copy_multi():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+def deep_new_ids(ic, parent_ic, to_copy=False):
+    delete_ic_data = ic.to_json()
+    ic.ic_id = str(uuid.uuid1())
+    ic.path = parent_ic.path + "/" + ic.name
+    ic.parent = parent_ic.path
+    ic.parent_id = parent_ic.ic_id
+    if not ic.is_directory:
+        ic.path += ic.type
+        result = db.upload_file(db_adapter, session.get("project")["name"], ic)
+        if not result: return result
+        delete_ic_data['user_id'] = session['user']
+        delete_ic_data['project_name'] = session.get("project")["name"]
+        delete_ic_data["delete_name"] = ic.name
+        result = db.delete_ic(db_adapter, delete_ic_data)
+        if not result: return result
+    for x in ic.sub_folders:
+        if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
+
+    return msg.DEFAULT_OK
 
 @app.route('/move_ic_multi', methods=['POST'])
 def move_multi():
@@ -71,39 +93,36 @@ def move_multi():
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
 
-                parent_ic = project.find_ic_by_id({"parent_id":request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], project.root_ic)
-                parent_ic = parent_ic.to_json()
-                print('parent:',parent_ic)
+                old_parent_ic = project.find_ic_by_id({"parent_id":request_data_array["from_parent_id"]}, request_data_array["from_ic_id"], project.root_ic)
+                new_parent_ic = project.find_ic_by_id({"parent_id":request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], project.root_ic)
 
-                if parent_ic:
+                if old_parent_ic and new_parent_ic:
                     for request_data in request_data_array["targets"]:
                         target_ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
-                        target_ic = target_ic.to_json()
-                        print('file:',target_ic)
-
                         if target_ic:
-                            target_ic["project_name"] = project_name
-                            target_ic['parent_path'] = parent_ic["path"]
-                            target_ic['ic_id'] = parent_ic["ic_id"]
-                            target_ic['parent'] = parent_ic["path"]
-                            target_ic['parent_id'] = parent_ic["ic_id"]
-                            target_ic['new_name'] = target_ic["name"]
-                            print('result:',target_ic)
-                            if target_ic["is_directory"]:
-                                resp = dirs.create_dir_process(target_ic)
-                            else:
-                                target_ic['new_name'] += target_ic["type"]
-                                resp = dirs.upload_file_process(target_ic, None)
-                            if not request_data_array["to_copy"]:
-                                result = db.delete_ic(db_adapter, target_ic)
-                                if result:
-                                    logger.log(LOG_LEVEL, result["message"])
-                                    resp.status_code = result["code"]
-                                    resp.data = result["message"]
-                                else:
-                                    logger.log(LOG_LEVEL, "not_successful - name already exists in the DB")
+                            copy_target_ic = copy.deepcopy(target_ic)
+                            result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
+                            if result != msg.DEFAULT_OK:
+                                return result
 
-                            return resp
+                            details = "Error"
+                            if not request_data_array["to_copy"]:
+                                old_parent_ic.sub_folders.remove(target_ic)
+                                details = Details(user, 'Moved',
+                                                  datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
+                                                  "Move form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
+                            else:
+                                details = Details(user, 'Copied',
+                                                  datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
+                                                  "Copy form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
+                            copy_target_ic.history.append(details)
+
+                            new_parent_ic.sub_folders.append(copy_target_ic)
+                            db.update_project(db_adapter, project, user)
+
+                    resp.status_code = msg.DEFAULT_OK['code']
+                    resp.data = str(msg.DEFAULT_OK['message'])
+                    return resp
 
         else:
             logger.log(LOG_LEVEL, str(msg.DB_FAILURE))
@@ -127,19 +146,19 @@ def get_delete_ic_multi():
             if "targets" in delete_ic_array:
                 user_id = session['user']['id']
                 project_name = session.get("project")["name"]
-                result = ''
+                final = ''
                 for delete_ic_data in delete_ic_array["targets"]:
                     delete_ic_data['user_id'] = user_id
                     delete_ic_data['project_name'] = project_name
                     result = db.delete_ic(db_adapter, delete_ic_data)
-                if result:
-                    #print(result["message"])
-                    resp = Response()
-                    resp.status_code = result["code"]
-                    resp.data = result["message"]
-                    return resp
-                else:
-                    logger.log(LOG_LEVEL, "not_successful - name already exists in the DB")
+                    if result["code"] != 200:
+                        final = result
+                if final:
+                    result = final
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result["message"]
+                return resp
 
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))

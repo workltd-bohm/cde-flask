@@ -290,7 +290,7 @@ def get_delete_ic():
                                             ic_id=request_data["ic_id"],
                                             project_name=project_name,
                                             delete_name=request_data["delete_name"],
-                                            is_directory=True if request_data["is_directory"] else False,
+                                            is_directory= True if request_data["is_directory"] else False,
                                             multi=is_multi,
                                             )
                     if not is_multi else

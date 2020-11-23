@@ -54,6 +54,18 @@ function SunFadeout(data){
                 })
         }
     });
+    if(g_project.overlay) {
+        g_project.overlay.transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_RESET)
+        .style("opacity", 0)
+    }
+    if(g_project.move) {
+        g_project.move.transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_RESET)
+        .style("opacity", 0)
+    }
 }
 
 function GetWarp(data){

@@ -226,31 +226,33 @@ class DBMongoAdapter:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name+file_obj.type,
+                                                        file_name=file_obj.name, #+file_obj.type, # problem with chunk delete
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
                                                         from_project=True
                                                         ))
+                    # col.update_one({'file_id': 'default'},
+                    #                {'$set': {'file_id': str(stored_id)}})
+                    col_file.update_one({'file_id': 'default'},
+                                        {'$set': {'file_id': str(file_obj.stored_id)}})
                 else:
-                    file_query = {'file_name': file_obj.name+file_obj.type, "file_id": file_obj.stored_id}
+                    file_query = {'file_name': file_obj.name, "file_id": file_obj.stored_id} #+file_obj.type # problem with chunk delete
                     #print(file_query)
                     file_json = col_file.find_one(file_query)
                     if file_json is not None:
                         del file_json["_id"]
-                        file_json["file_id"] = "default"
-                        file_json["file_name"] = file_obj.name+file_obj.type
-                        file_json["parent"] = file_obj.parent[0],
-                        file_json["parent_id"] = file_obj.parent_id[0],
+                        #file_json["file_id"] = "default"
+                        file_json["file_name"] = file_obj.name #+file_obj.type # problem with chunk delete
+                        file_json["parent"] = str(file_obj.parent),
+                        file_json["parent_id"] = str(file_obj.parent_id),
+                        #print("STORED", file_obj.parent, file_obj.parent_id, file_json)
                         file_obj.stored_id = str(col_file.insert_one(file_json)
                                         .inserted_id)
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND
-                # col.update_one({'file_id': 'default'},
-                #                {'$set': {'file_id': str(stored_id)}})
-                col_file.update_one({'file_id': 'default'},
-                                    {'$set': {'file_id': str(file_obj.stored_id)}})
+
                 add, ic = project.add_ic(file_obj, project.root_ic)
                 if add == msg.IC_SUCCESSFULLY_ADDED:
                     # print(project.to_json())
@@ -265,23 +267,6 @@ class DBMongoAdapter:
         return add
 
     def create_folder(self, project_name, folder):
-        ic = None
-        col = self._db.Projects
-        project_query = {'project_name': project_name}
-        project_json = col.find_one(project_query, {'_id': 0})
-        if project_json:
-            project = Project.json_to_obj(project_json)
-
-            message, ic = project.add_ic(folder, project.root_ic)
-            if message == msg.IC_SUCCESSFULLY_ADDED:
-                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
-        else:
-            print(msg.PROJECT_NOT_FOUND)
-            return msg.PROJECT_NOT_FOUND
-        self._close_connection()
-        return message, ic
-
-    def move_ic(self, project_name, folder):
         ic = None
         col = self._db.Projects
         project_query = {'project_name': project_name}
@@ -361,12 +346,12 @@ class DBMongoAdapter:
                 delete = project.delete_ic(delete_ic_data, project.root_ic)
             if delete == msg.IC_SUCCESSFULLY_DELETED:
                 ic_deleted = True
-                if not delete_ic_data['is_directory']:
+                if not delete_ic_data['is_directory'] or delete_ic_data['is_directory'] == "False":
                     ic_deleted = False
-                    file_query = {'file_name': delete_ic_data['delete_name']}
-                    print(file_query)
-                    file_json = col_file.delete_one(file_query, {'_id': 0})
-                    if file_json:
+                    #TODO del only if last link
+                    file_query = {'file_name': delete_ic_data['delete_name'], 'parent_id': delete_ic_data["parent_id"]}
+                    #TODO: chunk_query = {'files_id': delete_ic_data['stored_id']}
+                    if col_file.delete_one(file_query): #TODO and col_file_chunks.delete_one(file_query):
                         ic_deleted = True
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)

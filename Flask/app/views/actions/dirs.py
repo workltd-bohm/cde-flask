@@ -185,8 +185,8 @@ def upload_file_process(request_json, file=None):
             result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         else:
             file_obj.stored_id = request_json["stored_id"]
-            result, ic = db.create_folder(db_adapter, request_json['project_name'], file_obj)
-            #result = db.upload_file(db_adapter, request_json['project_name'], file_obj)
+            #result, ic = db.create_folder(db_adapter, request_json['project_name'], file_obj)
+            result = db.upload_file(db_adapter, request_json['project_name'], file_obj)
         if result:
             logger.log(LOG_LEVEL, ">> {}".format(result["message"]))
             resp = Response()
