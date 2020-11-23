@@ -174,7 +174,7 @@ function ClearMarket(){
 }
 
 
-function TabSwap(target){
+function MarketTabSwap(target){
     $(".edit-section.view").children().hide();
     $(".edit-box").removeClass("selected");
     $("#" + target).show();
