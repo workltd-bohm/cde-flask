@@ -10,6 +10,8 @@ from app.model.role import Role
 import app.model.messages as msg
 import json
 
+from bson.objectid import ObjectId
+
 class DBMongoAdapter:
 
     def __init__(self):
@@ -220,13 +222,13 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
-            file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id}
+            file_query = {'file_name': file_obj.name, "parent_id": file_obj.parent_id} # +file_obj.type # problem with chunk delete
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name, #+file_obj.type, # problem with chunk delete
+                                                        file_name=file_obj.name, # +file_obj.type, # problem with chunk delete
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
@@ -237,8 +239,8 @@ class DBMongoAdapter:
                     col_file.update_one({'file_id': 'default'},
                                         {'$set': {'file_id': str(file_obj.stored_id)}})
                 else:
-                    file_query = {'file_name': file_obj.name, "file_id": file_obj.stored_id} #+file_obj.type # problem with chunk delete
-                    #print(file_query)
+                    file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name} #+file_obj.type # problem with chunk delete
+                    # print(file_query)
                     file_json = col_file.find_one(file_query)
                     if file_json is not None:
                         del file_json["_id"]
@@ -246,11 +248,11 @@ class DBMongoAdapter:
                         file_json["file_name"] = file_obj.name #+file_obj.type # problem with chunk delete
                         file_json["parent"] = str(file_obj.parent),
                         file_json["parent_id"] = str(file_obj.parent_id),
-                        #print("STORED", file_obj.parent, file_obj.parent_id, file_json)
+                        # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
                         file_obj.stored_id = str(col_file.insert_one(file_json)
                                         .inserted_id)
                     else:
-                        print(msg.STORED_FILE_NOT_FOUND)
+                        print("upload_file", msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND
 
                 add, ic = project.add_ic(file_obj, project.root_ic)
@@ -258,10 +260,10 @@ class DBMongoAdapter:
                     # print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
             else:
-                print(msg.IC_ALREADY_EXISTS)
+                print("upload_file", msg.IC_ALREADY_EXISTS)
                 return msg.IC_ALREADY_EXISTS
         else:
-            print(msg.PROJECT_NOT_FOUND)
+            print("upload_file", msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
         self._close_connection()
         return add
@@ -354,13 +356,13 @@ class DBMongoAdapter:
                     if col_file.delete_one(file_query): #TODO and col_file_chunks.delete_one(file_query):
                         ic_deleted = True
                     else:
-                        print(msg.STORED_FILE_NOT_FOUND)
+                        print("delete_ic", msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND
                 if ic_deleted:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
         else:
-            print(msg.PROJECT_NOT_FOUND)
+            print("delete_ic", msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
         self._close_connection()
         return delete

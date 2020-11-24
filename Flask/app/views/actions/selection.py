@@ -67,12 +67,12 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
     if not ic.is_directory:
         ic.path += ic.type
         result = db.upload_file(db_adapter, session.get("project")["name"], ic)
-        if not result: return result
+        if result["code"] != 200: return result
         delete_ic_data['user_id'] = session['user']
         delete_ic_data['project_name'] = session.get("project")["name"]
         delete_ic_data["delete_name"] = ic.name
         result = db.delete_ic(db_adapter, delete_ic_data)
-        if not result: return result
+        if result["code"] != 200: return result
     for x in ic.sub_folders:
         if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
 
@@ -98,12 +98,14 @@ def move_multi():
 
                 if old_parent_ic and new_parent_ic:
                     for request_data in request_data_array["targets"]:
-                        target_ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+                        target_ic = project.find_ic_by_id({"parent_id":request_data['parent_id']}, request_data['ic_id'], project.root_ic)
                         if target_ic:
                             copy_target_ic = copy.deepcopy(target_ic)
                             result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
                             if result != msg.DEFAULT_OK:
-                                return result
+                                resp.status_code = result['code']
+                                resp.data = str(result['message'])
+                                return resp
 
                             details = "Error"
                             if not request_data_array["to_copy"]:

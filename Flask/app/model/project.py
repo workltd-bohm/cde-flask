@@ -252,6 +252,7 @@ class Project:
         return self._message, self._ic
 
     def find_ic(self, request_data, file_name, ic=None):
+        target = None
         if request_data['parent_id'] == 'root':
             return ic
         if ic.ic_id == request_data['parent_id']:
@@ -260,31 +261,34 @@ class Project:
                 if not sub_f.is_directory:
                     sub_f_name = sub_f.name+sub_f.type
                 if sub_f_name == file_name:
+                    target = sub_f
                     self._current_ic = sub_f
                     self._added = True
                     break
         else:
             for x in ic.sub_folders:
-                self.find_ic(request_data, file_name, x)
-                if self._added:
+                target = self.find_ic(request_data, file_name, x)
+                if target: # self._added:
                     break
-        return self._current_ic
+        return target # self._current_ic
 
     def find_ic_by_id(self, request_data, ic_id, ic=None):
+        target = None
         if request_data['parent_id'] == 'root':
             return ic
         if ic.ic_id == request_data['parent_id']:
             for sub_f in ic.sub_folders:
                 if sub_f.ic_id == ic_id:
+                    target = sub_f
                     self._current_ic = sub_f
                     self._added = True
                     break
         else:
             for x in ic.sub_folders:
-                self.find_ic_by_id(request_data, ic_id, x)
-                if self._added:
+                target = self.find_ic_by_id(request_data, ic_id, x)
+                if target: # self._added:
                     break
-        return self._current_ic
+        return target # self._current_ic
 
     def add_comment(self, request, comment, ic=None):
         if request['parent_id'] == 'root':
