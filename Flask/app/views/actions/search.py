@@ -153,7 +153,7 @@ def search_by_tags():
             if result:
                 ics = []
                 for tag in request_data['search_tags']:
-                    if not ics:
+                    if len(ics) == 0:
                         if tag in result[0]:
                             ics = result[0][tag]
                             continue
@@ -165,6 +165,7 @@ def search_by_tags():
                                     new_ics.append(tag_ic)
                                     break
                     ics = new_ics
+                # print(ics)
                 response = {
                     "project_name": "Search",
                     "root_ic": {
@@ -185,20 +186,22 @@ def search_by_tags():
                 for ic in ics:
                     project.current_ic = None
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
-                    path = file.name if file.is_directory else file.name + file.type
-                    ic_type = '' if file.is_directory else file.type
-                    proj_obj = {
-                        "ic_id": file.ic_id,
-                        "parent_id": file.parent_id,
-                        "name": file.name,
-                        "parent": "Search",
-                        "history": [],
-                        "path": "Search/" + path,
-                        "type": ic_type,
-                        "overlay_type": "search_target",
-                        "is_directory": False,
-                    }
-                    response['root_ic']["sub_folders"].append(proj_obj)
+                    # print(file)
+                    if file:
+                        path = file.name if file.is_directory else file.name + file.type
+                        ic_type = '' if file.is_directory else file.type
+                        proj_obj = {
+                            "ic_id": file.ic_id,
+                            "parent_id": file.parent_id,
+                            "name": file.name,
+                            "parent": "Search",
+                            "history": [],
+                            "path": "Search/" + path,
+                            "type": ic_type,
+                            "overlay_type": "search_target",
+                            "is_directory": False,
+                        }
+                        response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
@@ -229,12 +232,14 @@ def search_by_name():
                 for i in range(0, len(names)):
                     if i == 0:
                         project.search_by_name(names[i], project.root_ic, ics)
+                        # print('first', ics)
                     else:
                         new_ics = []
                         for ic in ics:
                             if names[i].lower() in ic.name.lower():
                                 new_ics.append(ic)
                                 break
+                        # print('second', ics)
                         ics = new_ics
                 response = {
                     "project_name": "Search",

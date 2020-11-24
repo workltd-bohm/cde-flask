@@ -461,10 +461,12 @@ class Project:
                     break
 
     def search_by_name(self, name, ic, new_ic_array):
-        print(name, ic.name)
+        # print(name, ic.name)
         if name.lower() in ic.name.lower():
-            new_ic_array.append(ic)
+            if ic not in new_ic_array:
+                new_ic_array.append(ic)
         for x in ic.sub_folders:
             if name.lower() in x.name.lower():
-                new_ic_array.append(x)
+                if ic not in new_ic_array:
+                    new_ic_array.append(x)
             self.search_by_name(name, x, new_ic_array)
