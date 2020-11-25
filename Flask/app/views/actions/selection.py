@@ -58,6 +58,7 @@ def copy_multi():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
 def deep_new_ids(ic, parent_ic, to_copy=False):
     delete_ic_data = ic.to_json()
     ic.ic_id = str(uuid.uuid1())
@@ -78,6 +79,7 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
 
     return msg.DEFAULT_OK
 
+
 @app.route('/move_ic_multi', methods=['POST'])
 def move_multi():
     resp = Response()
@@ -93,12 +95,18 @@ def move_multi():
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
 
-                old_parent_ic = project.find_ic_by_id({"parent_id":request_data_array["from_parent_id"]}, request_data_array["from_ic_id"], project.root_ic)
-                new_parent_ic = project.find_ic_by_id({"parent_id":request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], project.root_ic)
+                old_parent_ic = project.find_ic_by_id({"parent_id": request_data_array["from_parent_id"]}, request_data_array["from_ic_id"], project.root_ic)
+                project.current_ic = None
+                project.added = False
+                new_parent_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], project.root_ic)
+                project.current_ic = None
+                project.added = False
 
                 if old_parent_ic and new_parent_ic:
                     for request_data in request_data_array["targets"]:
-                        target_ic = project.find_ic_by_id({"parent_id":request_data['parent_id']}, request_data['ic_id'], project.root_ic)
+                        target_ic = project.find_ic_by_id({"parent_id": request_data['parent_id']}, request_data['ic_id'], project.root_ic)
+                        project.current_ic = None
+                        project.added = False
                         if target_ic:
                             copy_target_ic = copy.deepcopy(target_ic)
                             result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
