@@ -9,6 +9,8 @@ var CHECKED = {};
 
 var MULTI = [];
 
+var DEBUG = null;
+
 const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 

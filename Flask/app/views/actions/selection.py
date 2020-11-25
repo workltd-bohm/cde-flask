@@ -117,7 +117,6 @@ def move_multi():
 
                             details = "Error"
                             if not request_data_array["to_copy"]:
-                                old_parent_ic.sub_folders.remove(target_ic)
                                 details = Details(user, 'Moved',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Move form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
@@ -125,6 +124,15 @@ def move_multi():
                                 details = Details(user, 'Copied',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Copy form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
+                            if old_parent_ic.ic_id == target_ic.ic_id:
+                                request_data = {'parent_id' : target_ic.parent_id, "delete_name" : target_ic.name}
+                                result = project.delete_ic(request_data, project.root_ic)
+                                if result != msg.IC_SUCCESSFULLY_DELETED:
+                                    resp.status_code = result['code']
+                                    resp.data = str(result['message'])
+                                    return resp
+                            else:
+                                old_parent_ic.sub_folders.remove(target_ic)
                             copy_target_ic.history.append(details)
 
                             new_parent_ic.sub_folders.append(copy_target_ic)
