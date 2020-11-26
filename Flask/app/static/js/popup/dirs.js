@@ -289,7 +289,7 @@ function DeleteFile(form, json){
         parent_id: o[i].parent_id,
         ic_id: o[i].ic_id,
         parent_path: o[i].parent,
-        delete_name: o[i].name,
+        delete_name: o[i].name + ((o[i].type)? o[i].type:""),
         is_directory: o[i].is_directory,
     });
     if (o.length > 0) MULTI = {
@@ -308,7 +308,7 @@ function DeleteFile(form, json){
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,
-            delete_name: json.name,
+            delete_name: json.name + ((json.type)? json.type:""),
             is_directory: json.is_directory,
         }),
         timeout: 5000,

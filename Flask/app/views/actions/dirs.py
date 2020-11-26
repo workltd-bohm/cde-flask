@@ -148,8 +148,7 @@ def upload_file_process(request_json, file=None):
     directory = request_json['parent_path']
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
     # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
-    details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'] +
-                        "." + request_json['new_name'].split('.')[-1])
+    details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'])
     file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['new_name'].split('.')[:-1]),
                     file.filename if file else request_json["original_name"],

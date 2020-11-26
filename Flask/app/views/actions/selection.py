@@ -62,18 +62,21 @@ def copy_multi():
 def deep_new_ids(ic, parent_ic, to_copy=False):
     delete_ic_data = ic.to_json()
     ic.ic_id = str(uuid.uuid1())
-    ic.path = parent_ic.path + "/" + ic.name
+    full_name = ic.name
+    if hasattr(ic,"type"):
+        full_name += ic.type
+    ic.path = parent_ic.path + "/" + full_name
     ic.parent = parent_ic.path
     ic.parent_id = parent_ic.ic_id
     if not ic.is_directory:
-        ic.path += ic.type
         result = db.upload_file(db_adapter, session.get("project")["name"], ic)
         if result["code"] != 200: return result
-        delete_ic_data['user_id'] = session['user']
-        delete_ic_data['project_name'] = session.get("project")["name"]
-        delete_ic_data["delete_name"] = ic.name
-        result = db.delete_ic(db_adapter, delete_ic_data)
-        if result["code"] != 200: return result
+        if not to_copy:
+            delete_ic_data['user_id'] = session['user']
+            delete_ic_data['project_name'] = session.get("project")["name"]
+            delete_ic_data["delete_name"] = full_name
+            result = db.delete_ic(db_adapter, delete_ic_data)
+            if result["code"] != 200: return result
     for x in ic.sub_folders:
         if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
 
@@ -87,7 +90,7 @@ def move_multi():
     if main.IsLogin():
         request_data_array = json.loads(request.get_data())
         dirs.set_project_data(request_data_array, True)
-        print("array", request_data_array)
+        #print("array", request_data_array)
         if db.connect(db_adapter):
             if "targets" and "to_copy" in request_data_array:
                 user = session['user']
@@ -102,16 +105,44 @@ def move_multi():
                 project.current_ic = None
                 project.added = False
 
+                if old_parent_ic == new_parent_ic:
+                    #print("old_parent_ic == new_parent_ic")
+                    resp.status_code = msg.IC_ALREADY_EXISTS['code']
+                    resp.data = str(msg.IC_ALREADY_EXISTS['message'])
+                    return resp
+
                 if old_parent_ic and new_parent_ic:
                     for request_data in request_data_array["targets"]:
                         target_ic = project.find_ic_by_id({"parent_id": request_data['parent_id']}, request_data['ic_id'], project.root_ic)
                         project.current_ic = None
                         project.added = False
                         if target_ic:
+                            full_name = target_ic.name
+                            if hasattr(target_ic, "type"):
+                                full_name += target_ic.type
+
+                            same_ic = project.find_ic({"parent_id": request_data_array["to_ic_id"]}, full_name, project.root_ic)
+                            project.current_ic = None
+                            project.added = False
+                            if same_ic and same_ic.name == target_ic.name:
+                                #print("same name:",same_ic.name, target_ic.name)
+                                resp.status_code = msg.DEFAULT_OK['code']
+                                resp.data = str(msg.IC_ALREADY_EXISTS['message'])
+                                return resp
+                            if not request_data_array["to_copy"]:
+                                same_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], old_parent_ic)
+                                project.current_ic = None
+                                project.added = False
+                                if same_ic:
+                                    #print("same_ic == target_ic")
+                                    resp.status_code = msg.DEFAULT_OK['code']
+                                    resp.data = str(msg.DEFAULT_ERROR['message'])
+                                    return resp
+
                             copy_target_ic = copy.deepcopy(target_ic)
                             result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
                             if result != msg.DEFAULT_OK:
-                                resp.status_code = result['code']
+                                resp.status_code = msg.DEFAULT_OK['code']
                                 resp.data = str(result['message'])
                                 return resp
 
@@ -121,10 +152,14 @@ def move_multi():
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Move form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
                                 if old_parent_ic.ic_id == target_ic.ic_id:
-                                    request_data = {'parent_id' : target_ic.parent_id, "delete_name" : target_ic.name}
+                                    delete_name = target_ic.name
+                                    if hasattr(target_ic, "type"):
+                                        delete_name += target_ic.type
+
+                                    request_data = {'parent_id' : target_ic.parent_id, "delete_name" : delete_name}
                                     result = project.delete_ic(request_data, project.root_ic)
                                     if result != msg.IC_SUCCESSFULLY_DELETED:
-                                        resp.status_code = result['code']
+                                        resp.status_code = msg.DEFAULT_OK['code']
                                         resp.data = str(result['message'])
                                         return resp
                                 else:

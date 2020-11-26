@@ -200,7 +200,7 @@ class DBMongoAdapter:
         project_uploaded = False
         if col.find_one(project_query, {'_id': 0}) is None:
             file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                                                          "file_name": file_obj.name,
+                                                          "file_name": file_obj.name+file_obj.type,
                                                           "file": file,
                                                           "description": file_obj.description})
                                      .inserted_id)
@@ -222,13 +222,13 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
-            file_query = {'file_name': file_obj.name, "parent_id": file_obj.parent_id} # +file_obj.type # problem with chunk delete
+            file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id} # problem with chunk delete
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name, # +file_obj.type, # problem with chunk delete
+                                                        file_name=file_obj.name+file_obj.type, # problem with chunk delete
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
@@ -239,13 +239,13 @@ class DBMongoAdapter:
                     col_file.update_one({'file_id': 'default'},
                                         {'$set': {'file_id': str(file_obj.stored_id)}})
                 else:
-                    file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name} #+file_obj.type # problem with chunk delete
+                    file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} # problem with chunk delete
                     # print(file_query)
                     file_json = col_file.find_one(file_query)
                     if file_json is not None:
                         del file_json["_id"]
                         #file_json["file_id"] = "default"
-                        file_json["file_name"] = file_obj.name #+file_obj.type # problem with chunk delete
+                        file_json["file_name"] = file_obj.name+file_obj.type # problem with chunk delete
                         file_json["parent"] = str(file_obj.parent),
                         file_json["parent_id"] = str(file_obj.parent_id),
                         # print("STORED", file_obj.parent, file_obj.parent_id, file_json)

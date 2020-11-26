@@ -182,7 +182,10 @@ class Project:
     def delete_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
-                if y.name == request_data["delete_name"]:
+                full_name = y.name
+                if hasattr(y, "type"):
+                    full_name += y.type
+                if full_name == request_data["delete_name"]:
                     ic.sub_folders.remove(y)
                     self._deleted = True
                     self._message = msg.IC_SUCCESSFULLY_DELETED
