@@ -39,7 +39,7 @@
 <!--      <input type="text" class="terminal-sign" value=">" readonly>-->
       <div id="terminal-sign" class="terminal-sign"><b>{{ sign }}</b></div>
       <div id="terminal-main" class="terminal-div">
-        <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" onfocus="onFocus();" placeholder="ASK AND YOU SHALL RECEIVE">
+        <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" onfocus="onFocus();" onfocusout="onFocusOut();" placeholder="ASK AND YOU SHALL RECEIVE">
 <!--        <i>_</i>-->
       </div>
 

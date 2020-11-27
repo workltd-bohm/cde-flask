@@ -16,6 +16,10 @@ function onFocus(){
     }
 }
 
+function onFocusOut(){
+    $("#terminal-input").val("");
+}
+
 $(window).keydown(function(e){
 //    console.log(e.keyCode);
     terInput = $('#terminal-input').val();
