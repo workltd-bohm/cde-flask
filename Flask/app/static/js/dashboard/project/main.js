@@ -13,7 +13,15 @@ function CreateSpace(data) {
     g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
 
-    g_project.overlay = false;
+    if(g_project.overlay){
+        g_project.overlay.remove();
+        g_project.overlay = false;
+    }
+
+    if(g_project.selection){
+        g_project.selection.remove();
+        g_project.selection = false;
+    }
 
     g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};

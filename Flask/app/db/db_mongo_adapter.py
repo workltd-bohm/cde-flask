@@ -192,27 +192,51 @@ class DBMongoAdapter:
         self._close_connection()
         return result
 
-    def update_file(self, project, file_obj, file):
+    def update_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
-        project_query = {'project_id': project.project_id, 'stored_id': file_obj.stored_id}
-        project_uploaded = False
-        if col.find_one(project_query, {'_id': 0}) is None:
-            file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                                                          "file_name": file_obj.name+file_obj.type,
-                                                          "file": file,
-                                                          "description": file_obj.description})
-                                     .inserted_id)
-            col_file.update_one({'file_id': 'default'},
-                                {'$set': {'file_id': str(file_obj.stored_id)}})
+        project_query = {'project_name': project_name}
+        project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            if file:
+                # file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
+                #                                             "file_name": file_obj.name+file_obj.type,
+                #                                             "file": file,
+                #                                             "description": file_obj.description})
+                #                         .inserted_id)
+                file_obj.stored_id = str(self._fs.put(file,
+                                                        file_id='default',
+                                                        file_name=file_obj.name+file_obj.type, 
+                                                        parent=file_obj.parent,
+                                                        parent_id=file_obj.parent_id,
+                                                        description=file_obj.description,
+                                                        from_project=True
+                                                        ))
+                col_file.update_one({'file_id': 'default'},
+                                    {'$set': {'file_id': str(file_obj.stored_id)}})
+                project.update_file(file_obj) # TODO: NOT OK, also needs old chunk delete inside
+            else:
+                file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} 
+                # print(file_query)
+                file_json = col_file.find_one(file_query)
+                if file_json is not None:
+                    col_file.update_one({'file_id': file_json["file_id"]},
+                                        {'$set': {'file_name': file_obj.name+file_obj.type,
+                                                  'parent': file_obj.parent,
+                                                  'parent_id': file_obj.parent_id,
+                                                  'description': file_obj.description}})
+                else:
+                    print("update_file", msg.STORED_FILE_NOT_FOUND)
+                    return msg.STORED_FILE_NOT_FOUND
             # print(file_obj.to_json())
-            project.update_file(file_obj)
+            #project.update_file(file_obj)
             # print(project.to_json())
             col.update_one({'project_name': project.name}, {'$set': project.to_json()})
-            project_uploaded = True
+
         self._close_connection()
-        return project_uploaded
+        return msg.DEFAULT_OK
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
@@ -222,13 +246,13 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
-            file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id} # problem with chunk delete
+            file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id} 
             file_json = self._fs.find_one(file_query)
             if file_json is None:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name+file_obj.type, # problem with chunk delete
+                                                        file_name=file_obj.name+file_obj.type, 
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
@@ -239,18 +263,33 @@ class DBMongoAdapter:
                     col_file.update_one({'file_id': 'default'},
                                         {'$set': {'file_id': str(file_obj.stored_id)}})
                 else:
-                    file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} # problem with chunk delete
+                    file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} 
                     # print(file_query)
                     file_json = col_file.find_one(file_query)
                     if file_json is not None:
-                        del file_json["_id"]
-                        #file_json["file_id"] = "default"
-                        file_json["file_name"] = file_obj.name+file_obj.type # problem with chunk delete
-                        file_json["parent"] = str(file_obj.parent),
-                        file_json["parent_id"] = str(file_obj.parent_id),
-                        # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
-                        file_obj.stored_id = str(col_file.insert_one(file_json)
-                                        .inserted_id)
+                        # del file_json["_id"]
+                        # #file_json["file_id"] = "default"
+                        # file_json["file_name"] = file_obj.name+file_obj.type 
+                        # file_json["parent"] = str(file_obj.parent),
+                        # file_json["parent_id"] = str(file_obj.parent_id),
+                        # # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
+                        # file_obj.stored_id = str(col_file.insert_one(file_json)
+                        #                 .inserted_id)
+                        file = self.get_file(file_json["file_name"])
+                        if file:
+                            file_obj.stored_id = str(self._fs.put(file,
+                                                            file_id='default',
+                                                            file_name=file_obj.name+file_obj.type, 
+                                                            parent=file_obj.parent,
+                                                            parent_id=file_obj.parent_id,
+                                                            description=file_obj.description,
+                                                            from_project=True
+                                                            ))
+                            col_file.update_one({'file_id': 'default'},
+                                            {'$set': {'file_id': str(file_obj.stored_id)}})
+                        else:
+                            print("upload_file", msg.STORED_FILE_NOT_FOUND)
+                            return msg.STORED_FILE_NOT_FOUND
                     else:
                         print("upload_file", msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND
@@ -350,16 +389,16 @@ class DBMongoAdapter:
                 ic_deleted = True
                 if not delete_ic_data['is_directory'] or delete_ic_data['is_directory'] == "False":
                     ic_deleted = False
-                    #TODO del only if last link
                     file_query = {'file_name': delete_ic_data['delete_name'], 'parent_id': delete_ic_data["parent_id"]}
-                    #TODO: chunk_query = {'files_id': delete_ic_data['stored_id']}
-                    if col_file.delete_one(file_query): #TODO and col_file_chunks.delete_one(file_query):
+                    removing_file = col_file.find_one(file_query)
+                    self._fs.delete(removing_file["_id"])
+                    if col_file.find_one(file_query) == None:
                         ic_deleted = True
-                    else:
-                        print("delete_ic", msg.STORED_FILE_NOT_FOUND)
-                        return msg.STORED_FILE_NOT_FOUND
                 if ic_deleted:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                else:
+                    print("delete_ic", msg.STORED_FILE_NOT_FOUND)
+                    return msg.STORED_FILE_NOT_FOUND
 
         else:
             print("delete_ic", msg.PROJECT_NOT_FOUND)

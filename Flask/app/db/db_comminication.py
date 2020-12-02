@@ -53,6 +53,8 @@ def get_project(db_adapter, project_name, user):
 def upload_file(db_adapter, project, file_obj, file=None):
     return db_adapter.upload_file(project, file_obj, file)
 
+def update_file(db_adapter, project, file_obj, file=None):
+    return db_adapter.update_file(project, file_obj, file)
 
 def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)

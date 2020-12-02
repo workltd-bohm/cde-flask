@@ -69,14 +69,17 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
     ic.parent = parent_ic.path
     ic.parent_id = parent_ic.ic_id
     if not ic.is_directory:
-        result = db.upload_file(db_adapter, session.get("project")["name"], ic)
+        if to_copy:
+            result = db.upload_file(db_adapter, session.get("project")["name"], ic)
+        else:
+            result = db.update_file(db_adapter, session.get("project")["name"], ic)
         if result["code"] != 200: return result
-        if not to_copy:
-            delete_ic_data['user_id'] = session['user']
-            delete_ic_data['project_name'] = session.get("project")["name"]
-            delete_ic_data["delete_name"] = full_name
-            result = db.delete_ic(db_adapter, delete_ic_data)
-            if result["code"] != 200: return result
+            # delete_ic_data['user_id'] = session['user']
+            # delete_ic_data['project_name'] = session.get("project")["name"]
+            # delete_ic_data["delete_name"] = full_name
+            # result = db.delete_ic(db_adapter, delete_ic_data)
+            # if result["code"] != 200: return result
+
     for x in ic.sub_folders:
         if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
 
@@ -129,15 +132,17 @@ def move_multi():
                                 resp.status_code = msg.DEFAULT_OK['code']
                                 resp.data = str(msg.IC_ALREADY_EXISTS['message'])
                                 return resp
-                            if not request_data_array["to_copy"]:
-                                same_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], old_parent_ic)
-                                project.current_ic = None
-                                project.added = False
-                                if same_ic:
-                                    #print("same_ic == target_ic")
-                                    resp.status_code = msg.DEFAULT_OK['code']
-                                    resp.data = str(msg.DEFAULT_ERROR['message'])
-                                    return resp
+                            ##TODO: Enable copy, problem: copy to child, the child iself and something else 
+                            ## duplicates the else, if they are first to go
+                            # if not request_data_array["to_copy"]:
+                            same_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], target_ic)
+                            project.current_ic = None
+                            project.added = False
+                            if same_ic and same_ic != target_ic:
+                                #print("same_ic == target_ic", same_ic.ic_id, target_ic.ic_id)
+                                resp.status_code = msg.DEFAULT_OK['code']
+                                resp.data = str(msg.NOT_ALLOWED['message'])
+                                return resp
 
                             copy_target_ic = copy.deepcopy(target_ic)
                             result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
