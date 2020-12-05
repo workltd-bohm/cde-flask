@@ -12,6 +12,9 @@ COMMENT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 TAG_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 TAG_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 
+ACCESS_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+ACCESS_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
+
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}
 IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}

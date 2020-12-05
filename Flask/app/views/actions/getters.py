@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+from datetime import datetime
 
 from app import *
 
@@ -72,11 +73,41 @@ def get_project():
         project_name = session.get("project")["name"]
         user = session.get('user')
         if db.connect(db_adapter):
-            result = db.get_project(db_adapter, project_name, user)
+            if project_name == 'Shared':
+                result, ic_shares = db.get_my_shares(db_adapter, user)
+                name_id = str(uuid.uuid1())
+                us = {'user_id': session['user']['id'],
+                        'username': session['user']['username'],
+                        'picture': session['user']['picture']}
+                access = Access(us, '', '', Role.ADMIN.value)
+                
+                u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+                details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), 'Shared')
+                root_obj = IC(name_id,
+                            'Shared',
+                            ".",
+                            [details],
+                            'Shared',
+                            'root',
+                            '',
+                            [],
+                            [],
+                            [],
+                            [access])
+                project = Project("default", 'Shared', root_obj)
+                for ic in result:
+                    project.root_ic.sub_folders.append(ic)
+                result = project.to_json()
+            else:
+                result = db.get_project(db_adapter, project_name, user)
             if result:
-                project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
+                project = Project.json_to_obj(result)
+                # p = Project(project.project_id, project.project_name, None)
+                project = project.filter_by_access(session['user'], project.root_ic)
+                # project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
                 resp.status_code = msg.DEFAULT_OK['code']
+                # print(project.to_json())
                 resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
                 return resp
             else:
@@ -132,6 +163,23 @@ def get_root_project():
                         "is_directory": False,
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
+
+            result, ic_shares = db.get_my_shares(db_adapter, user)
+            if result:
+            # for share in result:
+            #     if share:
+                # pr = db.get_my_project(db_adapter, share["project_id"])
+                # pr.current_ic = None
+                # ic = pr.find_ic_by_id(share, share['ic_id'], pr.root)
+                shared_obj = {
+                    "ic_id": "",
+                    "name": 'Shared',
+                    "parent": "Projects",
+                    "history": [],
+                    "path": "Projects/shared",
+                    "is_directory": False,
+                }
+                response['root_ic']["sub_folders"].append(shared_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})

@@ -52,6 +52,11 @@ def create_project():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         user = session.get('user')
         name_id = str(uuid.uuid1())
+        us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+        access = Access(us, '', '', Role.ADMIN.value)
+        
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['project_name'])
         root_obj = IC(name_id,
@@ -63,9 +68,10 @@ def create_project():
                       '',
                       [],
                       [],
-                      [])
+                      [],
+                      [access])
         project = Project("default", request_data['project_name'], root_obj)
-        # print(project.to_json())
+        # print('******', project.to_json())
         if db.connect(db_adapter):
             result, id = db.upload_project(db_adapter, project, user)
             if result:
@@ -111,6 +117,10 @@ def upload_existing_project():
                 return resp
             else:
                 project = Project.json_to_obj(project)
+                us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+                access = Access(us, '', '', Role.ADMIN.value)
                 if is_dir == 'false':
                     file = request.files['file'].read()
                     counter = request.form['counter']
@@ -136,6 +146,7 @@ def upload_existing_project():
                             path = ('/').join(current_file_path_backup[0:i + 1])
                         path = path + '/' + name
                         details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                        
                         ic_new = Directory(new_id,
                                            name,
                                            parent_directory,
@@ -145,7 +156,8 @@ def upload_existing_project():
                                            '',
                                            [],
                                            [],
-                                           []
+                                           [],
+                                           [access]
                                            )
 
                         parent_id = new_id
@@ -167,7 +179,7 @@ def upload_existing_project():
                                           ('').join(['.', file_name.split('.')[-1]]))
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], [], [], '', '')
+                                           [], [], [], [access], '', '')
 
                         project.added = False
                         encoded = file
@@ -214,7 +226,8 @@ def upload_existing_project():
                                                '',
                                                [],
                                                [],
-                                               []
+                                               [],
+                                               [access]
                                                )
 
                             parent_id = new_id
@@ -388,6 +401,54 @@ def remove_tag():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.remove_tag(db_adapter, request_data, request_data['tag'])
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+
+@app.route('/add_access', methods=['POST'])
+def add_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            result = db.add_access(db_adapter, request_data, session['user'])
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+    
+
+@app.route('/remove_access', methods=['POST'])
+def remove_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            result = db.remove_access(db_adapter, request_data, session['user'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()

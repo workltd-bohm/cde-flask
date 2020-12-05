@@ -1,6 +1,8 @@
 from .details import Details
 from .comment import Comments
+from .role import Role
 from .tag import Tags
+from .access import Access
 from .directory import Directory
 from .site import Site
 from .building import Building
@@ -125,14 +127,14 @@ class Project:
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
-                print(ic.to_json())
+                # print(ic.to_json())
                 self._added = True
 
         return self, self._added
 
     def change_color(self, request_data, ic=None):
         if ic.ic_id == request_data['ic_id']:
-            print(ic.color, request_data)
+            # print(ic.color, request_data)
             ic.color = request_data["color"]
             self._message = msg.IC_COLOR_CHANGED
             self._added = True
@@ -379,6 +381,83 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
+    def add_access(self, request, user, ic=None):
+        if ic.ic_id == request['ic_id']:
+            already_in = False
+            for access in ic.access:
+                if user['id'] in access.to_json()['user']['user_id']:
+                    already_in = True
+                    break
+            if not already_in:
+                u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
+                role = getattr(Role, request['role']).value
+                a = Access(u, '', '', role)
+                ic.access.append(a)
+            self.add_access_to_ic(request, user, ic)
+            self._message = msg.ACCESS_SUCCESSFULLY_ADDED
+            self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.add_access(request, user, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
+    def add_access_to_ic(self, request, user, ic=None):
+        for sub_f in ic.sub_folders:
+            already_in = False
+            for access in sub_f.access:
+                if user['id'] in access.to_json()['user']['user_id']:
+                    already_in = True
+                    break
+            if not already_in:
+                u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
+                role = getattr(Role, request['role']).value
+                a = Access(u, '', '', role)
+                sub_f.access.append(a)
+            self.add_access_to_ic(request, user, sub_f)
+
+    def remove_access(self, request, ic=None):
+        if ic.ic_id == request['ic_id']:
+            for access in ic.access:
+                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                    ic.access.remove(access)
+                    break
+            self.remove_access_from_ic(request, ic)
+            self._message = msg.ACCESS_SUCCESSFULLY_REMOVED
+            self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.remove_access(request, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
+    def remove_access_from_ic(self, request, ic=None):
+        for sub_f in ic.sub_folders:
+            for access in sub_f.access:
+                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                    sub_f.access.remove(access)
+                    break
+            self.remove_access_from_ic(request, sub_f)
+
+
+    def set_access_for_all_ics(self, user, role, ic=None):
+        already_in = False
+        for access in ic.access:
+            if user['id'] in access.to_json():
+                already_in = True
+        if not already_in:
+            u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
+            a = Access(u, '', '', role)
+            ic.access.append(a)
+        for x in ic.sub_folders:
+            self.set_access_for_all_ics(user, role, x)
+
     def to_json(self):
         return {
             'project_id': self._project_id,
@@ -404,7 +483,8 @@ class Project:
                              json_file['color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
                              [Tags.json_to_obj(x) for x in json_file['tags']],
-                             [Project.json_folders_to_obj(x) for x in json_file['sub_folders']])
+                             [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
+                             [Access.json_to_obj(x) for x in json_file['access']])
         else:
             root = File(json_file['ic_id'],
                         json_file['name'],
@@ -418,6 +498,7 @@ class Project:
                         [Comments.json_to_obj(x) for x in json_file['comments']],
                         [Tags.json_to_obj(x) for x in json_file['tags']],
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
+                        [Access.json_to_obj(x) for x in json_file['access']],
                         json_file['stored_id'],
                         json_file['description'])
             root.project_code = json_file['project_code']
@@ -434,7 +515,6 @@ class Project:
     @staticmethod
     def json_to_obj(json_file):
         root = Project.json_folders_to_obj(json_file['root_ic'])
-
         project = Project(json_file['project_id'], json_file['project_name'], root)
         project.description = json_file['description']
         project.code = json_file['code']
@@ -473,3 +553,16 @@ class Project:
                 if ic not in new_ic_array:
                     new_ic_array.append(x)
             self.search_by_name(name, x, new_ic_array)
+
+    def filter_by_access(self, user, ic):
+        for x in ic.sub_folders:
+            already_in = False
+            for access in x.access:
+                if user['id'] in access.to_json()['user']['user_id']:
+                    already_in = True
+                    break
+            self.filter_by_access(user, x)
+            if not already_in:
+                ic.sub_folders.remove(x)
+        return self
+

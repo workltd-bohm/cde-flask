@@ -24,6 +24,9 @@ def get_open_file():
                 path = result.path
                 share_link = 'http://bohm.cloud/get_shared_file/' + file_name
                 comments = [x.to_json() for x in result.comments]
+                access = [x.to_json() for x in result.access]
+                for a in access:
+                    a['role'] = Role(a['role']).name
 
                 response = {
                     'html': render_template("popup/open_file.html",
@@ -40,7 +43,8 @@ def get_open_file():
                                                 parent_id=result.parent_id,
                                                 ic_id=result.ic_id,
                                                 stored_id=result.stored_id,
-                                                name=name+type
+                                                name=name+type,
+                                                access=access
                                                 ),
                     'data': []
                 }

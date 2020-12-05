@@ -63,3 +63,17 @@ class UserRoles:
     def role(self, value):
         self._role = value
 
+    def to_json(self):
+        return {
+            'user_id': self._user_id,
+            'project_id': self._project_id,
+            'role': self._role
+        }
+
+    @staticmethod
+    def json_to_obj(json_file):
+        return UserRoles(json_file['user_id'],
+                         json_file['project_id'],
+                         json_file['role']
+                         )
+

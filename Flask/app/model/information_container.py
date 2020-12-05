@@ -1,6 +1,6 @@
 class IC:
 
-    def __init__(self, ic_id, name, parent, history, path, parent_id, color, comments, tags, sub_folders):
+    def __init__(self, ic_id, name, parent, history, path, parent_id, color, comments, tags, sub_folders, access):
         self._ic_id = ic_id
         self._name = name
         self._parent = parent
@@ -13,6 +13,8 @@ class IC:
         self._parent_id = parent_id
         self._overlay_type = "ic"
         self._color = color
+        self._access = access
+        # print('__INIT__ IC', access[0].role)
 
     @property
     def ic_id(self):
@@ -87,6 +89,14 @@ class IC:
         self._sub_folders = value
 
     @property
+    def access(self):
+        return self._access
+
+    @access.setter
+    def access(self, value):
+        self._access = value
+
+    @property
     def parent_id(self):
         return self._parent_id
 
@@ -103,6 +113,7 @@ class IC:
         self._parent_id = value
 
     def to_json(self):
+        # print('ic to_json() -+-+-***', self._access[0].role)
         return {
             'ic_id': self._ic_id,
             'name': self._name,
@@ -115,7 +126,8 @@ class IC:
             'overlay_type': self._overlay_type,
             'comments': [x.to_json() for x in self._comments],
             'tags': [x.to_json() for x in self._tags],
-            'sub_folders': [x.to_json() for x in self._sub_folders]
+            'sub_folders': [x.to_json() for x in self._sub_folders],
+            'access': [x.to_json() for x in self._access]
         }
 
     @staticmethod
@@ -129,4 +141,6 @@ class IC:
                   json_file['color'],
                   [x.json_to_obj() for x in json_file['comments']],
                   [x.json_to_obj() for x in json_file['tags']],
-                  [x.json_to_obj() for x in json_file['sub_folders']])
+                  [x.json_to_obj() for x in json_file['sub_folders']],
+                  [x.json_to_obj() for x in json_file['access']]
+                  )

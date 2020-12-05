@@ -1,81 +1,82 @@
-
-function GetProjects(form){
+function GetProjects(form) {
     LoadStart();
-    $.get( "/get_all_projects")
-        .done(function( data ) {
+    $.get("/get_all_projects")
+        .done(function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             json = input_json['data'];
             form.empty();
             form.append(html);
             form_list = form.find(".form__field");
-            for(var i = 0; i < json.length; i++) {
+            for (var i = 0; i < json.length; i++) {
                 d3.select(form_list.get(0)).append("option")
-                    .attr("value",json[i])
+                    .attr("value", json[i])
                     .html(json[i]);
             }
             LoadStop();
         })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+        .fail(function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar(textStatus);
             PopupClose();
         });
 }
 
 
-function NewProject(form){
+function NewProject(form) {
     LoadStart();
-    $.get( "/get_new_project")
-        .done(function( data ) {
+    $.get("/get_new_project")
+        .done(function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
             form.append(html);
             LoadStop();
         })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+        .fail(function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar(textStatus);
             PopupClose();
         });
 }
 
-function SharePopup(form){
+function SharePopup(form) {
     LoadStart();
-    $.get( "/get_share")
-        .done(function( data ) {
+    $.get("/get_share")
+        .done(function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
             form.append(html);
-            autocomplete(document.getElementById("user_name"), input_json['data']);
+            autocomplete(document.getElementById("user_name_share"), input_json['data']);
             LoadStop();
         })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+        .fail(function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar(textStatus);
             PopupClose();
         });
 }
 
-function ShareProject(data){
+function ShareProject(data) {
     LoadStart();
     $.ajax({
         url: "/share_project",
         type: 'POST',
         data: JSON.stringify({
             project_id: data,
-            user_name: document.getElementById('user_name').value,
-            role: $("#role option:selected").text()
+            parent_id: SESSION['position'].parent_id,
+            user_name: document.getElementById('user_name_share').value,
+            role: $("#role_share option:selected").text()
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             PopupClose();
+            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -89,10 +90,11 @@ var listing = null;
 var dropArea = null;
 var box = null;
 var interval = null;
-function UploadProject(form){
+
+function UploadProject(form) {
     LoadStart();
-    $.get( "/get_upload_project")
-        .done(function( data ) {
+    $.get("/get_upload_project")
+        .done(function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
@@ -110,33 +112,32 @@ function UploadProject(form){
 
             LoadStop();
         })
-        .fail(function($jqXHR, textStatus, errorThrown){
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+        .fail(function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar(textStatus);
             PopupClose();
         });
 }
 
-function sendFilesHelper(files, folders){
+function sendFilesHelper(files, folders) {
     total = files.length;
     dropArea.style.display = "none";
     createProject(files, folders);
 }
 
-function createProject(files, folders){
+function createProject(files, folders) {
     var current = 0;
     counter = 1;
-    if(folders_only){
+    if (folders_only) {
         sendFile(files, folders, current);
-    }else{
-        if(files.length > 0){
+    } else {
+        if (files.length > 0) {
             project_name = files[current].path.substring(1).split('/')[0];
-        }
-        else{
+        } else {
             project_name = folders[current].path.substring(1).split('/')[0];
         }
-        let data = {project_name: project_name};
-//        console.log(data);
+        let data = { project_name: project_name };
+        //        console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
         $.ajax({
             url: 'create_project',
@@ -144,16 +145,16 @@ function createProject(files, folders){
             data: JSON.stringify(data),
             processData: false,
             contentType: false,
-        //        timeout: 20000,
-            success: function(data){
-        //            console.log(data);
+            //        timeout: 20000,
+            success: function(data) {
+                //            console.log(data);
                 listing.innerHTML = "Project " + project_name + ' ' + data;
 
                 sendFile(files, folders, current);
 
             },
             error: function($jqXHR, textStatus, errorThrown) {
-                console.log( errorThrown + ": " + $jqXHR.responseText );
+                console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 PopupClose();
             }
@@ -167,34 +168,33 @@ function sendFile(files, folders, current) {
     var formData = new FormData();
     var request = new XMLHttpRequest();
     let path = ''
-    if(counter > total){
-    console.log(folders)
-        if(folders.length == 0) {
+    if (counter > total) {
+        console.log(folders)
+        if (folders.length == 0) {
             CheckSession();
             //CreateProject();
             PopupClose();
             return;
         }
         path = folders[0].path;
-        if(folders_only) {
+        if (folders_only) {
             path = SESSION['position'].path + '/' + path;
             folders.forEach(folder => folder.path = SESSION['position'].path + '/' + folder.path)
         }
         listing.innerHTML = "Uploading " + total + " file(s) is done!<br>Creating folder structure. Please wait";
         box.innerHTML = "";
         interval = setInterval(adjustBox, 500);
-//        adjustBox();
+        //        adjustBox();
         formData.set('folders', JSON.stringify(folders));
         formData.set('path', path);
         formData.set('is_dir', true);
-    }
-    else{
+    } else {
         path = file.path.substring(1);
-        if(folders_only) {
+        if (folders_only) {
             path = SESSION['position'].path + '/' + path;
             file.path = path;
         }
-        listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0]  + " (" + counter + " of " + total + " ) ";
+        listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0] + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
         formData.set('file', file.file); // One object file
         formData.set('path', path); // String of local file's path
@@ -210,46 +210,45 @@ function sendFile(files, folders, current) {
         //dataType: "json",
         processData: false,
         contentType: false,
-    //        timeout: 20000,
-        success: function(data){
-//            console.log(data);
+        //        timeout: 20000,
+        success: function(data) {
+            //            console.log(data);
 
             if (counter > total) {
                 listing.innerHTML = data;
-//                box.innerHTML = "<br>Creating " + path.split('/')[0] + " project. This may take several minutes";
-//                adjustBox();
+                //                box.innerHTML = "<br>Creating " + path.split('/')[0] + " project. This may take several minutes";
+                //                adjustBox();
                 stopFunction();
                 MakeSnackbar(data);
-    //                PopupClose();
-//                console.log(data);
-                if(data == "Project successfully uploaded"){
-//                    counter = 1;
+                //                PopupClose();
+                //                console.log(data);
+                if (data == "Project successfully uploaded") {
+                    //                    counter = 1;
                     CheckSession();
                     //CreateProject();
                     MakeSnackbar(data);
                     PopupClose();
                 }
-            }
-            else{
+            } else {
                 listing.innerHTML = "Uploaded<br>" + data + " (" + counter + " of " + total + " ) ";
                 // Show percentage
                 box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
                 counter++;
-                sendFile(files, folders, current+1);
+                sendFile(files, folders, current + 1);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
-        });
+    });
 
 }
 
-function adjustBox(){
+function adjustBox() {
     var wait = document.getElementById("wait");
-    if ( wait.innerHTML.length > 5 )
+    if (wait.innerHTML.length > 5)
         wait.innerHTML = "";
     else
         wait.innerHTML += ".";
@@ -261,184 +260,183 @@ function stopFunction() {
 }
 
 function dragHandler(event) {
-  event.stopPropagation();
-  event.preventDefault();
-  dropArea.className = "area drag";
+    event.stopPropagation();
+    event.preventDefault();
+    dropArea.className = "area drag";
 }
 
 function dragLeave(event) {
-  event.stopPropagation();
-  event.preventDefault();
-  dropArea.className = "area";
+    event.stopPropagation();
+    event.preventDefault();
+    dropArea.className = "area";
 }
 
 function filesDroped(event) {
-  var webkitResult = [];
-  var webkitResultDir = [];
-  var mozResult = [];
-  var files;
-  //console.log(event);
-  event.stopPropagation();
-  event.preventDefault();
-  dropArea.className = "area";
+    var webkitResult = [];
+    var webkitResultDir = [];
+    var mozResult = [];
+    var files;
+    //console.log(event);
+    event.stopPropagation();
+    event.preventDefault();
+    dropArea.className = "area";
 
-  // do mozilla stuff
-  // TODO adjust, call `listDirectory()`, `listFile()`
-  function mozReadDirectories(entries, path) {
-//    console.log("dir", entries, path);
-    return [].reduce.call(entries, function(promise, entry) {
-        return promise.then(function() {
-          return Promise.resolve(entry.getFilesAndDirectories() || entry)
-            .then(function(dir) {
-              return dir
+    // do mozilla stuff
+    // TODO adjust, call `listDirectory()`, `listFile()`
+    function mozReadDirectories(entries, path) {
+        //    console.log("dir", entries, path);
+        return [].reduce.call(entries, function(promise, entry) {
+                return promise.then(function() {
+                    return Promise.resolve(entry.getFilesAndDirectories() || entry)
+                        .then(function(dir) {
+                            return dir
+                        })
+                })
+            }, Promise.resolve())
+            .then(function(items) {
+                var dir = items.filter(function(folder) {
+                    return folder instanceof Directory
+                });
+                var files = items.filter(function(file) {
+                    return file instanceof File
+                });
+                if (files.length) {
+                    // console.log("files:", files, path);
+                    files.forEach(function(file) {
+                        console.log(file)
+                    });
+                    mozResult = mozResult.concat.apply(mozResult, files);
+                }
+                if (dir.length) {
+                    // console.log(dir, dir[0] instanceof Directory);
+                    return mozReadDirectories(dir, dir[0].path || path);
+
+                } else {
+                    if (!dir.length) {
+                        return Promise.resolve(mozResult).then(function(complete) {
+                            return complete
+                        })
+                    }
+                }
+
             })
-        })
-      }, Promise.resolve())
-      .then(function(items) {
-        var dir = items.filter(function(folder) {
-          return folder instanceof Directory
-        });
-        var files = items.filter(function(file) {
-          return file instanceof File
-        });
-        if (files.length) {
-          // console.log("files:", files, path);
-          files.forEach(function(file) {
-            console.log(file)
-          });
-          mozResult = mozResult.concat.apply(mozResult, files);
-        }
-        if (dir.length) {
-          // console.log(dir, dir[0] instanceof Directory);
-          return mozReadDirectories(dir, dir[0].path || path);
 
-        } else {
-          if (!dir.length) {
-            return Promise.resolve(mozResult).then(function(complete) {
-              return complete
-            })
-          }
-        }
+    };
 
-      })
-
-  };
-
-  function handleEntries(entry) {
-    let file = "webkitGetAsEntry" in entry ? entry.webkitGetAsEntry() : entry
-    return Promise.resolve(file);
-  }
-
-  function handleFile(entry) {
-    return new Promise(function(resolve) {
-      if (entry.isFile) {
-        entry.file(function(file) {
-          listFile(file, entry.fullPath).then(resolve)
-        })
-      } else if (entry.isDirectory) {
-        var reader = entry.createReader();
-        reader.readEntries(webkitReadDirectories.bind(null, entry, handleFile, resolve))
-      } else {
-        var entries = [entry];
-        return entries.reduce(function(promise, file) {
-            return promise.then(function() {
-              return listDirectory(file)
-            })
-          }, Promise.resolve())
-          .then(function() {
-            return Promise.all(entries.map(function(file) {
-              return listFile(file)
-            })).then(resolve)
-          })
-      }
-    })
-
-    function webkitReadDirectories(entry, callback, resolve, entries) {
-      //console.log(entries);
-      return listDirectory(entry).then(function(currentDirectory) {
-        //console.log(`iterating ${currentDirectory.name} directory`, entry);
-        return entries.reduce(function(promise, directory) {
-          return promise.then(function() {
-            return callback(directory)
-          });
-        }, Promise.resolve())
-      }).then(resolve);
+    function handleEntries(entry) {
+        let file = "webkitGetAsEntry" in entry ? entry.webkitGetAsEntry() : entry
+        return Promise.resolve(file);
     }
 
-  }
-  // TODO: handle mozilla directories, additional directories being selected dropped and listed without
-  // creating nested list at `html` where different directory selected or dropped
-  function listDirectory(entry) {
-//        console.log('listDirectory', entry);
-    var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
-//    var cname = path.split("/").filter(Boolean).join("-");
-//    console.log("dir path", path.substring(1))
-    webkitResultDir.push({'path': path.substring(1), 'isDir': true});
-
-    return Promise.resolve(webkitResultDir);
-  }
-   // TODO: handle mozilla files
-  function listFile(file, path) {
-    path = path || file.webkitRelativePath || "/" + file.name;
-
-//    console.log("file path", path)
-    //console.log(`reading ${file.name}, size: ${file.size}, path:${path}`);
-    webkitResult.push({'path': path, 'file': file, 'isDir': false});
-    return Promise.resolve(webkitResult)
-  };
-
-  function processFiles(files) {
-    Promise.all([].map.call(files, function(file, index) {
-        return handleEntries(file, index).then(handleFile)
-      }))
-      .then(function() {
-//        console.log("complete", webkitResult);
-//        console.log("complete dir", webkitResultDir);
-        sendFilesHelper(webkitResult, webkitResultDir);
-      })
-      .catch(function(err) {
-        alert(err.message);
-      })
-  }
-
-  if ("getFilesAndDirectories" in event.target) {
-    return (event.type === "drop" ? event.dataTransfer : event.target).getFilesAndDirectories()
-      .then(function(dir) {
-        if (dir[0] instanceof Directory) {
-//          console.log(dir)
-          return mozReadDirectories(dir, dir[0].path || path)
-            .then(function(complete) {
-              console.log("complete:", complete);
-              event.target.value = null;
-            });
-        } else {
-          if (dir[0] instanceof File && dir[0].size > 0) {
-          return Promise.resolve(dir)
-                .then(function(complete) {
-                  console.log("complete:", complete);
+    function handleFile(entry) {
+        return new Promise(function(resolve) {
+            if (entry.isFile) {
+                entry.file(function(file) {
+                    listFile(file, entry.fullPath).then(resolve)
                 })
-          } else {
-            if (dir[0].size == 0) {
-              throw new Error("could not process '" + dir[0].name + "' directory"
-                              + " at drop event at firefox, upload folders at 'Choose folder...' input");
+            } else if (entry.isDirectory) {
+                var reader = entry.createReader();
+                reader.readEntries(webkitReadDirectories.bind(null, entry, handleFile, resolve))
+            } else {
+                var entries = [entry];
+                return entries.reduce(function(promise, file) {
+                        return promise.then(function() {
+                            return listDirectory(file)
+                        })
+                    }, Promise.resolve())
+                    .then(function() {
+                        return Promise.all(entries.map(function(file) {
+                            return listFile(file)
+                        })).then(resolve)
+                    })
             }
-          }
+        })
+
+        function webkitReadDirectories(entry, callback, resolve, entries) {
+            //console.log(entries);
+            return listDirectory(entry).then(function(currentDirectory) {
+                //console.log(`iterating ${currentDirectory.name} directory`, entry);
+                return entries.reduce(function(promise, directory) {
+                    return promise.then(function() {
+                        return callback(directory)
+                    });
+                }, Promise.resolve())
+            }).then(resolve);
         }
-      }).catch(function(err) {
-        alert(err)
-      })
-  }
 
-  // do webkit stuff
-  if (event.type === "drop" && event.target.webkitdirectory) {
-    files = event.dataTransfer.items || event.dataTransfer.files;
-  } else if (event.type === "change") {
-    files = event.target.files;
-  }
+    }
+    // TODO: handle mozilla directories, additional directories being selected dropped and listed without
+    // creating nested list at `html` where different directory selected or dropped
+    function listDirectory(entry) {
+        //        console.log('listDirectory', entry);
+        var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
+        //    var cname = path.split("/").filter(Boolean).join("-");
+        //    console.log("dir path", path.substring(1))
+        webkitResultDir.push({ 'path': path.substring(1), 'isDir': true });
 
-  if (files) {
-    processFiles(files)
-  }
+        return Promise.resolve(webkitResultDir);
+    }
+    // TODO: handle mozilla files
+    function listFile(file, path) {
+        path = path || file.webkitRelativePath || "/" + file.name;
+
+        //    console.log("file path", path)
+        //console.log(`reading ${file.name}, size: ${file.size}, path:${path}`);
+        webkitResult.push({ 'path': path, 'file': file, 'isDir': false });
+        return Promise.resolve(webkitResult)
+    };
+
+    function processFiles(files) {
+        Promise.all([].map.call(files, function(file, index) {
+                return handleEntries(file, index).then(handleFile)
+            }))
+            .then(function() {
+                //        console.log("complete", webkitResult);
+                //        console.log("complete dir", webkitResultDir);
+                sendFilesHelper(webkitResult, webkitResultDir);
+            })
+            .catch(function(err) {
+                alert(err.message);
+            })
+    }
+
+    if ("getFilesAndDirectories" in event.target) {
+        return (event.type === "drop" ? event.dataTransfer : event.target).getFilesAndDirectories()
+            .then(function(dir) {
+                if (dir[0] instanceof Directory) {
+                    //          console.log(dir)
+                    return mozReadDirectories(dir, dir[0].path || path)
+                        .then(function(complete) {
+                            console.log("complete:", complete);
+                            event.target.value = null;
+                        });
+                } else {
+                    if (dir[0] instanceof File && dir[0].size > 0) {
+                        return Promise.resolve(dir)
+                            .then(function(complete) {
+                                console.log("complete:", complete);
+                            })
+                    } else {
+                        if (dir[0].size == 0) {
+                            throw new Error("could not process '" + dir[0].name + "' directory" +
+                                " at drop event at firefox, upload folders at 'Choose folder...' input");
+                        }
+                    }
+                }
+            }).catch(function(err) {
+                alert(err)
+            })
+    }
+
+    // do webkit stuff
+    if (event.type === "drop" && event.target.webkitdirectory) {
+        files = event.dataTransfer.items || event.dataTransfer.files;
+    } else if (event.type === "change") {
+        files = event.target.files;
+    }
+
+    if (files) {
+        processFiles(files)
+    }
 
 }
-

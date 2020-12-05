@@ -148,6 +148,10 @@ def upload_file_process(request_json, file=None):
     directory = request_json['parent_path']
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
     # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
+    us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+    access = Access(us, request_json['parent_id'], '', Role.ADMIN.value)
     details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'])
     file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['new_name'].split('.')[:-1]),
@@ -161,6 +165,7 @@ def upload_file_process(request_json, file=None):
                     [],
                     [],
                     [],
+                    [access], # access
                     '',
                     'description') # request_json['description'])
     try:
@@ -203,6 +208,7 @@ def upload_file_process(request_json, file=None):
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    # print(session['project'])
     if main.IsLogin():
         # print(json.loads(request.get_data()))
         if 'file' not in request.files:
@@ -228,6 +234,10 @@ def upload_file():
 def create_dir_process(request_data):
     logger.log(LOG_LEVEL, "Create Dir Process")
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+    us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+    access = Access(us, request_data['parent_id'], '', Role.ADMIN.value)
     details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
     folder = Directory(str(uuid.uuid1()),
                         request_data['new_name'],
@@ -238,7 +248,8 @@ def create_dir_process(request_data):
                         '',
                         [],
                         [],
-                        [])
+                        [],
+                        [access])
     if db.connect(db_adapter):
         result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
@@ -406,10 +417,12 @@ def path_to_obj(path, parent=False, parent_id=""):
                          '',
                          [],
                          [],
+                         [],
+                         [],
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [], [], '', '')
     return root
 
 

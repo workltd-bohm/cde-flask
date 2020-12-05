@@ -1,60 +1,57 @@
-
-function OpenActivity(html, head=null, open=true){
-  if (html) ACTIVITY.html(html);
+function OpenActivity(html, head = null, open = true) {
+    if (html) ACTIVITY.html(html);
     if (head) {
-      ACTIVITY_HEAD.html(head);
-    }
-    else ACTIVITY_HEAD.style("display","none");
-    if(open){
-      $ACTIVITY.parent().addClass("opend");
-      $ACTIVITY.parent().removeClass("closed");
+        ACTIVITY_HEAD.html(head);
+    } else ACTIVITY_HEAD.style("display", "none");
+    if (open) {
+        $ACTIVITY.parent().addClass("opend");
+        $ACTIVITY.parent().removeClass("closed");
     }
 }
 
-function ExtractActivity(html=null, head=null, open=true){
-    if(html){
+function ExtractActivity(html = null, head = null, open = true) {
+    if (html) {
         ACTIVITY.html(html);
     }
     if (head) {
-      ACTIVITY_HEAD.html(head);
-    }
-    else ACTIVITY_HEAD.style("display","none");
-    if(open){
-      $ACTIVITY.parent().addClass("opend");
-      $ACTIVITY.parent().removeClass("closed");
+        ACTIVITY_HEAD.html(head);
+    } else ACTIVITY_HEAD.style("display", "none");
+    if (open) {
+        $ACTIVITY.parent().addClass("opend");
+        $ACTIVITY.parent().removeClass("closed");
     }
 }
 
-function CloseActivity(){
+function CloseActivity() {
     $ACTIVITY.parent().removeClass("opend");
     $ACTIVITY.parent().addClass("closed");
 }
 
-function ClearActivity(close=true){
-  ACTIVITY.html("");
-  if(close){
-    $ACTIVITY.parent().removeClass("opend");
-    $ACTIVITY.parent().addClass("closed");
-  }
+function ClearActivity(close = true) {
+    ACTIVITY.html("");
+    if (close) {
+        $ACTIVITY.parent().removeClass("opend");
+        $ACTIVITY.parent().addClass("closed");
+    }
 }
 
-function AppendActivity(html){
+function AppendActivity(html) {
     $ACTIVITY.append(html);
 }
 
-function AppendActivityTab(parent, child){
+function AppendActivityTab(parent, child) {
     parent.append(child);
 }
 
-function ClearActivityTab(parent){
+function ClearActivityTab(parent) {
     parent.html('');
 }
 
-function sendComment(el){
+function sendComment(el) {
     var key = window.event.keyCode;
-    if(key != 13)
+    if (key != 13)
         return true;
-    if (key === 13 && el.shiftKey){
+    if (key === 13 && el.shiftKey) {
         return true;
     }
     comment = $('#comment').val();
@@ -73,15 +70,15 @@ function sendComment(el){
             ic_id: ic_id
         }),
         timeout: 5000,
-        success: function(data){
-//            input_json = JSON.parse(data);
+        success: function(data) {
+            //            input_json = JSON.parse(data);
             //console.log(data);
             div.append(data);
             $('#comment').val('');
             div.scrollTop(div[0].scrollHeight);
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -89,11 +86,68 @@ function sendComment(el){
 
 }
 
-function addLink(el){
+function AddAccess() {
+    LoadStart();
+    $.ajax({
+        url: "/add_access",
+        type: 'POST',
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            user_name: document.getElementById('user_name').value,
+            role: $("#role option:selected").text()
+        }),
+        timeout: 5000,
+        success: function(data) {
+            MakeSnackbar(data);
+            LoadStop();
+            location.reload();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+        }
+    });
+}
+
+function removeAccess(access) {
+    console.log('>>>>>>>>>>>> access');
+    console.log(access);
+    console.log(SESSION['position'])
+    LoadStart();
+    $.ajax({
+        url: "/remove_access",
+        type: 'POST',
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            role: access.role,
+            user: access.user
+        }),
+        timeout: 5000,
+        success: function(data) {
+            MakeSnackbar(data);
+            LoadStop();
+            location.reload();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+        }
+    });
+}
+
+function addLink(el) {
     var key = window.event.keyCode;
-    if(key != 13)
+    if (key != 13)
         return true;
-    if (key === 13 && el.shiftKey){
+    if (key === 13 && el.shiftKey) {
         return true;
     }
     link = $('#3d-view-link').val();
@@ -105,14 +159,14 @@ function addLink(el){
             link: link
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json = JSON.parse(data);
             console.log(input_json);
             OpenViewer(input_json['html'], input_json['data']);
             $('#3d-view-link').val('');
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -120,18 +174,18 @@ function addLink(el){
 
 }
 
-function OpenPostListPopup(json){
+function OpenPostListPopup(json) {
     PopupOpen(PostList, json);
 }
 
-function PostList(form, json){
+function PostList(form, json) {
     LoadStart();
     $.ajax({
         url: "/get_my_posts_popup",
         type: 'POST',
         data: JSON.stringify(json),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
@@ -139,14 +193,14 @@ function PostList(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function PostListPopupResults(obj, json){
+function PostListPopupResults(obj, json) {
     PopupClose();
     var sel = document.getElementById('posts');
     MarketGet('Posts', EditPost, [obj, sel.value, json])

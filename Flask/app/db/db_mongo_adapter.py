@@ -154,6 +154,7 @@ class DBMongoAdapter:
         project_query = {'project_name': project.name}
         message = msg.PROJECT_NOT_FOUND
         if col.find_one(project_query, {'_id': 0}):
+            print(project.to_json())
             col.update_one(project_query, {'$set': project.to_json()})
 
             message = msg.PROJECT_SUCCESSFULLY_UPDATED
@@ -178,9 +179,33 @@ class DBMongoAdapter:
         self._close_connection()
         return projects
 
+    def get_my_shares(self, user):
+        col_shared = self._db.Projects.Shared
+        user_query = {'user_id': user['id']}
+        # print(user_query)
+        result = col_shared.find()
+        # print(result[0])
+        ics = []
+        ic_shares = []
+        if result:
+            # result[0].pop('_id', None)
+            # print(user['id'])
+            for u in result:
+                if user['id'] in u:
+                    for ic in u[user['id']]:
+                        project = self.get_my_project(ic['project_id'])
+                        if project:
+                            project = Project.json_to_obj(project)
+                            project.current_ic = None
+                            ics.append(project.find_ic_by_id(ic, ic['ic_id'], project.root_ic))
+                            ic_shares.append(ic)
+        self._close_connection()
+        return ics, ic_shares
+
     def get_my_project(self, project_id):
         col = self._db.Projects
         project_query = {'project_id': project_id}
+        print(project_query)
         result = col.find_one(project_query, {'_id': 0})
         self._close_connection()
         return result
@@ -423,6 +448,24 @@ class DBMongoAdapter:
             ic = project.find_ic(request_data, file_name, project.root_ic)
         return ic
 
+    def get_ic_object_from_shared(self, request_data, user):
+        # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
+        col = self._db.Projects
+        ics, ic_shares = self.get_my_shares(user)
+        shared_ic = None
+        ic = None
+        for i in ic_shares:
+            if request_data['ic_id'] == i['ic_id']:
+                shared_ic = i
+                break
+        if shared_ic:
+            project_query = {'project_name': shared_ic['project_name']}
+            project_json = col.find_one(project_query, {'_id': 0})
+            if project_json:
+                project = Project.json_to_obj(project_json)
+                ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+        return ic
+
     def get_post_file(self, request_json):
         stored_file = None
         file_query = request_json
@@ -637,24 +680,29 @@ class DBMongoAdapter:
         if u:
             for pr in u['projects']:
                 if request_data['project_id'] == pr['project_id']:
-                    if pr['role'] != 1:
+                    if pr['role'] != Role.WATCHER.value:
                         no_rights = False
                     break
         if no_rights:
             return msg.USER_NO_RIGHTS
         # TODO: check does user has the rights to share
         user_query = {'username': request_data['user_name']}
-        result = col.find_one(user_query, {'_id': 0})
-        if result:
-            user_id = result['id']
+        new_user = col.find_one(user_query, {'_id': 0})
+        if new_user:
+            user_id = new_user['id']
             user_query = {'user_id': user_id}
             u = col_users.find_one(user_query, {'_id': 0})
             if not request_data['role']:
                 request_data['role'] = 'ADMIN'
+            role = getattr(Role, request_data['role']).value
             u['projects'].append({'project_id': request_data['project_id'],
-                                  'role': getattr(Role, request_data['role']).value})
+                                  'role': role})
             col_users.update_one(user_query,
                                  {'$set': u})
+            p = self.get_my_project(request_data['project_id'])
+            project = Project.json_to_obj(p)
+            project.set_access_for_all_ics(new_user, role, project.root_ic)
+            self.update_project(project, new_user)
             message = msg.SUCCESSFULLY_SHARED
 
         else:
@@ -789,6 +837,116 @@ class DBMongoAdapter:
         self._close_connection()
         return tags
 
+    def add_access(self, request_data, session_user):
+        col = self._db.Projects
+        col_users = self._db.Users.Roles
+        col_shared = self._db.Projects.Shared
+        col_u = self._db.Users
+        user_query = {'user_id': session_user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        project_json = None
+        if u:
+            for x in u:
+                print('x', x)
+            project_json = self.get_project(request_data['project_name'], session_user)
+            for pr in u['projects']:
+                if project_json['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+        # project_query = {'project_name': request_data['project_name']}
+        # project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            user_query = {'username': request_data['user_name']}
+            new_user = col_u.find_one(user_query, {'_id': 0})
+            if new_user:
+                project = Project.json_to_obj(project_json)
+                message = project.add_access(request_data, new_user, project.root_ic)
+                if message == msg.TAG_SUCCESSFULLY_ADDED:
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+                    # if the user does not have an access to the whole project update shared
+                    shared = {'project_id': project.project_id,
+                              'project_name': project.name,
+                              'parent_id': request_data['parent_id'],
+                              'role': getattr(Role, request_data['role']).value,
+                              'ic_id': request_data['ic_id']}
+                    user_shared = col_shared.find()
+                    results = list(user_shared)
+                    shared_json = {}
+                    if len(results) != 0:
+                        # results[0].pop('_id', None)
+                        user_shared = results[0]
+                        if new_user['id'] in user_shared:
+                            already_exists = False
+                            for ic in user_shared[new_user['id']]:
+                                if ic['ic_id'] == request_data['ic_id']:
+                                    already_exists = True
+                                    break
+                            if not already_exists:
+                                user_shared[new_user['id']].append(shared)
+                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                        else:
+                            user_shared[new_user['id']] = [shared]
+                            col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
+                    else:
+                        shared_json[new_user['id']] = [shared]
+                        col_shared.insert_one(shared_json)
+
+            else:
+                message = msg.USER_NOT_FOUND
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def remove_access(self, request_data, session_user):
+        col = self._db.Projects
+        col_users = self._db.Users.Roles
+        col_shared = self._db.Projects.Shared
+        user_query = {'user_id': session_user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        project_json = None
+        if u:
+            project_json = self.get_project(request_data['project_name'], session_user)
+            for pr in u['projects']:
+                if project_json['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+        # project_query = {'project_name': request_data['project_name']}
+        # project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            message = project.remove_access(request_data, project.root_ic)
+            if message == msg.ACCESS_SUCCESSFULLY_REMOVED:
+                col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+                user_shared = col_shared.find()
+                results = list(user_shared)
+                if len(results) != 0:
+                    # results[0].pop('_id', None)
+                    user_shared = results[0]
+                    if request_data['user']['user_id'] in user_shared:
+                        user_shared[request_data['user']['user_id']].remove(
+                            {'project_id': project.project_id,
+                             'project_name': project.name,
+                             'parent_id': request_data['parent_id'],
+                             'role': getattr(Role, request_data['role']).value,
+                             'ic_id': request_data['ic_id']})
+                        col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
     def clear_db(self, user):
         self._db.Projects.drop()
         self._db.Projects.Files.drop()
@@ -800,6 +958,7 @@ class DBMongoAdapter:
         self._db.Tags.drop()
         self._db.fs.files.drop()
         self._db.fs.chunks.drop()
+        self._db.Projects.Shared.drop()
         # self._db.Users.drop()
 
         col_users = self._db.Users.Roles

@@ -102,9 +102,18 @@ def get_filter_activity():
             resp.data = str(msg.DEFAULT_OK['message'])
             return resp
 
+        if name == 'Shared':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
         if db.connect(db_adapter):
-            project_name = session['project']['name']
-            result = db.get_ic_object(db_adapter, project_name, request_data, name)
+            result = None
+            if request_data['project_name'] == 'Shared':
+                result = db.get_ic_object_from_shared(db_adapter, request_data, session['user'])
+            else:
+                project_name = session['project']['name']
+                result = db.get_ic_object(db_adapter, project_name, request_data, name)
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 details = [x.to_json() for x in result.history]
@@ -113,6 +122,9 @@ def get_filter_activity():
                 path = result.path
                 share_link = ''
                 comments = [x.to_json() for x in result.comments]
+                access = [x.to_json() for x in result.access]
+                for a in access:
+                    a['role'] = Role(a['role']).name
 
                 response = {
                     'html': render_template("activity/filter_folders.html",
@@ -125,13 +137,18 @@ def get_filter_activity():
                                             path=path,
                                             share_link=share_link,
                                             parent_id=result.parent_id,
-                                            ic_id=result.ic_id
+                                            ic_id=result.ic_id,
+                                            access=access
                                             ),
                     'data': []
                 }
                 # print(response)
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
+                return resp
+            else:
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
                 return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
