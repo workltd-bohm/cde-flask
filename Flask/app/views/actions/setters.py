@@ -318,6 +318,9 @@ def share_project():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
+            # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+
             result = db.share_project(db_adapter, request_data, session['user'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -424,7 +427,12 @@ def add_access():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
-            result = db.add_access(db_adapter, request_data, session['user'])
+            # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
+            # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+            if request_data['parent_id'] == 'root':
+                result = db.share_project(db_adapter, request_data, session['user'])
+            else:
+                result = db.add_access(db_adapter, request_data, session['user'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()

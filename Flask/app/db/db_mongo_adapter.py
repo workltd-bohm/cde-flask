@@ -678,6 +678,9 @@ class DBMongoAdapter:
         u = col_users.find_one(user_query, {'_id': 0})
         no_rights = True
         if u:
+            if 'project_id' not in request_data:
+                project_json = self.get_project(request_data['project_name'], user)
+                request_data['project_id'] = project_json['project_id']
             for pr in u['projects']:
                 if request_data['project_id'] == pr['project_id']:
                     if pr['role'] != Role.WATCHER.value:

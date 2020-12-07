@@ -114,9 +114,6 @@ function AddAccess() {
 }
 
 function removeAccess(access) {
-    console.log('>>>>>>>>>>>> access');
-    console.log(access);
-    console.log(SESSION['position'])
     LoadStart();
     $.ajax({
         url: "/remove_access",
