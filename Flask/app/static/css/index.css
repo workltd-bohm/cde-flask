@@ -21,7 +21,7 @@ td {
   background-color: var(--dashboard-bg);
   font-family: 'Roboto', sans-serif;
   /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
-  overflow: auto;
+  overflow: hidden;
   border-spacing: 0;
 }
 
@@ -44,9 +44,9 @@ td {
   height: 100%;
   vertical-align: top;
   z-index: 5;
-  -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
+ /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
   -moz-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
-  box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
+  box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);*/
 }
 
 a:link, a:visited {
@@ -280,10 +280,10 @@ body {
 
 .terminal-sign{
     width:1.5vw;
-	height:1.5vw;
+	  height:1.5vw;
     position: absolute;
-    top: 10%;
-    left: 15%;
+    top: 64px;
+    left: 240px;
     background: #bbb;
     /*background: transparent;
     color: green;*/
@@ -297,8 +297,8 @@ body {
 
 .terminal-div{
     position: absolute;
-    top: 10%;
-    left: 15%;
+    top: 69px;
+    left: 240px;
     border: none;
     width: 25%;
     /*border: 2px solid transparent;

@@ -11,13 +11,16 @@
   -moz-box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
   box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);*/
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
 }
-
+/* remove top bar of menu*/
+.remove-bar {
+  display: none;
+}
 /*This is the Menu when it is collapsed*/
 .menu-fixed.closed {
   width: 5%; /*5%*/
-  /*background-color: #0a1522;*/
+  background-color: #121212;
   transition: all 0.3s;
 }
 .menu-fixed.closed > a .material-icons.back {
@@ -35,11 +38,12 @@
   display: none;
   color: gray;
   float: left;
-  left: 10px;
-  top: 10px;
+  left: -5px;
+  top: 50vh;
   font-size: 36px;
   cursor: pointer;
   transition: color 0.3s;
+  position: relative;
 }
 .menu-fixed .material-icons.back:hover {
   color: #fff;
@@ -99,7 +103,7 @@
 
 .menu-activity.opend {
   width: 20%;
-  /*background: #000;*/
+  background-color:#e8e8e8;
 }
 
 .menu-fixed .logo {
@@ -121,30 +125,33 @@
 /*This is the transition logo of the menu*/
 .menu-fixed .logo span {
   display: block;
-  width: 10px;
-  height: 10px;
   background: var(--side-menu-logo-bg);
   position: absolute;
   margin: auto;
   left: 0;
   right: 0;
-  top: 25px;
-  transform: rotateZ(45deg);
-  -webkit-transform: rotateZ(45deg);
-  border: 8px solid rgba(51, 68, 69, 0.8);
+  top: 50vh;
+  width: 0;
+  height: 0;
+  border-left: 15px solid rgb(232, 232, 232);
+  border-right: 15px solid rgb(18, 18, 18);
+  border-top: 15px solid rgba(0, 0, 0, 0);
+  border-bottom: 15px solid rgba(0, 0, 0, 0);
   transition: all 0.2s;
-  box-sizing: initial;
+  transform: rotateZ(-180deg) translateX(10px);
+  -webkit-transform: rotateZ(-180deg) translateX(10px);
+  background: var(--side-menu-logo-bg-right);
 }
 
 .menu-right .logo  span {
-    background: var(--side-menu);
+    background: /*var(--side-menu)*/ #121212;
   /*border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
 }
 
 .menu-fixed .logo:hover ~ p {
   transition: all 0.3s;
 }
-.menu-fixed .logo:hover > span {
+/*.menu-fixed .logo:hover > span {
   width: 0;
   height: 0;
   border-left: 15px solid rgba(51, 68, 69, 0.8);
@@ -154,27 +161,39 @@
   transition: all 0.2s;
   transform: rotateZ(0deg) translateX(10px);
   -webkit-transform: rotateZ(0deg) translateX(10px);
-}
+}*/
 
-.menu-fixed .logo:hover > span.reverse {
+/*.menu-fixed .logo:hover > span.reverse {
   transform: rotateZ(-180deg) translateX(10px);
   -webkit-transform: rotateZ(-180deg) translateX(10px);
   background: var(--side-menu-logo-bg-right);
-}
-
-.menu-fixed .logo:hover > span::after {
+}*/
+.reverse::after {
   content: '';
   display: block;
   width: 0;
   height: 0;
-  border-left: 8px solid var(--side-menu); /*This is the little arrow of the logo when hovered*/
-  border-right: 8px solid rgba(255, 255, 255, 0); /*These 3 appear to have no effect at all*/
+  border-left: 8px solid #121212;
+  /*border-right: 8px solid rgb(232, 232, 232);*/
   border-top: 8px solid rgba(0, 0, 0, 0);
   border-bottom: 8px solid rgba(0, 0, 0, 0);
   left: -15px;
   position: absolute;
   top: -8px;
 }
+/*.menu-fixed .logo:hover > span::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--side-menu); /*This is the little arrow of the logo when hovered
+  border-right: 8px solid rgba(255, 255, 255, 0); /*These 3 appear to have no effect at all
+  border-top: 8px solid rgba(0, 0, 0, 0);
+  border-bottom: 8px solid rgba(0, 0, 0, 0);
+  left: -15px;
+  position: absolute;
+  top: -8px;
+}*/
 
 .menu-left .logo:hover > span::after {
   border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
@@ -198,6 +217,7 @@
   margin: 0;
   padding: 0;
   width: 100%;
+  margin-top: 40px;
 }
 .menu-fixed .menu li {
   padding: 20px 0px 20px 0px;
@@ -207,7 +227,7 @@
   border-bottom: none; /*1px solid rgba(255, 0, 0, 0.1); /*a line between the icons*/
   /*border-bottom-style: dotted;*/
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   transition: all 0.3s;
 }
@@ -239,7 +259,16 @@
   line-height: 30px;
   text-shadow: 1px 1px 8px #fff;
 }
-
+.menu-link.tooltip:hover .info-tooltip {
+  display: block !important;
+  z-index: 999;
+  position: relative;
+  color: #fff;
+  left: 40px;
+  top: 20px;
+  overflow: visible;
+  position: absolute;
+}
 .material-icons.info {
   color: #eb4034; /*I see no effext for this*/
   position: absolute;
@@ -275,6 +304,8 @@
 .icon-menu{
     height: 100%;
     vertical-align: bottom;
+    top: 150px;
+    position: relative;
 }
 
 .side-menu-icon{
