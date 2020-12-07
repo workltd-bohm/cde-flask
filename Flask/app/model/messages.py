@@ -36,7 +36,9 @@ NOT_ALLOWED = {"message": "Not allowed", "code": 400}
 
 NO_PROJECT_SELECTED = {"message": "Project not selected", "code": 400}
 
+IC_SUCCESSFULLY_TRASHED = {"message": "Successfully moved to trash", "code": 200}
 IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
+IC_SUCCESSFULLY_FOUND = {"message": "Successfully found", "code": 200}
 
 POST_ALREADY_EXISTS = {"message": "Post with the given ID already exists", "code": 409}
 POST_CREATED = {"message": "Post created successfully", "code": 200}
@@ -52,6 +54,7 @@ SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
+PROJECT_SUCCESSFULLY_TRASHED = {"message": "Project successfully moved to trash", "code": 200}
 
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
 FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}

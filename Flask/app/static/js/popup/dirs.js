@@ -281,6 +281,66 @@ function RenameFile(form, json){
 }
 
 // ------------------------------------------
+// TODO Trash
+function TrashFile(form, json){
+    var o = Object.values(CHECKED);
+    var multi = [];
+
+    for (var i = 0; i < o.length; i++) multi.push(
+        {
+            parent_id: o[i].parent_id,
+            ic_id: o[i].ic_id,
+            parent_path: o[i].parent,
+            delete_name: o[i].name,
+            is_directory: o[i].is_directory,
+        });
+        
+    if (o.length > 0) 
+    {
+        MULTI = {
+            parent_id: json.parent_id,
+            ic_id: json.ic_id,
+            targets : multi,
+        };
+    }
+    
+    LoadStart();
+    
+    console.log(json);
+
+    $.ajax({
+        url: "/get_trash_ic",
+        type: 'POST',
+        data: JSON.stringify((o.length > 0) ? {
+            is_multi: true,
+        } : {
+            ic_id: json.ic_id,
+            is_directory: json.is_directory,
+            delete_name: json.name,
+            parent_id: json.parent_id,
+            parent_path: json.parent,
+        }),
+        timeout: 5000,
+        success: function(data){
+            try {
+                input_json2 = JSON.parse(data);
+                html = input_json2['html'];
+                form.empty();
+                form.append(html);
+            } catch (e) {
+                MakeSnackbar(data);
+                CreateProject();
+            }
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
 
 function DeleteFile(form, json){
     var o = Object.values(CHECKED);
@@ -299,6 +359,7 @@ function DeleteFile(form, json){
     };
     
     LoadStart();
+    
     $.ajax({
         url: "/get_delete_ic",
         type: 'POST',

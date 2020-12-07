@@ -181,6 +181,24 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
+    # TODO trash
+    def trash_ic(self, request_data, ic=None):
+        if ic.ic_id == request_data['parent_id']:
+            for y in ic.sub_folders:
+                if y.name == request_data['delete_name']:
+                    ic.sub_folders.remove(y)
+                    self._deleted = True
+                    self._message = msg.IC_SUCCESSFULLY_TRASHED
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.trash_ic(request_data, x) # recursively find parent id
+                    if self._deleted:
+                        break
+        if not self._deleted:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
     def delete_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:

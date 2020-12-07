@@ -87,7 +87,7 @@ function AddSun(obj, data){
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
         .on("mouseover",function(d){
-            if(!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+            if (!g_project.overlay && !g_project.move && g_root.zoom)  OverlayCreate(d3.select(this), d, data);
         })
         .on("mousedown",function(d){
             // ClickStart(function(data){
@@ -208,10 +208,11 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
             if(!g_project.overlay && !g_project.move && g_root.zoom){
-                //console.log(g_root.universe.data.overlay_type)
+                console.log(g_root.universe.data)
                 switch(g_root.universe.data.overlay_type){
                     case "ic":
-                    case "search": OverlayCreate(d3.select(this), d, data, true); break;
+                    case "trash":
+                    case "search": OverlayCreate(d3.select(this), d, data, true); break; // search?
                     default: break;
                 }
             }

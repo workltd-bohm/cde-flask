@@ -16,30 +16,30 @@ g_OverSearch = [
 ]
 
 g_OverFolder = [
-    { name: "DETAILS", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "DELETE", icon: "delete", link: WrapDelete },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    //{ name : "SHARE PROJECT", icon : "control_point_duplicate", link : WrapShareProject},
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name : "DETAILS", icon : "preview", link : WrapOpenFile},
+    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+    { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
+    { name : "RENAME", icon : "create", link : WrapRename},
+    { name : "TRASH", icon : "delete", link : WrapTrash},
+    { name : "COPY", icon : "content_copy", link : WrapCopy},
+    { name : "MOVE", icon : "open_with", link : WrapMove},
+    { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "SHARE PROJECT", icon : "control_point_duplicate", link : WrapShareProject},
+    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+    { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
 
 g_OverFile = [
-    { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "DELETE", icon: "delete", link: WrapDelete },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name : "PREVIEW", icon : "preview", link : WrapOpenFile},
+    { name : "UPLOAD", icon : "arrow_circle_up", link : WrapCreateFile},
+    { name : "NEW", icon : "create_new_folder", link : WrapCreateFolder},
+    { name : "RENAME", icon : "create", link : WrapRename},
+    { name : "TRASH", icon : "delete", link : WrapTrash},
+    { name : "COPY", icon : "content_copy", link : WrapCopy},
+    { name : "MOVE", icon : "open_with", link : WrapMove},
+    { name : "SHARE", icon : "share", link : WrapShare},
+    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
+    { name : "COLOR", icon : "color_lens", link : ColorPicker},
 ]
 
 g_OverPlanet = [
@@ -47,6 +47,14 @@ g_OverPlanet = [
     { name: "OPEN", icon: "preview", link: WrapOpenFile },
 ]
 
+g_OverTrash = [
+    { name : "EMPTY", icon : "delete_sweep", link : WrapRestore}, // TODO WrapEmptyTrash
+]
+
+g_OverTrashPlanet = [
+    { name : "RESTORE", icon : "restore_from_trash", link : WrapRestore},
+    { name : "DESTROY", icon : "delete", link : WrapDelete}
+]
 // -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
@@ -72,6 +80,12 @@ function OverlayCreate(obj, data, parent, planet = false) {
             break;
         case "search_target":
             type = g_OverPlanet;
+            break;
+        case "trash": 
+            type = g_OverTrash; 
+            break;
+        case "trash_planet": 
+            type = g_OverTrashPlanet; 
             break;
         default:
             break;

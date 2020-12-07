@@ -58,7 +58,18 @@ function WrapRename(data){
 
 function WrapDelete(data){
     var tmp = data.values.data;
-    PopupOpen(DeleteFile, tmp);
+    PopupOpen(DeleteFile, tmp);     // todo when hard delete, user must type in "DELETE" to submit the form
+}
+
+// TODO trash
+function WrapTrash(data){
+    var tmp = data.values.data;
+    PopupOpen(TrashFile, tmp);     
+}
+
+// TODO file restoring
+function WrapRestore(data){
+    return;
 }
 
 function WrapMove(data){

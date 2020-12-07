@@ -275,7 +275,59 @@ def get_rename_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_trash_ic', methods=['POST'])
+def get_trash_ic():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
+        is_multi = True if "is_multi" in request_data else False
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
+        if db.connect(db_adapter):
+            result = db.get_all_projects(db_adapter)
+            if result:
+                response = {
+                    'html': render_template("popup/trash_ic_popup.html",
+                                            parent_path=request_data["parent_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            delete_name=request_data["delete_name"],
+                                            is_directory = True if request_data["is_directory"] else False,
+                                            multi=is_multi,
+                                            )
+                    if not is_multi else
+                            render_template("popup/trash_ic_popup.html",
+                                            multi=is_multi,
+                                            delete_name="Selections",
+                                            ),
+                    'data': []
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+            
+            
 @app.route('/get_delete_ic', methods=['POST'])
 def get_delete_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))

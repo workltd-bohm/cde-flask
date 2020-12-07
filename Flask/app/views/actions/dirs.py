@@ -320,6 +320,42 @@ def rename_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route("/trash_ic", methods=['POST'])
+def trash_ic():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        ic_data = json.loads(request.get_data())
+        set_project_data(ic_data, True) # session['project']
+        ic_data['user_id'] = session['user']['id']
+        
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(ic_data)) 
+
+        if db.connect(db_adapter):
+            result = db.trash_ic(db_adapter, ic_data)
+
+            if result == msg.PROJECT_SUCCESSFULLY_TRASHED:
+                session.get("project").update({'section': 'project'})
+                session.get("project").update({'position': None})
+                session.modified = True
+
+            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 @app.route('/delete_ic', methods=['POST'])
 def delete_ic():

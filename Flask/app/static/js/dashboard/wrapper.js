@@ -57,6 +57,10 @@ function CheckSession(){
                     SESSION["market"] ? MarketGet(SESSION["market"]) : SelectMarket(); 
                     break;
                 }
+                case "trash": {
+                    // TODO TRASH
+                    // SESSION["trash"] ? TrashGet(SESSION["trash"]) : SelectTrash();
+                }
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -214,7 +218,7 @@ function Select3D(){
         success: function(data){
             response = JSON.parse(data);
             if(response){
-                OpenActivity(response['html'], null, open);
+                OpenActivity(response['html'], null, open); 
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -224,6 +228,36 @@ function Select3D(){
     });
 }
 
+// Get trash and display on screen
+function SelectTrash(){
+    ClearProject(true);
+    SwitchDash(0);
+    $.ajax({
+        url: "/get_trash",
+        type: 'POST',
+        data: JSON.stringify({project: {section: "project"}}), // provjeriti section trash
+        timeout: 5000,
+        success: function(data) { // get data
+            data = JSON.parse(data); // convert data to json
+
+            if(data)
+            {
+                if (data.session) 
+                {
+                    SESSION = data.session; // set session from data.session
+                    console.log(SESSION);
+                }
+                
+                DashboardCreate([data.json.root_ic], data.project);
+            }
+        },
+
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
 // -------------------------------------------------------
 
 function SwitchDash(id){
