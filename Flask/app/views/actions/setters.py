@@ -431,6 +431,7 @@ def add_access():
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
             if request_data['parent_id'] == 'root':
                 result = db.share_project(db_adapter, request_data, session['user'])
+                # result = db.add_access(db_adapter, request_data, session['user'])
             else:
                 result = db.add_access(db_adapter, request_data, session['user'])
             if result:
@@ -456,7 +457,11 @@ def remove_access():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
-            result = db.remove_access(db_adapter, request_data, session['user'])
+            if request_data['parent_id'] == 'root':
+                # result = db.remove_access(db_adapter, request_data, session['user'])
+                result = db.remove_share_project(db_adapter, request_data, session['user'])
+            else:
+                result = db.remove_access(db_adapter, request_data, session['user'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
