@@ -108,7 +108,9 @@
                           <div class="access_field">
                               <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ a['user']['username'] }}   {{ a['role'] }}</p>
                           </div>
-                          <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
+                          {% if 'OWNER' not in a['role'] %}
+                            <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
+                          {% endif %}
                         </div>
                       {% endfor %}
                         <br>
@@ -118,10 +120,9 @@
                       </div>
                       <div class="form__group field">
                           <select class="form__field" name="role" id='role' required >
-                            <option>ADMIN</option>
-                            <option>WATCHER</option>
-                            <option>DEVELOPER</option>
-                            <option>OWNER</option>
+                              <option>WATCHER</option>
+                              <option>DEVELOPER</option>
+                              <option>ADMIN</option>
                           </select>
                           <label for="role" class="form__label">Role</label>
                       </div>
