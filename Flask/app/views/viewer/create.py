@@ -22,3 +22,9 @@ def load_viewer():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+@app.route('/bohmviewer', methods=['GET'])
+def bohmviewer():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    return render_template("dashboard/viewer/bohm_viewer.html")

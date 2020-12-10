@@ -889,6 +889,7 @@ class DBMongoAdapter:
             role = getattr(Role, request_data['role']).value
             u['projects'].append({'project_id': request_data['project_id'],
                                   'role': role})
+            print('+-+-', u)
             col_users.update_one(user_query,
                                  {'$set': u})
             p = self.get_my_project(request_data['project_id'])
@@ -896,6 +897,58 @@ class DBMongoAdapter:
             project.set_access_for_all_ics(new_user, role, project.root_ic)
             self.update_project(project, new_user)
             message = msg.SUCCESSFULLY_SHARED
+
+        else:
+            message = msg.USER_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def remove_share_project(self, request_data, session_user):
+        # {'project_name': 'CV', 
+        # 'ic_id': '22674965-395f-11eb-870a-001fb529734f', 
+        # 'parent_id': 'root', 
+        # 'is_directory': True, 
+        # 'role': 'ADMIN', 
+        # 'user': {
+        #           'user_id': '4d022b14-33e1-11eb-91e1-50e085759744', 
+        #           'username': '222', 
+        #           'picture': '5fc652bfdca9c896287f57b6'
+        # }
+        # }
+
+        col = self._db.Projects
+        col_users = self._db.Users.Roles
+        user_query = {'user_id': session_user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        project_json = None
+        if u:
+            project_json = self.get_project(request_data['project_name'], session_user)
+            for pr in u['projects']:
+                if project_json['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+        if 'user_id' in request_data['user']:
+            user_id = request_data['user']['user_id']
+            user_query = {'user_id': user_id}
+            u = col_users.find_one(user_query, {'_id': 0})
+            role = getattr(Role, request_data['role']).value
+            print('******', u)
+            u['projects'].remove({'project_id': project_json['project_id'],
+                                  'role': role})
+            print('+-+-', u)
+            col_users.update_one(user_query,
+                                 {'$set': u})
+
+            p = self.get_my_project(project_json['project_id'])
+            project = Project.json_to_obj(p)
+            project.remove_access_for_all_ics(request_data['user'], role, project.root_ic)
+            self.update_project(project, session_user)
+
+            message = msg.SUCCESSFULLY_REMOVED_PROJECT_ACCESS
 
         else:
             message = msg.USER_NOT_FOUND
