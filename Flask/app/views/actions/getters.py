@@ -230,21 +230,26 @@ def get_trash():
             my_trashed_items = db.get_my_trashed_projects(db_adapter, user)
 
             for trashed_project in my_trashed_items:
-                if trashed_project:
-                    if 'project_name' in trashed_project.keys():
-                        name = trashed_project['project_name']
-                    else:
-                        name = trashed_project['name']
+                proj_obj = dict()
 
-                    proj_obj = {
-                        "ic_id": "",
-                        "name": name,
-                        "parent": "Trash", 
-                        "history": [],
-                        "path": "Trash/" + name,
-                        "is_directory": False,
-                        "overlay_type": "trash_planet",
-                    }
+                if trashed_project:
+                    proj_obj['project_id'] = trashed_project['project_id']
+                    proj_obj['parent'] = "Trash"
+                    proj_obj['history'] = []
+                    proj_obj['overlay_type'] = "trash_planet"
+
+                    if 'project_name' in trashed_project.keys():
+                        proj_obj['name'] =          trashed_project['project_name']
+                        proj_obj['is_directory'] =  "" 
+                        proj_obj['ic_id'] =         ""
+                        proj_obj['parent_id'] =     "root"
+                    else:
+                        proj_obj['name'] =          trashed_project['name']
+                        proj_obj['is_directory'] =  trashed_project['is_directory']
+                        proj_obj['ic_id'] =         trashed_project['ic_id']
+                        proj_obj['parent_id'] =     trashed_project['parent_id']
+
+                    proj_obj['path'] = "Trash/" + proj_obj['name'] # TODO maybe leave path
 
                     # fill root container with found items (which will later become planets)
                     response['root_ic']["sub_folders"].append(proj_obj)

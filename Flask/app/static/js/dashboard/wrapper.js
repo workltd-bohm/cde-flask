@@ -235,16 +235,16 @@ function SelectTrash(){
     $.ajax({
         url: "/get_trash",
         type: 'POST',
-        data: JSON.stringify({project: {section: "project"}}), // provjeriti section trash
+        data: JSON.stringify({project: {section: "project"}}), 
         timeout: 5000,
-        success: function(data) { // get data
-            data = JSON.parse(data); // convert data to json
+        success: function(data) {
+            data = JSON.parse(data);
 
             if(data)
             {
                 if (data.session) 
                 {
-                    SESSION = data.session; // set session from data.session
+                    SESSION = data.session;
                     console.log(SESSION);
                 }
                 

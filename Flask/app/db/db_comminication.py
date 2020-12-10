@@ -72,9 +72,11 @@ def create_folder(db_adapter, project_name, folder):
 def rename_ic(db_adapter, request_data, user):
     return db_adapter.rename_ic(request_data, user)
 
-# TODO Trashing
 def trash_ic(db_adapter, ic_data):
     return db_adapter.trash_ic(ic_data)
+
+def restore_ic(db_adapter, ic_data):
+    return db_adapter.restore_ic(ic_data)
 
 def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)

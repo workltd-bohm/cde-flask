@@ -61,15 +61,14 @@ function WrapDelete(data){
     PopupOpen(DeleteFile, tmp);     // todo when hard delete, user must type in "DELETE" to submit the form
 }
 
-// TODO trash
 function WrapTrash(data){
     var tmp = data.values.data;
     PopupOpen(TrashFile, tmp);     
 }
 
-// TODO file restoring
 function WrapRestore(data){
-    return;
+    var tmp = data.values.data;
+    PopupOpen(RestoreFile, tmp); 
 }
 
 function WrapMove(data){

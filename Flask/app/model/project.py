@@ -181,7 +181,6 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
-    # TODO trash
     def trash_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
@@ -192,7 +191,7 @@ class Project:
         else:
             if ic.sub_folders:
                 for x in ic.sub_folders:
-                    self.trash_ic(request_data, x) # recursively find parent id
+                    self.trash_ic(request_data, x) 
                     if self._deleted:
                         break
         if not self._deleted:
@@ -289,6 +288,22 @@ class Project:
         else:
             for x in ic.sub_folders:
                 self.find_ic(request_data, file_name, x)
+                if self._added:
+                    break
+        return self._current_ic
+
+    def find_parent_by_id(self, request_data, ic_id, ic=None):
+        if request_data['parent_id'] == ic_id:
+            return ic
+        if ic.ic_id == request_data['parent_id']:
+            for sub_f in ic.sub_folders:
+                if sub_f.ic_id == ic_id:
+                    self._current_ic = sub_f
+                    self._added = True
+                    break
+        else:
+            for x in ic.sub_folders:
+                self.find_ic_by_id(request_data, ic_id, x)
                 if self._added:
                     break
         return self._current_ic
