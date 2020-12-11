@@ -28,7 +28,7 @@ $( document ).ready(function(){
 $(document).on('keypress',function(e) {
     if(e.which == 13) {
         target = $("input[type=button]");
-        if(target.length > 0) {
+        if(target.length > 0 && target.hasClass("keypress")) {
             console.log("onclick activate");
             $("input[type=button]").trigger( "click" );
         }
