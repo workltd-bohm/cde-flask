@@ -486,6 +486,21 @@ class Project:
         for x in ic.sub_folders:
             self.set_access_for_all_ics(user, role, x)
 
+
+    def remove_access_for_all_ics(self, user, role, ic=None):
+        already_in = False
+        print(ic.access)
+        for access in ic.access:
+            print('9999', access.to_json()['user'])
+            print(user['user_id'])
+            if user['user_id'] == access.to_json()['user']['user_id']:
+                print('in')
+                ic.access.remove(access)
+                break
+        for x in ic.sub_folders:
+            self.remove_access_for_all_ics(user, role, x)
+
+
     def to_json(self):
         return {
             'project_id': self._project_id,

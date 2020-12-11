@@ -157,6 +157,10 @@ def share_project(db_adapter, request_data, user):
     return db_adapter.share_project(request_data, user)
 
 
+def remove_share_project(db_adapter, request_data, session_user):
+    return db_adapter.remove_share_project(request_data, session_user)
+
+
 def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
