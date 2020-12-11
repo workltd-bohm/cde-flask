@@ -393,18 +393,19 @@ def get_delete_ic():
             if result:
                 response = {
                     'html': render_template("popup/delete_ic_popup.html",
-                                            parent_path=request_data["parent_path"],
-                                            parent_id=request_data["parent_id"],
-                                            ic_id=request_data["ic_id"],
-                                            project_name=project_name,
-                                            delete_name=request_data["delete_name"],
-                                            is_directory= True if request_data["is_directory"] else False,
-                                            multi=is_multi,
+                                            project_id =    request_data["project_id"],
+                                            parent_path =   request_data["parent_path"],
+                                            parent_id =     request_data["parent_id"],
+                                            ic_id =         request_data["ic_id"],
+                                            project_name =  project_name,
+                                            delete_name =   request_data["delete_name"],
+                                            is_directory =  True if request_data["is_directory"] else False,
+                                            multi =         is_multi,
                                             )
                     if not is_multi else
                             render_template("popup/delete_ic_popup.html",
-                                            multi=is_multi,
-                                            delete_name="Selections",
+                                            multi =         is_multi,
+                                            delete_name =   "Selections",
                                             ),
                     'data': []
                 }

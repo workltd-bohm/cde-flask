@@ -208,7 +208,7 @@ def get_trash_ic_multi():
                 for delete_ic_data in delete_ic_array["targets"]:
                     delete_ic_data['user_id'] = user_id
                     delete_ic_data['project_name'] = project_name
-                    result = db.delete_ic(db_adapter, delete_ic_data)
+                    result = db.trash_ic(db_adapter, delete_ic_data)
                     if result["code"] != 200:
                         final = result
                 if final:

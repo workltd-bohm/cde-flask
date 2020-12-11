@@ -201,6 +201,7 @@ function AddChildren(obj, data, parent, position=0){
             .attr("transform","translate("+(g_SunRadius/PLANET_SCROLL_TEXT)+")");
     }
 
+    // planet select = mouse over overlay for planets
     data.values.select = data.values.this.append("circle")
         .attr("class","planet select")
         .attr("cx", 0)
@@ -208,7 +209,7 @@ function AddChildren(obj, data, parent, position=0){
         .attr("r", g_PlanetRadius)
         .on("mouseover",function(d){
             if(!g_project.overlay && !g_project.move && g_root.zoom){
-                console.log(g_root.universe.data)
+                console.log(g_root.universe.data);
                 switch(g_root.universe.data.overlay_type){
                     case "ic":
                     case "trash":

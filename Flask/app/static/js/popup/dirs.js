@@ -426,6 +426,7 @@ function DeleteFile(form, json){
         data: JSON.stringify((o.length > 0)? {
             is_multi: true,
         } : {
+            project_id: json.project_id,
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,

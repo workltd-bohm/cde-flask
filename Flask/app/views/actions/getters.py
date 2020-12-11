@@ -195,7 +195,6 @@ def get_root_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
-# TODO TRASH route
 @app.route('/get_trash', methods=['POST'])
 def get_trash():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -255,9 +254,9 @@ def get_trash():
                     response['root_ic']["sub_folders"].append(proj_obj)
 
             resp.status_code = msg.DEFAULT_OK['code'] # get response code
+            session.get("project").update({'section': 'trash'})
             resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})
             return resp
-
         else:
             # failsafe
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
