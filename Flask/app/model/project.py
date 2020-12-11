@@ -298,7 +298,7 @@ class Project:
                 self._added = True
         else:
             for x in ic.sub_folders:
-                self.find_parent_ic_by_id(ic_id, x)
+                self.find_parent_by_id(ic_id, x)
                 if self._added:
                     break
         return self._current_ic
