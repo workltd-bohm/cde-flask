@@ -48,7 +48,8 @@ BID_CREATED = {"message": "Bid created successfully", "code": 200}
 
 MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "code": 409}
 
-SUCCESSFULLY_SHARED = {"message": "Shared successfully", "code": 200}
+SUCCESSFULLY_SHARED = {"message": "Project successfully shared", "code": 200}
+SUCCESSFULLY_REMOVED_PROJECT_ACCESS = {"message": "Removed Project access successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
