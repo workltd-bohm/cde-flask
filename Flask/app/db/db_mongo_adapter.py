@@ -441,12 +441,13 @@ class DBMongoAdapter:
                             if user_project['project_id'] == project_json['project_id']:
                                 my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
                                 # if this user has any trash
+                                new_trash = {
+                                    'type': 'project',
+                                    'project_id': user['projects'][count]['project_id'],
+                                    'project_name': ic_data['project_name']
+                                }
+
                                 if my_trash:
-                                    new_trash = {
-                                        'type': 'project',
-                                        'project_id': user['projects'][count]['project_id'],
-                                        'project_name': ic_data['project_name']
-                                    }
                                     my_trash['trash'].append(new_trash)
                                     users_trash.update_one({'user_id': ic_data['user_id']},
                                                             {'$set': 
@@ -455,7 +456,7 @@ class DBMongoAdapter:
                                                         )
                                 else:
                                     trash_tmp = []
-                                    trash_tmp.append(user['projects'][count])
+                                    trash_tmp.append(new_trash)
                                     users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
                                     del trash_tmp
                                 # update user's projects
