@@ -226,7 +226,7 @@ def get_trash():
             }
 
             # gets project list from Users.Roles 'trash' -> project id & role (lvl of access)
-            my_trashed_items = db.get_my_trashed_projects(db_adapter, user)
+            my_trashed_items = db.get_my_trash(db_adapter, user)
 
             for trashed_project in my_trashed_items:
                 proj_obj = dict()

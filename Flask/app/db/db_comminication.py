@@ -46,8 +46,8 @@ def get_my_projects(db_adapter, user):
     return db_adapter.get_my_projects(user)
 
 # TODO TRASH
-def get_my_trashed_projects(db_adapter, user):
-    return db_adapter.get_my_trashed_projects(user)
+def get_my_trash(db_adapter, user):
+    return db_adapter.get_my_trash(user)
 
 def get_my_shares(db_adapter, user):
     return db_adapter.get_my_shares(user)

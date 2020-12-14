@@ -217,31 +217,26 @@ class DBMongoAdapter:
         self._close_connection()
         return result
 
-    # TODO Trash
-    def get_my_trashed_projects(self, user):
-        users =         self._db.Users.Roles
+    # Finds user's Trashed items 
+    def get_my_trash(self, user):
         users_trash =   self._db.Users.Trash
         trash =         self._db.Trash
 
         user = users_trash.find_one({'user_id': user['id']}, {'_id': 0})
         my_trashed_items = []
-
-        project_id_flag = dict()
-
+        
         if user:
-            for trashed_project in user['trash']:
-                # prevent duplication
-                if trashed_project['project_id'] in project_id_flag.keys():
-                    continue
-                project_id_flag[trashed_project['project_id']] = True
+            for trashed_item in user['trash']:
+                item_query = {'project_id': trashed_item['project_id']}
 
-                if trashed_project['role'] == 0 or trashed_project['role'] == "0":
-                    # find all items in trash that match this project id
-                    trash_tmp = trash.find({'project_id': trashed_project['project_id']}, {'_id': 0})
-                    if trash_tmp:
-                        for item in trash_tmp:
-                            my_trashed_items.append(item)
-                    
+                if trashed_item['type'] == 'project':
+                    item_query['project_name'] = trashed_item['project_name']
+                elif trashed_item['type'] == 'ic':
+                    item_query['ic_id'] = trashed_item['ic_id']
+
+                trash_tmp = trash.find_one(item_query, {'_id': 0})
+                if trash_tmp:
+                    my_trashed_items.append(trash_tmp) 
 
         self._close_connection()
         return my_trashed_items
@@ -447,7 +442,12 @@ class DBMongoAdapter:
                                 my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
                                 # if this user has any trash
                                 if my_trash:
-                                    my_trash['trash'].append(user['projects'][count])
+                                    new_trash = {
+                                        'type': 'project',
+                                        'project_id': user['projects'][count]['project_id'],
+                                        'project_name': ic_data['project_name']
+                                    }
+                                    my_trash['trash'].append(new_trash)
                                     users_trash.update_one({'user_id': ic_data['user_id']},
                                                             {'$set': 
                                                                 {'trash': my_trash['trash']}
@@ -471,18 +471,24 @@ class DBMongoAdapter:
             # Trashing ic/sub folders or files
             else:
                 project = Project.json_to_obj(project_json)
-                # find the ic in project
+                # find the ic in project ...
                 this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
-                # copy just the ic into new object
+                # ... add project_id to it
                 this_ic['project_id'] = project.project_id
-                # paste the object in trash, with project_id
+                # put this IC to Trash collection
                 trash.insert_one(this_ic)
+                
                 # update user's trash
+                new_trash = {
+                        'type': 'ic',
+                        'project_id': this_ic['project_id'],
+                        'ic_id': ic_data['ic_id']
+                    }
+                
+                # if this user has trash already or to make new entry
                 my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
-                # if this user has any trash
                 if my_trash:
-                    # TODO prevent duplicating
-                    my_trash['trash'].append({'project_id': this_ic['project_id'], 'role': 0})
+                    my_trash['trash'].append(new_trash)
                     users_trash.update_one({'user_id': ic_data['user_id']},
                                             {'$set': 
                                                 {'trash': my_trash['trash']}
@@ -490,11 +496,11 @@ class DBMongoAdapter:
                                         )
                 else:
                     trash_tmp = []
-                    trash_tmp.append({'project_id': this_ic['project_id'], 'role': 0}) # TODO fix role
+                    trash_tmp.append(new_trash)
                     users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
                     del trash_tmp
 
-                # delete ic/update from current project
+                # delete ic/update from the project
                 delete = project.trash_ic(ic_data, project.root_ic)
 
                 # update project
