@@ -432,6 +432,41 @@ def get_delete_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_empty_trash', methods=['POST'])
+def get_empty_trash():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        project_name = session.get("project")["name"]
+        
+        if db.connect(db_adapter):
+            result = db.get_all_projects(db_adapter)
+            if result:
+                response = {
+                    'html': render_template("popup/empty_trash_popup.html"),
+                    'data': []
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 @app.route('/get_share', methods=['GET'])
 def get_share():

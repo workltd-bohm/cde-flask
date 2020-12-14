@@ -1,0 +1,14 @@
+<h3>Empty trash?</h3>
+<div class="scroll">
+  <div class="form__group field" style="height: 100px;">
+    <label for="confirm_delete" class="form__label" >Type "delete" to empty trash</label>
+	<br/ >
+	<input type="text" id="confirm_delete" name="confirm_delete" />
+  </div>
+</div>
+<script>
+	$("#confirm_delete").on("input", function(){
+		$("#confirm_button").prop("disabled", !($(this).val().toLowerCase() === "delete"));
+    });
+</script>
+<input type="button" disabled id="confirm_button" value="Delete" onclick="FormSubmit('empty_trash', null, true, CreateProject)"/>

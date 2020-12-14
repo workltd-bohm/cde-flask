@@ -71,6 +71,11 @@ function WrapRestore(data){
     PopupOpen(RestoreFile, tmp); 
 }
 
+function WrapEmptyTrash(data){
+    var tmp = data.values.data;
+    PopupOpen(EmptyTrash, tmp); 
+}
+
 function WrapMove(data){
     var tmp = data.values.data;
     MoveObject(tmp, false);

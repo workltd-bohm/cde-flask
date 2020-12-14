@@ -47,10 +47,11 @@ g_OverPlanet = [
 ]
 
 g_OverTrash = [
-    { name : "EMPTY",   icon : "delete_sweep",  link : WrapRestore}, // TODO WrapEmptyTrash
+    { name : "EMPTY",   icon : "delete_sweep",  link : WrapEmptyTrash}, // TODO WrapEmptyTrash
 ]
 
 g_OverTrashPlanet = [
+    { name: "SELECT",   icon: "check_circle",           link: SelectPlanet},
     { name : "RESTORE", icon : "restore_from_trash",    link : WrapRestore},
     { name : "DESTROY", icon : "delete",                link : WrapDelete}
 ]
@@ -75,7 +76,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (type.length == 0) return;
 
     if (planet) {
-        type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }, {...g_OverPlanet[2]}];
+        if (data.overlay_type != "trash_planet") {
+            type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }, {...g_OverPlanet[2]}];
+        }
         if (data.checked) type[0].icon = "check_circle_outline";
     }
 

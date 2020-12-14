@@ -81,6 +81,9 @@ def restore_ic(db_adapter, ic_data):
 def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)
 
+def empty_my_trash(db_adapter, user):
+    return db_adapter.empty_my_trash(user)
+
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
 

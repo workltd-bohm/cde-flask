@@ -224,7 +224,7 @@ class DBMongoAdapter:
 
         user = users_trash.find_one({'user_id': user['id']}, {'_id': 0})
         my_trashed_items = []
-        
+
         if user:
             for trashed_item in user['trash']:
                 item_query = {'project_id': trashed_item['project_id']}
@@ -671,6 +671,36 @@ class DBMongoAdapter:
         #     return msg.PROJECT_NOT_FOUND
         # self._close_connection()
         # return delete
+
+    def empty_my_trash(self, user):
+        users_trash =   self._db.Users.Trash
+        trash =         self._db.Trash
+
+        this_user = users_trash.find_one({'user_id': user['user_id']}, {'_id': 0})
+
+        # find user in Users.Trash
+        # find all his trashed items
+        # destroy them
+        # update user's trash
+
+        if this_user:
+            trash_to_del = []
+            for trashed_item in this_user['trash']:
+                if trashed_item['type'] == 'project':
+                    item_query = {'project_id': trashed_item['project_id'], 'project_name': trashed_item['project_name']}
+                elif trashed_item['type'] == 'ic':
+                    item_query = {'project_id': trashed_item['project_id'], 'ic_id': trashed_item['ic_id']}
+
+                if trash.find_one_and_delete(item_query): 
+                    trash_tmp.append(trashed_item)
+
+            for x in trash_to_del:
+                this_user['trash'].remove(x)
+
+            users_trash.update_one({'user_id': user['user_id']}, {'$set': {'trash': this_user['trash']}})
+        
+        self._close_connection
+        return msg.TRASH_SUCCESSFULLY_EMPTIED
 
     def get_file(self, file_name):
         stored_file = None
@@ -1271,7 +1301,6 @@ class DBMongoAdapter:
             if not u:
                 u = {}
                 u['projects'] = []
-                u['trash'] = []
                 u['user_id'] = user['id']
                 col_users.insert_one(u)
 

@@ -457,6 +457,32 @@ function DeleteFile(form, json){
     });
 }
 
+function EmptyTrash(form, json){
+    $.ajax({
+        url: "/get_empty_trash",
+        type: 'POST',
+        timeout: 5000,
+        success: function(data){
+            try {
+                input_json2 = JSON.parse(data);
+                html = input_json2['html'];
+                form.empty();
+                form.append(html);
+            } catch (e) {
+                MakeSnackbar(data);
+                CreateProject();
+            }
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log( errorThrown + ": " + $jqXHR.responseText );
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
+
 function DownloadMulti(path, multi){
     LoadStart();
     var link = document.createElement('a');

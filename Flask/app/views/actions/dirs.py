@@ -357,6 +357,40 @@ def trash_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route("/empty_trash", methods=['POST'])
+def empty_trash():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        #set_project_data(ic_data, True)
+        user = session['user']
+        user['user_id'] = user['id']
+        if db.connect(db_adapter):
+            result = db.empty_my_trash(db_adapter, user)
+
+            if result == msg.PROJECT_SUCCESSFULLY_TRASHED:
+                session.get("project").update({'section': 'project'})
+                session.get("project").update({'position': None})
+                session.modified = True
+
+            #logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
 @app.route("/restore_ic", methods=['POST'])
 def restore_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
