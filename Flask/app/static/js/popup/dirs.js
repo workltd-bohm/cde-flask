@@ -406,6 +406,7 @@ function DeleteFile(form, json){
     var o = Object.values(CHECKED);
     var multi = [];
     for (var i = 0; i < o.length; i++) multi.push({
+        project_id: o[i].project_id,
         parent_id: o[i].parent_id,
         ic_id: o[i].ic_id,
         parent_path: o[i].parent,
