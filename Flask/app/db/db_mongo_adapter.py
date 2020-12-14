@@ -525,7 +525,7 @@ class DBMongoAdapter:
 
         trashed_query = dict()
         if restore_ic_data['ic_id'] == '':  # if its a project
-            trashed_query = {'project_id': restore_ic_data['project_id']} # TODO fix make more precise
+            trashed_query = {'project_id': restore_ic_data['project_id'], 'project_name': restore_ic_data['restore_name']} #TODO project name
         else:  # if its IC
             trashed_query = {'project_id': restore_ic_data['project_id'], 'ic_id': restore_ic_data['ic_id']}
         
@@ -537,17 +537,20 @@ class DBMongoAdapter:
         # update Users.Roles and Users.Trash
         # delete from Trash
         if not project_or_ic_json:
-            restored = msg.PROJECT_NOT_FOUND # TODO break if can't find project or it's deleted
+            restored = msg.PROJECT_NOT_FOUND 
         else:
-            if restore_ic_data['parent_id'] == 'root':
+            if restore_ic_data['parent_id'] == 'root':  
+                ''' restoring projects '''
                 projects.insert_one(project_or_ic_json)
 
                 my_projects =   users_roles.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
                 my_trash =      users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
 
-                for trashed_ic in my_trash['trash']:    # TODO make fix for ic/projects || actually this is for projects so its fine
-                    if trashed_ic['project_id'] == restore_ic_data['project_id']:
-                        my_projects['projects'].append(trashed_ic)
+                for trashed_ic in my_trash['trash']:
+                    # if item in trash matches our query
+                    if trashed_ic['project_id'] == restore_ic_data['project_id'] \
+                    and trashed_ic['project_name'] == restore_ic_data['restore_name']:
+                        my_projects['projects'].append({'project_id': trashed_ic['project_id'], 'role': 0})
                         my_trash['trash'].remove(trashed_ic)
 
                 # update collections
@@ -572,6 +575,14 @@ class DBMongoAdapter:
                 projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project})
                 # delete from Trash
                 trash.delete_one(trashed_query)
+                # update trash
+                my_trash = users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+                for trashed_item in my_trash['trash']:
+                    if trashed_item['project_id'] == restore_ic_data['project_id'] \
+                    and trashed_item['ic_id'] == restore_ic_data['ic_id']:
+                        my_trash['trash'].remove(trashed_item)
+
+                users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
                 restored = msg.IC_SUCCESSFULLY_RESTORED
 
         return restored

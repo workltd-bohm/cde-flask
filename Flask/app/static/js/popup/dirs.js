@@ -347,16 +347,18 @@ function RestoreFile(form, json){
 
     for (var i = 0; i < o.length; i++) multi.push(
         {
-            parent_id: o[i].parent_id,
+            project_id: o[i].project_id,
             ic_id: o[i].ic_id,
-            parent_path: o[i].parent,
-            delete_name: o[i].name,
             is_directory: o[i].is_directory,
+            restore_name: o[i].name,
+            parent_id: o[i].parent_id,
+            parent_path: o[i].parent,
         });
         
     if (o.length > 0) 
     {
         MULTI = {
+            project_id: json.project_id,
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             targets : multi,
