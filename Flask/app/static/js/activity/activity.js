@@ -73,9 +73,9 @@ function sendComment(el) {
         success: function(data) {
             //            input_json = JSON.parse(data);
             //console.log(data);
-            div.append(data);
+            div.prepend(data);
             $('#comment').val('');
-            div.scrollTop(div[0].scrollHeight);
+            //div.scrollTop(div[0].scrollHeight);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -202,3 +202,32 @@ function PostListPopupResults(obj, json) {
     var sel = document.getElementById('posts');
     MarketGet('Posts', EditPost, [obj, sel.value, json])
 }
+
+function openToggleAccess() {
+    var box=document.getElementById('newpost');
+    var changesign= document.getElementById('plus-rotate');
+    var renamett= document.getElementById('renametooltip');
+    /*box.style.display = 'block';
+    changesign.style.transform= "rotate(45deg)";
+    renamett.innerHTML= "";*/
+    console.log(box.style.display);
+
+    if (box.style.display != 'none' && box.style.display !="") {
+        box.style.display = 'none';
+        changesign.style.transform= "rotate(90deg)";
+        renamett.innerHTML= "Add Access";
+    }
+    else {
+        box.style.display = 'block';
+        changesign.style.transform= "rotate(45deg)";
+        renamett.innerHTML= "";
+
+    }
+}
+    
+
+
+
+
+    
+    

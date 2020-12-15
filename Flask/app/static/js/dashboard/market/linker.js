@@ -1,20 +1,45 @@
-g_post_type = {new: '/make_activity_post_new',
-               edit: '/make_activity_post_edit'}
+g_post_type = {
+    new: '/make_activity_post_new',
+    edit: '/make_activity_post_edit'
+}
 
-function NewPost(obj, request_data=''){
+function WrapMarketGetPosts(data) {
+    console.log('herererererer');
+    MarketGet('Posts');
+}
+
+function WrapMarketGetBids(data) {
+    MarketGet('Bids');
+}
+
+function WrapNewPost(data) {
+    var tmp = data.values.data;
+    // console.log(tmp);
+    NewPost(tmp);
+}
+
+function WrapAllPost(data) {
+    var tmp = data.values.data;
+    // console.log(tmp);
+    GetAllPost();
+}
+
+function NewPost(obj, request_data = '') {
+    ClearProject();
+    SwitchDash(1);
     var tmp = obj;
     console.log(request_data);
     $.ajax({
         url: "/make_new_post",
         type: 'POST',
-        data: JSON.stringify({data: request_data}),
+        data: JSON.stringify({ data: request_data }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 OpenEditor(data.html, data.data);
-                OpenActivityEditPost(tmp, g_post_type.new );
-                if(request_data != ''){
+                OpenActivityEditPost(tmp, g_post_type.new);
+                if (request_data != '') {
                     a = [request_data]
                     documents = []
                     images = []
@@ -24,20 +49,20 @@ function NewPost(obj, request_data=''){
                         let blob = await fetch(url).then(r => r.blob());
                         blob.name = doc['name'];
                         blob.id = doc['stored_id'];
-                        documents.push({id: doc['stored_id'], name: doc['name']});
+                        documents.push({ id: doc['stored_id'], name: doc['name'] });
                         previewEditFile(blob);
                     });
                 }
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function AddPost(obj){
+function AddPost(obj) {
     var form = $("#EDITOR > .ticket-form");
 
     // post_json = {
@@ -50,9 +75,9 @@ function AddPost(obj){
 
     // }
 
-    if(!CheckAval(form)) return; 
+    if (!CheckAval(form)) return;
     var args = {};
-    form.serializeArray().map(function(x){args[x.name] = x.value;});
+    form.serializeArray().map(function(x) { args[x.name] = x.value; });
     args['image'] = images;
     args['doc'] = documents;
     console.log(args);
@@ -62,22 +87,22 @@ function AddPost(obj){
         type: 'POST',
         data: JSON.stringify(args),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             MarketGet('Posts');
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function UpdatePost(obj, data){
+function UpdatePost(obj, data) {
     var form = $("#EDITOR > .ticket-form");
-    if(!CheckAval(form)) return; 
+    if (!CheckAval(form)) return;
     var args = {};
-    form.serializeArray().map(function(x){args[x.name] = x.value;});
+    form.serializeArray().map(function(x) { args[x.name] = x.value; });
     args['image'] = images;
     args['doc'] = documents;
     console.log(args)
@@ -87,22 +112,22 @@ function UpdatePost(obj, data){
         type: 'POST',
         data: JSON.stringify(args),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             MarketGet('Posts');
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function UpdateBid(obj, data){
+function UpdateBid(obj, data) {
     var form = $("#EDITOR > .ticket-form");
-    if(!CheckAval(form)) return;
-    var args = {bid_id: data};
-    form.serializeArray().map(function(x){args[x.name] = x.value;});
+    if (!CheckAval(form)) return;
+    var args = { bid_id: data };
+    form.serializeArray().map(function(x) { args[x.name] = x.value; });
     console.log(args)
 
     $.ajax({
@@ -110,196 +135,216 @@ function UpdateBid(obj, data){
         type: 'POST',
         data: JSON.stringify(args),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             MarketGet('Bids');
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function Bid(obj, data, t, s){
+function Bid(obj, data, t, s) {
     var form = $("#EDITOR > .ticket-form");
-    if(!CheckAval(form)) return;
-    var args = {post_id: data, post_title: t, status: s};
-    form.serializeArray().map(function(x){args[x.name] = x.value;});
-//    console.log(args)
+    if (!CheckAval(form)) return;
+    var args = { post_id: data, post_title: t, status: s };
+    form.serializeArray().map(function(x) { args[x.name] = x.value; });
+    //    console.log(args)
 
     $.ajax({
         url: "/create_bid",
         type: 'POST',
         data: JSON.stringify(args),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             MarketGet('Bids');
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
 
-function GetAllPost(){
+function GetAllPost() {
     $.ajax({
-        url: "/get_all_posts",
+        url: "/get_all_posts_planetary",
         type: 'POST',
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 console.log(data);
-                ClearMarket();
-                MarketOpen("All_posts", data);
+                ClearProject();
+                // MarketOpen("All_posts", data);
+                DashboardCreate([data.json.root_ic]);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function OpenActivityBid(obj, data){
-//    var data = {};
-//    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
-//    console.log(data)
+function OpenActivityBid(obj, data) {
+    //    var data = {};
+    //    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
+    //    console.log(data)
 
     $.ajax({
         url: "/make_activity_bid",
         type: 'POST',
-        data: JSON.stringify({bid_id: data}),
+        data: JSON.stringify({ bid_id: data }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 OpenActivity(data.html);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function ViewPost(obj, data){
-    var tmp = obj;
-    let post_id = data;
+function ViewPost(obj, post_id, json = '') {
+    ClearProject();
+    SwitchDash(1);
+    // console.log(obj);
+    // console.log(post_id);
+    // var tmp = obj;
+    // let post_id = data;
     $.ajax({
         url: "/make_view_post",
         type: 'POST',
-        data: JSON.stringify({post_id: data}),
+        data: JSON.stringify({ post_id: post_id }),
         timeout: 5000,
-        success: function(data){
-            data = JSON.parse(data);
-            if(data){
-//                console.log(data)
-                OpenEditor(data.html, data.data);
-                ClearActivity(false);
-                OpenActivityEditBid(tmp);
-                data.data.image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
-                    let blob = await fetch(url).then(r => r.blob());
-                    blob.name = img['name'];
-                    blob.id = img['id'];
-                    previewImage(blob);
-                });
-                data.data.doc.forEach(async function(doc) {
-                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
-                    let blob = await fetch(url).then(r => r.blob());
-                    blob.name = doc['name'];
-                    blob.id = doc['id'];
-                    previewFile(blob);
-                });
+        success: function(data) {
+            json_data = JSON.parse(data);
+            if (json_data) {
+                if (json_data.data.type == 'view') {
+                    ResponseViewPost(json_data, obj, post_id)
+                } else {
+                    ResponseEditPost(json_data, obj, post_id, json);
+                }
             }
-//            MakeSnackbar("Editor");
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function EditPost(obj, data, json=''){
-    var tmp = obj;
-    let post_id = data;
+function EditPost(obj, post_id, json = '') {
+    ClearProject();
+    SwitchDash(1);
+    // console.log(obj);
+    // console.log(post_id);
+    // var tmp = obj;
+    // let post_id = data;
     $.ajax({
         url: "/make_edit_post",
         type: 'POST',
-        data: JSON.stringify({post_id: data}),
+        data: JSON.stringify({ post_id: post_id }),
         timeout: 5000,
-        success: function(data){
-            data = JSON.parse(data);
-            if(data){
-                console.log(data)
-                OpenEditor(data.html, data.data);
-                OpenActivityEditPost(tmp, g_post_type.edit, data.data[0]);
-                documents = []
-                images = []
-                data.data[0].image.forEach(async function(img) {
-                    let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
-                    let blob = await fetch(url).then(r => r.blob());
-                    blob.name = img['name'];
-                    blob.id = img['id'];
-                    blob.post_id = post_id;
-                    images.push({id: img['id'], name: img['name']});
-                    previewEditImage(blob);
-                });
-                console.log(data.data[0].doc);
-                if(json != ''){
-                    data.data[0].doc.push({id: json.stored_id, name: json.name});
-                }
-                console.log(data.data[0].doc);
-                data.data[0].doc.forEach(async function(doc) {
-//                    doc = JSON.parse(doc)
-                    let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
-                    let blob = await fetch(url).then(r => r.blob());
-                    blob.name = doc['name'];
-                    blob.id = doc['id'];
-                    blob.post_id = post_id;
-                    documents.push({id: doc['id'], name: doc['name']});
-                    previewEditFile(blob);
-                });
+        success: function(data) {
+            json_data = JSON.parse(data);
+            if (json_data) {
+                ResponseEditPost(json_data, obj, post_id, json);
             }
-            MakeSnackbar("Editor");
+            // MakeSnackbar("Editor");
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function OpenActivityEditPost(obj, url, d=null){
+function ResponseEditPost(data, tmp, post_id, json = '') {
+    // console.log(data)
+    OpenEditor(data.html, data.data);
+    OpenActivityEditPost(tmp, g_post_type.edit, data.data);
+    documents = []
+    images = []
+    data.data.image.forEach(async function(img) {
+        let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
+        let blob = await fetch(url).then(r => r.blob());
+        blob.name = img['name'];
+        blob.id = img['id'];
+        blob.post_id = post_id;
+        images.push({ id: img['id'], name: img['name'] });
+        previewEditImage(blob);
+    });
+    // console.log(data.data.doc);
+    if (json != '') {
+        data.data.doc.push({ id: json.stored_id, name: json.name });
+    }
+    // console.log(data.data.doc);
+    data.data.doc.forEach(async function(doc) {
+        //                    doc = JSON.parse(doc)
+        let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
+        let blob = await fetch(url).then(r => r.blob());
+        blob.name = doc['name'];
+        blob.id = doc['id'];
+        blob.post_id = post_id;
+        documents.push({ id: doc['id'], name: doc['name'] });
+        previewEditFile(blob);
+    });
+}
+
+function ResponseViewPost(data, tmp, post_id) {
+    //                console.log(data)
+    OpenEditor(data.html, data.data);
+    ClearActivity(false);
+    OpenActivityEditBid(tmp);
+    data.data.image.forEach(async function(img) {
+        let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
+        let blob = await fetch(url).then(r => r.blob());
+        blob.name = img['name'];
+        blob.id = img['id'];
+        previewImage(blob);
+    });
+    data.data.doc.forEach(async function(doc) {
+        let url = '/get_post_image/' + doc['id'] + '?post_id=' + post_id;
+        let blob = await fetch(url).then(r => r.blob());
+        blob.name = doc['name'];
+        blob.id = doc['id'];
+        previewFile(blob);
+    });
+}
+
+function OpenActivityEditPost(obj, url, d = null) {
     console.log(obj)
     var data = {};
-    if(data != null){
+    if (data != null) {
         data = d
     }
-    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;});
-//    console.log(data)
+    $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
+    //    console.log(data)
 
     $.ajax({
         url: url,
         type: 'POST',
         data: JSON.stringify(data),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
-//                console.log(data.html)
+            if (data) {
+                //                console.log(data.html)
                 OpenActivity(data.html);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
@@ -307,47 +352,49 @@ function OpenActivityEditPost(obj, url, d=null){
 
 // -------------------------------------------------------
 
-function EditBid(obj, data){
+function EditBid(obj, data) {
+    ClearProject();
+    SwitchDash(1);
     var tmp = obj;
     $.ajax({
         url: "/make_edit_bid",
         type: 'POST',
-        data: JSON.stringify({bid_id: data}),
+        data: JSON.stringify({ bid_id: data }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 console.log(data)
                 OpenEditor(data.html, data.data);
                 OpenActivityEditBid(tmp);
             }
-            MakeSnackbar("Editor");
+            // MakeSnackbar("Editor");
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function OpenActivityEditBid(obj){
+function OpenActivityEditBid(obj) {
     var data = {};
-    $(obj).parent().serializeArray().map(function(x){data[x.name] = x.value;}); 
-    console.log(data)
+    $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
+    // console.log(data)
 
     $.ajax({
         url: "/make_activity_bid_edit",
         type: 'POST',
         data: JSON.stringify(data),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 OpenActivity(data.html);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
@@ -355,8 +402,9 @@ function OpenActivityEditBid(obj){
 
 // -------------------------------------------------------
 
-function WrapGetMarket(data){
+function WrapGetMarket(data) {
     var choose_market = data.name;
     //console.log(tmp)
-    MarketGet(choose_market);
+    // MarketGet(choose_market);
+    ViewPost(data, data.ic_id);
 }

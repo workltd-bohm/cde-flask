@@ -2,7 +2,7 @@
 
 <div class="project-tab">
   <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
-    <p>Details</p>
+    <p>Info</p>
   </div>
   <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
     <p>Comments</p>
@@ -55,12 +55,12 @@
                 <div class="activity-tab-container">
                     <br>
                     {% for detail in details %}
-                      <div class="details_field">
-                          <p><b class="details_event_user">{{ detail['user']['username'] }}</b> <i class="details_event_name">{{ detail['event_name'] }}</i></p>
-                          <p class="details_event" style="margin-left:5px;">{{ detail['event_value'] }}</p>
-                          <p class="details_date" style="margin-left:5px;">{{ detail['date'] }}</p>
-                          <hr style="border-top: 1px solid gray; margin-left:12px; margin-right:18px;">
-                      </div>
+                    <div class="details_field">
+                      <p><b class="details_event_user">{{ detail['user']['username'] }}</b><br>&nbsp; <i class="details_event_name">Event name: {{ detail['event_name'] }}</i></p>
+                      <p class="details_event" style="margin-left:15px;"><strong>Name of the file: </strong> {{ detail['event_value'] }}</p>
+                      <p class="details_date" style="margin-left:15px;"><strong>Date of creation: </strong> {{ detail['date'] }}</p>
+                      <hr style="border-top: 1px solid gray; margin-left:-1px; margin-right:18px;">
+                    </div>
                     {% endfor %}
                     <br>
                 </div>
@@ -72,18 +72,27 @@
                 <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
                 <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
                 <div class="comments-div">
-                    <div class="activity-tab-div-comment">
-                      {% for comment in comments %}
-                        <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
-                        <div class="comments_field">
-                            <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ comment['comment'] }}</p>
-                            <p class="details_date" style="margin-left:20px; margin-right:10px;">{{ comment['date'] }}</p>
-                        </div>
-                      {% endfor %}
+                  <div class="comment-div">
+                    <input type="text" id="seachcomments" name="searchcomments" placeholder="Filter colab by @Users or #hashtag..."><br>
+                    <div class="img-comment-container">
+                    <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
                     </div>
-                    <br>
-                    <div class="comment-div">
-                      <textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="   Add comment..."></textarea><br>
+                  </div>
+                  <br>
+                  <div class="activity-tab-div-comment">
+                    
+                      {% for comment in comments %}
+                      <div class="comment-container">
+                        <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
+                        <div class="comments_field">
+                            <div class="comment-inline">
+                            <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
+                            <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
+                            </div>
+                        </div>
+                      </div>
+                            <p class="details_date comment-date">{{ comment['date'] }}</p>
+                      {% endfor %}
                     </div>
                 </div>
               </form>
@@ -107,21 +116,13 @@
           </div>
           <div id="filter-access" style="display: none;">
             <form id="filter-form-access">
-                <div class="access-div">
-                    <div class="activity-tab-div-access">
-                      {% for a in access %}
-                        <br>
-                        <div class="access-container">
-<!--                          <p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
-                          <div class="access_field">
-                              <p class="details_event" style="margin-left:20px; margin-right:10px; margin-top: 10px;">{{ a['user']['username'] }}   {{ a['role'] }}</p>
-                          </div>
-                          {% if 'OWNER' not in a['role'] %}
-                            <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
-                          {% endif %}
-                        </div>
-                      {% endfor %}
-                        <br>
+              <div class="access-div">
+                  <div class="activity-tab-div-access">
+                    <div class="image-toggle-container " id="open-toggle" onclick="openToggleAccess()">
+                    <p class="open-access" id="plus-rotate">+</p><span><p class="access-tooltip" id="renametooltip">Add Access</p></span>
+                    </div>
+                    <div class="toggle-access" id="newpost">
+                      <div class="create-user-container">
                       <div class="form__group field">
                         <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
                         <label for="user_name" class="form__label">User</label>
@@ -136,10 +137,50 @@
                       </div>
                       <br>
                       <input type="button" value="Share" onclick="AddAccess()" />
+                      </div>
                     </div>
+                    <hr class="access-break-line">
 
-                </div>
-              </form>
+                    <h3 class="title-access">Users</h3>
+                    {% for a in access %}
+                      <br>
+                      <div class="access-container">
+                        <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
+                        <div class="access_field">
+                          <div class="access-column-one">
+                            <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
+                          </div><!--{{ url_for('static', filename='img/user.png') }}-->
+                          <div class="access-column-two">
+                            <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
+                          </div>
+                          <div class="access-column-three">
+                            <p class="details_event role-columne" >  
+                              {% if 'OWNER' is in a['role'] %}
+                                  <img class="profile-icon access-img" src="{{ url_for('static', filename='img/add-user.png') }}"/>    
+                              {% endif %}
+
+                              {% if 'WATCHER' is in a['role'] %}
+                                  <img class="profile-icon access-img" src="{{ url_for('static', filename='img/view.png') }}"/>    
+                              {% endif %}
+
+                              {% if 'DEVELOPER' is in a['role'] %}
+                                  <img class="profile-icon access-img" src="{{ url_for('static', filename='img/pencil.png') }}"/>    
+                              {% endif %}
+                            </p>
+                          </div>
+                          <div class="access-column-four">
+                            <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
+                            <p class="details_event date-columne" >Accessebility date</p>
+                            {% if 'OWNER' not in a['role'] %}
+                            <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+              </div>
+            </form>
           </div>
         </div>
     </div>

@@ -7,11 +7,11 @@
   <input type="hidden" name="old_name" value="{{ old_name }}" required />
  <div id="smart_naming">
     <div class="form__group_popup circle">
-      <input type="text" class="form__field_popup" name="project_code" id='project_code' value="{{ project_code }}" required/>
+      <input type="text" class="form__field_popup" name="project_code" id='project_code' value="{{ project_code }}"/>
       <label for="project_code" class="form__label_popup">Project Code</label>
     </div>
     <div class="form__group_popup circle">
-      <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}" required/>
+      <input type="text" class="form__field_popup" name="company_code" id='company_code' value="{{ company_code }}"/>
       <label for="company_code" class="form__label_popup">Company Code</label>
     </div>
 
@@ -49,4 +49,4 @@
   </div>
   <br>
 </div>
-<input type="button" class="popup_button" value="Rename" onclick="FormSubmit('rename_ic', null, true, CreateProject)"/>
+<input type="button" class="popup_button keypress" value="Rename" onclick="FormSubmit('rename_ic', null, true, CreateProject)"/>

@@ -47,6 +47,21 @@ g_OverPlanet = [
     { name: "OPEN", icon: "preview", link: WrapOpenFile },
 ]
 
+g_OverMarket = [
+    { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
+    { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
+    { name: "NEW POST", icon: "addchart", link: WrapNewPost },
+]
+
+g_OverPost = [
+    { name: "NEW POST", icon: "create_new_folder", link: WrapNewPost }, //WrapNewPost
+    // { name: "ALL POSTS", icon: "preview", link: WrapOpenFile },
+]
+
+g_OverBid = [
+    { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
+]
+
 // -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
@@ -68,10 +83,16 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 break;
             }
         case "market":
-            type = g_OverNone;
+            type = g_OverMarket;
             break;
         case "search_target":
             type = g_OverPlanet;
+            break;
+        case "posts":
+            type = g_OverPost;
+            break;
+        case "bids":
+            type = g_OverBid;
             break;
         default:
             break;

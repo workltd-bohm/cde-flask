@@ -44,6 +44,7 @@
   cursor: pointer;
   transition: color 0.3s;
   position: relative;
+  z-index: 999;
 }
 .menu-fixed .material-icons.back:hover {
   color: #fff;
@@ -304,7 +305,7 @@
 .icon-menu{
     height: 100%;
     vertical-align: bottom;
-    top: 150px;
+    top: 47vh;
     position: relative;
 }
 
