@@ -348,7 +348,10 @@ body {
 .terminal-div input:focus + i {
 	display: none;
 }
-
+.path.draw {
+  position: relative;
+  top: 150px;
+}
 @keyframes blink {
 	from { opacity: 1; }
 	to { opacity: 0; }

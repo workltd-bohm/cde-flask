@@ -13,4 +13,4 @@
     <label for="rename_new_name" class="form__label" >Are you sure?</label>
   </div>
 </div>
-<input type="button" value="Delete" onclick="FormSubmit({% if not multi %}'delete_ic', null{% else %}'get_delete_ic_multi', MULTI{% endif %}, true, CreateProject)"/>
+<input type="button" class="keypress" value="Delete" onclick="FormSubmit({% if not multi %}'delete_ic', null{% else %}'get_delete_ic_multi', MULTI{% endif %}, true, CreateProject)"/>

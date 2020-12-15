@@ -150,31 +150,34 @@ class Project:
 
     def rename_ic(self, request_data, user, ic=None):
         if ic.ic_id == request_data['parent_id']:
-            for y in ic.sub_folders:
-                name = y.name
+            for sub_folder in ic.sub_folders:
+                name = sub_folder.name
                 #path = request_data['path']
                 parent = request_data['path'] #[:path.rfind("/")]
                 new_name = request_data['new_name']
                 new_name_backup = new_name
-                if not y.is_directory:
-                    name = y.name   + y.type
-                    new_name = '.'.join(new_name.split('.')[:-1])
+                new_name_contains_extension = len(new_name.split(".")) > 1
+                if not sub_folder.is_directory:
+                    name = sub_folder.name   + sub_folder.type
+                    if(new_name_contains_extension):
+                        new_name = '.'.join(new_name.split('.')[:-1])
+                        sub_folder.type = '.' + new_name_backup.split('.')[-1]
 
                 if name == request_data['old_name']:
                     details = Details(user, 'Renamed',
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                       name + ' to ' + new_name_backup)
-                    y.history.append(details)
-                    y.name = new_name
-                    y.path = parent + '/' + request_data['new_name']
+                    sub_folder.history.append(details)
+                    sub_folder.name = new_name                        
+                    sub_folder.path = parent + '/' + request_data['new_name']
                     # ic.parent = parent # no need?
                     self._message = msg.IC_SUCCESSFULLY_RENAMED
                     self._added = True
                     break
         else:
             if ic.sub_folders:
-                for x in ic.sub_folders:
-                    self.rename_ic(request_data, user, x)
+                for sub_folder in ic.sub_folders:
+                    self.rename_ic(request_data, user, sub_folder)
                     if self._added:
                         break
         if not self._added:

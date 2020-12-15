@@ -55,6 +55,20 @@ g_OverTrashPlanet = [
     { name : "RESTORE", icon : "restore_from_trash",    link : WrapRestore},
     { name : "DESTROY", icon : "delete",                link : WrapDelete}
 ]
+g_OverMarket = [
+    { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
+    { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
+    { name: "NEW POST", icon: "addchart", link: WrapNewPost },
+]
+
+g_OverPost = [
+    { name: "NEW POST", icon: "create_new_folder", link: WrapNewPost }, //WrapNewPost
+    // { name: "ALL POSTS", icon: "preview", link: WrapOpenFile },
+]
+
+g_OverBid = [
+    { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
+]
 // -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
@@ -71,6 +85,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
         case "search_target":   type = g_OverPlanet;        break;
         case "trash":           type = g_OverTrash;         break;
         case "trash_planet":    type = g_OverTrashPlanet;   break;
+        case "market":          type = g_OverMarket;        break;
+        case "posts":           type = g_OverPost;          break;
+        case "bids":            type = g_OverBid;           break;
         default: break;
     }
     if (type.length == 0) return;

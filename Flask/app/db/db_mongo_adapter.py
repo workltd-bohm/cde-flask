@@ -374,6 +374,7 @@ class DBMongoAdapter:
         return message, ic
 
     def rename_ic(self, request_data, user):
+        print("Pamir******* : I am here!")
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
@@ -390,8 +391,13 @@ class DBMongoAdapter:
                     file_query = {'file_name': request_data['old_name']}
                     file_json = col_file.find_one(file_query)
                     if file_json:
+                        new_name = request_data['new_name']
+                        new_name_has_extension = len(new_name.split('.')) > 1
+                        if not new_name_has_extension:
+                            old_name_extension = '.' + request_data['old_name'].split('.')[-1]
+                            new_name = new_name + old_name_extension
                         col_file.update_one({'file_name': request_data['old_name']},
-                                            {'$set': {'file_name': str(request_data['new_name'])}})
+                                            {'$set': {'file_name': new_name}})
                         file_updated = True
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)

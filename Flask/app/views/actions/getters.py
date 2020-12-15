@@ -338,25 +338,41 @@ def get_root_market():
                     "overlay_type": "market",
                     "is_directory": False,
                     "sub_folders": [
-                        {
-                            "ic_id": "",
-                            "name": "Bids",
-                            "parent": "Market",
-                            "history": [],
-                            "path": "Market",
-                            "is_directory": False,
-                        },
-                        {
-                            "ic_id": "",
-                            "name": "Posts",
-                            "parent": "Market",
-                            "history": [],
-                            "path": "Market",
-                            "is_directory": False,
-                        }
+                        # {
+                        #     "ic_id": "",
+                        #     "name": "Bids",
+                        #     "parent": "Market",
+                        #     "history": [],
+                        #     "path": "Market",
+                        #     "is_directory": False,
+                        # },
+                        # {
+                        #     "ic_id": "",
+                        #     "name": "Posts",
+                        #     "parent": "Market",
+                        #     "history": [],
+                        #     "path": "Market",
+                        #     "is_directory": False,
+                        # }
                     ]
                 }
             }
+
+            result = db.get_all_posts(db_adapter)
+
+            for post in result:
+                proj_obj = {
+                    "ic_id": post['post_id'],
+                    # "parent_id": ic.parent_id,
+                    "name": post['title'],
+                    "parent": "Market",
+                    "history": [],
+                    "path": "Market/" + post['title'],
+                    # "type": ic_type,
+                    "overlay_type": "post_ic",
+                    "is_directory": False,
+                }
+                response['root_ic']["sub_folders"].append(proj_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps({"json": response, "project" : False})
