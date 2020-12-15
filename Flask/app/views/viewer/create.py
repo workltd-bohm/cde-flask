@@ -1,4 +1,7 @@
 from app import *
+import mimetypes
+
+mimetypes.add_type("application/javascript", ".js", True)
 
 
 @app.route('/load_viewer', methods=['POST'])

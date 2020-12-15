@@ -84,7 +84,7 @@ def make_edit_bid():
     resp = Response()
     if main.IsLogin():
         result = db.get_single_bid(db_adapter, request_json)
-        post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
+        post = db.get_single_post(db_adapter, result[0]["post_id"])
         # res = json.loads(result[0])
         logger.log(LOG_LEVEL, 'DB result: {}'.format(result[0]))
         response = {
@@ -209,26 +209,52 @@ def make_view_post():
     resp = Response()
     if main.IsLogin():
         if db.connect(db_adapter):
-            result = db.get_single_post(db_adapter, request_json)
-            post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
-            logger.log(LOG_LEVEL, 'DB result: {}'.format(result[0]))
-            response = {
-                'html': render_template("dashboard/market/bid_all_posts.html",
-                                        post_id=result[0]["post_id"],
-                                        username=result[0]["user_owner"]["username"],
-                                        title=result[0]["title"],
-                                        description=result[0]["description"],
-                                        date=result[0]["date_expired"],
-                                        location=result[0]["location"],
-                                        status=status.Status(int(result[0]["status"])).name,
-                                        dview=result[0]['documents']['3d-view'],
-                                        doc=result[0]['documents']['doc'],
-                                        image=result[0]['documents']['image'],
-                                        offer=0
+            post = db.get_single_post(db_adapter, request_json)
+            # post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(post[0]))
+            if session['user'] == post[0]["user_owner"]:
+                response = {
+                'html': render_template("dashboard/market/post_edit.html",
+                                        post_id=request_json['post_id'],
+                                        username=post[0]["user_owner"]["username"],
+                                        title=post[0]["title"],
+                                        description=post[0]["description"],
+                                        quantity=post[0]["product"]["quantity"],
+                                        date=post[0]["date_expired"],
+                                        location=post[0]["location"],
+                                        lowest_bid=post[0]["current_best_bid"],
+                                        dview=post[0]['documents']['3d-view'],
+                                        doc=post[0]['documents']['doc'],
+                                        image=post[0]['documents']['image'],
+                                        bids=[]
                                         ),
-                'data': {'image': result[0]['documents']['image'],
-                         'doc': result[0]['documents']['doc']}
-            }
+                'data': {
+                    'type': 'edit',
+                    'bids': post[0]['bids'],
+                    'image': post[0]['documents']['image'],
+                    'doc': post[0]['documents']['doc']}
+                }
+            else:
+                # bid = db.get_my_bids(db_adapter, session['user'])
+                response = {
+                    'html': render_template("dashboard/market/bid_all_posts.html",
+                                            post_id=post[0]["post_id"],
+                                            username=post[0]["user_owner"]["username"],
+                                            title=post[0]["title"],
+                                            description=post[0]["description"],
+                                            date=post[0]["date_expired"],
+                                            location=post[0]["location"],
+                                            status=status.Status(int(post[0]["status"])).name,
+                                            dview=post[0]['documents']['3d-view'],
+                                            doc=post[0]['documents']['doc'],
+                                            image=post[0]['documents']['image'],
+                                            offer=0
+                                            ),
+                    'data': {
+                        'type': 'view',
+                        'image': post[0]['documents']['image'],
+                        'doc': post[0]['documents']['doc']}
+                }
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps(response)
