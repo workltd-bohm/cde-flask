@@ -1,6 +1,10 @@
 .project-tab{
     height: 5%;
     margin-bottom: 5%;
+    top: -34px;
+    position: relative;
+    margin-right: 25px;
+    margin-left: 25px;
 }
 
 .project-box{
