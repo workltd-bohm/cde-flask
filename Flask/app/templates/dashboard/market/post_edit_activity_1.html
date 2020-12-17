@@ -1,0 +1,156 @@
+<div class="project-tab">
+  <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+    <p>Details</p>
+  </div>
+  <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
+    <p>Bids</p>
+  </div>
+  <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
+    <p>Tags</p>
+  </div>
+  <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
+    <p>Access</p>
+  </div>
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+        <div class="project-view">
+            <div id="filter-details" style="display: block;">
+                <form id="filter-form-details">
+                    <h6 class="tab-title">{{ post['title'] }}</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        <p><b>Status:</b> {{ post['status'] }}</p>
+                        <p><b>Product:</b> {{ post['product'] }}</p>
+                        <p><b>Projet:</b> TODO</p>
+                        <p><b>Location:</b> {{ post['location'] }}</p>
+                        <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Desription</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        {{ post['description'] }}
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Documents</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        TODO
+                        <br>
+                        <input type="button" value="Attach BOHM Files TODO" onclick="" />
+                    </div>
+                </form>
+            </div>
+            <div id="filter-bids" style="display: none;">
+                <form id="filter-form-bids">
+                    <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
+
+                    {% for bid in bids %}
+                        <div class="post-header">
+                        <div class="post-block">
+                            <h5>{{ bid }}</h5>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </form>
+            </div>
+
+            <div id="filter-tags" style="display: none;">
+                <form id="filter-form-tags">
+                    <h6 class="tab-title">Tags</h6>
+                    <div class="activity-tab-container">
+                        <div class="activity-tab-container-inside" id="activity-tag-container">
+                            <br>
+                            {% for tag in tags %}
+                            <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                                <div class="tag" style="background-color: {{ tag['color'] }}">
+                                    <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                                    {{ tag['tag'] }}
+                                    </i>
+                                </div>
+                                <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                            </div>
+                            {% endfor %}
+                            <br>
+                        </div>
+                        <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                        <br>
+                    </div>
+                </form>
+            </div>
+
+            <div id="filter-access" style="display: none;">
+                <form id="filter-form-access">
+                    <div class="access-div">
+                        <div class="activity-tab-div-access">
+                            <div class="image-toggle-container " id="open-toggle" onclick="openToggleAccess()">
+                            <p class="open-access" id="plus-rotate">+</p><span><p class="access-tooltip" id="renametooltip">Add Access</p></span>
+                            </div>
+                            <div id="newpost" class="toggle-access">
+                            <div class="create-user-container">
+                            <div class="form__group field">
+                                <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
+                                <label for="user_name" class="form__label">User</label>
+                            </div>
+                            <div class="form__group field">
+                                <select class="form__field" name="role" id='role' required >
+                                    <option>WATCHER</option>
+                                    <option>DEVELOPER</option>
+                                    <option>ADMIN</option>
+                                </select>
+                                <label for="role" class="form__label">Role</label>
+                            </div>
+                            <br>
+                            <input type="button" value="Share" onclick="AddAccess()" />
+                            </div>
+                            </div>
+                            <hr class="access-break-line">
+
+                            <h3 class="title-access">Users</h3>
+                            {% for a in access %}
+                            <br>
+                            <div class="access-container">
+                                <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
+                                <div class="access_field">
+                                <div class="access-column-one">
+                                    <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
+                                </div><!--{{ url_for('static', filename='img/user.png') }}-->
+                                <div class="access-column-two">
+                                    <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
+                                </div>
+                                <div class="access-column-three">
+                                    <p class="details_event role-columne" >  
+                                    {% if 'OWNER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/add-user.png') }}"/>    
+                                    {% endif %}
+
+                                    {% if 'WATCHER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/view.png') }}"/>    
+                                    {% endif %}
+
+                                    {% if 'DEVELOPER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/pencil.png') }}"/>    
+                                    {% endif %}
+                                    </p>
+                                </div>
+                                <div class="access-column-four">
+                                    <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
+                                    <p class="details_event date-columne" >Accessebility date</p>
+                                    {% if 'OWNER' not in a['role'] %}
+                                    <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
+                                    {% endif %}
+                                </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

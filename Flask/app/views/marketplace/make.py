@@ -111,21 +111,32 @@ def make_edit_bid():
     return resp
 
 
-@app.route('/make_activity_bid_edit', methods=['POST'])
-def make_activity_bid_edit():
+@app.route('/make_post_view_activity', methods=['POST'])
+def make_post_view_activity():
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_json = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
-        response = {
-            'html': render_template("dashboard/market/bid_edit_activity.html",
-                                    # TODO
-                                    ),
-            'data': []
-        }
+        if db.connect(db_adapter):
+            post = db.get_single_post(db_adapter, request_json)[0]
+            response = {
+                'html': render_template("dashboard/market/post_view_activity.html",
+                                        post=post,
+                                        bids=[]
+                                        # tags=[]
+                                        ),
+                'data': []
+            }
 
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -212,9 +223,9 @@ def make_view_post():
             post = db.get_single_post(db_adapter, request_json)
             # post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
             logger.log(LOG_LEVEL, 'DB result: {}'.format(post[0]))
-            if session['user'] == post[0]["user_owner"]:
+            if session['user']["username"] == post[0]["user_owner"]["username"]:
                 response = {
-                'html': render_template("dashboard/market/post_edit.html",
+                'html': render_template("dashboard/market/post_edit_1.html",
                                         post_id=request_json['post_id'],
                                         username=post[0]["user_owner"]["username"],
                                         title=post[0]["title"],
@@ -237,7 +248,7 @@ def make_view_post():
             else:
                 # bid = db.get_my_bids(db_adapter, session['user'])
                 response = {
-                    'html': render_template("dashboard/market/bid_all_posts.html",
+                    'html': render_template("dashboard/market/post_view.html",
                                             post_id=post[0]["post_id"],
                                             username=post[0]["user_owner"]["username"],
                                             title=post[0]["title"],
@@ -344,6 +355,7 @@ def make_activity_post_edit():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
         if db.connect(db_adapter):
+            post = db.get_single_post(db_adapter, request_json)[0]
             bids = []
             req_bids = request_json['bids']
             if isinstance(request_json['bids'], str):
@@ -355,8 +367,10 @@ def make_activity_post_edit():
             for bid in bids:
                 div.append(bid['offer'])
             response = {
-                'html': render_template("dashboard/market/post_edit_activity.html",
-                                        bids=div
+                'html': render_template("dashboard/market/post_edit_activity_1.html",
+                                        post=post,
+                                        bids=div,
+                                        tags=[]
                                         ),
                 'data': []
             }

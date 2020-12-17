@@ -13,7 +13,7 @@ def create_bid():
 
         request_json['bid_id'] = "default"
         request_json.update({'offer': request_json['offer'] + ' ' + request_json['per']})
-        request_json.update({'status': status.Status[request_json["status"]].value})
+        request_json.update({'status': request_json["status"]})
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json['description'] = ""
     if main.IsLogin():

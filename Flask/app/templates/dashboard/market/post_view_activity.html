@@ -1,0 +1,57 @@
+</html><div class="project-tab">
+  <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+    <p>Details</p>
+  </div>
+  <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
+    <p>Bids</p>
+  </div>
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+        <div class="project-view">
+            <div id="filter-details" style="display: block;">
+                <form id="filter-form-details">
+
+                    <h6 class="tab-title">{{ post['title'] }}</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        <p><b>Status:</b> {{ post['status'] }}</p>
+                        <p><b>Product:</b> {{ post['product'] }}</p>
+                        <p><b>Project:</b> TODO</p>
+                        <p><b>Location:</b> {{ post['location'] }}</p>
+                        <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Desription</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        {{ post['description'] }}
+                        <br>
+                    </div>
+
+                </form>
+            </div>
+            <div id="filter-bids" style="display: none;">
+                <form id="filter-form-bids">
+                    <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
+
+                    <p><b>Offer:</b> <input type="text" name="offer" required></p>
+
+                    <p><b>Per:</b> <input type="text" name="per" required></p>
+
+                    <br>
+                    <p>Comment</p>
+                    <textarea rows="8" name="comments"></textarea>
+                    <br>
+
+                    <div class="edit-box hover right button" onclick="Bid(this, '{{ post['post_id'] }}', '{{ post['title'] }}', '{{ post['status'] }}');">
+                        <h4>BID</h4>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

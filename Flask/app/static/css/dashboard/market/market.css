@@ -1,11 +1,10 @@
-
-.ticket{
+.ticket {
     display: block;
     position: relative;
     float: left;
     width: 20%;
     height: 45%;
-    background: rgb(255,255,255,0.16);
+    background: rgb(255, 255, 255, 0.16);
     margin: 2%;
     padding: 1%;
     transition: all 0.5s;
@@ -16,137 +15,153 @@
     overflow: hidden;
 }
 
-.ticket-body{
+.ticket-body {
     height: 98%;
     width: 98%;
     transition: all 0.5s;
     cursor: pointer;
 }
 
-.ticket-form{
+.ticket-form {
     height: 100%;
     width: 100%;
 }
 
-.ticket-body > h3 {
+.ticket-body>h3 {}
 
+.ticket-body>h3 {
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.ticket-body > h3 {
-    color: rgba(255,255,255, 0.8);
+.ticket-body>i {
+    color: rgba(255, 255, 255, 0.8);
 }
-.ticket-body > i {
-    color: rgba(255,255,255, 0.8);
-}
-.ticket-form:hover > .ticket-body i {
+
+.ticket-form:hover>.ticket-body i {
     color: aqua;
 }
 
-.post-header{
+.post-header {
     display: block;
     float: left;
-    background: rgba(255,255,255, 0.16);
+    background: rgba(255, 255, 255, 0.16);
     padding: 2%;
     width: 90%;
 }
 
+
 /*Blocks inside the POST container*/
-.post-block{
+
+.post-block {
     display: block;
     cursor: pointer;
-    background: rgba(255,255,255, 0.16);
+    background: rgba(255, 255, 255, 0.16);
     border: 1px solid black;
     margin: 5px;
 }
 
-.post-block > h4 {
+.post-block>h4 {
     font-size: 12px;
-    color: rgba(255,255,255, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.post-block > h6 {
+.post-block>h6 {
     font-size: 12px;
-    color: rgba(255,255,255, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.edit-section{
+.edit-section {
     display: block;
     width: 100%;
-
     border: 1px solid gray;
     text-align: center;
 }
-.edit-section.upper{
+
+.edit-section.upper {
     background: #121212;
     height: 70%;
 }
-.edit-section.lower{
-    background:rgb(255, 255, 255, 0.11);
+
+.edit-section.lower {
+    background: rgb(255, 255, 255, 0.11);
     /* height: 50%; */
 }
-.edit-section.left{
+
+.edit-section.left {
     float: left;
     width: 50%;
     border: none;
 }
-.edit-section.right{
+
+.edit-section.right {
     float: right;
     width: 50%;
     border: none;
 }
-.edit-section.tab{
-    float: left;
+
+.edit-section.tab {
+    /* float: left;
     width: auto;
     padding: 0;
     margin: 0;
     width: 100%;
     height: auto;
     background:rgb(41, 41, 41);
-    border: 2px solid black;
-}
-.edit-section.view{
-    float: left;
-    width: auto;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: auto;
-    background:rgb(61, 61, 61);
-    border: 2px solid black;
+    border: 2px solid black; */
+    position: absolute;
+    top: 78px;
+    left: 640px;
+    border: none;
+    width: 40%;
+    background: transparent;
 }
 
-.edit-box{
+.edit-section.view {
+    position: absolute;
+    top: 150px;
+    width: 90%;
+    left: 50px;
+    right: 10px;
+    height: 80%;
+    background: transparent;
+    border: transparent;
+}
+
+.edit-box {
     display: block;
     float: left;
     cursor: pointer;
-    background: rgb(255, 255, 255, 0.11);
+    background: transparent;
     /* width: 20%; */
-    border: 2px solid black;
-    padding: 5px 2px 5px 2px;
+    /* border: 2px solid black; */
+    /* padding: 5px 2px 5px 2px; */
+    margin-left: 35px;
 }
 
-.edit-box:hover{
-    background: rgba(255, 255, 255, 0.3);
+.edit-box:hover {
+    /* background: rgba(255, 255, 255, 0.3); */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
     cursor: pointer;
 }
 
-.edit-box > h4 {
-    font-size: 18px;
-    font-weight: bold;
-    color: rgba(255,255,255, 0.7);
+.edit-box>h4 {
+    font-size: 14px;
+    /* font-weight: bold; */
+    color: rgba(255, 255, 255, 0.7);
 }
 
-.edit-box > h2 {
+.edit-box>h2 {
     font-size: 18px;
-    color: rgba(255,255,255, 0.7);
+    color: rgba(255, 255, 255, 0.7);
 }
 
-.edit-box.hover{
-    margin: 2%;
+.edit-box.hover {
+    /* margin: 2%; */
     float: none;
 }
 
-.edit-box.button{
+.edit-box.button {
     margin: 2%;
     float: none;
     width: 30%;
@@ -156,7 +171,7 @@
     background: #757575;
 }
 
-.edit-box.button:hover{
+.edit-box.button:hover {
     margin: 2%;
     float: none;
     background: #5264AE;
@@ -165,13 +180,15 @@
 .edit-box.selected {
     /* margin: 2%;
     float: none; */
-    background: #5264AE;
+    /* background: #5264AE; */
+    border-bottom: 1px solid white;
 }
 
-.edit-box.right{
+.edit-box.right {}
 
-}
+.edit-box.tab {}
 
-.edit-box.tab{
-
+.edit-view {
+    position: relative;
+    top: 35%;
 }
