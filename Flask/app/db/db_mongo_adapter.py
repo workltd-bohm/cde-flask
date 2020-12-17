@@ -207,7 +207,6 @@ class DBMongoAdapter:
         project_query = {'project_id': project_id}
         print(project_query)
         result = col.find_one(project_query, {'_id': 0})
-        self._close_connection()
         return result
 
     def get_project(self, project_name, user):
