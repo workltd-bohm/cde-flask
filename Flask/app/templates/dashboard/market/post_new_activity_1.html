@@ -5,12 +5,9 @@
   <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
     <p>Comments</p>
   </div>
-  <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
-    <p>Bids</p>
-  </div>
-  <!-- <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
+  <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
     <p>Tags</p> 
-  </div> -->
+  </div>
   <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
     <p>Access</p>
   </div>
@@ -20,29 +17,27 @@
         <div class="project-view">
             <div id="filter-details" style="display: block;">
                 <form id="filter-form-details">
-                    <input type="hidden" name="post_id" value="{{ post['post_id'] }}">
-                    <input type="hidden" name="bids" value="{{ post['bids'] }}">
-                    <h6 class="tab-title"><b>Title: </b><input type="text" name="title" value="{{ post['title'] }}" required></h6>
+                    <h6 class="tab-title"><b>Title: </b><input type="text" name="title" required></h6>
                     <div class="activity-tab-container">
                         <br>
                         <p>
-                        <b>Status:</b>
+                            <b>Status:</b> 
                             <select id="visibility" name="visibility">
                                 <option value="visible">Visible</option>
                                 <option value="private">Private</option>
-                            </select> 
+                            </select>
                         </p>
-                        <p><b>Quantity:</b> <input type="text" name="quantity" value="{{ post['product']['quantity'] }}" required></p>
+                        <p><b>Quantity:</b> <input type="text" name="product" required></p>
                         <p><b>Project:</b> TODO</p>
-                        <p><b>Location:</b> <input type="text" name="location" value="{{ post['location'] }}" required></p>
-                        <p><b>Expiration:</b> <input type="text" name="date_expired" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" value="{{ post['date_expired'] }}" required></p>
+                        <p><b>Location:</b> <input type="text" name="location" required></p>
+                        <p><b>Expiration:</b> <input type="text" name="date_expired" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required></p>
                         <br>
                     </div>
 
                     <h6 class="tab-title">Desription</h6>
                     <div class="activity-tab-container">
                         <br>
-                        <textarea rows="8" name="description" required>{{ post['description'] }}</textarea>
+                        <textarea rows="8" name="description" required></textarea>
                         <br>
                     </div>
 
@@ -88,22 +83,7 @@
                 </form>
           </div>
 
-            <div id="filter-bids" style="display: none;">
-                <form id="filter-form-bids">
-                    <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
-
-                    {% for bid in bids %}
-                        <div class="post-header">
-                        <div class="post-block">
-                            <h5>{{ bid }}</h5>
-                        </div>
-                    </div>
-                    {% endfor %}
-
-                </form>
-            </div>
-
-            <!-- <div id="filter-tags" style="display: none;">
+            <div id="filter-tags" style="display: none;">
                 <form id="filter-form-tags">
                     <h6 class="tab-title">Tags</h6>
                     <div class="activity-tab-container">
@@ -125,7 +105,7 @@
                         <br>
                     </div>
                 </form>
-            </div> -->
+            </div>
 
             <div id="filter-access" style="display: none;">
                 <form id="filter-form-access">

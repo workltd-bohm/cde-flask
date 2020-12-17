@@ -123,6 +123,7 @@ def make_post_view_activity():
             response = {
                 'html': render_template("dashboard/market/post_view_activity.html",
                                         post=post,
+                                        comments=[],
                                         bids=[]
                                         # tags=[]
                                         ),
@@ -175,9 +176,7 @@ def make_ticket_post_new():
         description = request_json['data']['name']
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_form.html",
-                                    username=session['user']['username'],
-                                    description=description
+            'html': render_template("dashboard/market/post_new_form_1.html",
                                     ),
             'data': []
         }
@@ -332,7 +331,7 @@ def make_activity_post_new():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_activity.html",
+            'html': render_template("dashboard/market/post_new_activity_1.html",
                                     # TODO
                                     ),
             'data': []
@@ -357,10 +356,10 @@ def make_activity_post_edit():
         if db.connect(db_adapter):
             post = db.get_single_post(db_adapter, request_json)[0]
             bids = []
-            req_bids = request_json['bids']
-            if isinstance(request_json['bids'], str):
+            req_bids = post['bids']
+            if isinstance(post['bids'], str):
                 # TODO: fix this
-                req_bids = json.loads(request_json['bids'])
+                req_bids = json.loads(post['bids'])
             for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
             div = []
@@ -369,6 +368,7 @@ def make_activity_post_edit():
             response = {
                 'html': render_template("dashboard/market/post_edit_activity_1.html",
                                         post=post,
+                                        comments=[],
                                         bids=div,
                                         tags=[]
                                         ),

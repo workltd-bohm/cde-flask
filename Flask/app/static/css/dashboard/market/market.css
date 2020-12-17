@@ -166,7 +166,7 @@
     float: none;
     width: 30%;
     display: inline-block;
-    position: relative;
+    position: absolute;
     bottom: 5px;
     background: #757575;
 }
