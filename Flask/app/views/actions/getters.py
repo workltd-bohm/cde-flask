@@ -244,6 +244,8 @@ def get_trash():
                         proj_obj['parent_id'] =     "root"
                     else:
                         proj_obj['name'] =          trashed_project['name']
+                        if 'type' in trashed_project.keys():
+                            proj_obj['name'] += trashed_project['type']
                         proj_obj['is_directory'] =  trashed_project['is_directory']
                         proj_obj['ic_id'] =         trashed_project['ic_id']
                         proj_obj['parent_id'] =     trashed_project['parent_id']
