@@ -35,9 +35,9 @@ function NewPost(obj, request_data = '') {
         data: JSON.stringify({ data: request_data }),
         timeout: 5000,
         success: function(data) {
-            data = JSON.parse(data);
-            if (data) {
-                OpenEditor(data.html, data.data);
+            json_data = JSON.parse(data);
+            if (json_data) {
+                OpenEditor(json_data.html, json_data.data);
                 OpenActivityEditPost(tmp, g_post_type.new);
                 if (request_data != '') {
                     a = [request_data]
@@ -63,7 +63,7 @@ function NewPost(obj, request_data = '') {
 }
 
 function AddPost(obj) {
-    var form = $("#EDITOR > .ticket-form");
+    var form = $("#filter-form-details");
 
     // post_json = {
     //     title: document.getElementById("title").value,
@@ -80,6 +80,7 @@ function AddPost(obj) {
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
     args['image'] = images;
     args['doc'] = documents;
+    args['3d-view'] = $("#3d-view-link")[0].value;
     console.log(args);
 
     $.ajax({
@@ -99,12 +100,13 @@ function AddPost(obj) {
 }
 
 function UpdatePost(obj, data) {
-    var form = $("#EDITOR > .ticket-form");
+    var form = $("#filter-form-details");
     if (!CheckAval(form)) return;
     var args = {};
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
     args['image'] = images;
     args['doc'] = documents;
+    args['3d-view'] = $("#3d-view-link")[0].value;
     console.log(args)
 
     $.ajax({
@@ -147,11 +149,11 @@ function UpdateBid(obj, data) {
 }
 
 function Bid(obj, data, t, s) {
-    var form = $("#EDITOR > .ticket-form");
+    var form = $("#filter-form-bids");
     if (!CheckAval(form)) return;
     var args = { post_id: data, post_title: t, status: s };
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
-    //    console.log(args)
+    console.log(args)
 
     $.ajax({
         url: "/create_bid",
@@ -325,11 +327,11 @@ function ResponseViewPost(data, tmp, post_id) {
 function OpenActivityEditPost(obj, url, d = null) {
     console.log(obj)
     var data = {};
-    if (data != null) {
-        data = d
-    }
     $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
-    //    console.log(data)
+    console.log(obj)
+    if (obj != null) {
+        data['post_id'] = obj.ic_id;
+    }
 
     $.ajax({
         url: url,
@@ -362,10 +364,10 @@ function EditBid(obj, data) {
         data: JSON.stringify({ bid_id: data }),
         timeout: 5000,
         success: function(data) {
-            data = JSON.parse(data);
-            if (data) {
-                console.log(data)
-                OpenEditor(data.html, data.data);
+            json_data = JSON.parse(data);
+            if (json_data) {
+                console.log(json_data)
+                OpenEditor(json_data.html, json_data.data);
                 OpenActivityEditBid(tmp);
             }
             // MakeSnackbar("Editor");
@@ -380,12 +382,13 @@ function EditBid(obj, data) {
 function OpenActivityEditBid(obj) {
     var data = {};
     $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
-    // console.log(data)
+    console.log(obj);
+    console.log({ post_id: obj.ic_id });
 
     $.ajax({
-        url: "/make_activity_bid_edit",
+        url: "/make_post_view_activity",
         type: 'POST',
-        data: JSON.stringify(data),
+        data: JSON.stringify({ post_id: obj.ic_id }),
         timeout: 5000,
         success: function(data) {
             data = JSON.parse(data);

@@ -1,0 +1,94 @@
+</html><div class="project-tab">
+    <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+        <p>Details</p>
+    </div>
+    <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
+        <p>Comments</p>
+    </div>
+    <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
+        <p>Bids</p>
+    </div>
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+        <div class="project-view">
+            <div id="filter-details" style="display: block;">
+                <form id="filter-form-details">
+
+                    <h6 class="tab-title">{{ post['title'] }}</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        <p><b>Status:</b> {{ post['status'] }}</p>
+                        <p><b>Product:</b> {{ post['product'] }}</p>
+                        <p><b>Project:</b> TODO</p>
+                        <p><b>Location:</b> {{ post['location'] }}</p>
+                        <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Desription</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        {{ post['description'] }}
+                        <br>
+                    </div>
+
+                </form>
+            </div>
+
+            <div id="filter-comments" style="display: none;">
+                <br>
+                TODO
+                <br>
+                <form id="filter-form-comments">
+                    <div class="comments-div">
+                        <div class="comment-div">
+                        <input type="text" id="seachcomments" name="searchcomments" placeholder="Filter colab by @Users or #hashtag..."><br>
+                        <div class="img-comment-container">
+                        <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
+                        </div>
+                        </div>
+                        <br>
+                        <div class="activity-tab-div-comment">
+                        
+                            {% for comment in comments %}
+                            <div class="comment-container">
+                            <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
+                            <div class="comments_field">
+                                <div class="comment-inline">
+                                <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
+                                <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
+                                </div>
+                            </div>
+                            </div>
+                                <p class="details_date comment-date">{{ comment['date'] }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="filter-bids" style="display: none;">
+                <form id="filter-form-bids">
+                    <h6 class="tab-title">BIDS FOR:<br>{{ post['title'] }}</h6>
+
+                    <p><b>Offer:</b> <input type="text" name="offer" required></p>
+
+                    <p><b>Per:</b> <input type="text" name="per" required></p>
+
+                    <br>
+                    <p>Comment</p>
+                    <textarea rows="8" name="comments"></textarea>
+                    <br>
+
+                    <div class="edit-box hover right button" onclick="Bid(this, '{{ post['post_id'] }}', '{{ post['title'] }}', '{{ post['status'] }}');">
+                        <h4>BID</h4>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

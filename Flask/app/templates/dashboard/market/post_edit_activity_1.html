@@ -1,0 +1,200 @@
+<div class="project-tab">
+  <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+    <p>Details</p>
+  </div>
+  <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
+    <p>Comments</p>
+  </div>
+  <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
+    <p>Bids</p>
+  </div>
+  <!-- <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
+    <p>Tags</p> 
+  </div> -->
+  <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
+    <p>Access</p>
+  </div>
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+        <div class="project-view">
+            <div id="filter-details" style="display: block;">
+                <form id="filter-form-details">
+                    <input type="hidden" name="post_id" value="{{ post['post_id'] }}">
+                    <input type="hidden" name="bids" value="{{ post['bids'] }}">
+                    <h6 class="tab-title"><b>Title: </b><input type="text" name="title" value="{{ post['title'] }}" required></h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        <p>
+                        <b>Status:</b>
+                            <select id="visibility" name="visibility">
+                                <option value="visible">Visible</option>
+                                <option value="private">Private</option>
+                            </select> 
+                        </p>
+                        <p><b>Quantity:</b> <input type="text" name="quantity" value="{{ post['product']['quantity'] }}" required></p>
+                        <p><b>Project:</b> TODO</p>
+                        <p><b>Location:</b> <input type="text" name="location" value="{{ post['location'] }}" required></p>
+                        <p><b>Expiration:</b> <input type="text" name="date_expired" placeholder="" onfocus="(this.type='date')" onblur="(this.type='text')" value="{{ post['date_expired'] }}" required></p>
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Desription</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        <textarea rows="8" name="description" required>{{ post['description'] }}</textarea>
+                        <br>
+                    </div>
+
+                    <h6 class="tab-title">Documents</h6>
+                    <div class="activity-tab-container">
+                        <br>
+                        TODO
+                        <br>
+                        <input type="button" value="Attach BOHM Files TODO" onclick="" />
+                    </div>
+                </form>
+            </div>
+
+            <div id="filter-comments" style="display: none;">
+                <br>
+                TODO
+                <br>
+                <form id="filter-form-comments">
+                    <div class="comments-div">
+                        <div class="comment-div">
+                        <input type="text" id="seachcomments" name="searchcomments" placeholder="Filter colab by @Users or #hashtag..."><br>
+                        <div class="img-comment-container">
+                        <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
+                        </div>
+                        </div>
+                        <br>
+                        <div class="activity-tab-div-comment">
+                        
+                            {% for comment in comments %}
+                            <div class="comment-container">
+                            <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
+                            <div class="comments_field">
+                                <div class="comment-inline">
+                                <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
+                                <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
+                                </div>
+                            </div>
+                            </div>
+                                <p class="details_date comment-date">{{ comment['date'] }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+          </div>
+
+            <div id="filter-bids" style="display: none;">
+                <form id="filter-form-bids">
+                    <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
+
+                    {% for bid in bids %}
+                        <div class="post-header">
+                        <div class="post-block">
+                            <h5>{{ bid }}</h5>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </form>
+            </div>
+
+            <!-- <div id="filter-tags" style="display: none;">
+                <form id="filter-form-tags">
+                    <h6 class="tab-title">Tags</h6>
+                    <div class="activity-tab-container">
+                        <div class="activity-tab-container-inside" id="activity-tag-container">
+                            <br>
+                            {% for tag in tags %}
+                            <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                                <div class="tag" style="background-color: {{ tag['color'] }}">
+                                    <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                                    {{ tag['tag'] }}
+                                    </i>
+                                </div>
+                                <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                            </div>
+                            {% endfor %}
+                            <br>
+                        </div>
+                        <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                        <br>
+                    </div>
+                </form>
+            </div> -->
+
+            <div id="filter-access" style="display: none;">
+                <form id="filter-form-access">
+                    <div class="access-div">
+                        <div class="activity-tab-div-access">
+                            <div class="image-toggle-container " id="open-toggle" onclick="openToggleAccess()">
+                            <p class="open-access" id="plus-rotate">+</p><span><p class="access-tooltip" id="renametooltip">Add Access</p></span>
+                            </div>
+                            <div id="newpost" class="toggle-access">
+                            <div class="create-user-container">
+                            <div class="form__group field">
+                                <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
+                                <label for="user_name" class="form__label">User</label>
+                            </div>
+                            <div class="form__group field">
+                                <select class="form__field" name="role" id='role' required >
+                                    <option>WATCHER</option>
+                                    <option>DEVELOPER</option>
+                                    <option>ADMIN</option>
+                                </select>
+                                <label for="role" class="form__label">Role</label>
+                            </div>
+                            <br>
+                            <input type="button" value="Share" onclick="AddAccess()" />
+                            </div>
+                            </div>
+                            <hr class="access-break-line">
+
+                            <h3 class="title-access">Users</h3>
+                            {% for a in access %}
+                            <br>
+                            <div class="access-container">
+                                <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
+                                <div class="access_field">
+                                <div class="access-column-one">
+                                    <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
+                                </div><!--{{ url_for('static', filename='img/user.png') }}-->
+                                <div class="access-column-two">
+                                    <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
+                                </div>
+                                <div class="access-column-three">
+                                    <p class="details_event role-columne" >  
+                                    {% if 'OWNER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/add-user.png') }}"/>    
+                                    {% endif %}
+
+                                    {% if 'WATCHER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/view.png') }}"/>    
+                                    {% endif %}
+
+                                    {% if 'DEVELOPER' is in a['role'] %}
+                                        <img class="profile-icon access-img" src="{{ url_for('static', filename='img/pencil.png') }}"/>    
+                                    {% endif %}
+                                    </p>
+                                </div>
+                                <div class="access-column-four">
+                                    <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
+                                    <p class="details_event date-columne" >Accessebility date</p>
+                                    {% if 'OWNER' not in a['role'] %}
+                                    <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
+                                    {% endif %}
+                                </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
