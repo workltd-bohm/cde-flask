@@ -1,6 +1,11 @@
-import * as THREE from 'https://unpkg.com/three@latest/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@latest/examples/jsm/controls/OrbitControls.js';
-import { Rhino3dmLoader } from 'https://unpkg.com/three@latest/examples/jsm/loaders/3DMLoader.js';
+//import * as THREE from 'https://unpkg.com/three@latest/build/three.module.js';
+//import { OrbitControls } from 'https://unpkg.com/three@latest/examples/jsm/controls/OrbitControls.js';
+//import { Rhino3dmLoader } from 'https://unpkg.com/three@latest/examples/jsm/loaders/3DMLoader.js';
+
+import * as THREE from '../../common/three/build/three.module.js';
+import { OrbitControls } from '../../common/three/examples/jsm/controls/OrbitControls.js';
+import { Rhino3dmLoader } from '../../common/three/examples/jsm/loaders/3DMLoader.js';
+import { GLTFLoader } from '../../common/three/examples/jsm/loaders/GLTFLoader.js';
 
 let renderer, aspect, scene, camera, controls, sceneBox;
 
@@ -71,44 +76,46 @@ function init() {
     requestAnimationFrame passes the time since the page loaded to our function. That time is passed in milliseconds.
     I find it's much easier to work with seconds so here we're converting that to seconds.*/
 
-    //LOAD RHINO
-    {
-        var loader = new Rhino3dmLoader();
-        loader.setLibraryPath( '/static/libs/' );
+        //LOAD RHINO
+        {
+            const loader = new Rhino3dmLoader();
+            loader.setLibraryPath( 'js/common/three/examples/jsm/libs/rhino3dm/' );
 
-             loader.load(
-            // resource URL
-            '/static/model/cube.3dm',
-            // called when the resource is loaded
-            function ( object ) {
 
-                object.color = 0xff0000;
-                scene.add( object );
-                console.log(object);
+                 loader.load(
+                'js/common/three/examples/jsm/models/3dm/Rhino.3dm',
+                function ( object ) {
 
-            },
-            // called as loading progresses
-            function ( xhr ) {
+                    object.color = 0xff0000;
+                    scene.add( object );
+                    console.log(object);
 
-                console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+                },
+                // called as loading progresses
+                function ( xhr ) {
 
-            },
-            // called when loading has errors
-            function ( error ) {
+                    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
-                console.log( 'An error happened' );
+                },
+                // called when loading has errors
+                function ( error ) {
 
-            }
-        );
+                    console.log( 'An error happened' );
 
-        /*loader.load( './static/model/cube.3dm', loadModel);*/
-        /*loader.load( './static/model/the.3dm', ( object ) => {
+                }
+            );
 
-                        scene.add( object );
-                        //initGUI( object.userData.layers );
+            /*loader.load( './static/model/cube.3dm', loadModel);*/
+            /*loader.load( './static/model/the.3dm', ( object ) => {
 
-                    } );*/
-    }
+                            scene.add( object );
+                            //initGUI( object.userData.layers );
+
+                        } );*/
+        }
+
+
+
 
     /*function loadModel( rhinoDoc) {
 
