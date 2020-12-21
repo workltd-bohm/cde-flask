@@ -12,4 +12,10 @@
     <label for="rename_new_name" class="form__label" >Are you sure?</label>
   </div>
 </div>
-<input type="button" value="Confirm" onclick="FormSubmit({% if not multi %}'trash_ic', null{% else %}'get_trash_ic_multi', MULTI{% endif %}, true, CreateProject)"/>
+<input type="button" value="Confirm" 
+onclick="FormSubmit({% if not multi %}'trash_ic', null{% else %}'get_trash_ic_multi', MULTI{% endif %}, true, 
+  {% if parent_id == 'root' %} 
+    SelectProject
+  {% else %} 
+    CreateProject 
+  {% endif %})"/>

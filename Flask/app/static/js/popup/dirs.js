@@ -391,7 +391,6 @@ function RestoreFile(form, json){
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
             }
 
             LoadStop();

@@ -333,8 +333,9 @@ def trash_ic():
         if db.connect(db_adapter):
             result = db.trash_ic(db_adapter, ic_data)
 
-            if result == msg.PROJECT_SUCCESSFULLY_TRASHED:
-                session.get("project").update({'section': 'project'})
+            if result == msg.PROJECT_SUCCESSFULLY_TRASHED \
+                or result == msg.IC_SUCCESSFULLY_TRASHED:
+                session.get("project").update({'section': 'trash'})
                 session.get("project").update({'position': None})
                 session.modified = True
 
@@ -404,9 +405,10 @@ def restore_ic():
         if db.connect(db_adapter):
             result = db.restore_ic(db_adapter, ic_data)
 
-            if result == msg.PROJECT_SUCCESSFULLY_RESTORED: # TODO also check for IC_successfuly_restored
-                session.get("project").update({'section': 'project'})
-                session.get("project").update({'position': None})
+            if result == msg.PROJECT_SUCCESSFULLY_RESTORED \
+                or result == msg.IC_SUCCESSFULLY_RESTORED:
+                session.get("project").update({'section': 'trash'})
+                session.get("project").update({'position': ''})
                 session.modified = True
 
             logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))

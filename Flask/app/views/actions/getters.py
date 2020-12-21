@@ -208,7 +208,6 @@ def get_trash():
         user = session.get('user')
         # print(request_data)
 
-        # TODO Trash route: project name, name, overlay type
         if db.connect(db_adapter):
 
             # setup trash container to take in information

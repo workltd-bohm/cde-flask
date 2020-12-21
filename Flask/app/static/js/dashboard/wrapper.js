@@ -43,7 +43,7 @@ function CheckSession() {
         timeout: 5000,
         success: function(data) {
             SESSION = JSON.parse(data);
-            //            console.log(SESSION)
+            console.log(SESSION);
             switch (SESSION["section"]) {
                 case "user":
                     {
@@ -61,8 +61,8 @@ function CheckSession() {
                         break;
                     }
               case "trash": {
-                    // TODO TRASH
-                    // SESSION["trash"] ? TrashGet(SESSION["trash"]) : SelectTrash();
+                    SelectTrash();
+                    break;
                 }
             }
         },
@@ -248,13 +248,11 @@ function SelectTrash(){
         timeout: 5000,
         success: function(data) {
             data = JSON.parse(data);
-
             if(data)
             {
                 if (data.session) 
                 {
                     SESSION = data.session;
-                    console.log(SESSION);
                 }
                 
                 DashboardCreate([data.json.root_ic], data.project);

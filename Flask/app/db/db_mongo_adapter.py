@@ -425,11 +425,6 @@ class DBMongoAdapter:
         project_json = projects.find_one(project_query, {'_id': 0}) # get project from DB
 
         # check if user has privileges TODO 
-        # user_tmp = users.find_one({'user_id': ic_data['user_id']}, '_id': 0):
-        # for project in user_tmp['projects']:
-        #     if project['project_id'] == project_json['project_id']:
-        #         if not project['role'] <= 1:
-        #             return msg.USER_NO_RIGHTS
 
         if project_json:
             # Trashing projects
@@ -472,8 +467,8 @@ class DBMongoAdapter:
                                                     {'projects': user['projects']}
                                                 }
                                             )
-
-                delete = msg.PROJECT_SUCCESSFULLY_TRASHED
+                                            
+                                delete = msg.PROJECT_SUCCESSFULLY_TRASHED
                 
             # Trashing ic/sub folders or files
             else:
@@ -570,15 +565,21 @@ class DBMongoAdapter:
                 # find the project in Project
                 my_project = projects.find_one({'project_id': restore_ic_data['project_id']}, {'_id': 0})
 
-                if my_project:
+                if my_project:  # TODO take path and add in-between folders
                     my_project = Project.json_to_obj(my_project)
                     # find the parent_id inside project
-                    my_project_parent = my_project.find_parent_by_id(restore_ic_data['parent_id'], my_project.root_ic).to_json()
-                    my_project_parent['sub_folders'].append(project_or_ic_json)
-                    my_project = my_project.to_json()
-                    my_project['root_ic'] = my_project_parent
-                    # insert the ic
-                    projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project})
+                    my_ic_parent_old = my_project.find_parent_by_id(restore_ic_data['parent_id'], my_project.root_ic)
+                    my_ic_parent_new = my_ic_parent_old
+
+                    # insert trashed ic into the parent
+                    my_ic_parent_new.sub_folders.append(Project.json_folders_to_obj(project_or_ic_json))
+
+                    # insert the ic to project
+                    my_project.update_ic(my_ic_parent_new, my_ic_parent_old)
+
+                    # update project
+                    projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project.to_json()})
+
                     # delete from Trash
                     trash.delete_one(trashed_query)
                     # update trash
