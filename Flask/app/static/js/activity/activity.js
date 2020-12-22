@@ -59,16 +59,21 @@ function sendComment(el) {
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
     div = $('.activity-tab-div-comment');
+    post_id = $('#post_id').val();
     console.log(comment);
     $.ajax({
         url: "/send_comment",
         type: 'POST',
-        data: JSON.stringify({
-            comment: comment,
-            project_name: project_name,
-            parent_id: parent_id,
-            ic_id: ic_id
-        }),
+        data: JSON.stringify(project_name ? 
+            {
+                comment: comment,
+                project_name: project_name,
+                parent_id: parent_id,
+                ic_id: ic_id
+            } : {
+                comment: comment,
+                post_id: post_id
+            }),
         timeout: 5000,
         success: function(data) {
             //            input_json = JSON.parse(data);

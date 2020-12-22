@@ -772,6 +772,9 @@ class DBMongoAdapter:
         return message
 
     def add_comment(self, request_data, comment):
+        if 'post_id' in request_data.keys():
+            return self.add_comment_to_post(request_data, comment)
+            
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         project_query = {'project_name': request_data['project_name']}
@@ -784,6 +787,21 @@ class DBMongoAdapter:
 
         else:
             message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def add_comment_to_post(self, request_data, comment):
+        posts = self._db.Marketplace.Posts
+        post_query = {'post_id': request_data['post_id']}
+        post = posts.find_one(post_query, {'_id': 0})
+        if post:
+            post = Post.json_to_obj(post)
+            post.comments.append(comment.to_json())
+            posts.update_one(post_query, {'$set': post.to_json()})
+            message = msg.COMMENT_SUCCESSFULLY_ADDED
+        else:
+            message = msg.POST_NOT_FOUND
+
         self._close_connection()
         return message
 
