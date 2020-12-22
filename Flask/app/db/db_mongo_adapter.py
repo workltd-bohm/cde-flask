@@ -569,30 +569,34 @@ class DBMongoAdapter:
                     my_project = Project.json_to_obj(my_project)
                     # find the parent_id inside project
                     my_ic_parent_old = my_project.find_parent_by_id(restore_ic_data['parent_id'], my_project.root_ic)
-                    my_ic_parent_new = my_ic_parent_old
 
-                    # insert trashed ic into the parent
-                    my_ic_parent_new.sub_folders.append(Project.json_folders_to_obj(project_or_ic_json))
+                    if my_ic_parent_old:
+                        my_ic_parent_new = my_ic_parent_old
 
-                    # insert the ic to project
-                    my_project.update_ic(my_ic_parent_new, my_ic_parent_old)
+                        # insert trashed ic into the parent
+                        my_ic_parent_new.sub_folders.append(Project.json_folders_to_obj(project_or_ic_json))
 
-                    # update project
-                    projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project.to_json()})
+                        # insert the ic to project
+                        my_project.update_ic(my_ic_parent_new, my_ic_parent_old)
 
-                    # delete from Trash
-                    trash.delete_one(trashed_query)
-                    # update trash
-                    my_trash = users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
-                    for trashed_item in my_trash['trash']:
-                        if trashed_item['project_id'] == restore_ic_data['project_id'] \
-                        and trashed_item['ic_id'] == restore_ic_data['ic_id']:
-                            my_trash['trash'].remove(trashed_item)
+                        # update project
+                        projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project.to_json()})
 
-                    users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
-                    restored = msg.IC_SUCCESSFULLY_RESTORED
+                        # delete from Trash
+                        trash.delete_one(trashed_query)
+                        # update trash
+                        my_trash = users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+                        for trashed_item in my_trash['trash']:
+                            if trashed_item['project_id'] == restore_ic_data['project_id'] \
+                            and trashed_item['ic_id'] == restore_ic_data['ic_id']:
+                                my_trash['trash'].remove(trashed_item)
+
+                        users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
+                        restored = msg.IC_SUCCESSFULLY_RESTORED
+                    else:
+                        restored = msg.IC_FAILED_RESTORE_PARENT_NOT_FOUND
                 else:
-                    restored = msg.PROJECT_NOT_FOUND # TODO new, custom message
+                    restored = msg.PROJECT_NOT_FOUND
 
         return restored
 
