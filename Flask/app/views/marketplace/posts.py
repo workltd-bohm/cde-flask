@@ -72,7 +72,6 @@ def edit_post():
         request_json.pop('image', None)
         request_json['bids'] = []
         request_json['current_best_bid'] = None
-        request_json['comments'] = []
         request_json['status'] = 0
 
     if main.IsLogin():

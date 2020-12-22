@@ -348,7 +348,7 @@ def send_comment():
             u = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-            comment = Comments(u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
+            comment = Comments(str(uuid.uuid1()), u, request_data['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S"))
             result = db.add_comment(db_adapter, request_data, comment)
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
