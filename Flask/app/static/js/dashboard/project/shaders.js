@@ -9,22 +9,33 @@ var g_GradientShadow = SWGDefs.append("radialGradient")
     .attr("cy", "50%")
     .attr("fx", "15%")
     .attr("fy", "50%");
-g_GradientShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0.1)");
-g_GradientShadow.append("stop").attr("offset", "60%").style("stop-color", "rgba(0,0,0,0.25)");
-g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.3)");
+g_GradientShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0)");
+g_GradientShadow.append("stop").attr("offset", "50%").style("stop-color", "rgba(0,0,0,0.35)");
+g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.65)");
+
+var g_GradientShadowSun = SWGDefs.append("radialGradient")
+    .attr("id", "gradient_shadow_sun")
+    .attr("r", PLANET_SHADOW_RAD)
+    .attr("cx", "50%")
+    .attr("cy", "50%")
+    .attr("fx", "50%")
+    .attr("fy", "50%");
+g_GradientShadowSun.append("stop").attr("offset", "0%").style("stop-color", "rgba(0,0,0,0.2)");
+g_GradientShadowSun.append("stop").attr("offset", "50%").style("stop-color", "rgba(0,0,0,0.45)");
+g_GradientShadowSun.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,1)");
 
 var g_FilterShadow = SWGDefs.append("filter")
     .attr("id", "filter_shadow")
-    .attr("x", "-20%")
-    .attr("y", "-20%")
-    .attr("width", "140%")
-    .attr("height", "140%");
-g_FilterShadow.append("feGaussianBlur")
+    .attr("x", "-10%")
+    .attr("y", "-10%")
+    .attr("width", "180%")
+    .attr("height", "180%");
+/*g_FilterShadow.append("feGaussianBlur")
     .attr("stdDeviation", "1 1")
-    .attr("result", "blur");
+    .attr("result", "blur");*/
 g_FilterShadow.append("feOffset")
-    .attr("dx", "3")
-    .attr("dy", "3");
+    .attr("dx", "2")
+    .attr("dy", "2");
 
 var g_FilterBlur = SWGDefs.append("filter")
     .attr("id", "filter_blur")

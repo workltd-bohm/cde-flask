@@ -23,7 +23,7 @@
 .pattern.star {
      /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
     /*fill : url("#patern_sun_fix"); */
-     fill: #121212;
+     fill: var(--sun-default-bg);
     /*stroke: none;*/
      stroke: rgba(250,250,250,0.25);
     stroke-width: 1;
@@ -31,27 +31,28 @@
 .pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
-    fill: #565656;
+    fill: var(--planet-default-bg);
     /*stroke: none;*/
     stroke: rgba(250, 250, 250, 0.7);
     stroke-width: 2;
-    opacity: 50%;
+    /*opacity: 50%;*/
 }
 .pattern.planet.dir{
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
-    opacity: 50%;
+    /*opacity: 50%;*/
 }
 .pattern.planet.empty{
     /*stroke: rgba(190, 30, 20, 0.5);*/
     stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 2;
     stroke-dasharray: 3;
-    opacity: 50%;
+    /*opacity: 50%;*/
 }
 
 .shader.star {
     /* fill : url("#patern_planet_file"); */
+    /*fill : url("#gradient_shadow_sun");*/
     fill: none;
 }
 .shader.planet {
@@ -144,7 +145,7 @@ g.star.overlay > g.text > text {
     font-size: 20px;
 }
 g.planet.object > g.text > text {
-    font-size: 12px;
+    font-size: 14px;
 }
 g.path.draw > g.text > text {
     font-family: 'Courier New', Courier, monospace;
