@@ -15,31 +15,35 @@
     </div>
     <div class="edit-section view">
         <div id="3d-view" class="edit-view">
-                <div class="group edit-box hover">
-                <input type="text" id="3d-view-link" name="3d-view" value="{{ dview }}">
-                <span class="highlight"></span>
-                <span class="bar"></span>
-                <label>Add an iframe link</label>
+            <div class="d3view-preview">
+                <div class="group edit-box hover view-link">
+                    <input type="text" id="3d-view-link" name="3d-view" value="{{ dview }}">
+                    <span class="highlight"></span>
+                    <span class="bar"></span>
+                    <label>Add an iframe link</label>
+                </div>
+                <input type="button" class="d3-preview-button" value="Use" onclick="Set3DPreview();">
             </div>
+            <div id="d3view-preview"></div>
         </div>
         <div id="docs" class="edit-view" style="display: none;">
+            <div id="file-preview"></div>
             <div class="drop-area" id="drop-area-doc">
                 <form class="my-form">
                 <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
                 <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
                 <label class="button" for="doc">Select file(s)</label>
                 </form>
-                <div id="file-preview"></div>
             </div>
         </div>
         <div id="images" class="edit-view" style="display: none;">
+            <div id="gallery"></div>
             <div class="drop-area" id="drop-area-image">
                 <form class="my-form">
                 <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
                 <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
                 <label class="button" for="image">Select file(s)</label>
                 </form>
-                <div id="gallery"></div>
             </div>
         </div>
     </div>

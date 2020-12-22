@@ -39,6 +39,7 @@ function NewPost(obj, request_data = '') {
             if (json_data) {
                 OpenEditor(json_data.html, json_data.data);
                 OpenActivityEditPost(tmp, g_post_type.new);
+                DropAreaInit();
                 if (request_data != '') {
                     a = [request_data]
                     documents = []
@@ -275,6 +276,8 @@ function ResponseEditPost(data, tmp, post_id, json = '') {
     // console.log(data)
     OpenEditor(data.html, data.data);
     OpenActivityEditPost(tmp, g_post_type.edit, data.data);
+    DropAreaInit();
+    Set3DPreview();
     documents = []
     images = []
     data.data.image.forEach(async function(img) {

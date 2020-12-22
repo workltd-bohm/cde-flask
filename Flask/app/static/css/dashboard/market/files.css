@@ -22,14 +22,15 @@ p {
 }
 
 #gallery {
+    display: inline-flex;
     margin-top: 10px;
 }
 
 #gallery img {
     width: 150px;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    vertical-align: middle;
+    margin-top: 10px;
+    margin-left: 10px;
+    vertical-align: top;
 }
 
 .button {
@@ -53,31 +54,74 @@ p {
     display: none;
 }
 
+.d3view-preview {
+    display: flex;
+}
+
+#d3view-preview {
+    position: relative;
+    height: 33vw;
+    width: 100%;
+    margin-top: 2%;
+}
+
+.d3-preview-button {
+    margin-left: 10px;
+    width: 80px;
+}
+
 #file-preview {
+    display: inline-block;
     margin-top: 10px;
     color: var(--file-preview-text);
 }
 
 .file-preview-div {
     position: relative;
+    display: flex;
+    margin-left: 10px;
+    vertical-align: top;
 }
 
 .file-preview-name {
-    display: inline-block;
+    display: block;
 }
 
 .file-preview-button {
     display: inline-block;
     width: 20px;
     height: 20px;
-    margin-left: 15px;
-    background-color: rgba(192, 192, 192, 0.5);
+    margin-left: 10px;
+    color: #000;
+    background-color: rgba(192, 192, 192, 0.3);
+    text-align: center;
 }
 
 .file-preview-button:hover {
+    color: #fff;
+    background-color: #121212;
+    cursor: pointer;
+}
+
+.image-preview-div {
+    position: relative;
+    margin-left: 10px;
+    vertical-align: top;
+}
+
+.image-preview-button {
+    display: inline-block;
     width: 20px;
     height: 20px;
-    margin-left: 15px;
-    background-color: rgba(192, 192, 192, 0.1);
+    margin-left: -21px;
+    margin-top: 10px;
+    color: #000;
+    background-color: rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.image-preview-button:hover {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.9);
     cursor: pointer;
 }
