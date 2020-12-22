@@ -4,8 +4,11 @@
 
 import * as THREE from '../../common/three/build/three.module.js';
 import { OrbitControls } from '../../common/three/examples/jsm/controls/OrbitControls.js';
-import { Rhino3dmLoader } from '../../common/three/examples/jsm/loaders/3DMLoader.js';
+//import { TrackballControls } from '../../common/three/examples/jsm/controls/TrackballControls.js';
+//import { Rhino3dmLoader } from '../../common/three/examples/jsm/loaders/3DMLoader.js';
 import { GLTFLoader } from '../../common/three/examples/jsm/loaders/GLTFLoader.js';
+import {bohmLoad} from './bohmViewerLoader.js';
+import {setCamera} from './bohmViewerCamera.js';
 
 let renderer, aspect, scene, camera, controls, sceneBox;
 
@@ -23,11 +26,17 @@ function init() {
         const canvas = document.querySelector('#c');
         const renderer = new THREE.WebGL1Renderer({canvas});
 
+
+
     /*---CAMERA---
     */
-    aspect = window.innerWidth/window.innerHeight;// 2;  // the canvas default
+    var camera = setCamera('perspective', THREE);
+    /*aspect = window.innerWidth/window.innerHeight;// 2;  // the canvas default
     camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.y = -50;
+    //camera.up = new THREE.Vector3(1, 0, 0);
+    camera.lookAt(0, 0, 0);*/
+
 
     /*---SCENE---
     A Scene in three.js is the root of a form of scene graph. Anything you want three.js to draw needs to be added to the scene.*/
@@ -43,12 +52,6 @@ function init() {
     //const material = new THREE.MeshBasicMaterial({color: 0x44aa88});
     const material = new THREE.MeshPhongMaterial({color: 0x44aa88});  // greenish blue
 
-    /*---MESH---
-    A combination of Geometry and Material*/
-    const cube = new THREE.Mesh(geometry, material);
-
-    //Adding the mesh to the scene
-    scene.add(cube);
 
     //Take care of the resize of the window
     /*window.addEventListener('resize', ()=>{
@@ -61,8 +64,21 @@ function init() {
       const color = 0xFFFFFF;
       const intensity = 1;
       const light = new THREE.DirectionalLight(color, intensity);
-      light.position.set(-1, 2, 4);
+      light.position.set(-1, -2, 4);
       scene.add(light);
+
+      const light2 = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 2 );
+      scene.add( light2 );
+
+
+      const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+      directionalLight.position.set(1,1,1);
+      scene.add( directionalLight );
+
+      const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 1 );
+      directionalLight2.position.set(-1,1,-1);
+      scene.add( directionalLight2 );
+
 
     /*---RENDER---*/
     //renderer.render(scene, camera);
@@ -76,44 +92,7 @@ function init() {
     requestAnimationFrame passes the time since the page loaded to our function. That time is passed in milliseconds.
     I find it's much easier to work with seconds so here we're converting that to seconds.*/
 
-        //LOAD RHINO
-        {
-            const loader = new Rhino3dmLoader();
-            loader.setLibraryPath( 'js/common/three/examples/jsm/libs/rhino3dm/' );
-
-
-                 loader.load(
-                'js/common/three/examples/jsm/models/3dm/Rhino.3dm',
-                function ( object ) {
-
-                    object.color = 0xff0000;
-                    scene.add( object );
-                    console.log(object);
-
-                },
-                // called as loading progresses
-                function ( xhr ) {
-
-                    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-                },
-                // called when loading has errors
-                function ( error ) {
-
-                    console.log( 'An error happened' );
-
-                }
-            );
-
-            /*loader.load( './static/model/cube.3dm', loadModel);*/
-            /*loader.load( './static/model/the.3dm', ( object ) => {
-
-                            scene.add( object );
-                            //initGUI( object.userData.layers );
-
-                        } );*/
-        }
-
+    bohmLoad('gltf', scene);
 
 
 
@@ -124,11 +103,17 @@ function init() {
     }*/
 
     const controls = new OrbitControls( camera, renderer.domElement );
+    //controls.maxPolarAngle = 8.16;
     controls.update();
+    //controls.enabled=false;
+
+
+
 
 
     function render(time) {
           time *= 0.001;  // convert time to seconds
+          //camera.rotation.z += 0.01;
 
           /*RESPONSIVE DESIGN - resizing the window*/
 
@@ -141,7 +126,7 @@ function init() {
           //cube.rotation.x = time;
           //cube.rotation.y = time;
 
-
+        controls.update();
 
           renderer.render(scene, camera);
 
@@ -156,12 +141,14 @@ function init() {
 Let's write a function that checks if the renderer's canvas is not already the size
 it is being displayed as and if so set its size.
 */
-function resizeRendererToDisplaySize(renderer) {
+function resizeRendererToDisplaySize(renderer, controls) {
   const canvas = renderer.domElement;
   const needResize = canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight;
   if (needResize) {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight, false); //It's important to pass false at the end.
   }
+
+
   return needResize;
 }
 
