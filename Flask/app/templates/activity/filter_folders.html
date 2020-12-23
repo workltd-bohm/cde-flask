@@ -15,88 +15,95 @@
   </div>
 </div>
 <div class="activity-tab-div">
-    <div class="scroll">
-        <div class="project-view">
-          <div id="filter-details" style="display: none;">
-              <form id="filter-form-details">
-                <h6 class="tab-title">Tags</h6>
-                <div class="activity-tab-container">
-                    <div class="activity-tab-container-inside" id="activity-tag-container">
-                        <br>
-                        {% for tag in tags %}
-                        <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
-                            <div class="tag" style="background-color: {{ tag['color'] }}">
-                                <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                                    {{ tag['tag'] }}
-                                </i>
-                            </div>
-                            <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
-                        </div>
-                        {% endfor %}
-                        <br>
-                    </div>
-                    <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
-                    <br>
+  <div class="scroll">
+      <div class="project-view">
+        <div id="filter-details" style="display: none;">
+            <form id="filter-form-details">
+              <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+              <div class="activity-tab-container" id="tags">
+                  <div class="activity-tab-container-inside" id="activity-tag-container">
+                      <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                      <br>
+                      {% for tag in tags %}
+                      <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                          <div class="tag" style="background-color: {{ tag['color'] }}">
+                              <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                               {{ tag['tag'] }}
+                              </i>
+                          </div>
+                          <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                      </div>
+                      {% endfor %}
+                      <br>
+                  </div>
                 </div>
 
-                <h6 class="tab-title">IC details</h6>
-                <div class="activity-tab-container">
-                    <br>
-                    <p><b>IC name:</b></p>
-                    <p><i style="margin-left:5px;">{{ file_name }}</i></p>
-                    <p><b>Path:</b></p>
-                    <p><i style="margin-left:5px;">{{ path }}</i></p>
-                    <p><b>Share link:</b></p>
-                    <p><i style="margin-left:5px;">{{ share_link }}</i></p>
-                    <br>
-                </div>
+              <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoIC()">details</h6>
+              <div class="activity-tab-container" id="ic">
+                  <br>
+                  <p><b style="color:  #b0b0b0;">Name:</b></p>
+                  <p>{{ file_name }}</p>
+                  <p><b style="color:  #b0b0b0;">Size:</b></p>
+                  <p>{{ size }}</p>
+                  <p><b style="color:  #b0b0b0;">Full Path:</b></p>
+                  <p>{{ path }}</p>
+                  <p><b style="color:  #b0b0b0;">Share link:</b></p>
+                  <div class="share-link"><p>{{ share_link }}</p> <img class="img-copy" src="{{ url_for('static', filename='img/copy.png') }}"/></div>
+                  <br>
+              </div>
 
-                <h6 class="tab-title">History</h6>
-                <div class="activity-tab-container">
-                    <br>
-                    {% for detail in details %}
+              <h6 class="tab-title id="open-toggle" onclick="openToggleInfoHistory()">History</h6>
+              <div class="activity-tab-container" id="history">
+                  <br>
+                  {% for detail in details %}
                     <div class="details_field">
-                      <p><b class="details_event_user">{{ detail['user']['username'] }}</b><br>&nbsp; <i class="details_event_name">Event name: {{ detail['event_name'] }}</i></p>
-                      <p class="details_event" style="margin-left:15px;"><strong>Name of the file: </strong> {{ detail['event_value'] }}</p>
-                      <p class="details_date" style="margin-left:15px;"><strong>Date of creation: </strong> {{ detail['date'] }}</p>
-                      <hr style="border-top: 1px solid gray; margin-left:-1px; margin-right:18px;">
+                        <div class="user-details-container">
+                          <img class="img-details" src="{{ url_for('static', filename='img/add-user.png') }}" />
+                          <div class="user-details-event-date">
+                              <p class="details_event_user">{{ detail['user']['username'] }}</p>
+                              <p class="details_event_name">{{ detail['event_name'] }}</p>
+                              <p class="details_date" >{{ detail['date'] }}</p>
+                              <!--<p class="details_event"><strong>Name of the file: </strong> {{ detail['event_value'] }}</p>-->
+                              </div>
+                        </div>
                     </div>
-                    {% endfor %}
-                    <br>
+                  {% endfor %}
+                  <br>
+              </div>
+            </form>
+        </div>
+        <div id="filter-comments" style="display: none;">
+          <form id="filter-form-comments">
+            <input type="hidden" id="project_name" value="{{ project_name }}" required />
+            <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
+            <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
+            <div class="comments-div">
+              <div class="comment-div">
+                <input type="text" id="seachcomments" name="searchcomments" placeholder="Filter colab by @Users or #hashtag..."><br>
+                <div class="img-comment-container">
+                <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="1" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
                 </div>
-              </form>
-          </div>
-          <div id="filter-comments" style="display: none;">
-              <form id="filter-form-comments">
-                <input type="hidden" id="project_name" value="{{ project_name }}" required />
-                <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
-                <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
-                <div class="comments-div">
-                  <div class="comment-div">
-                    <input type="text" id="searchcomments" name="searchcomments" placeholder="Filter collab by @Users or #hashtag..."><br>
-                    <div class="img-comment-container">
-                    <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
+              </div>
+              <br>
+              <div class="activity-tab-div-comment">
+                {% for comment in comments %}
+                  <div class="comment-container">
+                    <div class="comment-img container"><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </div>
+                    <div class="comment-container-all">
+                      <p class="details_date comment-date">{{ comment['date'] }}</p>
+                      <div class="comments_field">
+                      <div class="comment-inline">
+                        <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
+                        <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
+                        </div>
+                    </div>
                     </div>
                   </div>
-                  <br>
-                  <div class="activity-tab-div-comment">
-                    
-                      {% for comment in comments %}
-                      <div class="comment-container">
-                        <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
-                        <div class="comments_field">
-                            <div class="comment-inline">
-                            <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
-                            <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
-                            </div>
-                        </div>
-                      </div>
-                            <p class="details_date comment-date">{{ comment['date'] }}</p>
-                      {% endfor %}
-                    </div>
+                  {% endfor %}
                 </div>
-              </form>
-          </div>
+              </div>
+          </form>
+      </div>
           <div id="filter-search" style="display: none;">
             <form id="filter-form-search" onchange="FilterOut('#filter-form-search')">
                 <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
@@ -118,47 +125,56 @@
             <form id="filter-form-access">
               <div class="access-div">
                   <div class="activity-tab-div-access">
-                    <div class="image-toggle-container " id="open-toggle" onclick="openToggleAccess()">
-                    <p class="open-access" id="plus-rotate">+</p><span><p class="access-tooltip" id="renametooltip">Add Access</p></span>
-                    </div>
-                    <div class="toggle-access" id="newpost">
+                      <h6 class="tab-title access" >owner</h6>
+                      <div class="access-owner-profile">
+                        {% for a in access %}
+                          {% if 'OWNER' is in a['role'] %}
+                          <img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/>
+                          <p class="details_event owner-username" >{{ a['user']['username'] }}  </p>
+                          {% endif %}
+                        {% endfor %}
+                      </div> 
+                      <h6 class="tab-title access">collaborators</h6>
+                     <div class="toggle-access" id="access-box">
                       <div class="create-user-container">
-                      <div class="form__group field">
-                        <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
-                        <label for="user_name" class="form__label">User</label>
+                      <div class="form__group field access-users-add">
+                        <input type="text" class="form__field new-access" id="user_name" name="user_name" placeholder="Add User..." required />
+                        <!--<label for="user_name" class="form__label access"> Add User...</label>-->
+                        <input type="button" class="add-user" value="+" onclick="AddAccess()" />
                       </div>
                       <div class="form__group field">
-                          <select class="form__field" name="role" id='role' required >
-                              <option>WATCHER</option>
-                              <option>DEVELOPER</option>
-                              <option>ADMIN</option>
+                          <select class="form__field new-access" name="role" id='role' required >
+                              <option data-img_src="{{ url_for('static', filename='img/view.png') }}"><span class="watcher">WATCHER</span></option>
+                              <option data-img_src="{{ url_for('static', filename='img/pencil.png') }}"><span class="developer">DEVELOPER</span></option>
+                              <option data-img_src="{{ url_for('static', filename='img/add-user.png') }}"><span class="admin">ADMIN</span></option>
                           </select>
-                          <label for="role" class="form__label">Role</label>
+                          <!--<label for="role" class="form__label">Role</label>-->
                       </div>
-                      <br>
-                      <input type="button" value="Share" onclick="AddAccess()" />
-                      </div>
-                    </div>
-                    <hr class="access-break-line">
-
-                    <h3 class="title-access">Users</h3>
+                     </div>
+                    
                     {% for a in access %}
-                      <br>
-                      <div class="access-container">
+                    
+                    <div class="access-container">
                         <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
                         <div class="access_field">
                           <div class="access-column-one">
+                            {% if 'WATCHER' is  in a['role'] %}
                             <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
+                            {% endif %}
+                            {% if 'DEVELOPER' is  in a['role'] %}
+                            <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
+                            {% endif %}
                           </div><!--{{ url_for('static', filename='img/user.png') }}-->
                           <div class="access-column-two">
+                            {% if 'WATCHER' is  in a['role'] %}
                             <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
+                            {% endif %}
+                            {% if 'DEVELOPER' is  in a['role'] %}
+                            <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
+                            {% endif %}
                           </div>
                           <div class="access-column-three">
                             <p class="details_event role-columne" >  
-                              {% if 'OWNER' is in a['role'] %}
-                                  <img class="profile-icon access-img" src="{{ url_for('static', filename='img/add-user.png') }}"/>    
-                              {% endif %}
-
                               {% if 'WATCHER' is in a['role'] %}
                                   <img class="profile-icon access-img" src="{{ url_for('static', filename='img/view.png') }}"/>    
                               {% endif %}
@@ -169,15 +185,21 @@
                             </p>
                           </div>
                           <div class="access-column-four">
+                            {% if 'WATCHER' is in a['role'] %}
                             <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
                             <p class="details_event date-columne" >Accessebility date</p>
+                            {% endif %}
+                            {% if 'DEVELOPER' is in a['role'] %}
+                            <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
+                            <p class="details_event date-columne" >Accessebility date</p>
+                            {% endif %}
                             {% if 'OWNER' not in a['role'] %}
                             <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
                             {% endif %}
                           </div>
                         </div>
                       </div>
-                    {% endfor %}
+                  {% endfor %}
                   </div>
               </div>
             </form>

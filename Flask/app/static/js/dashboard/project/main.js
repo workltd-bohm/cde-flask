@@ -103,6 +103,18 @@ function AddSun(obj, data) {
     data.values.picture = data.values.object.append("circle")
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
+
+    data.values.shader = data.values.object.append("circle")
+        .attr("class", "star shader")
+        .attr("r", g_SunRadius)
+
+    data.values.gloss = data.values.object.append("circle")
+        .attr("class", "star gloss")
+        .attr("r", g_SunRadius)
+
+    data.values.select = data.values.this.append("circle")
+        .attr("class", "star select")
+        .attr("r", g_SunRadius)
         .on("mouseover", function(d) {
             if (!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
         })
@@ -117,14 +129,6 @@ function AddSun(obj, data) {
             //     // NONE
             // }, data);
         });
-
-    data.values.shader = data.values.object.append("circle")
-        .attr("class", "star shader")
-        .attr("r", g_SunRadius)
-
-    data.values.shader = data.values.object.append("circle")
-        .attr("class", "star gloss")
-        .attr("r", g_SunRadius)
 
     AddText(data, "star");
 
@@ -205,7 +209,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("r", g_PlanetRadius)
         .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
 
-    data.values.shader = data.values.object.append("circle")
+    data.values.gloss = data.values.object.append("circle")
         .attr("class", "planet gloss")
         .attr("r", g_PlanetRadius)
         .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
