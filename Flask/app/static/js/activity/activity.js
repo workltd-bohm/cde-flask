@@ -54,6 +54,7 @@ function sendComment(el) {
     if (key === 13 && el.shiftKey) {
         return true;
     }
+
     comment = $('#comment').val();
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
@@ -61,6 +62,7 @@ function sendComment(el) {
     div = $('.activity-tab-div-comment');
     post_id = $('#post_id').val();
     console.log(comment);
+
     $.ajax({
         url: "/send_comment",
         type: 'POST',
@@ -89,6 +91,10 @@ function sendComment(el) {
         }
     });
 
+}
+
+function editComment(elem) {
+    elem.getElementsByClassName('comment-events')[0];
 }
 
 function AddAccess() {

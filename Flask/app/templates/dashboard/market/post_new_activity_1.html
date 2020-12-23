@@ -56,25 +56,17 @@
                     <input type="hidden" id="post_id" value="{{ post_id }}" required />
                     <div class="comments-div">
                         <div class="comment-div">
-                        <input type="text" id="seachcomments" name="searchcomments" placeholder="Filter colab by @Users or #hashtag..."><br>
-                        <div class="img-comment-container">
-                        <img class="profile-icon" src="../static/img/avatar.svg"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
-                        </div>
+                            <input type="text" id="searchcomments" name="searchcomments" placeholder="Filter collab by @Users or #hashtag..."><br>
+                            <div class="img-comment-container">
+                                <img class="profile-icon" src="../static/img/avatar.svg"/>
+                                <textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea>
+                                <br>
+                            </div>
                         </div>
                         <br>
                         <div class="activity-tab-div-comment">
-                        
                             {% for comment in comments %}
-                            <div class="comment-container">
-                            <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
-                            <div class="comments_field">
-                                <div class="comment-inline">
-                                <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
-                                <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
-                                </div>
-                            </div>
-                            </div>
-                                <p class="details_date comment-date">{{ comment['date'] }}</p>
+                            {% include 'activity/single_comment.html' %}
                             {% endfor %}
                         </div>
                     </div>
