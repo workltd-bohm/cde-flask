@@ -9,6 +9,7 @@ from app.model.marketplace.bid import Bid
 from app.model.role import Role
 import app.model.messages as msg
 import json
+from datetime import datetime
 
 from bson.objectid import ObjectId
 
@@ -1071,6 +1072,49 @@ class DBMongoAdapter:
         else:
             message = msg.POST_NOT_FOUND
 
+        self._close_connection()
+        return message
+
+    def update_comment(self, request_data):
+        if 'post_id' in request_data.keys():
+            return self.update_post_comment(request_data)
+
+    def update_post_comment(self, request_data):
+        posts = self._db.Marketplace.Posts
+        post_query = {'post_id': request_data['post_id']}
+        post = posts.find_one(post_query, {'_id': 0})
+        if post:
+            for i, comment in enumerate(post['comments']):
+                if comment['id'] == request_data['comment_id']:
+                    post['comments'][i]['comment'] = request_data['comment']
+                    post['comments'][i]['date'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
+                    break
+            posts.update_one(post_query, {'$set': post})
+            message = msg.COMMENT_SUCCESSFULLY_UPDATED
+        else:
+            message = msg.POST_NOT_FOUND
+        
+        self._close_connection()
+        return message
+            
+    def delete_comment(self, request_data):
+        if 'post_id' in request_data.keys():
+            return self.delete_post_comment(request_data)
+
+    def delete_post_comment(self, request_data):
+        posts = self._db.Marketplace.Posts
+        post_query = {'post_id': request_data['post_id']}
+        post = posts.find_one(post_query, {'_id': 0})
+        if post:
+            for i, comment in enumerate(post['comments']):
+                if comment['id'] == request_data['comment_id']:
+                    del post['comments'][i]
+                    break
+            posts.update_one(post_query, {'$set': post})
+            message = msg.COMMENT_SUCCESSFULLY_DELETED
+        else:
+            message = msg.POST_NOT_FOUND
+            
         self._close_connection()
         return message
 

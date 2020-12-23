@@ -368,6 +368,57 @@ def send_comment():
 
     return redirect('/')
 
+@app.route('/update_comment', methods=['POST'])
+def update_comment():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):                 
+            result = db.update_comment(db_adapter, request_data)
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                # resp.data = render_template("activity/single_comment.html",
+                #                             comment=comment.to_json(),
+                #                             picture=u['picture']
+                #                             )
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
+
+@app.route('/delete_comment', methods=['POST'])
+def delete_comment():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):                 
+            result = db.delete_comment(db_adapter, request_data)
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                # resp.data = render_template("activity/single_comment.html",
+                #                             comment=comment.to_json(),
+                #                             picture=u['picture']
+                #                             )
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
 
 @app.route('/add_tag', methods=['POST'])
 def add_tag():

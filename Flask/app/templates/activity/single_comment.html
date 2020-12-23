@@ -11,7 +11,11 @@
             </div>
         </div>
         {% if comment['user']['user_id'] == session['user']['id'] %}
-        <i class="material-icons create comment-options" onclick="editComment(this.parentElement)">edit</i>
+        <i class="material-icons border_color comment-options" onclick="editComment(this.parentElement)">edit</i>
+        {% endif %}
+
+        {% if comment['user']['user_id'] == session['user']['id'] or post['user_owner']['id'] == session['user']['id'] %}
+        <i class="material-icons clear comment-options" onclick="deleteComment(this.parentElement.parentElement)">delete</i>
         {% endif %}
     </div>
 </div>

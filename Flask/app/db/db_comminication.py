@@ -167,6 +167,11 @@ def remove_share_project(db_adapter, request_data, session_user):
 def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
+def update_comment(db_adapter, request_data):
+    return db_adapter.update_comment(request_data)
+
+def delete_comment(db_adapter, request_data):
+    return db_adapter.delete_comment(request_data)
 
 def add_tag(db_adapter, request_data, tags):
     return db_adapter.add_tag(request_data, tags)
