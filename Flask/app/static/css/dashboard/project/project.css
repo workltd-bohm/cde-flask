@@ -149,7 +149,7 @@ g.planet.object > g.text > text {
     font-size: 14px;
 }
 g.path.draw > g.text > text {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Lato', Courier, monospace;
     font-size: 18px;
     text-anchor: start;
 }
