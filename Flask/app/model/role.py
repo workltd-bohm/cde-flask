@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class Role(Enum):
-    ADMIN = 0
-    WATCHER = 1
+    OWNER = 0
+    ADMIN = 1
     DEVELOPER = 2
-    OWNER = 3
+    WATCHER = 3
 
 
 class CompanyRole(Enum):

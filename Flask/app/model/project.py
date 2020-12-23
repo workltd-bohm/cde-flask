@@ -184,6 +184,23 @@ class Project:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
 
+    def trash_ic(self, request_data, ic=None):
+        if ic.ic_id == request_data['parent_id']:
+            for y in ic.sub_folders:
+                if y.name == request_data['delete_name']:
+                    ic.sub_folders.remove(y)
+                    self._deleted = True
+                    self._message = msg.IC_SUCCESSFULLY_TRASHED
+        else:
+            if ic.sub_folders:
+                for x in ic.sub_folders:
+                    self.trash_ic(request_data, x) 
+                    if self._deleted:
+                        break
+        if not self._deleted:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
     def delete_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
             for y in ic.sub_folders:
@@ -274,6 +291,17 @@ class Project:
         else:
             for x in ic.sub_folders:
                 self.find_ic(request_data, file_name, x)
+                if self._added:
+                    break
+        return self._current_ic
+
+    def find_parent_by_id(self, ic_id, ic=None):
+        if ic.ic_id == ic_id:
+                self._current_ic = ic
+                self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.find_parent_by_id(ic_id, x)
                 if self._added:
                     break
         return self._current_ic

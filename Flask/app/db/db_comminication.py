@@ -45,6 +45,9 @@ def get_all_projects(db_adapter):
 def get_my_projects(db_adapter, user):
     return db_adapter.get_my_projects(user)
 
+# TODO TRASH
+def get_my_trash(db_adapter, user):
+    return db_adapter.get_my_trash(user)
 
 def get_my_shares(db_adapter, user):
     return db_adapter.get_my_shares(user)
@@ -69,10 +72,17 @@ def create_folder(db_adapter, project_name, folder):
 def rename_ic(db_adapter, request_data, user):
     return db_adapter.rename_ic(request_data, user)
 
+def trash_ic(db_adapter, ic_data):
+    return db_adapter.trash_ic(ic_data)
+
+def restore_ic(db_adapter, ic_data):
+    return db_adapter.restore_ic(ic_data)
 
 def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)
 
+def empty_my_trash(db_adapter, user):
+    return db_adapter.empty_my_trash(user)
 
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)

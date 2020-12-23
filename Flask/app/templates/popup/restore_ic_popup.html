@@ -1,16 +1,16 @@
-<h3>Delete {{ delete_name }}</h3>
+<h3>Restore "{{ restore_name }}" from trash?</h3>
 <div class="scroll">
   {% if not multi %}
-  <input type="hidden" name="project_id"     value="{{ project_id }}"     required />
+  <input type="hidden" name="project_id"    value="{{ project_id }}"    required />
   <input type="hidden" name="parent_id"     value="{{ parent_id }}"     required />
   <input type="hidden" name="ic_id"         value="{{ ic_id }}"         required />
   <input type="hidden" name="project_name"  value="{{ project_name }}"  required />
   <input type="hidden" name="parent_path"   value="{{ parent_path }}"   required />
-  <input type="hidden" name="delete_name"   value="{{ delete_name }}"   required />
+  <input type="hidden" name="restore_name"  value="{{ restore_name }}"  required />
   <input type="hidden" name="is_directory"  value="{{ is_directory }}"  required />
   {% endif %}
   <div class="form__group field" style="height: 100px;">
     <label for="rename_new_name" class="form__label" >Are you sure?</label>
   </div>
 </div>
-<input type="button" class="keypress" value="Delete" onclick="FormSubmit({% if not multi %}'delete_ic', null{% else %}'get_delete_ic_multi', MULTI{% endif %}, true, SelectTrash)"/>
+<input type="button" value="Confirm" onclick="FormSubmit({% if not multi %}'restore_ic', null{% else %}'get_restore_ic_multi', MULTI{% endif %}, true, SelectTrash)"/>
