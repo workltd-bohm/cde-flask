@@ -106,7 +106,7 @@
 
 .menu-activity.opend {
   width: 20%;
-  background-color:#e8e8e8;
+  background-color:#e1e1e1;
 }
 
 .menu-fixed .logo {
@@ -324,3 +324,9 @@
 .side-menu-icon:hover{
     opacity: 100%;
 }
+
+@media screen and (min-width: 1024px) and (max-width:1919px) {
+ .icon-menu{
+  top: 27vh;
+ }
+  }

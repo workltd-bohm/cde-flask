@@ -204,26 +204,52 @@ function PostListPopupResults(obj, json) {
 }
 
 function openToggleAccess() {
-    var box=document.getElementById('newpost');
-    var changesign= document.getElementById('plus-rotate');
-    var renamett= document.getElementById('renametooltip');
-    /*box.style.display = 'block';
-    changesign.style.transform= "rotate(45deg)";
-    renamett.innerHTML= "";*/
-    console.log(box.style.display);
-
+    var box=document.getElementById('access-box');
     if (box.style.display != 'none' && box.style.display !="") {
         box.style.display = 'none';
-        changesign.style.transform= "rotate(90deg)";
-        renamett.innerHTML= "Add Access";
     }
     else {
         box.style.display = 'block';
-        changesign.style.transform= "rotate(45deg)";
-        renamett.innerHTML= "";
-
     }
 }
+
+function openToggleInfoTags() {
+    var tags=document.getElementById('tags');
+    console.log(tags);
+    if (tags.style.display != 'none' && tags.style.display !="") {
+        tags.style.display = 'none';
+        
+    }
+    else {
+        tags.style.display = 'block';
+    }
+}
+
+function openToggleInfoIC() {
+    var ic=document.getElementById('ic');
+    console.log(tags);
+    if (ic.style.display != 'none' && ic.style.display !="") {
+        ic.style.display = 'none';
+        
+    }
+    else {
+        ic.style.display = 'block';
+    }
+}
+
+function openToggleInfoHistory() {
+    var history=document.getElementById('history');
+    console.log(tags);
+    if (history.style.display != 'none' && history.style.display !="") {
+        history.style.display = 'none';
+        
+    }
+    else {
+        history.style.display = 'block';
+    }
+}
+
+
     
 
 

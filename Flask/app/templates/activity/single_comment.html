@@ -4,12 +4,14 @@
         <p class="details_date" style="margin-left:5px;">{{ comment['date'] }}</p>
     </div>-->
     <div class="comment-container">
-        <p><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </p>
-        <div class="comments_field">
-            <div class="comment-inline">
-            <p><b class="details_event_user">{{ comment['user']['username'] }}</b></p>
+        <div class="comment-img container"><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </div>
+        <div class="comment-container-all">
+          <p class="details_date comment-date">{{ comment['date'] }}</p>
+          <div class="comments_field">
+          <div class="comment-inline">
+            <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
             <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
             </div>
         </div>
+        </div>
       </div>
-            <p class="details_date comment-date">{{ comment['date'] }}</p>
