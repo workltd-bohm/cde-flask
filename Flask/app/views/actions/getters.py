@@ -195,6 +195,81 @@ def get_root_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_trash', methods=['POST'])
+def get_trash():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        request_data["project"]["name"] = None
+        request_data["project"]["position"] = None  # reset position
+        dirs.set_project_data(request_data)
+        user = session.get('user')
+        # print(request_data)
+
+        if db.connect(db_adapter):
+
+            # setup trash container to take in information
+            response = {
+                "project_name": "Trash",
+                "root_ic": {
+                    "ic_id": "",
+                    "name": "Trash",
+                    "history": [],
+                    "path": ".",
+                    "overlay_type": "trash",
+                    "is_directory": True,
+                    "sub_folders": []
+                }
+            }
+
+            # gets project list from Users.Roles 'trash' -> project id & role (lvl of access)
+            my_trashed_items = db.get_my_trash(db_adapter, user)
+
+            for trashed_project in my_trashed_items:
+                proj_obj = dict()
+
+                if trashed_project:
+                    proj_obj['project_id'] = trashed_project['project_id']
+                    proj_obj['parent'] = "Trash"
+                    proj_obj['history'] = []
+                    proj_obj['overlay_type'] = "trash_planet"
+
+                    if 'project_name' in trashed_project.keys():
+                        proj_obj['name'] =          trashed_project['project_name']
+                        proj_obj['is_directory'] =  "" 
+                        proj_obj['ic_id'] =         ""
+                        proj_obj['parent_id'] =     "root"
+                    else:
+                        proj_obj['name'] =          trashed_project['name']
+                        if 'type' in trashed_project.keys():
+                            proj_obj['name'] += trashed_project['type']
+                        proj_obj['is_directory'] =  trashed_project['is_directory']
+                        proj_obj['ic_id'] =         trashed_project['ic_id']
+                        proj_obj['parent_id'] =     trashed_project['parent_id']
+
+                    proj_obj['path'] = "Trash/" + proj_obj['name'] # TODO maybe leave path
+
+                    # fill root container with found items (which will later become planets)
+                    response['root_ic']["sub_folders"].append(proj_obj)
+
+            resp.status_code = msg.DEFAULT_OK['code'] # get response code
+            session.get("project").update({'section': 'trash'})
+            resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})
+            return resp
+        else:
+            # failsafe
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    # user not logged
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
 
 @app.route('/get_user_profile', methods=['POST'])
 def get_user_profile():

@@ -19,6 +19,8 @@ IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}
 IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}
 
+TRASH_SUCCESSFULLY_EMPTIED = {"message": "Trash successfully emptied", "code": 200}
+
 PROJECT_NOT_FOUND = {"message": "Project with the specific ID not found", "code": 404}
 PROJECT_ALREADY_EXISTS = {"message": "Project with the given name already exists", "code": 409}
 PROJECT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
@@ -36,7 +38,11 @@ NOT_ALLOWED = {"message": "Not allowed", "code": 400}
 
 NO_PROJECT_SELECTED = {"message": "Project not selected", "code": 400}
 
+IC_SUCCESSFULLY_TRASHED = {"message": "Successfully moved to trash", "code": 200}
+IC_SUCCESSFULLY_RESTORED = {"message": "Successfully restored from trash", "code": 200}
 IC_SUCCESSFULLY_DELETED = {"message": "Successfully deleted", "code": 200}
+IC_SUCCESSFULLY_FOUND = {"message": "Successfully found", "code": 200}
+IC_FAILED_RESTORE_PARENT_NOT_FOUND = {"message": "Restore failed. Parent can't be found", "code": 404}
 
 POST_ALREADY_EXISTS = {"message": "Post with the given ID already exists", "code": 409}
 POST_CREATED = {"message": "Post created successfully", "code": 200}
@@ -52,7 +58,11 @@ SUCCESSFULLY_SHARED = {"message": "Project successfully shared", "code": 200}
 SUCCESSFULLY_REMOVED_PROJECT_ACCESS = {"message": "Removed Project access successfully", "code": 200}
 
 PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
+PROJECT_SUCCESSFULLY_TRASHED = {"message": "Project successfully moved to trash", "code": 200}
+PROJECT_SUCCESSFULLY_RESTORED = {"message": "Project successfully restored from trash", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
+
+
 
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
 FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}

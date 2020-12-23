@@ -24,6 +24,7 @@ function GetForm(){
     return $("div.pero > .content > .form");
 }
 
+// Set up an empty form
 function PopupOpen(run=null, data=null, file=null){
     var form = GetForm();
 

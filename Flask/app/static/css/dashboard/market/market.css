@@ -138,11 +138,26 @@
     margin-left: 35px;
 }
 
+.edit-box {
+    display: block;
+    float: left;
+    cursor: pointer;
+    background: transparent;
+    /* width: 20%; */
+    /* border: 2px solid black; */
+    /* padding: 5px 2px 5px 2px; */
+    margin-left: 35px;
+}
+
 .edit-box:hover {
     /* background: rgba(255, 255, 255, 0.3); */
     border-bottom: 2px solid rgba(255, 255, 255, 0.3);
     color: white;
     cursor: pointer;
+}
+
+.edit-box.view-link {
+    width: 90%;
 }
 
 .edit-box>h4 {
@@ -190,5 +205,7 @@
 
 .edit-view {
     position: relative;
-    top: 35%;
+    left: 5%;
+    top: 5%;
+    text-align: left;
 }

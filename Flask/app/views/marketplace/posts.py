@@ -348,6 +348,10 @@ def upload_post_file():
         # print(request.form['data'])
         request_json = json.loads(request.form['data'])
         request_json['user'] = session['user']['username']
+        if '.' in request_json['file_name']:
+            request_json['type'] = request_json['file_name'].split('.')[:-1]
+
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
 
         if db.connect(db_adapter):
             result, id = db.upload_post_file(db_adapter, request_json, file)

@@ -1,23 +1,37 @@
 :root {
-
-
-    --login-bg-color: #A8A8A8;
+    /*--login-bg-color: #A8A8A8;
     --login-back-box-bg-color: #404040;
     --login-front-box-bg-color: #ffffff;
     --login-signup-btn-back-box-bg-color: #404040;
-    --login-signup-btn-front-box-bg-color: #35B729;
+    --login-signup-btn-front-box-bg-color: #35B729;*/
 
+    --dashboard-bg: #121212;
+    --dashboard-bg-light: #ffffff;
 
     --side-menu: #e8e8e8;
-    --left-side-menu: #121212;
-    --side-menu-text: #b8b8b8;
+    --side-menu-light: #e8e8e8;
 
+    --sun-default-bg: #ababab;
+    --sun-default-bg-light: #ababab;
+
+    --planet-default-bg: #ffffff;
+    --planet-default-bg-light: #ffffff;
+
+
+    --left-side-menu: #121212;
+    --side-menu-text: #b8b8b8; /*NOT USED ANY MORE - color of the text next to the icon (in an expanded menu)*/
     --side-menu-logo-bg: #121212;
     --side-menu-logo-bg-right: #e8e8e8;
 
-    --dashboard-bg: #121212;
-
-
     /* marketplace post */
-    --file-preview-text: #fff;
+    --file-preview-text: #ffffff;
+
+
+
+
+    /*Currently used (when we have dark/light themes JS will simply change the --cur-bg value*/
+    --cur-dashboard-bg: var(--dashboard-bg);
+    --cur-side-menu: var(--side-menu);
+    --cur-sun-default-bg: var(--sun-default-bg);
+    --cur-planet-default-bg: var(--planet-default-bg);
 }

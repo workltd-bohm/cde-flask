@@ -1,21 +1,35 @@
 
 g_OverSelect = [
-    { name : "DETAILS", icon : "preview", link : WrapOpenFile},
-    { name : "PREVIEW", icon : "preview", link : WrapOpenFile},
-    { name : "RENAME", icon : "create", link : WrapRename},
-    { name : "DELETE", icon : "delete", link : WrapDelete},
-    { name : "MOVE", icon : "open_with", link : WrapMove},
-    { name : "SHARE", icon : "share", link : WrapShare},
-    { name : "DOWNLOAD", icon : "cloud_download", link : WrapDownload},
-    { name : "COLOR", icon : "color_lens", link : ColorPicker},
-    { name : "COPY", icon : "content_copy", link : WrapCopy},
+    { name : "DETAILS",     icon : "preview",           link : WrapOpenFile},
+    { name : "PREVIEW",     icon : "preview",           link : WrapOpenFile},
+    { name : "RENAME",      icon : "create",            link : WrapRename},
+    { name : "TRASH",       icon : "delete",            link : WrapTrash},
+    { name : "MOVE",        icon : "open_with",         link : WrapMove},
+    { name : "SHARE",       icon : "share",             link : WrapShare},
+    { name : "DOWNLOAD",    icon : "cloud_download",    link : WrapDownload},
+    { name : "COLOR",       icon : "color_lens",        link : ColorPicker},
+    { name : "COPY",        icon : "content_copy",      link : WrapCopy},
 ]
 
+// TODO 
+g_OverSelectTrash = [
+    { name : "DETAILS", icon : "preview",       link : WrapOpenFile},   // TODO display from which project, etc
+    { name : "RESTORE", icon : "delete_sweep",  link : WrapRestore},    // display from which project, etc
+    { name : "DESTROY", icon : "delete",        link : WrapDelete},     // display from which project, etc
+]
+
+s_type_default  = "default"
+s_type_project  = "project"
+s_type_trash    = "trash"
+
+// Multiple selection
 function SelectionCreate(obj, data) {
     // if(g_project.overlay){
     //     g_project.overlay.remove();
     //     g_project.overlay = false;
     // }
+
+    console.log(SESSION);
     if(g_project.selection){
         g_project.selection.remove();
         g_project.selection = false;
@@ -24,7 +38,16 @@ function SelectionCreate(obj, data) {
     data.selection = {};
     data.selection.this = obj;
 
-    var type = [...g_OverSelect];
+    var type;
+
+    switch(SESSION.section)
+    {
+        case s_type_project:
+        case s_type_default:    type = [...g_OverSelect];       break;
+        case s_type_trash:      type = [...g_OverSelectTrash];  break;
+    }
+
+    
     var file = 0;
     var folder = 0;
     for (var o in CHECKED){

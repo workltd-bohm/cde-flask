@@ -216,6 +216,30 @@ class DBMongoAdapter:
         self._close_connection()
         return result
 
+    # Finds user's Trashed items 
+    def get_my_trash(self, user):
+        users_trash =   self._db.Users.Trash
+        trash =         self._db.Trash
+
+        user = users_trash.find_one({'user_id': user['id']}, {'_id': 0})
+        my_trashed_items = []
+
+        if user:
+            for trashed_item in user['trash']:
+                item_query = {'project_id': trashed_item['project_id']}
+
+                if trashed_item['type'] == 'project':
+                    item_query['project_name'] = trashed_item['project_name']
+                elif trashed_item['type'] == 'ic':
+                    item_query['ic_id'] = trashed_item['ic_id']
+
+                trash_tmp = trash.find_one(item_query, {'_id': 0})
+                if trash_tmp:
+                    my_trashed_items.append(trash_tmp) 
+
+        self._close_connection()
+        return my_trashed_items
+
     def update_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
@@ -386,55 +410,300 @@ class DBMongoAdapter:
         self._close_connection()
         return add
 
-    def delete_ic(self, delete_ic_data):
-        col = self._db.Projects
-        # col_file = self._db.Projects.Files
-        col_file = self._db.fs.files
-        col_file_chunks = self._db.fs.chunks
-        project_query = {'project_name': delete_ic_data['project_name']}
-        project_json = col.find_one(project_query, {'_id': 0})
-        delete = msg.PROJECT_NOT_FOUND
+    # TODO update all users that share the project's trash
+    def trash_ic(self, ic_data):
+        # database tables
+        users =         self._db.Users.Roles
+        projects =      self._db.Projects
+        trash =         self._db.Trash          # trashed items
+        users_trash =   self._db.Users.Trash    # user trash info
+        files =         self._db.fs.files
+        file_chunks =   self._db.fs.chunks
+
+        project_query = {'project_name': ic_data['project_name']}
+        project_json = projects.find_one(project_query, {'_id': 0}) # get project from DB
+
+        # check if user has privileges TODO 
+
         if project_json:
-            if delete_ic_data['parent_id'] == 'root':
-                col.delete_one(project_query)
-                file_query = {'project_name': delete_ic_data['project_name']}
-                col_file.delete_many(file_query)
-                col_file_chunks.delete_many(file_query)
-                col_users = self._db.Users.Roles
-                user_query = {'user_id': delete_ic_data['user_id']}
-                pr_query = {'project_id': delete_ic_data['ic_id']}
-                result = col_users.find()
-                if result:
-                    for u in result:
-                        for count, pr in enumerate(u['projects']):
-                            if pr['project_id'] == project_json['project_id']:
-                                del u['projects'][count]
-                                col_users.update_one(user_query,
-                                                     {'$set': {'projects': u['projects']}})
-                delete = msg.PROJECT_SUCCESSFULLY_DELETED
+            # Trashing projects
+            if ic_data['parent_id'] == 'root':
+                # 'move' project to Trash
+                trash.insert_one(project_json)
+                projects.delete_one(project_query)
+                all_users = users.find()
+                if all_users:
+                    # iterate thru users in Users.Roles
+                    for user in all_users:
+                        # iterate through their projects
+                        for count, user_project in enumerate(user['projects']):
+                            # if its the one deleting
+                            if user_project['project_id'] == project_json['project_id']:
+                                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
+                                # if this user has any trash
+                                new_trash = {
+                                    'type': 'project',
+                                    'project_id': user['projects'][count]['project_id'],
+                                    'project_name': ic_data['project_name']
+                                }
+
+                                if my_trash:
+                                    my_trash['trash'].append(new_trash)
+                                    users_trash.update_one({'user_id': ic_data['user_id']},
+                                                            {'$set': 
+                                                                {'trash': my_trash['trash']}
+                                                            }
+                                                        )
+                                else:
+                                    trash_tmp = []
+                                    trash_tmp.append(new_trash)
+                                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
+                                    del trash_tmp
+                                # update user's projects
+                                del user['projects'][count]
+                                users.update_one({'user_id': ic_data['user_id']},
+                                                {'$set': 
+                                                    {'projects': user['projects']}
+                                                }
+                                            )
+                                            
+                                delete = msg.PROJECT_SUCCESSFULLY_TRASHED
+                
+            # Trashing ic/sub folders or files
             else:
                 project = Project.json_to_obj(project_json)
-                delete = project.delete_ic(delete_ic_data, project.root_ic)
-            if delete == msg.IC_SUCCESSFULLY_DELETED:
-                ic_deleted = True
-                if not delete_ic_data['is_directory'] or delete_ic_data['is_directory'] == "False":
-                    ic_deleted = False
-                    file_query = {'file_name': delete_ic_data['delete_name'], 'parent_id': delete_ic_data["parent_id"]}
-                    removing_file = col_file.find_one(file_query)
-                    self._fs.delete(removing_file["_id"])
-                    if col_file.find_one(file_query) == None:
-                        ic_deleted = True
-                if ic_deleted:
-                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                # find the ic in project ...
+                this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
+                # ... add project_id to it
+                this_ic['project_id'] = project.project_id
+                # put this IC to Trash collection
+                trash.insert_one(this_ic)
+                
+                # update user's trash
+                new_trash = {
+                        'type': 'ic',
+                        'project_id': this_ic['project_id'],
+                        'ic_id': ic_data['ic_id']
+                    }
+                
+                # if this user has trash already or to make new entry
+                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
+                if my_trash:
+                    my_trash['trash'].append(new_trash)
+                    users_trash.update_one({'user_id': ic_data['user_id']},
+                                            {'$set': 
+                                                {'trash': my_trash['trash']}
+                                            }
+                                        )
                 else:
-                    print("delete_ic", msg.STORED_FILE_NOT_FOUND)
-                    return msg.STORED_FILE_NOT_FOUND
+                    trash_tmp = []
+                    trash_tmp.append(new_trash)
+                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
+                    del trash_tmp
 
+                # delete ic/update from the project
+                delete = project.trash_ic(ic_data, project.root_ic)
+
+                # update project
+                projects.update_one({'project_id': this_ic['project_id']}, {'$set': project.to_json()})
         else:
-            print("delete_ic", msg.PROJECT_NOT_FOUND)
+            print("trash_ic", msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
+
         self._close_connection()
         return delete
+
+    # restores projects or other directories/files from trash
+    def restore_ic(self, restore_ic_data):
+        # database tables
+        users_roles =   self._db.Users.Roles
+        projects =      self._db.Projects
+        trash =         self._db.Trash          # trashed items
+        users_trash =   self._db.Users.Trash    # user trash info
+
+        trashed_query = dict()
+        if restore_ic_data['ic_id'] == '':  # if its a project
+            trashed_query = {'project_id': restore_ic_data['project_id'], 'project_name': restore_ic_data['restore_name']} #TODO project name
+        else:  # if its IC
+            trashed_query = {'project_id': restore_ic_data['project_id'], 'ic_id': restore_ic_data['ic_id']}
+        
+        project_or_ic_json = trash.find_one(trashed_query, {'_id': 0}) # get project/ic from DB
+
+        '''restoring projects'''
+        # find project in Trash
+        # restore from Trash to Projects
+        # update Users.Roles and Users.Trash
+        # delete from Trash
+        if not project_or_ic_json:
+            restored = msg.PROJECT_NOT_FOUND 
+        else:
+            if restore_ic_data['parent_id'] == 'root':  
+                ''' restoring projects '''
+                projects.insert_one(project_or_ic_json)
+
+                my_projects =   users_roles.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+                my_trash =      users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+
+                for trashed_ic in my_trash['trash']:
+                    # if item in trash matches our query
+                    if trashed_ic['project_id'] == restore_ic_data['project_id'] \
+                    and trashed_ic['project_name'] == restore_ic_data['restore_name']:
+                        my_projects['projects'].append({'project_id': trashed_ic['project_id'], 'role': 0})
+                        my_trash['trash'].remove(trashed_ic)
+
+                # update collections
+                users_roles.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'projects': my_projects['projects']}})
+                users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
+
+                # remove
+                trash.delete_one(trashed_query)
+                restored = msg.PROJECT_SUCCESSFULLY_RESTORED
+            else:
+                '''restoring IC'''
+                # get the IC from Trash
+                # find the project in Project
+                my_project = projects.find_one({'project_id': restore_ic_data['project_id']}, {'_id': 0})
+
+                if my_project:  # TODO take path and add in-between folders
+                    my_project = Project.json_to_obj(my_project)
+                    # find the parent_id inside project
+                    my_ic_parent_old = my_project.find_parent_by_id(restore_ic_data['parent_id'], my_project.root_ic)
+
+                    if my_ic_parent_old:
+                        my_ic_parent_new = my_ic_parent_old
+
+                        # insert trashed ic into the parent
+                        my_ic_parent_new.sub_folders.append(Project.json_folders_to_obj(project_or_ic_json))
+
+                        # insert the ic to project
+                        my_project.update_ic(my_ic_parent_new, my_ic_parent_old)
+
+                        # update project
+                        projects.update_one({'project_id': restore_ic_data['project_id']}, {'$set': my_project.to_json()})
+
+                        # delete from Trash
+                        trash.delete_one(trashed_query)
+                        # update trash
+                        my_trash = users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+                        for trashed_item in my_trash['trash']:
+                            if trashed_item['project_id'] == restore_ic_data['project_id'] \
+                            and trashed_item['ic_id'] == restore_ic_data['ic_id']:
+                                my_trash['trash'].remove(trashed_item)
+
+                        users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
+                        restored = msg.IC_SUCCESSFULLY_RESTORED
+                    else:
+                        restored = msg.IC_FAILED_RESTORE_PARENT_NOT_FOUND
+                else:
+                    restored = msg.PROJECT_NOT_FOUND
+
+        return restored
+
+    # deletes projects permanently (from database)
+    def delete_ic(self, delete_ic_data):
+        '''
+        # check and find specific item in trash
+        # destroy it
+        # update user's trash
+        '''
+        trash =         self._db.Trash
+        users_trash =   self._db.Users.Trash
+        files =         self._db.fs.files
+        file_chunks =   self._db.fs.chunks
+        
+        # query config
+        delete_query = dict()
+        if delete_ic_data['ic_id'] == '':
+            delete_query = {
+                'project_id':   delete_ic_data['project_id'], 
+                'project_name': delete_ic_data['delete_name']
+            } 
+            response = msg.PROJECT_NOT_FOUND
+        else:
+            delete_query = {
+                'project_id': delete_ic_data['project_id'], 
+                'ic_id': delete_ic_data['ic_id']
+            }
+            response = msg.STORED_FILE_NOT_FOUND
+
+        project_or_ic_json = trash.find_one(delete_query, {'_id': 0})
+        if project_or_ic_json:
+            # delete all project files from trash / delete a file and chunks related / delete just ic
+            if 'project_name' in project_or_ic_json.keys():
+                trash.delete_many({'project_id': delete_ic_data['project_id']})
+                response = msg.PROJECT_SUCCESSFULLY_DELETED
+            elif 'stored_id' in project_or_ic_json.keys():
+                trash.delete_one(delete_query)
+                files.delete_one({'file_id': project_or_ic_json['stored_id']})
+                file_chunks.delete_many({'files_id': ObjectId(project_or_ic_json['stored_id'])})
+                response = msg.FILE_SUCCESSFULLY_DELETED
+            elif 'ic_id' in project_or_ic_json.keys():
+                trash.delete_one(delete_query)
+                response = msg.IC_SUCCESSFULLY_DELETED
+
+            # update user's trash TODO trash should store specific ic data, not just project id
+            my_trash = users_trash.find_one({'user_id': delete_ic_data['user_id']})
+            for trashed_item in my_trash['trash']:
+                if trashed_item['project_id'] == delete_ic_data['project_id']:
+                    my_trash['trash'].remove(trashed_item)
+                    if len(my_trash['trash']) > 0:
+                        users_trash.update_one(
+                            {'user_id': delete_ic_data['user_id']}, 
+                            {'$set': {'trash': my_trash['trash']}})
+                    else:
+                        users_trash.delete_one({'user_id': delete_ic_data['user_id']})
+                    break
+        
+        self._close_connection()
+        return response
+
+    def empty_my_trash(self, user):
+        # find user in Users.Trash
+        # find all his trashed items
+        # destroy them
+        # update user's trash
+        users_trash =   self._db.Users.Trash
+        trash =         self._db.Trash
+        files =         self._db.fs.files
+        file_chunks =   self._db.fs.chunks
+
+        this_user = users_trash.find_one({'user_id': user['user_id']}, {'_id': 0})
+        if this_user:
+            trash_to_del = []
+            for trashed_item in this_user['trash']:
+                if trashed_item['type'] == 'project':
+                    item_query = {'project_id': trashed_item['project_id'], 'project_name': trashed_item['project_name']}
+                elif trashed_item['type'] == 'ic':
+                    item_query = {'project_id': trashed_item['project_id'], 'ic_id': trashed_item['ic_id']}
+
+                # delete associated files
+                project_or_ic_json = trash.find_one(item_query)
+                if 'stored_id' in project_or_ic_json.keys():
+                    files.find_one_and_delete({'file_id': project_or_ic_json['stored_id']})
+                    file_chunks.delete_many({'files_id': ObjectId(project_or_ic_json['stored_id'])})
+                    del project_or_ic_json
+
+                # delete item from trash
+                if trash.find_one_and_delete(item_query): 
+                    trash_to_del.append(trashed_item)
+
+            for x in trash_to_del:
+                this_user['trash'].remove(x)
+
+            users_trash.update_one({'user_id': user['user_id']}, {'$set': {'trash': this_user['trash']}})
+            self.trash_clear(user['user_id'])
+        
+        self._close_connection
+        return msg.TRASH_SUCCESSFULLY_EMPTIED
+
+    # remove user entry from Users.Trash if empty
+    def trash_clear(self, user_id):
+        users_trash =   self._db.Users.Trash
+        user_query = {'user_id': user_id}
+        user = users_trash.find_one(user_query, {'_id': 0})
+        if len(user['trash']) < 1:
+            users_trash.find_one_and_delete(user_query)
+        return
 
     def get_file(self, file_name):
         stored_file = None
@@ -1038,6 +1307,8 @@ class DBMongoAdapter:
         self._db.fs.files.drop()
         self._db.fs.chunks.drop()
         self._db.Projects.Shared.drop()
+        self._db.Trash.drop()
+        self._db.Users.Trash.drop()
         # self._db.Users.drop()
 
         col_users = self._db.Users.Roles

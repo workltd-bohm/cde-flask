@@ -7,8 +7,6 @@ g_OverUser = []
 g_OverProject = [
     { name: "NEW PROJECT", icon: "create_new_folder", link: WrapNewProject },
     { name: "UPLOAD PROJECT", icon: "cloud_upload", link: WrapUploadProject }
-    //{ name : "RENAME", icon : "create", link : WrapRename},
-    //{ name : "DELETE", icon : "delete", link : WrapDelete},
 ]
 
 g_OverSearch = [
@@ -20,11 +18,11 @@ g_OverFolder = [
     { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "DELETE", icon: "delete", link: WrapDelete },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
     { name: "COPY", icon: "content_copy", link: WrapCopy },
     { name: "MOVE", icon: "open_with", link: WrapMove },
     { name: "SHARE", icon: "share", link: WrapShare },
-    //{ name : "SHARE PROJECT", icon : "control_point_duplicate", link : WrapShareProject},
+    { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
     { name: "COLOR", icon: "color_lens", link: ColorPicker },
 ]
@@ -34,7 +32,7 @@ g_OverFile = [
     { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "DELETE", icon: "delete", link: WrapDelete },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
     { name: "COPY", icon: "content_copy", link: WrapCopy },
     { name: "MOVE", icon: "open_with", link: WrapMove },
     { name: "SHARE", icon: "share", link: WrapShare },
@@ -45,8 +43,18 @@ g_OverFile = [
 g_OverPlanet = [
     { name: "SELECT", icon: "check_circle", link: SelectPlanet },
     { name: "OPEN", icon: "preview", link: WrapOpenFile },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
 ]
 
+g_OverTrash = [
+    { name: "EMPTY", icon: "delete_sweep", link: WrapEmptyTrash }, // TODO WrapEmptyTrash
+]
+
+g_OverTrashPlanet = [
+    { name: "SELECT", icon: "check_circle", link: SelectPlanet },
+    { name: "RESTORE", icon: "restore_from_trash", link: WrapRestore },
+    { name: "DESTROY", icon: "delete", link: WrapDelete }
+]
 g_OverMarket = [
     { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
     { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
@@ -59,10 +67,9 @@ g_OverPost = [
 ]
 
 g_OverBid = [
-    { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
-]
-
-// -------------------------------------------------------
+        { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
+    ]
+    // -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
     data.overlay = {};
@@ -71,22 +78,26 @@ function OverlayCreate(obj, data, parent, planet = false) {
 
     var type = g_OverNone;
     switch (data.overlay_type) {
+        case "ic":
+            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            break;
         case "user":
             type = g_OverUser;
             break;
         case "project":
             type = g_OverProject;
             break;
-        case "ic":
-            {
-                type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
-                break;
-            }
-        case "market":
-            type = g_OverMarket;
-            break;
         case "search_target":
             type = g_OverPlanet;
+            break;
+        case "trash":
+            type = g_OverTrash;
+            break;
+        case "trash_planet":
+            type = g_OverTrashPlanet;
+            break;
+        case "market":
+            type = g_OverMarket;
             break;
         case "posts":
             type = g_OverPost;
@@ -100,7 +111,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (type.length == 0) return;
 
     if (planet) {
-        type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }];
+        if (data.overlay_type != "trash_planet") {
+            type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }, {...g_OverPlanet[2] }];
+        }
         if (data.checked) type[0].icon = "check_circle_outline";
     }
 

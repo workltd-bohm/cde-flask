@@ -5,9 +5,10 @@ from email.mime.multipart import MIMEMultipart
 smtp_port = 465
 sender_email = "if.lamp0@gmail.com"
 receiver_email = [
-    ["toma.dimcic@gmail.com", "Toma"],
-    ["milos.dimcic@gmail.com", "Milos"],
-    ["kraksorz@gmail.com", "Filip"]
+    # ["toma.dimcic@gmail.com", "Toma"],
+    # ["milos.dimcic@gmail.com", "Milos"],
+    # ["kraksorz@gmail.com", "Filip"],
+    ["phillip.zoghby@gmail.com", "Phillip"]
 ]
 password = "lozinka121"
 
