@@ -26,16 +26,16 @@ g_GradientShadowSun.append("stop").attr("offset", "100%").style("stop-color", "r
 
 var g_FilterShadow = SWGDefs.append("filter")
     .attr("id", "filter_shadow")
-    .attr("x", "-10%")
-    .attr("y", "-10%")
-    .attr("width", "180%")
-    .attr("height", "180%");
-/*g_FilterShadow.append("feGaussianBlur")
+    .attr("x", "0%")
+    .attr("y", "0%")
+    .attr("width", "140%")
+    .attr("height", "140%");
+g_FilterShadow.append("feGaussianBlur")
     .attr("stdDeviation", "1 1")
-    .attr("result", "blur");*/
+    .attr("result", "blur");
 g_FilterShadow.append("feOffset")
-    .attr("dx", "2")
-    .attr("dy", "2");
+    .attr("dx", "1")
+    .attr("dy", "1");
 
 var g_FilterBlur = SWGDefs.append("filter")
     .attr("id", "filter_blur")
