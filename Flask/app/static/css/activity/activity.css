@@ -140,6 +140,12 @@
     overflow: hidden;
 }
 
+.comment-options:hover {
+}
+
+.comment-options {
+}
+
 .img-comment-container {
     display: flex;
 }

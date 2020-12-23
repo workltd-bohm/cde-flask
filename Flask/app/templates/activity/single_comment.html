@@ -13,15 +13,16 @@
                     <b class="details_event_user">{{ comment['user']['username'] }}</b>
                 </p>
                 <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">
-                    {{ comment['comment'] }} 
-                    <br>
+                    {{ comment['comment'] }}
                 </p>
             </div>
         </div>
 
         {% if comment['user']['user_id'] == session['user']['id'] %}
-        <i class="material-icons create" onclick="editComment(this.parentElement)">edit</i>
+        <i class="material-icons create comment-options" onclick="editComment(this.parentElement)">edit</i>
         {% endif %}
         
       </div>
             <p class="details_date comment-date">{{ comment['date'] }}</p>
+
+            
