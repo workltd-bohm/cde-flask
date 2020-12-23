@@ -1,8 +1,10 @@
 @import url("../common/colors.css");
 
+
+
 /*This is the default Menu position (collapsed)*/
 .menu-fixed {
-  background-color: var(--side-menu);
+  background-color: var(--cur-side-menu);
   width: 5%; /*5%*/
   z-index: 2;
   height: 100%;
