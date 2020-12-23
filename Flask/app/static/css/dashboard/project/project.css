@@ -51,8 +51,8 @@
 }
 
 .shader.star {
-    /*fill : url("#gradient_shadow_sun");*/
-    fill: none;
+    fill : url("#gradient_shadow_sun");
+    /* fill: none; */
 }
 .shader.planet {
     fill : url("#gradient_shadow");
