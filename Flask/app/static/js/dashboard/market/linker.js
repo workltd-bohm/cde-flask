@@ -54,6 +54,7 @@ function NewPost(obj, request_data = '') {
                         previewEditFile(blob);
                     });
                 }
+                MarketTabSwap('3d-view');
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -277,6 +278,7 @@ function ResponseEditPost(data, tmp, post_id, json = '') {
     OpenEditor(data.html, data.data);
     OpenActivityEditPost(tmp, g_post_type.edit, data.data);
     DropAreaInit();
+    MarketTabSwap('3d-view');
     Set3DPreview();
     documents = []
     images = []
@@ -311,6 +313,7 @@ function ResponseViewPost(data, tmp, post_id) {
     OpenEditor(data.html, data.data);
     ClearActivity(false);
     OpenActivityEditBid(tmp);
+    MarketTabSwap('3d-view');
     data.data.image.forEach(async function(img) {
         let url = '/get_post_image/' + img['id'] + '?post_id=' + post_id;
         let blob = await fetch(url).then(r => r.blob());
