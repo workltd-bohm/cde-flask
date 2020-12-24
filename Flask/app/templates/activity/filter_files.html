@@ -86,20 +86,9 @@
                   </div>
                   <br>
                   <div class="activity-tab-div-comment">
-                    {% for comment in comments %}
-                      <div class="comment-container">
-                        <div class="comment-img container"><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </div>
-                        <div class="comment-container-all">
-                          <p class="details_date comment-date">{{ comment['date'] }}</p>
-                          <div class="comments_field">
-                          <div class="comment-inline">
-                            <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
-                            <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
-                            </div>
-                        </div>
-                        </div>
-                      </div>
-                      {% endfor %}
+                    {% for comment in comments|reverse %}
+                    {% include 'activity/single_comment.html' %}
+                    {% endfor %}
                     </div>
                   </div>
               </form>

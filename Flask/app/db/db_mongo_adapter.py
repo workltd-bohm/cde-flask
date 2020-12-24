@@ -1079,6 +1079,36 @@ class DBMongoAdapter:
         if 'post_id' in request_data.keys():
             return self.update_post_comment(request_data)
 
+        # find project
+        projects = self._db.Projects
+        project_query = {'project_name': request_data['project_name']}
+        project_json = projects.find_one(project_query, {'_id': 0})
+
+        if project_json:
+            # find ic
+            project = Project.json_to_obj(project_json)
+            ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+            ic_new = ic
+            comments = ic_new.comments
+
+            # find & replace comment
+            for i, comment in enumerate(comments):
+                if comment.id == request_data['comment_id']:
+                    comments[i].comment = request_data['comment']
+                    comments[i].date = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
+                    break
+            ic_new.comments = comments
+            project.update_ic(ic_new, ic)
+            message = msg.COMMENT_SUCCESSFULLY_UPDATED
+
+            # update
+            projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
+        else:
+            message = msg.PROJECT_NOT_FOUND
+
+        self._close_connection()
+        return message
+
     def update_post_comment(self, request_data):
         posts = self._db.Marketplace.Posts
         post_query = {'post_id': request_data['post_id']}
@@ -1100,6 +1130,34 @@ class DBMongoAdapter:
     def delete_comment(self, request_data):
         if 'post_id' in request_data.keys():
             return self.delete_post_comment(request_data)
+
+        # find project
+        projects = self._db.Projects
+        project_query = {'project_name': request_data['project_name']}
+        project_json = projects.find_one(project_query, {'_id': 0})
+
+        if project_json:
+            # find ic
+            project = Project.json_to_obj(project_json)
+            ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+            ic_new = ic
+            comments = ic_new.comments
+
+            # find & replace comment
+            for i, comment in enumerate(comments):
+                if comment.id == request_data['comment_id']:
+                    del comments[i]
+                
+            # update comments, then project
+            ic_new.comments = comments
+            project.update_ic(ic_new, ic)
+            projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
+            message = msg.COMMENT_SUCCESSFULLY_DELETED
+        else:
+            message = msg.PROJECT_NOT_FOUND
+
+        self._close_connection()
+        return message
 
     def delete_post_comment(self, request_data):
         posts = self._db.Marketplace.Posts
