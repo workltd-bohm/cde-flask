@@ -1061,13 +1061,16 @@ class DBMongoAdapter:
         return message
 
     def add_comment_to_post(self, request_data, comment):
+        # find post
         posts = self._db.Marketplace.Posts
         post_query = {'post_id': request_data['post_id']}
         post = posts.find_one(post_query, {'_id': 0})
         if post:
+            # add comment & update post
             post = Post.json_to_obj(post)
             post.comments.append(comment.to_json())
             posts.update_one(post_query, {'$set': post.to_json()})
+
             message = msg.COMMENT_SUCCESSFULLY_ADDED
         else:
             message = msg.POST_NOT_FOUND
@@ -1094,15 +1097,21 @@ class DBMongoAdapter:
             # find & replace comment
             for i, comment in enumerate(comments):
                 if comment.id == request_data['comment_id']:
+                    # security check
+                    if comment.user['user_id'] != request_data['user_id']:
+                        self._close_connection
+                        return msg.USER_NO_RIGHTS
+
                     comments[i].comment = request_data['comment']
                     comments[i].date = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
                     break
-            ic_new.comments = comments
-            project.update_ic(ic_new, ic)
-            message = msg.COMMENT_SUCCESSFULLY_UPDATED
 
             # update
+            ic_new.comments = comments
+            project.update_ic(ic_new, ic)
             projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+            message = msg.COMMENT_SUCCESSFULLY_UPDATED
         else:
             message = msg.PROJECT_NOT_FOUND
 
@@ -1110,15 +1119,23 @@ class DBMongoAdapter:
         return message
 
     def update_post_comment(self, request_data):
+        # find marketplace post
         posts = self._db.Marketplace.Posts
         post_query = {'post_id': request_data['post_id']}
         post = posts.find_one(post_query, {'_id': 0})
         if post:
+            # find comment & update
             for i, comment in enumerate(post['comments']):
                 if comment['id'] == request_data['comment_id']:
+                    # security check
+                    if comment['user']['user_id'] != request_data['user_id']:
+                        self._close_connection
+                        return msg.USER_NO_RIGHTS
+
                     post['comments'][i]['comment'] = request_data['comment']
                     post['comments'][i]['date'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
                     break
+            # update post
             posts.update_one(post_query, {'$set': post})
             message = msg.COMMENT_SUCCESSFULLY_UPDATED
         else:
@@ -1143,10 +1160,16 @@ class DBMongoAdapter:
             ic_new = ic
             comments = ic_new.comments
 
-            # find & replace comment
+            # delete comment
             for i, comment in enumerate(comments):
                 if comment.id == request_data['comment_id']:
+                    # security check
+                    if comment.user['user_id'] != request_data['user_id']:
+                        self._close_connection
+                        return msg.USER_NO_RIGHTS
+
                     del comments[i]
+                    break
                 
             # update comments, then project
             ic_new.comments = comments
@@ -1166,6 +1189,11 @@ class DBMongoAdapter:
         if post:
             for i, comment in enumerate(post['comments']):
                 if comment['id'] == request_data['comment_id']:
+                    # security check
+                    if comment['user']['user_id'] != request_data['user_id']:
+                        self._close_connection
+                        return msg.USER_NO_RIGHTS
+
                     del post['comments'][i]
                     break
             posts.update_one(post_query, {'$set': post})
