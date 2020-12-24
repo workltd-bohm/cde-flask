@@ -1,17 +1,21 @@
-<!--<p><img class="profile-icon" src="/get_profile_image/{{ picture }}"/><b class="details_event_user">{{ comment['user']['username'] }}</b> </p>
-    <div class="comments_field">
-        <p class="details_event" style="margin-left:5px;">{{ comment['comment'] }}</p>
-        <p class="details_date" style="margin-left:5px;">{{ comment['date'] }}</p>
-    </div>-->
-    <div class="comment-container">
-        <div class="comment-img container"><img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/> </div>
-        <div class="comment-container-all">
-          <p class="details_date comment-date">{{ comment['date'] }}</p>
-          <div class="comments_field">
-          <div class="comment-inline">
-            <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
-            <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }} <br></p>
+<div class="comment-container" data-id="{{ comment['id'] }}" data-user="{{ comment['user']['user_id'] }}">
+    <div class="comment-img container">
+        <img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/>
+    </div>
+    <div class="comment-container-all">
+        <p class="details_date comment-date">{{ comment['date'] }}</p>
+        <div class="comments_field">
+            <div class="comment-inline">
+                <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
+                <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }}</p>
             </div>
         </div>
-        </div>
-      </div>
+        {% if comment['user']['user_id'] == session['user']['id'] %}
+        <i class="material-icons border_color comment-options" onclick="editComment(this.parentElement)">edit</i>
+        {% endif %}
+
+        {% if comment['user']['user_id'] == session['user']['id'] or post['user_owner']['id'] == session['user']['id'] %}
+        <i class="material-icons clear comment-options" onclick="deleteComment(this.parentElement.parentElement)">delete</i>
+        {% endif %}
+    </div>
+</div>

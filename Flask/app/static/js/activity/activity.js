@@ -54,21 +54,30 @@ function sendComment(el) {
     if (key === 13 && el.shiftKey) {
         return true;
     }
+
     comment = $('#comment').val();
+    if (comment.length < 1) {return; }  // prevent sending empty comments
+
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
     div = $('.activity-tab-div-comment');
+    post_id = $('#post_id').val();
     console.log(comment);
+
     $.ajax({
         url: "/send_comment",
         type: 'POST',
-        data: JSON.stringify({
-            comment: comment,
-            project_name: project_name,
-            parent_id: parent_id,
-            ic_id: ic_id
-        }),
+        data: JSON.stringify(project_name ? 
+            {
+                comment: comment,
+                project_name: project_name,
+                parent_id: parent_id,
+                ic_id: ic_id
+            } : {
+                comment: comment,
+                post_id: post_id
+            }),
         timeout: 5000,
         success: function(data) {
             //            input_json = JSON.parse(data);
@@ -84,6 +93,123 @@ function sendComment(el) {
         }
     });
 
+}
+
+var tmp_comment = "";
+
+function editComment(elem) {
+    let editmode = document.getElementById('comment-editmode');
+    if (editmode) {
+        editmode.parentElement.innerHTML = tmp_comment;
+    }
+    
+    tmp_comment = elem.getElementsByClassName('comment-inline')[0].innerHTML;
+    let comment_text = elem.getElementsByClassName('comment-events')[0].innerHTML;
+
+    elem.getElementsByClassName('comment-inline')[0].innerHTML = 
+        '<textarea id="comment-editmode" ' 
+        + 'onkeypress="updateComment(event, this.parentElement.parentElement.parentElement.parentElement.dataset)">' 
+        + "</textarea>";
+
+    $('#comment-editmode').focus().val(comment_text.trim());
+}
+
+function updateComment(el, dataset) {
+    var key = window.event.keyCode;
+    if (key != 13)
+        return true;
+    if (key === 13 && el.shiftKey) {
+        return true;
+    }
+
+    let editmode = document.getElementById('comment-editmode');
+    let parent = editmode.parentElement;
+    let comment = editmode.value;
+
+    if (comment.length < 1){
+        // prompt to delete
+    }
+
+    console.log(dataset['id']);
+    project_name = $('#project_name').val();
+    parent_id = $('#parent_id').val();
+    ic_id = $('#ic_id').val();
+    div = $('.activity-tab-div-comment');
+    post_id = $('#post_id').val();
+
+    $.ajax({
+        url: "/update_comment",
+        type: 'POST',
+        data: JSON.stringify(project_name ? 
+            {
+                comment: comment,
+                project_name: project_name,
+                parent_id: parent_id,
+                ic_id: ic_id
+            } : {
+                post_id: post_id,
+                comment_id: dataset.id,
+                comment: comment,
+            }),
+        timeout: 5000,
+        success: function(data) {
+            //            input_json = JSON.parse(data);
+            //console.log(data);
+            // div.prepend(data);
+            // $('#comment').val('');
+            //div.scrollTop(div[0].scrollHeight);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+
+    parent.innerHTML = tmp_comment;
+    
+    parent.getElementsByClassName('comment-events')[0].innerHTML = comment;
+}
+
+function resetComment(){
+    let editmode = document.getElementById('comment-editmode');
+    if (editmode) {
+        editmode.parentElement.innerHTML = tmp_comment;
+    }
+}
+
+function deleteComment(elem){
+    project_name = $('#project_name').val();
+    parent_id = $('#parent_id').val();
+    ic_id = $('#ic_id').val();
+    div = $('.activity-tab-div-comment');
+    post_id = $('#post_id').val();
+    comment_id = elem.dataset.id;
+    console.log(elem);
+
+    $.ajax({
+        url: "/delete_comment",
+        type: 'POST',
+        data: JSON.stringify(project_name ? 
+            {
+                comment: comment,
+                project_name: project_name,
+                parent_id: parent_id,
+                ic_id: ic_id
+            } : {
+                post_id: post_id,
+                comment_id: comment_id
+            }),
+        timeout: 5000,
+        success: function(data) {
+            elem.remove();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
 }
 
 function AddAccess() {
