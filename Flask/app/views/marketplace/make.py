@@ -123,7 +123,6 @@ def make_post_view_activity():
             response = {
                 'html': render_template("dashboard/market/post_view_activity.html",
                                         post=post,
-                                        comments=[],
                                         bids=[]
                                         # tags=[]
                                         ),

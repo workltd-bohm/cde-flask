@@ -9,6 +9,8 @@ ACCOUNT_CHANGED = {"message": "Account changed", "code": 200}
 DB_FAILURE = {"message": "Connection with the DB failed!", "code": 400}
 
 COMMENT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+COMMENT_SUCCESSFULLY_UPDATED = {"message": "Updated successfully", "code": 200}
+COMMENT_SUCCESSFULLY_DELETED = {"message": "Deleted successfully", "code": 200}
 TAG_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 TAG_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 
