@@ -80,6 +80,7 @@
 .details_event_user {
     color: black;
 }
+
 .user-details-container P {
     margin-top: 4px;
     font-weight: 400;
@@ -89,25 +90,31 @@
 .user-details-container {
     display: flex;
 }
+
 .user-details-event-date {
     margin-left: 10px;
 }
+
 .user-details-event-date p {
     margin-bottom: 0px;
 }
+
 .img-details {
     width: 80px;
     height: 80px;
     border-radius: 50%;
 }
+
 p.details_event_name {
     color: black;
     text-transform: capitalize;
 }
+
 p.details_date {
     color: black;
     text-transform: capitalize;
 }
+
 .tab-title {
     width: 100%;
     text-align: center;
@@ -116,18 +123,20 @@ p.details_date {
     padding-bottom: 5px;
     text-transform: uppercase;
 }
+
 img.img-copy {
     width: 32px;
     height: 32px;
     margin-right: 10px;
 }
+
 .share-link {
     display: flex;
     background-color: #d0d0d0;
     padding: 10px 0px;
     margin-left: 8px;
-
 }
+
 .share-link p {
     margin-right: 40px;
     margin-left: 10px;
@@ -167,7 +176,8 @@ img.img-copy {
     flex-wrap: wrap;
     margin-left: 10px;
 }
-.comment-events{
+
+.comment-events {
     top: 12px !important;
     position: relative !important;
     word-wrap: break-word;
@@ -185,15 +195,23 @@ img.img-copy {
     margin-right: 10px;*/
     overflow: hidden;
 }
+
 p.details_event_user.comments {
     text-transform: uppercase;
     margin-bottom: 0px;
 }
 
 .comment-options:hover {
+    opacity: 0.5;
 }
 
 .comment-options {
+    cursor: pointer;
+}
+
+#comment-editmode {
+    width: 95%;
+    height: 95%;
 }
 
 .img-comment-container {
@@ -236,9 +254,11 @@ div.activity-tab-div>div.scroll {
     text-align: left;
     /*padding-top: 20px;*/
 }
+
 p.details_date.comment-date {
     margin-bottom: 0px;
 }
+
 .comment-div {
     width: 100%;
     /* height: 100%; */
@@ -268,10 +288,12 @@ p.details_date.comment-date {
     height: 40px !important;
     top: 6px;
 }
+
 .comment-container-all {
     width: 100%;
     margin-right: 20px;
 }
+
 .access-div {
     position: relative;
     height: 700px;
@@ -292,12 +314,15 @@ p.details_date.comment-date {
     border: none;
     text-align: left;
 }
+
 .access-owner-profile {
     text-align: center;
 }
+
 p.details_event.owner-username {
     text-transform: uppercase;
 }
+
 .access_field {
     width: 95%;
     /*background: none repeat scroll 0 0 #ccc;*/
@@ -351,12 +376,14 @@ p.details_event.owner-username {
     margin-right: 2px;
 }
 
+
 /*.add-tag {
     /*margin: 15px;
     margin-top: 15px;
     margin-bottom: 15px;
     margin-left: 160px;
 }*/
+
 .add-tag {
     /* margin: 15px; */
     margin-top: 15px;
@@ -367,6 +394,7 @@ p.details_event.owner-username {
     outline: none;
     border: none;
 }
+
 div#add-tagautocomplete-list {
     position: absolute;
     /* border: 1px solid #bbb; */
@@ -423,8 +451,6 @@ div#add-tagautocomplete-list {
     display: inline;
 }
 
-
-
 .access-break-line {
     width: 59% !important;
     margin-left: 90px;
@@ -461,10 +487,12 @@ div#add-tagautocomplete-list {
     position: relative;
     left: -30px;
 }
+
 .create-user-container {
     display: flex;
     padding: 10px;
 }
+
 .date-columne {
     left: -10px !important;
 }
@@ -478,11 +506,14 @@ div#add-tagautocomplete-list {
     text-align: center;
     cursor: pointer;
 }
+
 .toggle-container-open {
-     padding-top: 4px;
+    padding-top: 4px;
 }
 
-#tags, #ic, #history {
+#tags,
+#ic,
+#history {
     display: none;
 }
 
@@ -494,6 +525,7 @@ div#add-tagautocomplete-list {
 .bohm-files-button {
     width: 95%;
 }
+
 .form__group.field.access-users-add {
     display: flex;
 }
@@ -507,10 +539,11 @@ input#user_name {
     font-size: 1.2rem;
     color: #bbb !important;
     /* padding: 7px 0; */
-    background:  white !important; 
+    background: white !important;
     /* transition: border-color 0.2s; */
     padding-left: 10px;
 }
+
 input.add-user {
     border-radius: 50%;
     width: 34px;
@@ -520,10 +553,12 @@ input.add-user {
     border: 1px solid black;
     top: 5px;
 }
+
 input#user_name::placeholder {
     color: #000 !important;
     font-size: 14px;
 }
+
 label.form__label.access {
     font-size: 14px !important;
     cursor: text;
@@ -537,6 +572,7 @@ label.form__label.access:focus {
     top: -9px !important;
     margin-left: 10px;
 }
+
 select#role {
     width: 30%;
     left: -24px;
