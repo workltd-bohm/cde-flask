@@ -373,6 +373,7 @@ def update_comment():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        request_data['user_id'] = session.get('user')['id']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):                 
             result = db.update_comment(db_adapter, request_data)
@@ -399,6 +400,7 @@ def delete_comment():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        request_data['user_id'] = session.get('user')['id']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):                 
             result = db.delete_comment(db_adapter, request_data)

@@ -145,7 +145,9 @@ function updateComment(el, dataset) {
                 comment: comment,
                 project_name: project_name,
                 parent_id: parent_id,
-                ic_id: ic_id
+                ic_id: ic_id,
+                comment_id: dataset.id,
+                comment: comment,
             } : {
                 post_id: post_id,
                 comment_id: dataset.id,
@@ -195,7 +197,8 @@ function deleteComment(elem){
                 comment: comment,
                 project_name: project_name,
                 parent_id: parent_id,
-                ic_id: ic_id
+                ic_id: ic_id,
+                comment_id: comment_id
             } : {
                 post_id: post_id,
                 comment_id: comment_id
