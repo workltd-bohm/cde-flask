@@ -126,6 +126,31 @@ def get_project():
     return resp
 
 
+@app.route('/get_my_projects', methods=['POST'])
+def get_my_projects():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        user = session.get('user')
+        # print(request_data)
+        if db.connect(db_adapter):
+            result = db.get_my_projects(db_adapter, user)
+
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(result)
+            return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/get_root_project', methods=['POST'])
 def get_root_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))

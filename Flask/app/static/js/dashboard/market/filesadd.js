@@ -256,3 +256,61 @@ function Set3DPreview() {
     iframe.style.height = "100%";
     $('#d3view-preview').append(iframe);
 }
+
+function OpenFolderStructure() {
+    PopupOpen(OpenFolderStructurePopup, '', '');
+}
+
+function OpenFolderStructurePopup(form) {
+    LoadStart();
+    $.ajax({
+        url: "/get_my_projects",
+        type: 'POST',
+        data: JSON.stringify({}),
+        timeout: 5000,
+        success: function(data) {
+            input_json2 = JSON.parse(data);
+            console.log(input_json2);
+            form.empty();
+            div = document.createElement('div');
+            div.id = 'container';
+            var root = new TreeNode("projects");
+            for (var i = 0; i < input_json2.length; i++) {
+                var node = new TreeNode(input_json2[i].project_name);
+                console.log(input_json2[i]);
+                for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
+                    AddSubfolders(node, input_json2[i].root_ic.sub_folders[j]);
+                }
+                root.addChild(node);
+            }
+            form.append(div);
+            var tree = new TreeView(root, "#container", {
+                leaf_icon: "<span>&#128441;</span>",
+                parent_icon: "<span>&#128449;</span>",
+                open_icon: "<span>&#9698;</span>",
+                close_icon: "<span>&#9654;</span>"
+            });
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
+
+function AddSubfolders(node, sub_folder) {
+    name = sub_folder.name;
+    if (!sub_folder.is_directory) {
+        name = sub_folder.name + sub_folder.type;
+    }
+    var child = new TreeNode(name);
+    for (var k = 0; k < sub_folder.sub_folders.length; k++) {
+        // console.log(sub_folder.sub_folders[k].name);
+        AddSubfolders(child, sub_folder.sub_folders[k]);
+    }
+    console.log(sub_folder.name);
+    node.addChild(child);
+}
