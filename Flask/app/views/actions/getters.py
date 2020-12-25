@@ -136,9 +136,20 @@ def get_my_projects():
         if db.connect(db_adapter):
             result = db.get_my_projects(db_adapter, user)
 
+            response = {
+                    'html': render_template("popup/folder_structure.html",
+                                            ),
+                    'data': result
+                }
+            resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(result)
+            resp.data = json.dumps(response)
             return resp
+
+            # resp.status_code = msg.DEFAULT_OK['code']
+            # resp.data = resp.data = json.dumps({"data": result, "project" : False, "session": session.get("project")})
+            # resp.data = json.dumps(result)
+            # return resp
 
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))

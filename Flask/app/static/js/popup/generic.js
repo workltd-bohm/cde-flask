@@ -1,41 +1,40 @@
-
-$( document ).ready(function(){
-    $("div.pero > .cover.back").click(function(d){
+$(document).ready(function() {
+    $("div.pero > .cover.back").click(function(d) {
         $(this).parent().hide();
     });
 
-    $("div.pero > .content > .zatvori").click(function(d){
+    $("div.pero > .content > .zatvori").click(function(d) {
         GetForm().empty();
         $(this).parent().parent().hide();
     });
 });
 
-function LoadStart(){
+function LoadStart() {
     var load = $('div.pero > .cover.front');
     load.show();
 }
 
-function LoadStop(){
+function LoadStop() {
     var load = $('div.pero > .cover.front');
     load.hide();
 }
 
-function GetForm(){
+function GetForm() {
     return $("div.pero > .content > .form");
 }
 
 // Set up an empty form
-function PopupOpen(run=null, data=null, file=null){
+function PopupOpen(run = null, data = null, file = null) {
     var form = GetForm();
 
-    LoadStop(); 
+    LoadStop();
     $(form).empty();
     $("div.pero").show();
 
-    if(run) run(form, data, file);
+    if (run) run(form, data, file);
 }
 
-function PopupClose(){
+function PopupClose() {
     var form = GetForm();
     $(form).empty();
     LoadStop();
@@ -43,77 +42,84 @@ function PopupClose(){
     ClearActivity();
 }
 
-function CheckAval(data){
+function PopupOnlyClose() {
+    var form = GetForm();
+    $(form).empty();
+    LoadStop();
+    $("div.pero").hide();
+}
+
+function CheckAval(data) {
     var ok = true;
-    for(var i = 0; i < data.length; i++)
-        if(! data[i].checkValidity()) {
+    for (var i = 0; i < data.length; i++)
+        if (!data[i].checkValidity()) {
             data[i].reportValidity();
             ok = false;
         }
     return ok;
 }
 
-function FormClose(){
+function FormClose() {
     PopupClose();
 }
 
-function FormSubmit(job, args=null, stay=false, func=null, fill=false){
+function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
     var form = GetForm();
 
-    if(!CheckAval(form)) return; 
-    var d = {parent_id: '', ic_id:''};
-    form.serializeArray().map(function(x){d[x.name] = x.value;}); 
+    if (!CheckAval(form)) return;
+    var d = { parent_id: '', ic_id: '' };
+    form.serializeArray().map(function(x) { d[x.name] = x.value; });
     if (!args) args = d;
-//    console.log(args);
-//    console.log(d);
+    //    console.log(args);
+    //    console.log(d);
 
     LoadStart();
     $.ajax({
         url: job,
         type: 'POST',
-        data: (args instanceof FormData)? args : JSON.stringify(args),
+        data: (args instanceof FormData) ? args : JSON.stringify(args),
         //dataType: "json",
         processData: false,
         contentType: false,
         timeout: 5000,
-        success: function(data){
-            if(!stay) location.reload();
-//            console.log(data);
-            if(fill) $("div.content > .form").html(data);
+        success: function(data) {
+            if (!stay) location.reload();
+            //            console.log(data);
+            if (fill) $("div.content > .form").html(data);
             else PopupClose();
-            pom = (args instanceof FormData)? d : args;
-//            for (var value of args.values()) {
-              console.log(pom);
-//            }
-            SESSION["position"] = {parent_id: pom["parent_id"], ic_id: pom["ic_id"], path: pom["path"]};
+            pom = (args instanceof FormData) ? d : args;
+            //            for (var value of args.values()) {
+            console.log(pom);
+            //            }
+            SESSION["position"] = { parent_id: pom["parent_id"], ic_id: pom["ic_id"], path: pom["path"] };
             if (job != 'select_project') SESSION["undo"] = true;
             MULTI = {};
-            if(data == 'Project successfully deleted'){
+            if (data == 'Project successfully deleted') {
                 SESSION["position"] = null;
                 func = SelectProject;
-                }
+            }
 
-            if(func) func();
+            if (func) func();
             LoadStop();
             MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function MakeSnackbar(data){
+function MakeSnackbar(data) {
     $("#snackbar").html(data);
     $("#snackbar").show();
-    setTimeout(function(){ $("#snackbar").hide(); }, 3000);
+    setTimeout(function() { $("#snackbar").hide(); }, 3000);
 }
 
-function TabSwap(target){
+function TabSwap(target) {
     $(".popup-view").children().hide();
     $(".popup-box").removeClass("selected");
-    $("#popup-"+target).show();
-    $("#popup-"+target+"-tab").addClass("selected");
+    $("#popup-" + target).show();
+    $("#popup-" + target + "-tab").addClass("selected");
 }

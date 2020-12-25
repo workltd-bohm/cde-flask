@@ -257,11 +257,14 @@ function Set3DPreview() {
     $('#d3view-preview').append(iframe);
 }
 
-function OpenFolderStructure() {
-    PopupOpen(OpenFolderStructurePopup, '', '');
+function OpenFolderStructure(post_id = '') {
+    console.log(post_id);
+    PopupOpen(OpenFolderStructurePopup, post_id, '');
 }
 
-function OpenFolderStructurePopup(form) {
+var tree = null;
+
+function OpenFolderStructurePopup(form, post_id) {
     LoadStart();
     $.ajax({
         url: "/get_my_projects",
@@ -269,27 +272,36 @@ function OpenFolderStructurePopup(form) {
         data: JSON.stringify({}),
         timeout: 5000,
         success: function(data) {
-            input_json2 = JSON.parse(data);
-            console.log(input_json2);
+            input_json1 = JSON.parse(data);
+            input_json2 = input_json1['data'];
+            console.log(post_id);
+            html = input_json1['html'];
             form.empty();
-            div = document.createElement('div');
-            div.id = 'container';
+            div = document.getElementById('container');
+            // div.id = 'container';
             var root = new TreeNode("projects");
             for (var i = 0; i < input_json2.length; i++) {
                 var node = new TreeNode(input_json2[i].project_name);
-                console.log(input_json2[i]);
+                // console.log(input_json2[i]);
                 for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
                     AddSubfolders(node, input_json2[i].root_ic.sub_folders[j]);
                 }
                 root.addChild(node);
             }
-            form.append(div);
-            var tree = new TreeView(root, "#container", {
+
+            form.append(html);
+            tree = new TreeView(root, "#container", {
                 leaf_icon: "<span>&#128441;</span>",
                 parent_icon: "<span>&#128449;</span>",
                 open_icon: "<span>&#9698;</span>",
                 close_icon: "<span>&#9654;</span>"
             });
+
+            // Resets the root-node (TreeNode)
+            tree.setRoot(root);
+
+            // tree.collapseAllNodes();
+            root.setExpanded(true);
 
             LoadStop();
         },
@@ -306,11 +318,50 @@ function AddSubfolders(node, sub_folder) {
     if (!sub_folder.is_directory) {
         name = sub_folder.name + sub_folder.type;
     }
-    var child = new TreeNode(name);
+    var child = new TreeNode(name, {
+        ic_id: sub_folder.ic_id,
+        name: sub_folder.name,
+        parent_id: sub_folder.parent_id,
+        parent: sub_folder.parent,
+        is_directory: sub_folder.is_directory,
+        stored_id: (sub_folder.is_directory) ? '' : sub_folder.stored_id,
+        type: (sub_folder.is_directory) ? '' : sub_folder.type
+    });
     for (var k = 0; k < sub_folder.sub_folders.length; k++) {
         // console.log(sub_folder.sub_folders[k].name);
         AddSubfolders(child, sub_folder.sub_folders[k]);
     }
-    console.log(sub_folder.name);
+    // console.log(sub_folder);
+    // node.setOptions({ ic_id: sub_folder.ic_id, name: sub_folder.name, parent_id: sub_folder.parent_id, parent: sub_folder.parent });
     node.addChild(child);
+    node.setExpanded(false);
+}
+
+function SelectFiles() {
+    console.log('ovde');
+    selectedNodes = tree.getSelectedNodes();
+
+    nodeList = [];
+
+    for (var i = 0; i < selectedNodes.length; i++) {
+        selectedNode = selectedNodes[i].getOptions();
+        if (Object.keys(selectedNode).length != 0 && selectedNode.constructor === Object && !selectedNode.is_directory && selectedNode.stored_id != '') {
+            console.log(selectedNode);
+            nodeList.push(selectedNode);
+        }
+    }
+
+    console.log(nodeList);
+    nodeList.forEach(async function(selectedNode) {
+        let url = '/get_post_image/' + selectedNode.stored_id + '?post_id=default';
+        let blob = await fetch(url).then(r => r.blob());
+        blob.name = selectedNode.name + selectedNode.type;
+        blob.id = selectedNode.stored_id;
+        // blob.post_id = post_id;
+        documents.push({ id: selectedNode.stored_id, name: selectedNode.name + selectedNode.type });
+        previewEditFile(blob);
+    });
+
+    PopupOnlyClose();
+
 }
