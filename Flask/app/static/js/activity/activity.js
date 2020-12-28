@@ -240,6 +240,7 @@ function AddAccess() {
 }
 
 function removeAccess(access) {
+    console.log(access);
     LoadStart();
     $.ajax({
         url: "/remove_access",
