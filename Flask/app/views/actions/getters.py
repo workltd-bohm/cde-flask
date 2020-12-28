@@ -479,6 +479,31 @@ def get_all_tags():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_all_users', methods=['GET'])
+def get_all_users():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            usernames = db.get_all_users(db_adapter)
+            response = {
+                'users': usernames
+            }
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
 
 def get_input_file_fixed():
     doc = open('app/static/file/input.json', 'r')

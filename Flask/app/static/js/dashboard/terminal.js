@@ -38,7 +38,7 @@ $(window).keydown(function(e){
 
 function terminalListen(el){
     var key = window.event.keyCode;
-    if(key != 13)
+    if(key != 13) // 13 = carriage return ASCII (enter key)
         return true;
     if (key === 13 && el.shiftKey){
         return true;

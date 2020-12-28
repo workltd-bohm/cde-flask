@@ -21,7 +21,7 @@
 .autocomplete-items div {
   padding: 10px;
   cursor: pointer;
-  background-color: rgba(50, 50, 50, 0.7);}
+  background-color: rgba(50, 50, 50, 0.7);
   color: #bbb;
 }
 
@@ -34,4 +34,20 @@
 .autocomplete-active {
   background-color: #000 !important;
   color: #fff;
+}
+
+.suggestions {
+  border: 0px solid #999;
+  display: none;
+}
+
+.suggestions > div {
+  padding : 15 px;
+  padding-left: 5px;
+  font-size: 20 px;
+  color: #000;
+  background-color: rgba(255,255,255,0.5);
+  border: 1px solid #bbb;
+  border-radius: 15px;
+  cursor : pointer;
 }
