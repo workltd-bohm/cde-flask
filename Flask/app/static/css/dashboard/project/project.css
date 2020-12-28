@@ -1,5 +1,6 @@
 .effect.star {
-    fill : url("#patern_sun_bg");
+    fill : url('#gradient_eclipse');
+    filter: url('#filter_eclipse_sun');
 }
 
 .background.star {
@@ -28,7 +29,8 @@
      /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
     /*fill : url("#patern_sun_fix"); */
      /* fill: var(--cur-sun-default-bg); */
-     fill: none;
+     fill: black;
+     /* filter: url('#filter_eclipse_planet'); */
     /*stroke: none;*/
      /* stroke: rgba(250,250,250,0.25);
     stroke-width: 1; */
@@ -57,7 +59,7 @@
 
 .shader.star {
     /* fill : url("#gradient_shadow_sun"); */
-    /* fill: none; */
+    fill: none;
 }
 .shader.planet {
     fill : url("#gradient_shadow");
