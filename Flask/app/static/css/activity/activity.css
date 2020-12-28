@@ -222,6 +222,8 @@ p.details_event_user.comments {
 #comment-editmode {
     width: 95%;
     height: 95%;
+    top: 10px;
+    position: relative;
 }
 
 .img-comment-container {
