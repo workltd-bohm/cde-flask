@@ -180,7 +180,7 @@ img.img-copy {
     display: flex;
 }
 .edit-delete {
-    left: 140px;
+    left: 290px;
     top: 10px;
     position: relative;
 }
@@ -591,4 +591,14 @@ select#role {
     width: 30%;
     left: -24px;
     position: relative;
+}
+
+
+/*media screen*/
+
+
+@media screen and (min-width: 1024px) and (max-width:1920px) {
+    .edit-delete {
+        left: 140px !important;
+    }
 }
