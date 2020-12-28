@@ -303,7 +303,7 @@ def make_edit_post():
                                         dview=result[0]['documents']['3d-view'],
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
-                                        bids=[]
+                                        bids=result[0]['bids']
                                         ),
                 'data': [{'bids': result[0]['bids'],
                           'image': result[0]['documents']['image'],
@@ -400,6 +400,8 @@ def get_my_posts_popup():
         if db.connect(db_adapter):
             result = db.get_my_posts(db_adapter, session.get('user'))
             logger.log(LOG_LEVEL, 'DB result: {}'.format(result))
+            print(result)
+            print(request_json)
             response = {
                 'html': render_template("dashboard/market/popup/my_posts_popup.html",
                                         posts=result,

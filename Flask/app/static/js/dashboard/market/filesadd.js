@@ -358,8 +358,13 @@ function SelectFiles() {
         blob.name = selectedNode.name + selectedNode.type;
         blob.id = selectedNode.stored_id;
         // blob.post_id = post_id;
-        documents.push({ id: selectedNode.stored_id, name: selectedNode.name + selectedNode.type });
-        previewEditFile(blob);
+        if (!selectedNode.type.match(/.(jpg|jpeg|png|gif)$/i)) {
+            documents.push({ id: selectedNode.stored_id, name: selectedNode.name + selectedNode.type });
+            previewEditFile(blob);
+        } else {
+            images.push({ id: selectedNode.stored_id, name: selectedNode.name + selectedNode.type });
+            previewEditImage(blob);
+        }
     });
 
     PopupOnlyClose();

@@ -97,7 +97,7 @@
               <form id="filter-form-post">
                 <input type="hidden" id="project_name_post" value="{{ project_name }}" required />
                 <br>
-                <button type="button" class="activity-post-button" onclick="MarketGet('Posts', NewPost, [this, {'ic_id': '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 'name': '{{ name }}' }])">Create New Post</button>
+                <button type="button" class="activity-post-button" onclick="MarketOpen('Posts', '', NewPost, [this, {'ic_id': '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 'name': '{{ name }}' }])">Create New Post</button>
                 <br>
                 <button type="button" class="activity-post-button" onclick="OpenPostListPopup({'ic_id': '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 'name': '{{ name }}' });">Add to existing Post</button>
               </form>

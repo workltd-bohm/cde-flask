@@ -1,8 +1,6 @@
-
-
-function OpenFile(form, json, file, open){
+function OpenFile(form, json, file, open) {
     LoadStartPreview();
-    console.log(json);
+    // console.log(json);
     $.ajax({
         url: "/get_open_file",
         type: 'POST',
@@ -13,12 +11,12 @@ function OpenFile(form, json, file, open){
             ic_id: json.ic_id
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
             activity = input_json2['activity'];
-            if(form) form.empty();
-            if(form) form.append(html);
+            if (form) form.empty();
+            if (form) form.append(html);
 
             OpenActivity(activity, null, open);
 
@@ -27,7 +25,7 @@ function OpenFile(form, json, file, open){
             LoadStopPreview();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -35,7 +33,7 @@ function OpenFile(form, json, file, open){
 }
 
 
-function NewFolder(form, json){
+function NewFolder(form, json) {
     LoadStart();
     $.ajax({
         url: "/get_new_folder",
@@ -43,10 +41,10 @@ function NewFolder(form, json){
         data: JSON.stringify({
             parent_id: json.parent_id,
             ic_id: json.ic_id,
-            parent_path:json.path,
+            parent_path: json.path,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
@@ -65,7 +63,7 @@ function NewFolder(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -93,7 +91,7 @@ var fileList = null;
 var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'Default'];
 
 
-function FileDataInit(){
+function FileDataInit() {
 
     file_extension = document.getElementById('file_extension');
     name1 = document.getElementById('name');
@@ -114,46 +112,46 @@ function FileDataInit(){
 
 };
 
-function updateName(position, el){
-//    console.log(el.value);
+function updateName(position, el) {
+    //    console.log(el.value);
     text = el.value.split(',')[0];
-    if(position == 3 || position == 6){
+    if (position == 3 || position == 6) {
         text = el.value.split(',')[0].split('.')[0];
     }
     updated_name[position] = text;
     updateNewName();
 }
-function updateNewName(){
+
+function updateNewName() {
     $("#new_name").attr("value", updated_name.join("-"))
 }
 
-function OnFileUpload(file){
-//    $("#file").change(function(e){
-//        var file = e.target.files[0];
-//        fill_options();
-        var fileName = file.name.split('.');
-        file_extension.value = '.' + fileName[fileName.length-1];
-        name1.value = file.name;
-        fileList = file;
-//        console.log(file);
-        updated_name[9] = file.name;
-        //updated_name[10] = '.' + fileName[1];
-        originalName = fileName[0] + '.' + fileName[1]
-        updateNewName();
+function OnFileUpload(file) {
+    //    $("#file").change(function(e){
+    //        var file = e.target.files[0];
+    //        fill_options();
+    var fileName = file.name.split('.');
+    file_extension.value = '.' + fileName[fileName.length - 1];
+    name1.value = file.name;
+    fileList = file;
+    //        console.log(file);
+    updated_name[9] = file.name;
+    //updated_name[10] = '.' + fileName[1];
+    originalName = fileName[0] + '.' + fileName[1]
+    updateNewName();
 
-// });
+    // });
 }
 
-function GetFile(){
+function GetFile() {
     var fd = new FormData();
     var d = {};
-    var form = GetForm().serializeArray().map(function(x){d[x.name] = x.value;});
+    var form = GetForm().serializeArray().map(function(x) { d[x.name] = x.value; });
 
-    if(fileList){
+    if (fileList) {
         fd.append('data', JSON.stringify(d));
         fd.append('file', fileList)
-    }
-    else{
+    } else {
         MakeSnackbar("File not selected");
         return null;
     }
@@ -161,20 +159,20 @@ function GetFile(){
     return fd;
 }
 
-function OpenFileDialog(data){
+function OpenFileDialog(data) {
     var input = document.createElement('input');
     input.type = 'file';
     input.onchange = e => {
 
-       // getting a hold of the file reference
-       var file = e.target.files[0];
+        // getting a hold of the file reference
+        var file = e.target.files[0];
 
-       PopupOpen(NewFile, data, file);
+        PopupOpen(NewFile, data, file);
     }
     input.click();
 }
 
-function NewFile(form, json, file){
+function NewFile(form, json, file) {
     LoadStart();
     $.ajax({
         url: "/get_new_file",
@@ -186,7 +184,7 @@ function NewFile(form, json, file){
             is_file: !json.is_directory,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
             form.empty();
@@ -198,7 +196,7 @@ function NewFile(form, json, file){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -207,12 +205,12 @@ function NewFile(form, json, file){
 
 // ------------------------------------------
 
-function RenameFile(form, json){
-//    console.log(json);
+function RenameFile(form, json) {
+    //    console.log(json);
     LoadStart();
     var newOldName = json.name;
-    if(json.hasOwnProperty("type") && json.type != null){
-//        console.log(data.name);
+    if (json.hasOwnProperty("type") && json.type != null) {
+        //        console.log(data.name);
         newOldName = json.name + json.type
     }
     $.ajax({
@@ -226,24 +224,23 @@ function RenameFile(form, json){
             is_directory: json.is_directory,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
             form.empty();
             form.append(html);
 
-            if(json.is_directory){
-//                console.log(html);
+            if (json.is_directory) {
+                //                console.log(html);
                 document.getElementById('smart_naming').remove();
                 document.getElementById('name_div').style.bottom = "120px";
-            }
-            else{
+            } else {
                 document.getElementById('project_code').value = json.project_code;
                 document.getElementById('company_code').value = json.company_code;
-//                document.getElementById('name').value = json.original_name;
+                //                document.getElementById('name').value = json.original_name;
                 var file = {};
                 file.name = json.name + json.type;
-//                console.log(json);
+                //                console.log(json);
 
                 FileDataInit();
                 OnFileUpload(file);
@@ -257,7 +254,7 @@ function RenameFile(form, json){
                 updated_name[6] = json.file_number.split(',')[0];
                 updated_name[7] = json.status.split(',')[0];
                 updated_name[8] = json.revision.split(',')[0];
-//                updated_name[9] = json.uniclass_2015.split(',')[0];
+                //                updated_name[9] = json.uniclass_2015.split(',')[0];
 
                 updateNewName();
 
@@ -273,7 +270,7 @@ function RenameFile(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
@@ -281,30 +278,28 @@ function RenameFile(form, json){
 }
 
 // ------------------------------------------
-function TrashFile(form, json){
+function TrashFile(form, json) {
     var o = Object.values(CHECKED);
     var multi = [];
 
-    for (var i = 0; i < o.length; i++) multi.push(
-        {
-            parent_id: o[i].parent_id,
-            ic_id: o[i].ic_id,
-            parent_path: o[i].parent,
-            delete_name: o[i].name,
-            is_directory: o[i].is_directory,
-        });
-        
-    if (o.length > 0) 
-    {
+    for (var i = 0; i < o.length; i++) multi.push({
+        parent_id: o[i].parent_id,
+        ic_id: o[i].ic_id,
+        parent_path: o[i].parent,
+        delete_name: o[i].name,
+        is_directory: o[i].is_directory,
+    });
+
+    if (o.length > 0) {
         MULTI = {
             parent_id: json.parent_id,
             ic_id: json.ic_id,
-            targets : multi,
+            targets: multi,
         };
     }
-    
+
     LoadStart();
-    
+
     console.log(json);
 
     $.ajax({
@@ -320,7 +315,7 @@ function TrashFile(form, json){
             parent_path: json.parent,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
                 html = input_json2['html'];
@@ -334,39 +329,37 @@ function TrashFile(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function RestoreFile(form, json){
+function RestoreFile(form, json) {
     var o = Object.values(CHECKED);
     var multi = [];
 
-    for (var i = 0; i < o.length; i++) multi.push(
-        {
-            project_id: o[i].project_id,
-            ic_id: o[i].ic_id,
-            is_directory: o[i].is_directory,
-            restore_name: o[i].name,
-            parent_id: o[i].parent_id,
-            parent_path: o[i].parent,
-        });
-        
-    if (o.length > 0) 
-    {
+    for (var i = 0; i < o.length; i++) multi.push({
+        project_id: o[i].project_id,
+        ic_id: o[i].ic_id,
+        is_directory: o[i].is_directory,
+        restore_name: o[i].name,
+        parent_id: o[i].parent_id,
+        parent_path: o[i].parent,
+    });
+
+    if (o.length > 0) {
         MULTI = {
             project_id: json.project_id,
             parent_id: json.parent_id,
             ic_id: json.ic_id,
-            targets : multi,
+            targets: multi,
         };
     }
-    
+
     LoadStart();
-    
+
     console.log(json);
 
     $.ajax({
@@ -383,7 +376,7 @@ function RestoreFile(form, json){
             parent_path: json.parent,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
                 html = input_json2['html'];
@@ -396,14 +389,14 @@ function RestoreFile(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function DeleteFile(form, json){
+function DeleteFile(form, json) {
     var o = Object.values(CHECKED);
     var multi = [];
     for (var i = 0; i < o.length; i++) multi.push({
@@ -411,32 +404,32 @@ function DeleteFile(form, json){
         parent_id: o[i].parent_id,
         ic_id: o[i].ic_id,
         parent_path: o[i].parent,
-        delete_name: o[i].name + ((o[i].type)? o[i].type:""),
+        delete_name: o[i].name + ((o[i].type) ? o[i].type : ""),
         is_directory: o[i].is_directory,
     });
     if (o.length > 0) MULTI = {
         parent_id: json.parent_id,
         ic_id: json.ic_id,
-        targets : multi,
+        targets: multi,
     };
-    
+
     LoadStart();
-    
+
     $.ajax({
         url: "/get_delete_ic",
         type: 'POST',
-        data: JSON.stringify((o.length > 0)? {
+        data: JSON.stringify((o.length > 0) ? {
             is_multi: true,
         } : {
             project_id: json.project_id,
             parent_id: json.parent_id,
             ic_id: json.ic_id,
             parent_path: json.parent,
-            delete_name: json.name + ((json.type)? json.type:""),
+            delete_name: json.name + ((json.type) ? json.type : ""),
             is_directory: json.is_directory,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
                 html = input_json2['html'];
@@ -451,19 +444,19 @@ function DeleteFile(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function EmptyTrash(form, json){
+function EmptyTrash(form, json) {
     $.ajax({
         url: "/get_empty_trash",
         type: 'POST',
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
                 html = input_json2['html'];
@@ -477,25 +470,25 @@ function EmptyTrash(form, json){
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
         }
     });
 }
 
-function DownloadMulti(path, multi){
+function DownloadMulti(path, multi) {
     LoadStart();
     var link = document.createElement('a');
     link.href = path + JSON.stringify(multi);
     link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
-//    window.open(url, "_blank");
+    //    window.open(url, "_blank");
     LoadStop();
 }
 
-function DownloadIC(path, name){
+function DownloadIC(path, name) {
     console.log(path);
     LoadStart();
     var link = document.createElement('a');
@@ -503,32 +496,33 @@ function DownloadIC(path, name){
     link.download = name;
     link.dispatchEvent(new MouseEvent('click'));
 
-//    window.open(url, "_blank");
+    //    window.open(url, "_blank");
     LoadStop();
 }
 
-function DownloadICs(json){
+function DownloadICs(json) {
     var o = Object.values(CHECKED);
     var multi = [];
-    for (var i = 0; i < o.length; i++) multi.push({parent_id: o[i].parent_id,
-                                                    ic_name: (!o[i].is_directory)? o[i].name + o[i].type : o[i].name});
+    for (var i = 0; i < o.length; i++) multi.push({
+        parent_id: o[i].parent_id,
+        ic_name: (!o[i].is_directory) ? o[i].name + o[i].type : o[i].name
+    });
     console.log(multi);
-    if (o.length > 0){
-        if (o.length == 1){
+    if (o.length > 0) {
+        if (o.length == 1) {
             console.log(o[0]);
-            if(o[0].is_directory){
+            if (o[0].is_directory) {
                 DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
-            }else{
+            } else {
                 DownloadIC("/get_file/" + o[0].name + o[0].type, o[0].name + o[0].type);
             }
-        }else{
+        } else {
             DownloadMulti("/get_ic_multi/", multi);
         }
-    }
-    else{
-        if(json.is_directory){
+    } else {
+        if (json.is_directory) {
             DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
-        }else{
+        } else {
             DownloadIC("/get_file/" + json.name + json.type, json.name + json.type);
         }
     }

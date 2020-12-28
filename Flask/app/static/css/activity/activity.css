@@ -524,6 +524,8 @@ div#add-tagautocomplete-list {
 
 .bohm-files-button {
     width: 95%;
+    margin-top: 5vw;
+    vertical-align: middle;
 }
 
 .form__group.field.access-users-add {

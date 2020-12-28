@@ -1,7 +1,7 @@
 <h3>Choose post</h3>
 
   <div class="my_posts_popup">
-      <select name="posts" id='posts'>
+      <select name="posts" id="posts">
           <option></option>
           {% for key in posts %}
             <option value="{{ key.post_id }}">{{ key.title }}</option>

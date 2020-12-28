@@ -28,7 +28,7 @@ function NewPost(obj, request_data = '') {
     ClearProject();
     SwitchDash(1);
     var tmp = obj;
-    console.log(request_data);
+    // console.log(request_data);
     $.ajax({
         url: "/make_new_post",
         type: 'POST',
@@ -232,6 +232,7 @@ function ViewPost(obj, post_id, json = '') {
         timeout: 5000,
         success: function(data) {
             json_data = JSON.parse(data);
+            console.log(json_data);
             if (json_data) {
                 if (json_data.data.type == 'view') {
                     ResponseViewPost(json_data, obj, post_id)
@@ -276,7 +277,7 @@ function EditPost(obj, post_id, json = '') {
 function ResponseEditPost(data, tmp, post_id, json = '') {
     // console.log(data)
     OpenEditor(data.html, data.data);
-    OpenActivityEditPost(tmp, g_post_type.edit, data.data);
+    OpenActivityEditPost(tmp, g_post_type.edit, post_id);
     DropAreaInit();
     MarketTabSwap('3d-view');
     Set3DPreview();
@@ -330,14 +331,15 @@ function ResponseViewPost(data, tmp, post_id) {
     });
 }
 
-function OpenActivityEditPost(obj, url, d = null) {
-    console.log(obj)
+function OpenActivityEditPost(obj, url, post_id) {
+    // console.log(obj);
+    // console.log(d);
     var data = {};
-    $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
-    console.log(obj)
-    if (obj != null) {
-        data['post_id'] = obj.ic_id;
-    }
+    // $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
+    // console.log(data)
+    // if (obj != null) {
+    data['post_id'] = post_id;
+    // }
 
     $.ajax({
         url: url,

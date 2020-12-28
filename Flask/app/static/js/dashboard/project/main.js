@@ -227,14 +227,17 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
-        .on("mouseover",function(d){
-            if(!g_project.overlay && !g_project.move && g_root.zoom){
+        .on("mouseover", function(d) {
+            if (!g_project.overlay && !g_project.move && g_root.zoom) {
                 console.log(g_root.universe.data);
-                switch(g_root.universe.data.overlay_type){
+                switch (g_root.universe.data.overlay_type) {
                     case "ic":
                     case "trash":
-                    case "search": OverlayCreate(d3.select(this), d, data, true); break; // search?
-                    default: break;
+                    case "search":
+                        OverlayCreate(d3.select(this), d, data, true);
+                        break; // search?
+                    default:
+                        break;
                 }
             }
         })
@@ -371,7 +374,7 @@ function ProjectPosiotionSet(data) {
         found = RecursiveFileSearch(data, data);
         if (found) {
             var path = found[0].reverse()
-            console.log(path);
+                // console.log(path);
             for (var add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };

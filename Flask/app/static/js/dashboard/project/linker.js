@@ -1,98 +1,97 @@
-
-function WrapGetProject(data){
-    var tmp = {choose_project: data.name};
+function WrapGetProject(data) {
+    var tmp = { choose_project: data.name };
     //console.log(tmp)
     FormSubmit('select_project', tmp, true, CreateProject);
     //PopupOpen(GetProjects);
 }
 
-function WrapNewProject(){
+function WrapNewProject() {
     PopupOpen(NewProject);
 }
 
-function WrapUploadProject(){
+function WrapUploadProject() {
     PopupOpen(UploadProject);
-//    OpenFolderDialog();
+    //    OpenFolderDialog();
 }
 
-function WrapCreateFolder(data){
+function WrapCreateFolder(data) {
     var tmp = data.values.data;
     //console.log(tmp);
     PopupOpen(NewFolder, tmp);
 }
 
-function WrapOpenFile(data, open=true){
-    if(g_project.overlay){
+function WrapOpenFile(data, open = true) {
+    if (g_project.overlay) {
         data.values.data.values.text.style("opacity", 100);
         g_project.overlay.remove();
         g_project.overlay = false;
     }
     var o = Object.values(CHECKED);
-    var tmp = (o.length > 0)? o[0] : data.values.data;
+    var tmp = (o.length > 0) ? o[0] : data.values.data;
     //console.log(tmp)
-    if(tmp.is_directory){
+    if (tmp.is_directory) {
         //console.log("dir",tmp);
         //OpenActivity(null, null, open);
         OpenFilterActivity(tmp, open);
-    }else{
-        console.log("tmp",open);
+    } else {
+        // console.log("tmp",open);
         PreviewOpen(OpenFile, tmp, null, open);
     }
-//    PopupOpen(NewFile, tmp);
-//    OpenFileDialog(tmp);
+    //    PopupOpen(NewFile, tmp);
+    //    OpenFileDialog(tmp);
 }
 
-function WrapCreateFile(data){
+function WrapCreateFile(data) {
     var tmp = data.values.data;
     //console.log(tmp);
-//    PopupOpen(NewFile, tmp);
+    //    PopupOpen(NewFile, tmp);
     OpenFileDialog(tmp);
 }
 
-function WrapRename(data){
+function WrapRename(data) {
     var o = Object.values(CHECKED);
-    var tmp = (o.length > 0)? o[0] : data.values.data;
+    var tmp = (o.length > 0) ? o[0] : data.values.data;
     //console.log(tmp);
     PopupOpen(RenameFile, tmp);
 }
 
-function WrapDelete(data){
+function WrapDelete(data) {
     var tmp = data.values.data;
-    PopupOpen(DeleteFile, tmp);     // todo when hard delete, user must type in "DELETE" to submit the form
+    PopupOpen(DeleteFile, tmp); // todo when hard delete, user must type in "DELETE" to submit the form
 }
 
-function WrapTrash(data){
+function WrapTrash(data) {
     var tmp = data.values.data;
-    PopupOpen(TrashFile, tmp);     
+    PopupOpen(TrashFile, tmp);
 }
 
-function WrapRestore(data){
+function WrapRestore(data) {
     var tmp = data.values.data;
-    PopupOpen(RestoreFile, tmp); 
+    PopupOpen(RestoreFile, tmp);
 }
 
-function WrapEmptyTrash(data){
+function WrapEmptyTrash(data) {
     var tmp = data.values.data;
-    PopupOpen(EmptyTrash, tmp); 
+    PopupOpen(EmptyTrash, tmp);
 }
 
-function WrapMove(data){
+function WrapMove(data) {
     var tmp = data.values.data;
     MoveObject(tmp, false);
     MoveCreate(tmp.values.back.values.this, tmp.values.back);
 }
 
-function WrapCopy(data){
+function WrapCopy(data) {
     var tmp = data.values.data;
     MoveObject(tmp, true);
     MoveCreate(tmp.values.back.values.this, tmp.values.back);
 }
 
-function WrapPaste(){
+function WrapPaste() {
 
 }
 
-function WrapShare(data){
+function WrapShare(data) {
     //var o = Object.values(CHECKED);
     //var multi = [];
     //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
@@ -101,7 +100,7 @@ function WrapShare(data){
     tmp.project_name = SESSION["name"];
 
     var dummy = document.createElement('input'),
-    text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
+        text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
 
     document.body.appendChild(dummy);
     dummy.value = text;
@@ -109,16 +108,16 @@ function WrapShare(data){
     document.execCommand('copy');
     document.body.removeChild(dummy);
     MakeSnackbar("Copied to clipboard");
-    
+
 }
 
-function WrapDownload(data){
+function WrapDownload(data) {
     var tmp = data.values.data;
 
     DownloadICs(tmp);
 }
 
-function WrapShareProject(data){
+function WrapShareProject(data) {
     var tmp = data.values.data;
 
     PopupOpen(SharePopup, tmp);

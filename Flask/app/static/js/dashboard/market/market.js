@@ -141,6 +141,7 @@ function GetBidId(json) {
 
 
 function MarketGet(choose_market, run = null, run_data = null) {
+    console.log(run_data);
     ClearProject(true);
     SwitchDash(0);
     $.ajax({

@@ -56,7 +56,7 @@ function sendComment(el) {
     }
 
     comment = $('#comment').val();
-    if (comment.length < 1) {return; }  // prevent sending empty comments
+    if (comment.length < 1) { return; } // prevent sending empty comments
 
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
@@ -68,16 +68,15 @@ function sendComment(el) {
     $.ajax({
         url: "/send_comment",
         type: 'POST',
-        data: JSON.stringify(project_name ? 
-            {
-                comment: comment,
-                project_name: project_name,
-                parent_id: parent_id,
-                ic_id: ic_id
-            } : {
-                comment: comment,
-                post_id: post_id
-            }),
+        data: JSON.stringify(project_name ? {
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id
+        } : {
+            comment: comment,
+            post_id: post_id
+        }),
         timeout: 5000,
         success: function(data) {
             //            input_json = JSON.parse(data);
@@ -102,14 +101,14 @@ function editComment(elem) {
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
     }
-    
+
     tmp_comment = elem.getElementsByClassName('comment-inline')[0].innerHTML;
     let comment_text = elem.getElementsByClassName('comment-events')[0].innerHTML;
 
-    elem.getElementsByClassName('comment-inline')[0].innerHTML = 
-        '<textarea id="comment-editmode" ' 
-        + 'onkeypress="updateComment(event, this.parentElement.parentElement.parentElement.parentElement.dataset)">' 
-        + "</textarea>";
+    elem.getElementsByClassName('comment-inline')[0].innerHTML =
+        '<textarea id="comment-editmode" ' +
+        'onkeypress="updateComment(event, this.parentElement.parentElement.parentElement.parentElement.dataset)">' +
+        "</textarea>";
 
     $('#comment-editmode').focus().val(comment_text.trim());
 }
@@ -126,7 +125,7 @@ function updateComment(el, dataset) {
     let parent = editmode.parentElement;
     let comment = editmode.value;
 
-    if (comment.length < 1){
+    if (comment.length < 1) {
         // prompt to delete
     }
 
@@ -140,19 +139,18 @@ function updateComment(el, dataset) {
     $.ajax({
         url: "/update_comment",
         type: 'POST',
-        data: JSON.stringify(project_name ? 
-            {
-                comment: comment,
-                project_name: project_name,
-                parent_id: parent_id,
-                ic_id: ic_id,
-                comment_id: dataset.id,
-                comment: comment,
-            } : {
-                post_id: post_id,
-                comment_id: dataset.id,
-                comment: comment,
-            }),
+        data: JSON.stringify(project_name ? {
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id,
+            comment_id: dataset.id,
+            comment: comment,
+        } : {
+            post_id: post_id,
+            comment_id: dataset.id,
+            comment: comment,
+        }),
         timeout: 5000,
         success: function(data) {
             //            input_json = JSON.parse(data);
@@ -169,18 +167,18 @@ function updateComment(el, dataset) {
     });
 
     parent.innerHTML = tmp_comment;
-    
+
     parent.getElementsByClassName('comment-events')[0].innerHTML = comment;
 }
 
-function resetComment(){
+function resetComment() {
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
     }
 }
 
-function deleteComment(elem){
+function deleteComment(elem) {
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
@@ -192,17 +190,16 @@ function deleteComment(elem){
     $.ajax({
         url: "/delete_comment",
         type: 'POST',
-        data: JSON.stringify(project_name ? 
-            {
-                comment: comment,
-                project_name: project_name,
-                parent_id: parent_id,
-                ic_id: ic_id,
-                comment_id: comment_id
-            } : {
-                post_id: post_id,
-                comment_id: comment_id
-            }),
+        data: JSON.stringify(project_name ? {
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id,
+            comment_id: comment_id
+        } : {
+            post_id: post_id,
+            comment_id: comment_id
+        }),
         timeout: 5000,
         success: function(data) {
             elem.remove();
@@ -327,62 +324,49 @@ function PostList(form, json) {
 }
 
 function PostListPopupResults(obj, json) {
-    PopupClose();
     var sel = document.getElementById('posts');
-    MarketGet('Posts', EditPost, [obj, sel.value, json])
+    PopupClose();
+    MarketOpen('Posts', '', ViewPost, [obj, sel.value, json])
 }
 
 function openToggleAccess() {
-    var box=document.getElementById('access-box');
-    if (box.style.display != 'none' && box.style.display !="") {
+    var box = document.getElementById('access-box');
+    if (box.style.display != 'none' && box.style.display != "") {
         box.style.display = 'none';
-    }
-    else {
+    } else {
         box.style.display = 'block';
     }
 }
 
 function openToggleInfoTags() {
-    var tags=document.getElementById('tags');
+    var tags = document.getElementById('tags');
     console.log(tags);
-    if (tags.style.display != 'none' && tags.style.display !="") {
+    if (tags.style.display != 'none' && tags.style.display != "") {
         tags.style.display = 'none';
-        
-    }
-    else {
+
+    } else {
         tags.style.display = 'block';
     }
 }
 
 function openToggleInfoIC() {
-    var ic=document.getElementById('ic');
+    var ic = document.getElementById('ic');
     console.log(tags);
-    if (ic.style.display != 'none' && ic.style.display !="") {
+    if (ic.style.display != 'none' && ic.style.display != "") {
         ic.style.display = 'none';
-        
-    }
-    else {
+
+    } else {
         ic.style.display = 'block';
     }
 }
 
 function openToggleInfoHistory() {
-    var history=document.getElementById('history');
+    var history = document.getElementById('history');
     console.log(tags);
-    if (history.style.display != 'none' && history.style.display !="") {
+    if (history.style.display != 'none' && history.style.display != "") {
         history.style.display = 'none';
-        
-    }
-    else {
+
+    } else {
         history.style.display = 'block';
     }
 }
-
-
-    
-
-
-
-
-    
-    
