@@ -15,6 +15,10 @@ function SunFadeout(data) {
         g_root.y -= (vec_y + g_root.cy) * g_root.scale;
     }
 
+    data.values.back.values.effect.transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_MOVE)
+        .style("opacity", 0)
     data.values.back.values.background.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
