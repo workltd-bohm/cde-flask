@@ -20,6 +20,8 @@ const SUN_SCROLL_X_COEF = 2;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 1.2;
 
+const SUN_BG_RATIO = 4;
+
 const PLANET_MAX_NUMBER_MIN = 9;
 const PLANET_MAX_NUMBER_MAX = 12;
 

@@ -62,6 +62,20 @@ var g_PatternSunFixated = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_SUN);
 
+var g_PatternSunBg = SWGDefs.append("pattern")
+    .attr("id", "patern_sun_bg")
+    .attr("x", "0%")
+    .attr("y", "-0%")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox","0 0 1 1")
+    .append("image")
+    .attr("x", "0")
+    .attr("y", "0")
+    .attr("width", "1")
+    .attr("height", "1")
+    .attr("xlink:href", IMG_PATH_SUN_BG);
+
 var g_PatternSunRotate = SWGDefs.append("pattern")
     .attr("id", "patern_sun_rot")
     .attr("x", "0%")
