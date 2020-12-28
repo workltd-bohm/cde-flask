@@ -6,16 +6,20 @@
         <p class="details_date comment-date">{{ comment['date'] }}</p>
         <div class="comments_field">
             <div class="comment-inline">
+                <div class="comment-edit-options">
                 <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
+                    <div class="edit-delete">
+                    {% if comment['user']['user_id'] == session['user']['id'] %}
+                    <i class="material-icons border_color comment-options" onclick="editComment(this.parentElement)">edit</i>
+                    {% endif %}
+
+                    {% if comment['user']['user_id'] == session['user']['id'] or post['user_owner']['id'] == session['user']['id'] %}
+                    <i class="material-icons clear comment-options" onclick="deleteComment(this.parentElement.parentElement)">delete</i>
+                    {% endif %} 
+                </div>
+                </div>
                 <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }}</p>
             </div>
         </div>
-        {% if comment['user']['user_id'] == session['user']['id'] %}
-        <i class="material-icons border_color comment-options" onclick="editComment(this.parentElement)">edit</i>
-        {% endif %}
-
-        {% if comment['user']['user_id'] == session['user']['id'] or post['user_owner']['id'] == session['user']['id'] %}
-        <i class="material-icons clear comment-options" onclick="deleteComment(this.parentElement.parentElement)">delete</i>
-        {% endif %}
     </div>
 </div>
