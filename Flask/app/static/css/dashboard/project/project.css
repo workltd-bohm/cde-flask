@@ -28,8 +28,8 @@
 .pattern.star {
      /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
     /*fill : url("#patern_sun_fix"); */
-     /* fill: var(--cur-sun-default-bg); */
-     fill: black;
+      fill: var(--cur-sun-default-bg);
+     /*fill: black;*/
      /* filter: url('#filter_eclipse_planet'); */
     /*stroke: none;*/
      /* stroke: rgba(250,250,250,0.25);
@@ -58,8 +58,8 @@
 }
 
 .shader.star {
-    /* fill : url("#gradient_shadow_sun"); */
-    fill: none;
+    fill : url("#gradient_shadow_sun");
+    /*fill: none;*/
 }
 .shader.planet {
     fill : url("#gradient_shadow");
