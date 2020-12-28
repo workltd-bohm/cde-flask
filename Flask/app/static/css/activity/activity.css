@@ -179,6 +179,14 @@ img.img-copy {
 .comment-edit-options {
     display: flex;
 }
+.edit-delete {
+    left: 140px;
+    top: 10px;
+    position: relative;
+}
+.material-icons {
+    font-size: 18px;
+}
 .comment-events {
     top: 12px !important;
     position: relative !important;
