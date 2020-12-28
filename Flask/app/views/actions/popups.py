@@ -33,6 +33,7 @@ def get_open_file():
                                             preview='/get_shared_file/' + name + type
                                             ),
                     'activity': render_template("activity/filter_files.html",
+                                                profile_picture=session['user']['picture'],
                                                 details=details,
                                                 tags=tags,
                                                 file_name=file_name,
