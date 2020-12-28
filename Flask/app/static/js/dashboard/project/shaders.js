@@ -81,13 +81,13 @@ var g_GradientEclipse = SWGDefs.append("radialGradient")
     .attr("r", PLANET_SHADOW_RAD)
     .attr("cx", "50%")
     .attr("cy", "50%")
-    .attr("fx", "51%")
-    .attr("fy", "49%");
-g_GradientEclipse.append("stop").attr("offset", "35%").style("stop-color", "rgba(241, 228, 208, 1)");
-g_GradientEclipse.append("stop").attr("offset", "36%").style("stop-color", "rgba(241, 201, 138, 0.7)");
-g_GradientEclipse.append("stop").attr("offset", "38%").style("stop-color", "rgba(241, 201, 138, 0.2)");
-g_GradientEclipse.append("stop").attr("offset", "45%").style("stop-color", "rgba(246, 129, 83, 0.1)");
-g_GradientEclipse.append("stop").attr("offset", "60%").style("stop-color", "rgba(255, 117, 26, 0.0)");
+    .attr("fx", "50%")
+    .attr("fy", "50%");
+g_GradientEclipse.append("stop").attr("offset", "40%").style("stop-color", "rgba(255, 255, 255, 0.8)");
+g_GradientEclipse.append("stop").attr("offset", "50%").style("stop-color", "rgba(255, 255, 255, 0.0)");
+/*g_GradientEclipse.append("stop").attr("offset", "38%").style("stop-color", "rgba(255, 255, 255, 0.2)");
+g_GradientEclipse.append("stop").attr("offset", "40%").style("stop-color", "rgba(255, 255, 255, 0.1)");
+g_GradientEclipse.append("stop").attr("offset", "60%").style("stop-color", "rgba(255, 255, 255, 0.0)");*/
 
 var g_FilterEclipsePlanet = SWGDefs.append("filter")
     .attr("id", "filter_eclipse_planet")
