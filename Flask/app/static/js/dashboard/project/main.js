@@ -93,8 +93,8 @@ function AddSun(obj, data) {
     }
 
     data.values.effect = data.values.this.append("circle")
-    .attr("class", "star effect")
-    .attr("r", g_SunRadius*SUN_BG_RATIO);
+        .attr("class", "star effect")
+        .attr("r", g_SunRadius*SUN_BG_RATIO);
 
     data.values.children = data.values.this.append("g").attr("class", "star child");
 

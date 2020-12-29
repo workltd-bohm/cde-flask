@@ -1412,14 +1412,24 @@ class DBMongoAdapter:
                 if len(results) != 0:
                     # results[0].pop('_id', None)
                     user_shared = results[0]
+                    # print('ovde', request_data['role'])
                     if request_data['user']['user_id'] in user_shared:
-                        user_shared[request_data['user']['user_id']].remove(
-                            {'project_id': project.project_id,
-                             'project_name': project.name,
-                             'parent_id': request_data['parent_id'],
-                             'role': getattr(Role, request_data['role']).value,
-                             'ic_id': request_data['ic_id']})
-                        col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                        # print(user_shared[request_data['user']['user_id']])
+                        # print({'project_id': project.project_id,
+                        #      'project_name': project.name,
+                        #      'parent_id': request_data['parent_id'],
+                        #      'role': getattr(Role, request_data['role']).value,
+                        #      'ic_id': request_data['ic_id']})
+                        try:
+                            user_shared[request_data['user']['user_id']].remove(
+                                {'project_id': project.project_id,
+                                'project_name': project.name,
+                                'parent_id': request_data['parent_id'],
+                                'role': getattr(Role, request_data['role']).value,
+                                'ic_id': request_data['ic_id']})
+                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                        except:
+                            print('empty shared')
         else:
             message = msg.PROJECT_NOT_FOUND
         self._close_connection()

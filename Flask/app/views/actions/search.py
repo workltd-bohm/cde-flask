@@ -129,6 +129,7 @@ def get_filter_activity():
                 response = {
                     'html': render_template("activity/filter_folders.html",
                                             project_name=session.get("project")["name"],
+                                            profile_picture=session['user']['picture'],
                                             search=filter_file,
                                             details=details,
                                             tags=tags,

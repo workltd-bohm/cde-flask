@@ -179,6 +179,15 @@ img.img-copy {
 .comment-edit-options {
     display: flex;
 }
+.edit-delete {
+    left: 290px;
+    top: 10px;
+    position: relative;
+}
+
+.material-icons {
+    font-size: 18px;
+}
 .comment-events {
     top: 12px !important;
     position: relative !important;
@@ -214,6 +223,8 @@ p.details_event_user.comments {
 #comment-editmode {
     width: 95%;
     height: 95%;
+    top: 10px;
+    position: relative;
 }
 
 .img-comment-container {
@@ -581,4 +592,14 @@ select#role {
     width: 30%;
     left: -24px;
     position: relative;
+}
+
+
+/*media screen*/
+
+
+@media screen and (min-width: 1024px) and (max-width:1920px) {
+    .edit-delete {
+        left: 220px !important;
+    }
 }

@@ -76,6 +76,39 @@ var g_PatternSunBg = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_SUN_BG);
 
+var g_GradientEclipse = SWGDefs.append("radialGradient")
+    .attr("id", "gradient_eclipse")
+    .attr("r", PLANET_SHADOW_RAD)
+    .attr("cx", "50%")
+    .attr("cy", "50%")
+    .attr("fx", "50%")
+    .attr("fy", "50%");
+g_GradientEclipse.append("stop").attr("offset", "40%").style("stop-color", "rgba(255, 255, 255, 0.8)");
+g_GradientEclipse.append("stop").attr("offset", "50%").style("stop-color", "rgba(255, 255, 255, 0.0)");
+/*g_GradientEclipse.append("stop").attr("offset", "38%").style("stop-color", "rgba(255, 255, 255, 0.2)");
+g_GradientEclipse.append("stop").attr("offset", "40%").style("stop-color", "rgba(255, 255, 255, 0.1)");
+g_GradientEclipse.append("stop").attr("offset", "60%").style("stop-color", "rgba(255, 255, 255, 0.0)");*/
+
+var g_FilterEclipsePlanet = SWGDefs.append("filter")
+    .attr("id", "filter_eclipse_planet")
+    .attr("x", "-100%")
+    .attr("y", "-100%")
+    .attr("width", "300%")
+    .attr("height", "300%");
+g_FilterEclipsePlanet.append("feGaussianBlur")
+    .attr("stdDeviation", "1 1")
+    .attr("result", "blur");
+
+var g_FilterEclipse = SWGDefs.append("filter")
+    .attr("id", "filter_eclipse_sun")
+    .attr("x", "-100%")
+    .attr("y", "-100%")
+    .attr("width", "300%")
+    .attr("height", "300%");
+g_FilterEclipse.append("feGaussianBlur")
+    .attr("stdDeviation", "2 2")
+    .attr("result", "blur");
+
 var g_PatternSunRotate = SWGDefs.append("pattern")
     .attr("id", "patern_sun_rot")
     .attr("x", "0%")

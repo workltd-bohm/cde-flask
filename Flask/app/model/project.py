@@ -492,12 +492,12 @@ class Project:
 
     def remove_access_for_all_ics(self, user, role, ic=None):
         already_in = False
-        print(ic.access)
+        # print(ic.access)
         for access in ic.access:
-            print('9999', access.to_json()['user'])
-            print(user['user_id'])
+            # print('9999', access.to_json()['user'])
+            # print(user['user_id'])
             if user['user_id'] == access.to_json()['user']['user_id']:
-                print('in')
+                # print('in')
                 ic.access.remove(access)
                 break
         for x in ic.sub_folders:
