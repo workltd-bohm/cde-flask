@@ -232,7 +232,7 @@ function ViewPost(obj, post_id, json = '') {
         timeout: 5000,
         success: function(data) {
             json_data = JSON.parse(data);
-            console.log(json_data);
+            // console.log(json_data);
             if (json_data) {
                 if (json_data.data.type == 'view') {
                     ResponseViewPost(json_data, obj, post_id)

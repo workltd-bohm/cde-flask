@@ -16,6 +16,16 @@ function DropAreaInit() {
     dropAreaImage.type = 'image';
     dropAreaDoc.addEventListener('drop', handleDrop, false);
     dropAreaDoc.type = 'doc';
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropAreaImage.addEventListener(eventName, highlight, false);
+        dropAreaDoc.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropAreaImage.addEventListener(eventName, unhighlight, false);
+        dropAreaDoc.addEventListener(eventName, unhighlight, false);
+    });
 }
 
 function preventDefaults(e) {
@@ -23,24 +33,16 @@ function preventDefaults(e) {
     e.stopPropagation();
 }
 
-['dragenter', 'dragover'].forEach(eventName => {
-    dropAreaImage.addEventListener(eventName, highlight, false);
-    dropAreaDoc.addEventListener(eventName, highlight, false);
-});
 
-['dragleave', 'drop'].forEach(eventName => {
-    dropAreaImage.addEventListener(eventName, unhighlight, false);
-    dropAreaDoc.addEventListener(eventName, unhighlight, false);
-});
 
 function highlight(e) {
-    dropAreaImage.classList.add('highlight');
-    dropAreaDoc.classList.add('highlight');
+    dropAreaImage.classList.add('drop-highlight');
+    dropAreaDoc.classList.add('drop-highlight');
 }
 
 function unhighlight(e) {
-    dropAreaImage.classList.remove('highlight');
-    dropAreaDoc.classList.remove('highlight');
+    dropAreaImage.classList.remove('drop-highlight');
+    dropAreaDoc.classList.remove('drop-highlight');
 }
 
 
@@ -170,9 +172,9 @@ function previewFileFunction() {
 }
 
 function previewEditFile(file) {
-    console.log(file);
+    // console.log(file);
     let reader = new FileReader();
-    console.log(file);
+    // console.log(file);
     reader.readAsDataURL(file);
     reader.onloadend = function() {
         let div = document.createElement('div');
@@ -204,44 +206,55 @@ function previewEditFile(file) {
 }
 
 function removeFile(file) {
-    var url = 'remove_post_file';
-    var formData = new FormData();
-    d = { file_id: file.id, file_name: file.name, type: file.t };
-    if ('post_id' in file) {
-        d = { file_id: file.id, file_name: file.name, post_id: file.post_id, type: file.t };
-    }
-
-    console.log(file);
-    console.log(file.id);
-
-    formData.append('data', JSON.stringify(d));
-    //  xhr.send(formData)
-    LoadStart();
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: formData,
-        //dataType: "json",
-        processData: false,
-        contentType: false,
-        timeout: 5000,
-        success: function(data) {
-            LoadStop();
-            //MakeSnackbar(data);
+    if (file.hasOwnProperty('fromBohm')) {
+        if (file.fromBohm) {
             if (file.t == 'image') {
                 images.splice(images.findIndex(v => v.id === file.id), 1);
             } else {
                 documents.splice(documents.findIndex(v => v.id === file.id), 1);
             }
             document.getElementById(file.name).remove();
-
-        },
-        error: function($jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown + ": " + $jqXHR.responseText);
-            MakeSnackbar($jqXHR.responseText);
-            LoadStop();
         }
-    });
+    } else {
+        var url = 'remove_post_file';
+        var formData = new FormData();
+        d = { file_id: file.id, file_name: file.name, type: file.t };
+        if ('post_id' in file) {
+            d = { file_id: file.id, file_name: file.name, post_id: file.post_id, type: file.t };
+        }
+
+        // console.log(file);
+        // console.log(file.id);
+
+        formData.append('data', JSON.stringify(d));
+        //  xhr.send(formData)
+        LoadStart();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            //dataType: "json",
+            processData: false,
+            contentType: false,
+            timeout: 5000,
+            success: function(data) {
+                LoadStop();
+                //MakeSnackbar(data);
+                if (file.t == 'image') {
+                    images.splice(images.findIndex(v => v.id === file.id), 1);
+                } else {
+                    documents.splice(documents.findIndex(v => v.id === file.id), 1);
+                }
+                document.getElementById(file.name).remove();
+
+            },
+            error: function($jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown + ": " + $jqXHR.responseText);
+                MakeSnackbar($jqXHR.responseText);
+                LoadStop();
+            }
+        });
+    }
 }
 
 function Set3DPreview() {
@@ -258,7 +271,7 @@ function Set3DPreview() {
 }
 
 function OpenFolderStructure(post_id = '') {
-    console.log(post_id);
+    // console.log(post_id);
     PopupOpen(OpenFolderStructurePopup, post_id, '');
 }
 
@@ -338,7 +351,6 @@ function AddSubfolders(node, sub_folder) {
 }
 
 function SelectFiles() {
-    console.log('ovde');
     selectedNodes = tree.getSelectedNodes();
 
     nodeList = [];
@@ -346,17 +358,18 @@ function SelectFiles() {
     for (var i = 0; i < selectedNodes.length; i++) {
         selectedNode = selectedNodes[i].getOptions();
         if (Object.keys(selectedNode).length != 0 && selectedNode.constructor === Object && !selectedNode.is_directory && selectedNode.stored_id != '') {
-            console.log(selectedNode);
+            // console.log(selectedNode);
             nodeList.push(selectedNode);
         }
     }
 
-    console.log(nodeList);
+    // console.log(nodeList);
     nodeList.forEach(async function(selectedNode) {
         let url = '/get_post_image/' + selectedNode.stored_id + '?post_id=default';
         let blob = await fetch(url).then(r => r.blob());
         blob.name = selectedNode.name + selectedNode.type;
         blob.id = selectedNode.stored_id;
+        blob.fromBohm = true;
         // blob.post_id = post_id;
         if (!selectedNode.type.match(/.(jpg|jpeg|png|gif)$/i)) {
             documents.push({ id: selectedNode.stored_id, name: selectedNode.name + selectedNode.type });
