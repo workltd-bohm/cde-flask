@@ -54,7 +54,6 @@ function sendComment(el) {
     if (key === 13 && el.shiftKey) {
         return true;
     }
-
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
@@ -371,3 +370,174 @@ function openToggleInfoHistory() {
         history.style.display = 'block';
     }
 }
+
+function filterDirectoryComments(searchCommentboxText)
+{
+    console.log("TODO@pamir: filterDirectoryComments");
+    numOfAtSymbols = searchCommentboxText.split("@").length - 1;
+    noSpacesInSearchText = (searchCommentboxText.lastIndexOf(" ") == -1);
+    if (numOfAtSymbols == 1 && noSpacesInSearchText)
+    {
+        //filter comments from this user
+
+    }
+    else
+    {
+        // filter comments for occurrence of search-text substring
+    }
+}
+
+function isUsernameSuggestionWanted(searchText)
+{
+    // check if user wants username suggestions
+    posOfLastAt = searchText.lastIndexOf("@");
+    userWantsUsernameSuggestions = (posOfLastAt==0);
+    if (posOfLastAt > 0)
+    {
+        userWantsUsernameSuggestions = (searchText.charAt(posOfLastAt-1)==' ') &&
+                                        (searchText.substring(posOfLastAt).lastIndexOf(" ") == -1);
+    }    
+    return userWantsUsernameSuggestions;
+}
+
+function autocompleteUsername(searchText, idOfInputHtml)
+{
+    if (isUsernameSuggestionWanted(searchText))
+    {
+        $.get( "/get_all_users")
+        .done(function(data) {
+            response_json = JSON.parse(data);
+            allUsers = response_json.users;
+            console.log("all users in db = " + allUsers);
+            autocomplete(document.getElementById(idOfInputHtml), allUsers);
+        });
+    } 
+}
+
+function serviceCommentSearchQuery(event)
+{
+    // monitor text in the search-comments box after every key-press event
+    // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
+    // if user presses enter, filter directory comments using text in the searchbox, and show results
+    let keyPressedByUser = window.event.keyCode;
+    let searchCommentBoxId = "seachcomments";
+    let searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
+
+    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+        return true;
+
+    let enterKeyAscii = 13;
+    if (keyPressedByUser == enterKeyAscii)
+    {
+        commentsearchAutocompleteDivId = "seachcomments" + "autocomplete-list";
+        if(document.getElementById(commentsearchAutocompleteDivId)== null || 
+        document.getElementById(commentsearchAutocompleteDivId).getElementsByTagName("div").length == 0)
+        {
+            filterDirectoryComments(searchCommentboxText);
+        }
+    }
+    else
+    {
+        controlCharacterUpper = 31;
+        deleteAscii = 127;
+        if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii))
+        {
+            searchCommentboxText += String.fromCharCode(keyPressedByUser);
+            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+        }
+        else
+            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    }
+}
+
+function commentOnProject(event)
+{
+    let keyPressedByUser = window.event.keyCode;
+    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+        return true;
+
+    if (keyPressedByUser != 13)
+    {
+        commentboxText = $('#comment').val() + String.fromCharCode(keyPressedByUser);
+        commentBoxId = "comment";
+        autocompleteUsername(commentboxText, commentBoxId);
+        return true;
+    }
+    commentAutocompleteDivId = "comment" + "autocomplete-list";
+    if(document.getElementById(commentAutocompleteDivId)== null || 
+    document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0)
+    {
+        sendComment(event);
+    }
+}
+
+function autocomplete(inp, arr) {
+    var currentFocusHere = -1;
+    inp.addEventListener("input", function(e) {
+        var a, b, i, searchText = this.value;
+        if(!isUsernameSuggestionWanted(searchText)) { return;}
+        posOfLastAt = searchText.lastIndexOf("@");
+        lookingFor = searchText.substring(posOfLastAt+1);
+        var val = lookingFor;
+        closeAllLists();
+        if (!val) { return false;}
+        currentFocusHere = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            b = document.createElement("DIV");
+            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+            b.innerHTML += arr[i].substr(val.length);
+            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+            b.addEventListener("click", function(e) {
+                newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
+                inp.value = newText;
+                closeAllLists();
+            });
+            a.appendChild(b);
+          }
+        }
+    });
+    inp.addEventListener("keydown", function(e) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+          currentFocusHere++;
+          addActive(x);
+        } else if (e.keyCode == 38) {
+          currentFocusHere--;
+          addActive(x);
+        } else if (e.keyCode == 13) {
+          e.preventDefault();
+          if (currentFocusHere > -1) {
+            if (x) x[currentFocusHere].click();
+          }
+        }
+    });
+    function addActive(x) {
+      if (!x) return false;
+      removeActive(x);
+      if (currentFocusHere >= x.length) currentFocusHere = 0;
+      if (currentFocusHere < 0) currentFocusHere = (x.length - 1);
+      x[currentFocusHere].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+      for (var i = 0; i < x.length; i++) {
+        x[i].classList.remove("autocomplete-active");
+      }
+    }
+    function closeAllLists(elmnt) {
+      var x = document.getElementsByClassName("autocomplete-items");
+      for (var i = 0; i < x.length; i++) {
+        if (elmnt != x[i] && elmnt != inp) {
+          x[i].parentNode.removeChild(x[i]);
+        }
+      }
+    }
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+  }
