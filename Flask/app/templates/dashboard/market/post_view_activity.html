@@ -1,4 +1,6 @@
-</html><div class="project-tab">
+{% extends 'dashboard/market/post_activity.html' %}
+
+{% block tabs %}
     <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
         <p>Details</p>
     </div>
@@ -8,84 +10,17 @@
     <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
         <p>Bids</p>
     </div>
-</div>
-<div class="activity-tab-div">
-    <div class="scroll">
-        <div class="project-view">
-            <div id="filter-details" style="display: block;">
-                <form id="filter-form-details">
+{% endblock %}
 
-                    <h6 class="tab-title">{{ post['title'] }}</h6>
-                    <div class="activity-tab-container">
-                        <br>
-                        <p><b>Status:</b> {{ post['status'] }}</p>
-                        <p><b>Product:</b> {{ post['product'] }}</p>
-                        <p><b>Project:</b> TODO</p>
-                        <p><b>Location:</b> {{ post['location'] }}</p>
-                        <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
-                        <br>
-                    </div>
+{% block details %}
+    {% include 'dashboard/market/partials/details_tab.html' %}
+{% endblock %}
+    
+{% block comments %}
+    {% include 'dashboard/market/partials/comments_tab.html' %}
+{% endblock %}
 
-                    <h6 class="tab-title">Desription</h6>
-                    <div class="activity-tab-container">
-                        <br>
-                        {{ post['description'] }}
-                        <br>
-                    </div>
-
-                    <h6 class="tab-title">Tags</h6>
-                    <div class="activity-tab-container">
-                        TODO
-                    </div>
-
-                </form>
-            </div>
-
-            <div id="filter-comments" style="display: none;">
-                <br>
-                TODO
-                <br>
-                <form id="filter-form-comments">
-                    <input type="hidden" id="post_id" value="{{ post['post_id'] }}" required />
-                    <div class="comments-div">
-                        <div class="comment-div">
-                            <input type="text" id="searchcomments" name="searchcomments" placeholder="Filter collab by @Users or #hashtag...">
-                            <br>
-                            <div class="img-comment-container">
-                                <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/><textarea id="comment" rows="2" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="activity-tab-div-comment">
-                            {% for comment in post['comments']|reverse %}
-                            {% include 'activity/single_comment.html' %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-
-            <div id="filter-bids" style="display: none;">
-                <form id="filter-form-bids">
-                    <h6 class="tab-title">BIDS FOR:<br>{{ post['title'] }}</h6>
-
-                    <p><b>Offer:</b> <input type="text" name="offer" required></p>
-
-                    <p><b>Per:</b> <input type="text" name="per" required></p>
-
-                    <br>
-                    <p>Comment</p>
-                    <textarea rows="8" name="comments"></textarea>
-                    <br>
-
-                    <div class="edit-box hover right button" onclick="Bid(this, '{{ post['post_id'] }}', '{{ post['title'] }}', '{{ post['status'] }}');">
-                        <h4>BID</h4>
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-    </div>
-</div>
+{% block bids %}
+    {% include 'dashboard/market/partials/bids_form.html' %}
+    {% include 'dashboard/market/partials/bids_tab.html' %}
+{% endblock %}

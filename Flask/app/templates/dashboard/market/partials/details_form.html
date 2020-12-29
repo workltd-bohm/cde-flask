@@ -1,0 +1,30 @@
+<div id="filter-details" style="display: block;">
+    <form id="filter-form-details">
+        <h6 class="tab-title">Create a new post</h6>
+        <div class="activity-tab-container">
+            <br>
+            <p><b>Title:</b><input type="text" name="title" value="{{ post['title'] if post is defined }}" required></p>
+            <p>
+                <b>Description: </b><br>
+                <textarea rows="8" name="description" value="{{ post['description'] if post is defined}}" required></textarea>
+            </p>
+            <p>
+                <b>Status:</b> 
+                <select id="visibility" name="visibility">
+                    <option value="visible">Visible</option>
+                    <option value="private">Private</option>
+                </select>
+            </p>
+            <p><b>Quantity:</b> <input type="text" name="product" value="{{ post['product']['quantity'] if post is defined}}" required></p>
+            <p><b>Project:</b> TODO</p>
+            <p><b>Location:</b> <input type="text" name="location" value="{{ post['location'] if post is defined }}" required></p>
+            <p><b>Expiration:</b> <input type="text" name="date_expired" value="{{ post['date_expired'] if post is defined }}" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required></p>
+            <br>
+        </div>
+
+        <h6 class="tab-title">Tags</h6>
+        <div class="activity-tab-container">
+            TODO
+        </div>
+    </form>
+</div>

@@ -1,18 +1,6 @@
 <div class="edit-section lower">
-    <div class="edit-section tab">
-        <div class="edit-box" id="edit-box-back" onclick="SelectMarket()">
-            <h4>BACK TO MARKET</h4>
-        </div>
-        <div class="edit-box" id="edit-box-3d-view" onclick="MarketTabSwap('3d-view')">
-            <h4>3D</h4>
-        </div>
-        <div class="edit-box" id="edit-box-docs" onclick="MarketTabSwap('docs')">
-            <h4>DOC</h4>
-        </div>
-        <div class="edit-box" id="edit-box-images" onclick="MarketTabSwap('images')">
-            <h4>IMG</h4>
-        </div>
-    </div>
+    {% include 'dashboard/market/partials/post_nav.html' %}
+    
     <div class="edit-section view">
         <div id="3d-view" class="edit-view">
             <div class="d3view-preview">
