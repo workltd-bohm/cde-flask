@@ -12,32 +12,7 @@
 {% endblock %}
 
 {% block details %}
-    <div id="filter-details" style="display: block;">
-        <form id="filter-form-details">
-            <h6 class="tab-title">{{ post['title'] }}</h6>
-
-            <div class="activity-tab-container">
-                <br>
-                {{ post['description'] }}
-                <br>
-            </div>
-            
-            <div class="activity-tab-container">
-                <br>
-                <p><b>Status:</b> {{ post['status'] }}</p>
-                <p><b>Product:</b> {{ post['product'] }}</p>
-                <p><b>Project:</b> TODO</p>
-                <p><b>Location:</b> {{ post['location'] }}</p>
-                <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
-                <br>
-            </div>
-
-            <h6 class="tab-title">Tags</h6>
-            <div class="activity-tab-container">
-                TODO
-            </div>
-        </form>
-    </div>
+    {% include 'dashboard/market/partials/details_tab.html' %}
 {% endblock %}
     
 {% block comments %}
@@ -45,5 +20,6 @@
 {% endblock %}
 
 {% block bids %}
+    {% include 'dashboard/market/partials/bids_form.html' %}
     {% include 'dashboard/market/partials/bids_tab.html' %}
 {% endblock %}

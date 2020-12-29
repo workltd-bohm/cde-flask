@@ -58,8 +58,14 @@ function FilterOut(obj) {
 function FilterSwap(target) {
     $(".project-view").children().hide();
     $(".project-box").removeClass("selected");
-    $("#filter-" + target).show();
-    $("#filter-" + target + "-tab").addClass("selected");
+    
+    if ($("#filter-" + target).length){
+        $("#filter-" + target).show();
+        $("#filter-" + target + "-tab").addClass("selected");
+    } else if ($(".filter-" + target)) {
+        $(".filter-" + target).show();
+        $(".filter-" + target + "-tab").addClass("selected");
+    }
 }
 
 function SearchOpen(data) {
