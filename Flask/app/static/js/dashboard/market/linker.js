@@ -390,8 +390,8 @@ function EditBid(obj, data) {
 function OpenActivityEditBid(obj) {
     var data = {};
     $(obj).parent().serializeArray().map(function(x) { data[x.name] = x.value; });
-    console.log(obj);
-    console.log({ post_id: obj.ic_id });
+    // console.log(obj);
+    // console.log({ post_id: obj.ic_id });
 
     $.ajax({
         url: "/make_post_view_activity",

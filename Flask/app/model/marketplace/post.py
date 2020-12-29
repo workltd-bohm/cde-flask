@@ -149,7 +149,7 @@ class Post:
                     'date_created': self._date_created,
                     'date_expired': self._date_expired,
                     'documents': self._documents,
-                    'bids': self._bids,
+                    'bids': [x.bid_id for x in self._bids],
                     'current_best_bid': self._current_best_bid,
                     'comments': self._comments,
                     'visibility': self._visibility,

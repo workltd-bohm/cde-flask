@@ -33,7 +33,7 @@ function CreateSpace(data) {
             EditPost(data, data.ic_id);
             break;
         case "bid_ic":
-            EditBid(data, data.ic_id);
+            ViewPost(data, data.ic_id);
             break;
         case "all_post_ic":
             ViewPost(data, data.ic_id);

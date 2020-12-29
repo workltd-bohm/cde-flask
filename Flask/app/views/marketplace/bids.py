@@ -93,7 +93,7 @@ def get_all_bids():
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
-                bid['html'] = render_template("dashboard/market/bid.html",
+                bid['html'] = render_template("dashboard/market/bid_old.html",
                                               bid_id=bid["bid_id"],
                                               post_id=bid["post_id"],
                                               offer=bid["offer"],
@@ -129,7 +129,7 @@ def get_my_bids():
             resp = Response()
             resp.status_code = msg.DEFAULT_OK['code']
             for bid in result:
-                bid['html'] = render_template("dashboard/market/bid.html",
+                bid['html'] = render_template("dashboard/market/bid_old.html",
                                               title = bid["post_title"],
                                               bid_id=bid["bid_id"],
                                               post_id=bid["post_id"],
@@ -193,7 +193,8 @@ def get_my_bids_planetary():
                 # path = ic.name if ic.is_directory else ic.name + ic.type
                 # ic_type = '' if ic.is_directory else ic.type
                 proj_obj = {
-                    "ic_id": bid['bid_id'],
+                    "ic_id": bid['post_id'],
+                    "bid_id": bid['bid_id'],
                     # "parent_id": ic.parent_id,
                     "name": bid['post_title'],
                     "parent": "My bids",

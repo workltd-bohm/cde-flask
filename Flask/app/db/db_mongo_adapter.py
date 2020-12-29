@@ -1063,10 +1063,14 @@ class DBMongoAdapter:
     def add_comment_to_post(self, request_data, comment):
         # find post
         posts = self._db.Marketplace.Posts
+        bids = self._db.Marketplace.Bids
         post_query = {'post_id': request_data['post_id']}
         post = posts.find_one(post_query, {'_id': 0})
         if post:
-            # add comment & update post
+            bids_array = []
+            for i in range(len(post['bids'])):
+                bid_query = {'bid_id': post['bids'][i]}
+                post['bids'][i] = bids.find_one(bid_query, {'_id': 0})
             post = Post.json_to_obj(post)
             post.comments.append(comment.to_json())
             posts.update_one(post_query, {'$set': post.to_json()})

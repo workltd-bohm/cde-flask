@@ -16,7 +16,7 @@ def make_ticket_bid():
         # resp.status_code = msg.DEFAULT_OK['code']
         # resp.data = json.dumps(response)
         # return resp
-        return render_template("dashboard/market/bid.html")
+        return render_template("dashboard/market/bid_old.html")
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -119,7 +119,7 @@ def make_post_view_activity():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
         if db.connect(db_adapter):
-            post = db.get_single_post(db_adapter, request_json)
+            post = db.get_single_post(db_adapter, request_json)[0]
             response = {
                 'html': render_template("dashboard/market/post_view_activity.html",
                                         post=post,
@@ -221,7 +221,7 @@ def make_view_post():
         if db.connect(db_adapter):
             post = db.get_single_post(db_adapter, request_json)
             # post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
-            logger.log(LOG_LEVEL, 'DB result: {}'.format(post[0]))
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(post))
             if session['user']["username"] == post[0]["user_owner"]["username"]:
                 response = {
                 'html': render_template("dashboard/market/post_edit_1.html",
