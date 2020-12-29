@@ -123,7 +123,8 @@ def make_post_view_activity():
             response = {
                 'html': render_template("dashboard/market/post_view_activity.html",
                                         post=post,
-                                        bids=[]
+                                        bids=[],
+                                        profile_picture=session['user']['picture']
                                         # tags=[]
                                         ),
                 'data': []
@@ -331,7 +332,7 @@ def make_activity_post_new():
     if main.IsLogin():
         response = {
             'html': render_template("dashboard/market/post_new_activity_1.html",
-                                    # TODO
+                                    profile_picture=session['user']['picture']
                                     ),
             'data': []
         }
@@ -369,7 +370,8 @@ def make_activity_post_edit():
                                         post=post,
                                         comments=[],
                                         bids=div,
-                                        tags=[]
+                                        tags=[],
+                                        profile_picture=session['user']['picture']
                                         ),
                 'data': []
             }

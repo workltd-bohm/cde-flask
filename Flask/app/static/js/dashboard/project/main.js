@@ -94,7 +94,7 @@ function AddSun(obj, data) {
 
     data.values.effect = data.values.this.append("circle")
         .attr("class", "star effect")
-        .attr("r", g_SunRadius*SUN_BG_RATIO);
+        .attr("r", g_SunRadius * SUN_BG_RATIO);
 
     data.values.children = data.values.this.append("g").attr("class", "star child");
 
@@ -233,7 +233,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("r", g_PlanetRadius)
         .on("mouseover", function(d) {
             if (!g_project.overlay && !g_project.move && g_root.zoom) {
-                console.log(g_root.universe.data);
+                // console.log(g_root.universe.data);
                 switch (g_root.universe.data.overlay_type) {
                     case "ic":
                     case "trash":
