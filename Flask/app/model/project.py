@@ -149,19 +149,6 @@ class Project:
         return self._message
 
     def rename_ic(self, request_data, user, ic=None):
-        if request_data['parent_id'] == 'root':
-            self.root_ic.name = request_data['new_name']
-            details = Details(user, 'Renamed',
-                datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
-                request_data['old_name'] + ' to ' + request_data['new_name'])
-            ic.history.append(details)
-            ic.path = request_data['new_name']
-            ic.name = request_data['new_name']
-            name = request_data['new_name']
-            self._added = True
-            self._message = msg.IC_SUCCESSFULLY_RENAMED
-            return self._message
-
         if ic.ic_id == request_data['parent_id']:
             for sub_folder in ic.sub_folders:
                 name = sub_folder.name
