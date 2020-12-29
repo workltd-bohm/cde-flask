@@ -1,0 +1,12 @@
+<div id="filter-bids" style="display: none;">
+    <form id="filter-form-bids">
+        <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
+        {% for bid in bids %}
+            <div class="post-header">
+            <div class="post-block">
+                <h5>{{ bid }}</h5>
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+</div>

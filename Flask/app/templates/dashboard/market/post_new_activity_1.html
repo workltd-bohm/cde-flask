@@ -1,80 +1,24 @@
-<div class="project-tab">
-  <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
-    <p>Details</p>
-  </div>
-  <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
-    <p>Comments</p>
-  </div>
-  <!-- <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
-    <p>Tags</p> 
-  </div> -->
-  <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
-    <p>Access</p>
-  </div>
-</div>
-<div class="activity-tab-div">
-    <div class="scroll">
-        <div class="project-view">
-            <div id="filter-details" style="display: block;">
-                <form id="filter-form-details">
-                    <h6 class="tab-title"><b>Title: </b><input type="text" name="title" required></h6>
-                    <div class="activity-tab-container">
-                        <br>
-                        <p>
-                            <b>Status:</b> 
-                            <select id="visibility" name="visibility">
-                                <option value="visible">Visible</option>
-                                <option value="private">Private</option>
-                            </select>
-                        </p>
-                        <p><b>Quantity:</b> <input type="text" name="product" required></p>
-                        <p><b>Project:</b> TODO</p>
-                        <p><b>Location:</b> <input type="text" name="location" required></p>
-                        <p><b>Expiration:</b> <input type="text" name="date_expired" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required></p>
-                        <br>
-                    </div>
-
-                    <h6 class="tab-title">Desription</h6>
-                    <div class="activity-tab-container">
-                        <br>
-                        <textarea rows="8" name="description" required></textarea>
-                        <br>
-                    </div>
-
-                    <h6 class="tab-title">Tags</h6>
-                    <div class="activity-tab-container">
-                        TODO
-                    </div>
-
-                </form>
-            </div>
-
-            {% include 'dashboard/market/partials/comment_tab.html' %}
-
-            {% include 'dashboard/market/partials/access_tab.html' %}
-            <!-- <div id="filter-tags" style="display: none;">
-                <form id="filter-form-tags">
-                    <h6 class="tab-title">Tags</h6>
-                    <div class="activity-tab-container">
-                        <div class="activity-tab-container-inside" id="activity-tag-container">
-                            <br>
-                            {% for tag in tags %}
-                            <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
-                                <div class="tag" style="background-color: {{ tag['color'] }}">
-                                    <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                                    {{ tag['tag'] }}
-                                    </i>
-                                </div>
-                                <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
-                            </div>
-                            {% endfor %}
-                            <br>
-                        </div>
-                        <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
-                        <br>
-                    </div>
-                </form>
-            </div> -->
-        </div>
+{% extends 'dashboard/market/post_activity.html' %}
+{% block tabs %}
+    <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+        <p>Details</p>
     </div>
-</div>
+    <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
+        <p>Comments</p>
+    </div>
+    <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
+        <p>Access</p>
+    </div>
+{% endblock %}
+
+{% block details %}
+    {% include 'dashboard/market/partials/details_form.html' %}
+{% endblock %}
+
+{% block comments %}
+    {% include 'dashboard/market/partials/comments_tab.html' %}
+{% endblock %}
+
+{% block access %}
+    {% include 'dashboard/market/partials/access_tab.html' %}
+{% endblock %}

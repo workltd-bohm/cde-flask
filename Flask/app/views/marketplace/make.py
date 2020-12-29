@@ -84,7 +84,7 @@ def make_edit_bid():
     resp = Response()
     if main.IsLogin():
         result = db.get_single_bid(db_adapter, request_json)
-        post = db.get_single_post(db_adapter, result[0]["post_id"])
+        post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
         # res = json.loads(result[0])
         logger.log(LOG_LEVEL, 'DB result: {}'.format(result[0]))
         response = {
@@ -119,7 +119,7 @@ def make_post_view_activity():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
         if db.connect(db_adapter):
-            post = db.get_single_post(db_adapter, request_json)[0]
+            post = db.get_single_post(db_adapter, request_json)
             response = {
                 'html': render_template("dashboard/market/post_view_activity.html",
                                         post=post,

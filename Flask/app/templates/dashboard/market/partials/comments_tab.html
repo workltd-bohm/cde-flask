@@ -3,6 +3,7 @@
     TODO
     <br>
     <form id="filter-form-comments">
+        {% if post is defined %}
         <input type="hidden" id="post_id" value="{{ post['post_id'] }}" required />
         <div class="comments-div">
             <div class="comment-div">
@@ -21,5 +22,6 @@
                 {% endfor %}
             </div>
         </div>
+        {% endif %}
     </form>
 </div>

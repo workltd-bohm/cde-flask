@@ -1,0 +1,18 @@
+<div id="filter-bids" style="display: none;">
+    <form id="filter-form-bids">
+        <h6 class="tab-title">BIDS FOR:<br>{{ post['title'] }}</h6>
+
+        <p><b>Offer:</b> <input type="text" name="offer" required></p>
+
+        <p><b>Per:</b> <input type="text" name="per" required></p>
+
+        <br>
+        <p>Comment</p>
+        <textarea rows="8" name="comments"></textarea>
+        <br>
+
+        <div class="edit-box hover right button" onclick="Bid(this, '{{ post['post_id'] }}', '{{ post['title'] }}', '{{ post['status'] }}');">
+            <h4>BID</h4>
+        </div>
+    </form>
+</div>
