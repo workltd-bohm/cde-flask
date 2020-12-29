@@ -1284,11 +1284,14 @@ class DBMongoAdapter:
                     results[0].pop('_id', None)
                     tags = results[0]
                     if request_tag in tags:
-                        tags[request_tag].remove({'ic_id': request_data['ic_id'],
-                                                  'project_name': request_data['project_name'],
-                                                  'parent_id': request_data['parent_id']})
+                        try:
+                            tags[request_tag].remove({'ic_id': request_data['ic_id'],
+                                                      'project_name': request_data['project_name'],
+                                                      'parent_id': request_data['parent_id']})
 
-                        col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                            col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                        except:
+                            print('tag not in a list')
 
         else:
             message = msg.PROJECT_NOT_FOUND

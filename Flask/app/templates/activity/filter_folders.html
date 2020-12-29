@@ -83,7 +83,7 @@
                   <input type="text" id="seachcomments" name="searchcomments" onkeypress="serviceCommentSearchQuery(event)" onkeydown="serviceCommentSearchQuery(event)" placeholder="Filter colab by @Users or #hashtag..."><br>
                 </div>
                 <div class="img-comment-container">
-                  <img class="profile-icon" src="../static/img/avatar.svg"/>
+                  <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/>
                   <div id="makecommentsDiv" class="autocomplete">
                     <textarea id="comment" rows="2" onkeypress="commentOnProject(event)" onkeydown="commentOnProject(event)" placeholder="Comment..."></textarea><br>
                   </div>
