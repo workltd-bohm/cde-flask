@@ -27,11 +27,12 @@ $(document).ready(function() {
 
 $(document).on('keypress', function(e) {
     if (e.which == 13) {
-        target = $("input[type=button]");
-        if (target.length > 0 && target.hasClass("keypress")) {
-            console.log("onclick activate");
-            $("input[type=button]").trigger("click");
-        }
+        $("input[type=button]").each(function(i){
+            if ($(this).hasClass("keypress")) {
+                // console.log("onclick activate", this);
+                $(this).trigger("click");
+            }
+        });
         return false;
     }
 });
