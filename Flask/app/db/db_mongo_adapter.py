@@ -1233,9 +1233,10 @@ class DBMongoAdapter:
                         if request_tags[i] in tags:
                             if request_tags[i].startswith('#'):
                                 already_exists = False
-                                for ic in tags[request_tags[i]]:
-                                    if ic['ic_id'] == request_data['ic_id']:
-                                        already_exists = True
+                                for obj in tags[request_tags[i]]:
+                                    if 'ic_id' in obj.keys():
+                                        if obj['ic_id'] == request_data['ic_id']:
+                                            already_exists = True
                                         break
                                 if not already_exists:
                                     tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
