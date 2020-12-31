@@ -96,6 +96,7 @@ function sendComment(el) {
 var tmp_comment = "";
 
 function editComment(elem) {
+    elem = elem.closest('.comments_field');
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
@@ -106,13 +107,13 @@ function editComment(elem) {
 
     elem.getElementsByClassName('comment-inline')[0].innerHTML =
         '<textarea id="comment-editmode" ' +
-        'onkeypress="updateComment(event, this.parentElement.parentElement.parentElement.parentElement.dataset)">' +
-        "</textarea>";
+        'onkeypress="updateComment(event, this)"></textarea>';
 
     $('#comment-editmode').focus().val(comment_text.trim());
 }
 
-function updateComment(el, dataset) {
+function updateComment(el, container) {
+    let dataset = container.closest('.comment-container').dataset;
     var key = window.event.keyCode;
     if (key != 13)
         return true;
@@ -128,7 +129,6 @@ function updateComment(el, dataset) {
         // prompt to delete
     }
 
-    console.log(dataset['id']);
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
@@ -178,13 +178,15 @@ function resetComment() {
 }
 
 function deleteComment(elem) {
+    elem = elem.closest('.comment-container');
+
+    // data
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
     div = $('.activity-tab-div-comment');
     post_id = $('#post_id').val();
     comment_id = elem.dataset.id;
-    console.log(elem);
 
     $.ajax({
         url: "/delete_comment",

@@ -10,11 +10,11 @@
                     <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
                     <div class="edit-delete">
                         {% if comment['user']['user_id'] == session['user']['id'] %}
-                        <i class="material-icons border_color comment-options" onclick="editComment(this.parentElement.parentElement.parentElement.parentElement)">edit</i>
+                        <i class="material-icons border_color comment-options" onclick="editComment(this)">edit</i>
                         {% endif %}
 
                         {% if comment['user']['user_id'] == session['user']['id'] or (post is defined and post['user_owner']['id'] == session['user']['id']) %}
-                            <i class="material-icons clear comment-options" onclick="deleteComment(this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement)">delete</i>
+                        <i class="material-icons clear comment-options" onclick="deleteComment(this)">delete</i>
                         {% endif %}
                     </div>
                 </div>
