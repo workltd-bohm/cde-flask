@@ -212,7 +212,7 @@ function addTag(terminal, buffer=false){
 
                 tagBuffer.push({
                     tag: terminal[i]
-                })
+                });
             }
         }
         console.log(tagBuffer);

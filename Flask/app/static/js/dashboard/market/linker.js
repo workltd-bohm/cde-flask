@@ -84,7 +84,7 @@ function AddPost(obj) {
     args['doc'] = documents;
     args['3d-view'] = $("#3d-view-link")[0].value;
     console.log(args);
-    args['tags'] = [];
+    args['tags'] = tagBuffer;
 
     $.ajax({
         url: "/create_post",
@@ -94,6 +94,7 @@ function AddPost(obj) {
         success: function(data) {
             MakeSnackbar(data);
             MarketGet('Posts');
+            tagBuffer = [];
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

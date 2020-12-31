@@ -26,6 +26,15 @@ def create_post():
         request_json['current_best_bid'] = None
         request_json['comments'] = []
         request_json['status'] = 0
+        print('\n\n\n before: ', request_json['tags'])
+        for i, tag in enumerate(request_json['tags']):
+            # if 'tag' in tag.keys() and 'color' in tag.keys():
+            #     request_json['tags'][i] = {'tag': tag['tag'], 'color': tag['color']}
+            # elif 'tag' in tag.keys():
+            #     request_json['tags'][i] = {'tag': tag['tag'], 'color': 'white'}
+            if 'color' not in tag.keys():
+                request_json['tags'][i]['color'] = 'white'
+        print('\n\n\n after: ', request_json['tags'])
 
     if main.IsLogin():
         request_json['user_owner'] = session.get('user')
