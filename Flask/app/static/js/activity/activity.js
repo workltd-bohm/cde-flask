@@ -85,6 +85,7 @@ function sendCommentPress(){
     });
 }
 function sendComment(el) {
+    console.log("sending comment");
     var key = window.event.keyCode;
     if (key != 13)
         return true;
@@ -408,19 +409,69 @@ function openToggleInfoHistory() {
     }
 }
 
+var allProjectComments=null;
 function filterDirectoryComments(searchCommentboxText)
 {
-    console.log("TODO@pamir: filterDirectoryComments");
+    divWithAllComments = document.getElementById("activity-tab-div-comments");
+    
+    if(allProjectComments == null)
+    allProjectComments = divWithAllComments.innerHTML;
+    else
+    divWithAllComments.innerHTML = allProjectComments;
+    
+    
+    comments = divWithAllComments.children;
     numOfAtSymbols = searchCommentboxText.split("@").length - 1;
     noSpacesInSearchText = (searchCommentboxText.lastIndexOf(" ") == -1);
     if (numOfAtSymbols == 1 && noSpacesInSearchText)
     {
         //filter comments from this user
-
+        console.log("showing all comments from " + searchCommentboxText);
+        numComments = comments.length;
+        whichComment=0;
+        while(whichComment < numComments)
+        {
+            username = comments[whichComment].getElementsByClassName("details_event_user comments")[0].innerText;
+            if(username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1))//1 to skip @
+            {
+                whichComment++;
+            }
+            else
+            {
+                divWithAllComments.removeChild(comments[whichComment]);
+                numComments--;
+            }
+        }
     }
     else
     {
         // filter comments for occurrence of search-text substring
+        console.log("searching through " + divWithAllComments.childElementCount + " comments");
+        numComments = comments.length;
+        whichComment=0;
+        while(whichComment < numComments)
+        {
+            comment = comments[whichComment].getElementsByClassName("details_event comment-events")[0].innerText;
+            if(comment.toLowerCase().includes(searchCommentboxText.toLowerCase()))
+            {
+                whichComment++;
+            }
+            else
+            {
+                divWithAllComments.removeChild(comments[whichComment]);
+                numComments--;
+            }
+        }
+    }
+}
+
+function resetCommentSearch(event)
+{
+    console.log("reset search");
+    if(allProjectComments != null)
+    {
+        document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
+        document.getElementById("seachcomments").value = "";
     }
 }
 
@@ -463,14 +514,27 @@ function serviceCommentSearchQuery(event)
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let enterKeyAscii = 13;
-    if (keyPressedByUser == enterKeyAscii)
+    let commentsearchAutocompleteDivId = "seachcomments" + "autocomplete-list";
+    if (keyPressedByUser == 13) //enter
     {
-        commentsearchAutocompleteDivId = "seachcomments" + "autocomplete-list";
         if(document.getElementById(commentsearchAutocompleteDivId)== null || 
         document.getElementById(commentsearchAutocompleteDivId).getElementsByTagName("div").length == 0)
         {
             filterDirectoryComments(searchCommentboxText);
+        }
+    }
+    else if(keyPressedByUser == 27) //esc
+    {
+        if(document.getElementById(commentsearchAutocompleteDivId) != null)
+        {
+            if(document.getElementById(commentsearchAutocompleteDivId).innerHTML != "")
+                document.getElementById(commentsearchAutocompleteDivId).innerHTML = "";
+            else
+                resetCommentSearch();
+        }
+        else
+        {
+            resetCommentSearch();
         }
     }
     else
@@ -493,6 +557,13 @@ function commentOnProject(event)
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
+    let commentAutocompleteDivId = "comment" + "autocomplete-list";
+    if(keyPressedByUser == 27) //esc key
+    {
+        if(document.getElementById(commentAutocompleteDivId) != null)
+            document.getElementById(commentAutocompleteDivId).innerHTML = "";
+    }
+
     if (keyPressedByUser != 13)
     {
         commentboxText = $('#comment').val() + String.fromCharCode(keyPressedByUser);
@@ -500,11 +571,12 @@ function commentOnProject(event)
         autocompleteUsername(commentboxText, commentBoxId);
         return true;
     }
-    commentAutocompleteDivId = "comment" + "autocomplete-list";
+    
     if(document.getElementById(commentAutocompleteDivId)== null || 
     document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0)
     {
         sendComment(event);
+        document.getElementById("comment").value = ""; //clear after sending
     }
 }
 
