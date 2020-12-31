@@ -190,32 +190,59 @@ function isString(variable){
 }
 /* * * * helper fs * * * */
 
+function createTempTag(name, color='white'){
+    let t_container;
+    let t_inner;
+    let tag;
+    let all_tags = document.getElementsByClassName('activity-tab-container-inside')[0];
+    t_container = document.createElement("div");
+    t_container.className = "tag-container";
+    t_inner = document.createElement('div');
+    t_inner.className = "tag";
+    tag = document.createElement('i'); 
+    tag.append(name);
+
+    all_tags.append(t_container);
+    t_container.append(t_inner);
+    t_inner.append(tag);
+    t_inner.style.backgroundColor = color;
+    tag.style.color = (color == 'white') ? 'black' : 'white';
+    all_tags.append(t_container);
+}
+
+function bufferTag(terminal){
+    for (i = 1; i < terminal.length; i++){
+        if (isString(terminal[i])) {
+            if (terminal[i].startsWith("#")){
+                // check if has color
+                if (i + 1 <= terminal.length) {
+                    if (isColor(terminal[i+1])) {
+                        tagBuffer.push({
+                            tag: terminal[i],
+                            color: terminal[i+1]
+                        });
+
+                        createTempTag(terminal[i], color=terminal[i+1]);
+                        i++; 
+                        continue;
+                    }
+                }
+                tagBuffer.push({
+                    tag: terminal[i]
+                });
+                
+                createTempTag(terminal[i]);                    
+            }
+        }
+    }
+}
+
 var tagBuffer = [];
 function addTag(terminal, buffer=false){
     LoadStart();
 
     if (buffer){
-        for (i = 1; i < terminal.length; i++){
-            if (isString(terminal[i])) {
-                if (terminal[i].startsWith("#")){
-                    if (i + 1 <= terminal.length) {
-                        if (isColor(terminal[i+1]) && !terminal[i+1].startsWith("#")) {
-                            tagBuffer.push({
-                                tag: terminal[i],
-                                color: terminal[i+1]
-                            });
-                            i++; 
-                            continue;
-                        }
-                    }
-                }
-
-                tagBuffer.push({
-                    tag: terminal[i]
-                });
-            }
-        }
-        console.log(tagBuffer);
+        bufferTag(terminal);
         return;
     }
 

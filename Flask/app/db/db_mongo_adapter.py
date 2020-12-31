@@ -790,17 +790,18 @@ class DBMongoAdapter:
                 if len(results) != 0:
                     results[0].pop('_id', None)
                     tags = results[0]
-                    for i in range(1, len(request_tags)):
-                        if request_tags[i] in tags:
-                            if request_tags[i].startswith('#'):
+                    for i in range(0, len(request_tags)):
+                        tag = request_tags[i]
+                        if tag['tag'] in tags:
+                            if tag['tag'].startswith('#'):
                                 # add this post to a tag
-                                tags[request_tags[i]].append({'post_id': post_id})
+                                tags[tag['tag']].append({'post_id': post_id})
                                 col_tags.update_one({'id': tags['id']}, {'$set': tags})
                                 break
                         else:
                             # create a new tag and add this post
-                            if request_tags[i].startswith('#'):
-                                tag_json[request_tags[i]] = [{'post_id': post_id}]
+                            if request_tags[i]['tag'].startswith('#'):
+                                tag_json[request_tags[i]['tag']] = [{'post_id': post_id}]
                                 col_tags.update({'id': tags['id']}, {'$set': tag_json})
                     print('Tags added successfully')
                 else:

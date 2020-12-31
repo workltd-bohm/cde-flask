@@ -26,18 +26,7 @@
         <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
         <div class="activity-tab-container" id="tags">
             <div class="activity-tab-container-inside" id="activity-tag-container">
-                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event, true)" placeholder="Add tags here..">
-                <br>
-                {% for tag in tags %}
-                <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
-                    <div class="tag" style="background-color: {{ tag['color'] }}">
-                        <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                         {{ tag['tag'] }}
-                        </i>
-                    </div>
-                    <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
-                </div>
-                {% endfor %}
+                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event, true);" placeholder="Add tags here..">
                 <br>
             </div>
         </div>
