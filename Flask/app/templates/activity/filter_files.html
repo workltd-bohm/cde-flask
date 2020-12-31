@@ -81,7 +81,7 @@
                   <div class="comment-div">
                     <input type="text" id="searchcomments" name="searchcomments" placeholder="Filter collab by @Users or #hashtag..."><br>
                     <div class="img-comment-container">
-                    <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/><textarea id="comment" rows="1" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><br>
+                    <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/><div class="comment-send-container"><textarea id="comment" rows="1" onkeypress="sendComment(event)" placeholder="Comment..."></textarea><img class="send-icon" src="{{ url_for('static', filename='img/send.png') }}" onclick="sendCommentPress()"/></div><br>
                     </div>
                   </div>
                   <br>
@@ -130,6 +130,18 @@
                                 <option data-img_src="{{ url_for('static', filename='img/add-user.png') }}"><span class="admin">ADMIN</span></option>
                             </select>
                             <!--<label for="role" class="form__label">Role</label>-->
+                        </div>
+                        <div class="form__group field">
+                             <div class="button-date"  >
+                                <div id="button-date-icon">
+                                  <img id="button-for-date" class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}" onclick="openDate()" />
+                                  <div id="experation-date" class="experation-date-falesafe">
+                                    <input type="date" name="date_expired"  placeholder=""  required>
+                                  </div>
+                                  <p id="permanet">Permanent</p>
+                                  
+                                </div>
+                              </div>
                         </div>
                        </div>
                       
