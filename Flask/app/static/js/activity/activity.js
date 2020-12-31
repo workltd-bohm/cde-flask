@@ -46,7 +46,44 @@ function AppendActivityTab(parent, child) {
 function ClearActivityTab(parent) {
     parent.html('');
 }
+function sendCommentPress(){
+    comment = $('#comment').val();
+    if (comment.length < 1) { return; } // prevent sending empty comments
 
+    project_name = $('#project_name').val();
+    parent_id = $('#parent_id').val();
+    ic_id = $('#ic_id').val();
+    div = $('.activity-tab-div-comment');
+    post_id = $('#post_id').val();
+    console.log(comment);
+
+    $.ajax({
+        url: "/send_comment",
+        type: 'POST',
+        data: JSON.stringify(project_name ? {
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id
+        } : {
+            comment: comment,
+            post_id: post_id
+        }),
+        timeout: 5000,
+        success: function(data) {
+            //            input_json = JSON.parse(data);
+            //console.log(data);
+            div.prepend(data);
+            $('#comment').val('');
+            //div.scrollTop(div[0].scrollHeight);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+        }
+    });
+}
 function sendComment(el) {
     var key = window.event.keyCode;
     if (key != 13)
@@ -212,7 +249,7 @@ function deleteComment(elem) {
 }
 
 function AddAccess() {
-    LoadStart();
+    /*LoadStart();*/
     $.ajax({
         url: "/add_access",
         type: 'POST',
@@ -541,3 +578,21 @@ function autocomplete(inp, arr) {
         closeAllLists(e.target);
     });
   }
+  function openDate() {
+    var x = document.getElementById("experation-date");
+    var y = document.getElementById("permanet");
+    var z = document.getElementById("role");
+    var i=  document.getElementById("button-for-date");
+    console.log("t");
+      if (x.style.display  === "none") {
+      x.style.display = "block";
+      y.style.display = "none";
+      z.style.width ="103%";
+      i.style.left= "35px";
+    } else {
+      x.style.display = "none";
+      y.style.display = "block";
+      z.style.width ="49%";
+      i.style.left= "";
+    }
+  } 
