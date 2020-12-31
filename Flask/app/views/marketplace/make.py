@@ -1,5 +1,5 @@
 from app import *
-
+from uuid import uuid1
 
 @app.route('/make_ticket_bid', methods=['POST'])
 def make_ticket_bid():
@@ -332,7 +332,8 @@ def make_activity_post_new():
     if main.IsLogin():
         response = {
             'html': render_template("dashboard/market/post_new_activity_1.html",
-                                    profile_picture=session['user']['picture']
+                                    profile_picture=session['user']['picture'],
+                                    post_id= uuid1()
                                     ),
             'data': []
         }
@@ -370,7 +371,6 @@ def make_activity_post_edit():
                                         post=post,
                                         comments=[],
                                         bids=div,
-                                        tags=[],
                                         profile_picture=session['user']['picture']
                                         ),
                 'data': []

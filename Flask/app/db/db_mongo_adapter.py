@@ -374,7 +374,7 @@ class DBMongoAdapter:
         return message, ic
 
     def rename_ic(self, request_data, user):
-        print("Pamir******* : I am here!")
+        print("Pamir******* : I am here!\n\n\n")
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
@@ -387,6 +387,7 @@ class DBMongoAdapter:
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 file_updated = True
                 if not request_data['is_directory']:
+                    print('shouldnt be here\n\n\n')
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
                     file_json = col_file.find_one(file_query)
@@ -1209,6 +1210,9 @@ class DBMongoAdapter:
         return message
 
     def add_tag(self, request_data, tags):
+        if 'post_id' in request_data.keys():
+            return self.add_tag_to_post(request_data)
+
         col = self._db.Projects
         col_tags = self._db.Tags
         project_query = {'project_name': request_data['project_name']}
@@ -1267,7 +1271,76 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def add_tag_to_post(self, request_data):
+        col_posts = self._db.Marketplace.Posts
+        col_tags = self._db.Tags
+
+        post_query = {'post_id': request_data['post_id']}
+        post_json = col_posts.find_one(post_query, {'_id': 0})
+
+        if post_json: 
+            post = Post.json_to_obj(post_json)
+            message = post.add_tag(request_data['tags']) # <- check if post already has this tag, and add it
+            if message == msg.TAG_SUCCESSFULLY_ADDED:
+                # update post
+                # col_posts.update_one({'post_id': post_json['post_id']}, {'$set': post.to_json()})
+                
+                # # add tags to collection and check if it doesn't already exists
+                # tag_obj = col_tags.find()
+                # tag_list = list(tag_obj)[0]
+                # tag_list.pop("_id", None)
+
+                # for i, tag in enumerate(request_data['tags']):
+                #     if tag.startswith("#"):
+                #         if tag not in tag_list:
+                #             tag_list.append(tag)
+                #             col_tags.update_one({'id': tag_obj[0]['tags_collection']}, {'$set': tag_
+                #             })           
+                        
+                # check if tag is not duplicate in db
+                col_posts.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tags = request_data['tags']
+                tag_json = {}
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i] in tags:
+                            if request_tags[i].startswith('#'):
+                                already_exists = False
+                                for obj in tags[request_tags[i]]:
+                                    if 'post_id' in obj.keys():
+                                        if obj['post_id'] == request_data['post_id']:
+                                            already_exists = True
+                                            break
+                                if not already_exists:
+                                    tags[request_tags[i]].append({'post_id': post.post_id})
+
+                                col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                                break
+                        else:
+                            if request_tags[i].startswith('#'):
+                                tag_json[request_tags[i]] = [{'post_id': request_data['post_id']}]
+
+                                col_tags.update({'id': tags['id']}, {'$set': tag_json})
+                else:
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i].startswith('#'):
+                            tag_json[request_tags[i]] = [{'post_id': request_data['post_id']}]
+                    tag_json['id'] = 'tags_collection'
+                    col_tags.insert_one(tag_json)
+        else:
+            message = msg.POST_NOT_FOUND
+            
+        self._close_connection()
+        return message           
+
     def remove_tag(self, request_data, tag):
+        if 'post_id' in request_data.keys():
+            return self.remove_tag_from_post(request_data, tag)
+
         col = self._db.Projects
         col_tags = self._db.Tags
         project_query = {'project_name': request_data['project_name']}
@@ -1295,6 +1368,38 @@ class DBMongoAdapter:
 
         else:
             message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def remove_tag_from_post(self, request_data, tag):
+        col = self._db.Marketplace.Posts
+        col_tags = self._db.Tags
+
+        post_query = {'post_id': request_data['post_id']}
+        post_json = col.find_one(post_query, {'_id': 0})
+
+        if post_json:
+            post = Post.json_to_obj(post_json)
+            message = post.remove_tag(tag)
+
+            if message == msg.TAG_SUCCESSFULLY_REMOVED:
+                col.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tag = request_data['tag']
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    if request_tag in tags:
+                        try:
+                            tags[request_tag].remove({'post_id': post.post_id})
+
+                            col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                        except:
+                            print('tag not in a list')
+
+        else:
+            message = msg.POST_NOT_FOUND
         self._close_connection()
         return message
 

@@ -2,11 +2,10 @@
     <form id="filter-form-details">
         <h6 class="tab-title">Create a new post</h6>
         <div class="activity-tab-container">
-            <br>
             <p><b>Title:</b><input type="text" name="title" value="{{ post['title'] if post is defined }}" required></p>
             <p>
                 <b>Description: </b><br>
-                <textarea rows="8" name="description" value="{{ post['description'] if post is defined}}" required></textarea>
+                <textarea rows="8" name="description" required>{{ post['description'] if post is defined}}</textarea>
             </p>
             <p>
                 <b>Status:</b> 
@@ -22,9 +21,46 @@
             <br>
         </div>
 
-        <h6 class="tab-title">Tags</h6>
-        <div class="activity-tab-container">
-            TODO
+        {% if post is not defined %}
+        <!-- create post tags -->
+        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+        <div class="activity-tab-container" id="tags">
+            <div class="activity-tab-container-inside" id="activity-tag-container">
+                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event, true)" placeholder="Add tags here..">
+                <br>
+                {% for tag in tags %}
+                <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                    <div class="tag" style="background-color: {{ tag['color'] }}">
+                        <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                         {{ tag['tag'] }}
+                        </i>
+                    </div>
+                    <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                </div>
+                {% endfor %}
+                <br>
+            </div>
         </div>
+        {% else %}
+        <!-- edit post tags -->
+        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+        <div class="activity-tab-container" id="tags">
+            <div class="activity-tab-container-inside" id="activity-tag-container">
+                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tags here..">
+                <br>
+                {% for tag in post['tags'] %}
+                <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                    <div class="tag" style="background-color: {{ tag['color'] }}">
+                        <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                         {{ tag['tag'] }}
+                        </i>
+                    </div>
+                    <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                </div>
+                {% endfor %}
+                <br>
+            </div>
+        </div>
+        {% endif %}
     </form>
 </div>

@@ -6,86 +6,87 @@ var keyWordsArr = [];
 var currentActiveArr = '';
 var currField = '';
 
-function onFocus() {
+function onFocus(){
     terInput = $('#terminal-input').val();
-    if (terInput.split(' ').length > 1) {
-        if (currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
-    } else {
-        if (currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
+    if(terInput.split(' ').length > 1){
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
+    }
+    else{
+        if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
     }
 }
 
-function onFocusOut() {
+function onFocusOut(){
     $("#terminal-input").val("");
 }
 
-$(window).keydown(function(e) {
-    //    console.log(e.keyCode);
+$(window).keydown(function(e){
+//    console.log(e.keyCode);
     terInput = $('#terminal-input').val();
     if ((e.ctrlKey || e.metaKey) && e.keyCode === 70) {
         e.preventDefault();
         $('#terminal-input').focus();
-        if (terInput.split(' ').length > 1) {
-            if (currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
-        } else {
-            if (currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
+        if(terInput.split(' ').length > 1){
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
+        }
+        else{
+            if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
         }
     }
 });
 
 
-function terminalListen(el) {
+function terminalListen(el){
     var key = window.event.keyCode;
-    if (key != 13) // 13 = carriage return ASCII (enter key)
+    if(key != 13)
         return true;
-    if (key === 13 && el.shiftKey) {
+    if (key === 13 && el.shiftKey){
         return true;
     }
-    if ($('#terminal-input').val() == '') {
+    if ($('#terminal-input').val() == ''){
         return true;
     }
     terminal = $('#terminal-input').val().split(' ');
 
     $('#terminal-input').val('');
 
-    //    console.log(terminal);
+//    console.log(terminal);
     console.log(SESSION);
 
-    if (terminal[0] == 'new_folder') {
-        if (terminal.length > 1) {
-            args = {
-                parent_id: SESSION['position'].parent_id,
-                ic_id: SESSION['position'].ic_id,
-                project_name: SESSION['position'].project_name,
-                parent_path: SESSION['position'].path,
-                new_name: terminal[1]
-            }
+    if(terminal[0] == 'new_folder'){
+        if(terminal.length > 1){
+            args = {parent_id: SESSION['position'].parent_id,
+                    ic_id: SESSION['position'].ic_id,
+                    project_name: SESSION['position'].project_name,
+                    parent_path: SESSION['position'].path,
+                    new_name: terminal[1]
+                    }
             FormSubmit('create_dir', args, true, CreateProject);
-        } else {
+        }else{
             PopupOpen(NewFolder, SESSION['position']);
         }
 
     }
-    if (terminal[0] == 'create_file') {
+    if(terminal[0] == 'create_file'){
         OpenFileDialog(SESSION['position'])
     }
-    if (terminal[0] == 'open') {
-        if (SESSION['position'].is_directory) {
+    if(terminal[0] == 'open'){
+        if(SESSION['position'].is_directory){
             OpenFilterActivity(SESSION['position'], open);
-        } else {
+        }else{
             PreviewOpen(OpenFile, SESSION['position'], null, open);
         }
     }
-    if (terminal[0] == 'rename') {
+    if(terminal[0] == 'rename'){
         PopupOpen(RenameFile, SESSION['position']);
     }
-    if (terminal[0] == 'help') {
+    if(terminal[0] == 'help'){
         PopupOpen(Help);
     }
-    if (terminal[0] == 'tag') {
+    if(terminal[0] == 'tag'){
         addTag(terminal);
     }
-    if (!keyWordsArr.includes(terminal[0]) && !tagsArr.includes(terminal[0])) {
+    if(!keyWordsArr.includes(terminal[0]) && !tagsArr.includes(terminal[0])){
         console.log(terminal);
         $('#terminal-input').val(terminal.join(' '));
         searchByName(terminal);
@@ -94,110 +95,160 @@ function terminalListen(el) {
 
 }
 
-function RemoveLastDirectoryPartOf(the_url) {
+function RemoveLastDirectoryPartOf(the_url)
+{
     var the_arr = the_url.split('/');
     the_arr.pop();
-    return (the_arr.join('/'));
+    return( the_arr.join('/') );
 }
 
-function Help(form) {
+function Help(form){
     LoadStart();
-    $.get("/get_help")
-        .done(function(data) {
+    $.get( "/get_help")
+        .done(function( data ) {
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
             form.append(html);
             LoadStop();
         })
-        .fail(function($jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown + ": " + $jqXHR.responseText);
+        .fail(function($jqXHR, textStatus, errorThrown){
+            console.log( errorThrown + ": " + $jqXHR.responseText );
             MakeSnackbar(textStatus);
             PopupClose();
         });
 }
 
-function getTags(field) {
-    if (tagsArr.length > 0) {
+function getTags(field){
+    if(tagsArr.length > 0){
         currentArr = tagsArr;
         currentActiveArr = 'tags';
-        if (currField != field) {
+        if(currField != field){
             terminalAutocomplete(field, input_json['data']);
             currField = field;
         }
-    } else {
-        $.get("/get_all_tags")
-            .done(function(data) {
+    }else{
+        $.get( "/get_all_tags")
+            .done(function( data ) {
                 input_json = JSON.parse(data);
-                //            console.log(input_json['data']);
+    //            console.log(input_json['data']);
                 currentArr = input_json['data'];
                 tagsArr = input_json['data'];
                 currentActiveArr = 'tags';
-                //                if(field == ''){
-                //                    field = document.getElementById("terminal-input");
-                //                    addTagActive = false;
-                //                }
-                //                else{
-                //                    addTagActive = true;
-                //                }
+//                if(field == ''){
+//                    field = document.getElementById("terminal-input");
+//                    addTagActive = false;
+//                }
+//                else{
+//                    addTagActive = true;
+//                }
                 terminalAutocomplete(field, input_json['data']);
                 currField = field;
 
 
             })
-            .fail(function($jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown + ": " + $jqXHR.responseText);
+            .fail(function($jqXHR, textStatus, errorThrown){
+                console.log( errorThrown + ": " + $jqXHR.responseText );
                 MakeSnackbar(textStatus);
             });
-    }
+   }
 }
 
-function get_help_suggest(field = '') {
-    if (keyWordsArr.length > 0) {
+function get_help_suggest(field=''){
+    if(keyWordsArr.length > 0){
         currentArr = keyWordsArr;
         currentActiveArr = 'suggests';
-    } else {
-        $.get("/get_help_suggest")
-            .done(function(data) {
+    }else{
+        $.get( "/get_help_suggest")
+            .done(function( data ) {
                 input_json = JSON.parse(data);
-                //            console.log(input_json['data']);
+    //            console.log(input_json['data']);
                 currentArr = input_json['data'];
                 keyWordsArr = input_json['data'];
                 currentActiveArr = 'suggests';
-                if (field == '') {
+                if(field == ''){
                     field = document.getElementById("terminal-input");
                 }
                 terminalAutocomplete(field, input_json['data']);
             })
-            .fail(function($jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown + ": " + $jqXHR.responseText);
+            .fail(function($jqXHR, textStatus, errorThrown){
+                console.log( errorThrown + ": " + $jqXHR.responseText );
                 MakeSnackbar(textStatus);
             });
     }
 }
 
-function addTag(terminal) {
+/* move these to helper.js */
+function isColor(strColor){
+    var s = new Option().style;
+    s.color = strColor;
+    return s.color == strColor;
+}
+
+function isString(variable){
+    return typeof variable == 'string';
+}
+/* * * * helper fs * * * */
+
+var tagBuffer = [];
+function addTag(terminal, buffer=false){
     LoadStart();
+
+    if (buffer){
+        for (i = 1; i < terminal.length; i++){
+            if (isString(terminal[i])) {
+                if (terminal[i].startsWith("#")){
+                    if (i + 1 <= terminal.length) {
+                        if (isColor(terminal[i+1]) && !terminal[i+1].startsWith("#")) {
+                            tagBuffer.push({
+                                tag: terminal[i],
+                                color: terminal[i+1]
+                            });
+                            i++; 
+                            continue;
+                        }
+                    }
+                }
+
+                tagBuffer.push({
+                    tag: terminal[i]
+                })
+            }
+        }
+        console.log(tagBuffer);
+        return;
+    }
+
+    let post_id = $("#post_id").val();
+    let project_name;
+    if (SESSION['position']){ // todo when market has session, find another way to filter out
+        project_name = SESSION['position'].project_name;
+    }
+
     $.ajax({
         url: "/add_tag",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify(project_name ? {
             project_name: SESSION['position'].project_name,
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             tags: terminal
-        }),
+            } : {
+                post_id: post_id,
+                tags: terminal
+            }
+        ),
         timeout: 5000,
-        success: function(data) {
+        success: function(data){
             MakeSnackbar(data);
             LoadTag(terminal);
             LoadStop();
 
-            //            location.reload();
+//            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown + ": " + $jqXHR.responseText);
+            console.log( errorThrown + ": " + $jqXHR.responseText );
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
         }
@@ -205,66 +256,78 @@ function addTag(terminal) {
 }
 
 var addTagActive = false;
-
-function addTagListen(el) {
-    if (!addTagActive) {
+function addTagListen(el, buffer=false){
+    if(!addTagActive){
         getTags(document.getElementById("add-tag"));
+    }
 
-    }
     var key = window.event.keyCode;
-    if (key != 13)
+    if(key != 13)
         return true;
-    if (key === 13 && el.shiftKey) {
+    if (key === 13 && el.shiftKey){
         return true;
     }
+
     tagsValue = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
-    if (tagsValue[0] != "tag") {
+    if(tagsValue[0] != "tag"){
         tagsValue.unshift("tag");
     }
-    addTag(tagsValue);
+
+    addTag(tagsValue, buffer);
 }
 
-function removeTag(tagName, tagColor) {
+function removeTag(tagName, tagColor){
     LoadStart();
+
+    let post_id = $("#post_id").val();
+    let project_name;
+    if (SESSION['position']){ // todo when market has session, find another way to filter out
+        project_name = SESSION['position'].project_name;
+    }
+
     $.ajax({
         url: "/remove_tag",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify(project_name ? {
             project_name: SESSION['position'].project_name,
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             tag: tagName,
             color: tagColor
+        } : {
+            post_id: post_id,
+            tag: tagName,
+            color: tagColor
         }),
         timeout: 5000,
-        success: function(data) {
+        success: function(data){
             MakeSnackbar(data);
             LoadStop();
             t = document.getElementById(tagName + ' ' + tagColor);
             t.parentNode.removeChild(t);
-            //            location.reload();
+//            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log(errorThrown + ": " + $jqXHR.responseText);
+            console.log( errorThrown + ": " + $jqXHR.responseText );
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
         }
     });
 }
 
-function LoadTag(terminal) {
-    // console.log(terminal);
+function LoadTag(terminal){
+    console.log(terminal);
     activityTagContainer = document.getElementById('activity-tag-container');
-    for (var i = 1; i < terminal.length; i++) {
-        if (terminal[i].startsWith('#')) {
+    for(i=1; i<terminal.length; i++){
+        if(terminal[i].startsWith('#')){
             var tag = terminal[i];
             var color = 'white';
-            if (i < terminal.length - 1) {
-                if (!terminal[i + 1].startsWith('#')) {
-                    color = terminal[i + 1];
+            if(i < terminal.length-1){
+                if(!terminal[i+1].startsWith('#')){
+                    color = terminal[i+1];
                     i++;
                 }
             }
@@ -272,13 +335,13 @@ function LoadTag(terminal) {
             existingTags = document.getElementsByClassName('tag-container');
 
             var alreadyInside = false;
-            for (var j = 0; j < existingTags.length; j++) {
-                if (existingTags[j].id == tag + ' ' + color) {
+            for(j=0; j<existingTags.length; j++){
+                if(existingTags[j].id == tag + ' ' + color){
                     alreadyInside = true;
                 }
             }
 
-            if (!alreadyInside) {
+            if(!alreadyInside){
 
                 addTagInArrayIfMissing(tag, tagsArr);
 
@@ -294,17 +357,17 @@ function LoadTag(terminal) {
 
                 tagI = document.createElement("i");
                 var iColor = 'white;';
-                if (color == 'white') {
-                    iColor = 'black;';
+                if(color == 'white'){
+                   iColor = 'black;';
                 }
                 tagI.style.cssText = "color: " + iColor + ";";
                 tagI.innerHTML = tag;
 
-                var tagSpan = document.createElement("span");
+                tagSpan = document.createElement("span");
                 tagSpan.className = "remove-tag";
-                tagSpan.tagTag = tag;
-                tagSpan.color = color;
-                tagSpan.addEventListener('click', removeTagLocal, false);
+                tagSpan.onclick = function(){
+                    removeTag(tag + ' ' + color);
+                };
                 tagSpan.innerHTML = 'x';
 
                 tagDiv.appendChild(tagI);
@@ -317,163 +380,158 @@ function LoadTag(terminal) {
     }
 }
 
-function removeTagLocal(evt) {
-    removeTag(evt.currentTarget.tagTag, evt.currentTarget.color);
-}
-
-function addTagInArrayIfMissing(element, array) {
+function addTagInArrayIfMissing(element, array){
     array.indexOf(element) === -1 ? array.push(element) : console.log("This item already exists in the local array");
 }
 
 function terminalAutocomplete(inp, arr) {
-    var currentFocus = -1;
-    inp.addEventListener("input", function(e) {
-        valArray = this.value.split(' ');
-        var a, b, i, val = valArray[valArray.length - 1];
-        if (valArray.length > 1 || val.toLowerCase() == 'tag' ||
-            val.toLowerCase() == 'new_folder' ||
-            val.startsWith('#')) {
-            if (currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
-            //            alreadyIn = true;
-        } else {
-            //            if(currentActiveArr == 'tags') get_help_suggest(false);
-            if (currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
-            //            suggest = true;
+  var currentFocus=-1;
+  inp.addEventListener("input", function(e) {
+      valArray = this.value.split(' ');
+      var a, b, i, val = valArray[valArray.length-1];
+      if(valArray.length > 1 || val.toLowerCase() == 'tag' ||
+                                val.toLowerCase() == 'new_folder' ||
+                                val.startsWith('#'))
+        {
+            if(currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
+//            alreadyIn = true;
         }
-        terminalCloseAllLists();
-        if (!val) { return false; }
-        currentFocus = -1;
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        this.parentNode.appendChild(a);
-        arr = currentArr;
-        //      console.log(arr);
-        count = 0;
-        for (i = 0; i < arr.length; i++) {
-            if (count < 10) {
-                if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                    count++;
-                    b = document.createElement("DIV");
-                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                    b.innerHTML += arr[i].substr(val.length);
-                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                    b.addEventListener("click", function(e) {
-                        if (valArray.slice(0, -1).length == 0) {
-                            preValue = '';
-                        } else {
-                            preValue = valArray.slice(0, -1).join(' ') + ' ';
-                        }
-                        inp.value = preValue + this.getElementsByTagName("input")[0].value;
-                        terminalCloseAllLists();
-                    });
-                    a.appendChild(b);
-                }
+        else{
+//            if(currentActiveArr == 'tags') get_help_suggest(false);
+            if(currentActiveArr == 'tags' || currentActiveArr == '') get_help_suggest();
+//            suggest = true;
+        }
+      terminalCloseAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      this.parentNode.appendChild(a);
+      arr = currentArr;
+//      console.log(arr);
+      count = 0;
+      for (i = 0; i < arr.length; i++) {
+        if(count < 10){
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+              count++;
+              b = document.createElement("DIV");
+              b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+              b.innerHTML += arr[i].substr(val.length);
+              b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+              b.addEventListener("click", function(e) {
+                  if(valArray.slice(0, -1).length == 0){
+                    preValue = '';
+                  }
+                  else{
+                    preValue = valArray.slice(0, -1).join(' ') + ' ';
+                  }
+                  inp.value = preValue + this.getElementsByTagName("input")[0].value;
+                  terminalCloseAllLists();
+              });
+              a.appendChild(b);
             }
         }
-    });
-    inp.addEventListener("keydown", function(e) {
-        //      console.log(e.keyCode);
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
-        if (e.keyCode == 32) {
-            if ($('#terminal-input').is(":focus")) {
-                currValArray = $('#terminal-input').val().split(' ');
-                if (currValArray[0].startsWith('#')) {
+      }
+  });
+inp.addEventListener("keydown", function(e) {
+//      console.log(e.keyCode);
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 32) {
+          if($('#terminal-input').is(":focus")){
+              currValArray = $('#terminal-input').val().split(' ');
+              if(currValArray[0].startsWith('#')){
+                console.log(currValArray);
+                searchByTag(currValArray);
+              }
+              if(!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])){
+                console.log(currValArray);
+                searchByName(currValArray);
+              }
+          }
+      }
+      if (e.keyCode == 40) {
+        currentFocus++;
+        terminalAddActive(x);
+      } else if (e.keyCode == 38) {
+        currentFocus--;
+        terminalAddActive(x);
+      } else if (e.keyCode == 13) {
+
+        if(!x){
+            $(this).keydown();
+        }else{
+            if(x.length > 0){
+                terminalCloseAllLists();
+                e.preventDefault();
+            }
+        }
+        if (currentFocus > -1) {
+          if (x) {
+              if($('#terminal-input').is(":focus")){
+                  currValArray = $('#terminal-input').val().split(' ');
+                  currValArray.splice(currValArray.length-1);
+                  currVal = x[currentFocus].getElementsByTagName('input')[0].value;
+                  currValArray.push(currVal);
+                  if(currValArray[0].startsWith('#')){
                     console.log(currValArray);
                     searchByTag(currValArray);
-                }
-                if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                  }
+                  if(!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])){
                     console.log(currValArray);
                     searchByName(currValArray);
-                }
-            }
-        }
-        if (e.keyCode == 40) {
-            currentFocus++;
-            terminalAddActive(x);
-        } else if (e.keyCode == 38) {
-            currentFocus--;
-            terminalAddActive(x);
-        } else if (e.keyCode == 13) {
-
-            if (!x) {
-                $(this).keydown();
-            } else {
-                if (x.length > 0) {
-                    terminalCloseAllLists();
-                    e.preventDefault();
-                }
-            }
-            if (currentFocus > -1) {
-                if (x) {
-                    if ($('#terminal-input').is(":focus")) {
-                        currValArray = $('#terminal-input').val().split(' ');
-                        currValArray.splice(currValArray.length - 1);
-                        currVal = x[currentFocus].getElementsByTagName('input')[0].value;
-                        currValArray.push(currVal);
-                        if (currValArray[0].startsWith('#')) {
-                            console.log(currValArray);
-                            searchByTag(currValArray);
-                        }
-                        if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
-                            console.log(currValArray);
-                            searchByName(currValArray);
-                        }
-                    }
-                    x[currentFocus].click();
-                } else {
-                    curr = $('#terminal-input').val().split(' ')[0].toLowerCase()
-                    if (curr != 'tag' && curr != 'new_folder' && !curr.startsWith('#'))
-                        terminalListen(inp);
-                    //                $(window).off('keydown');
-                    //                $(window).keydown = key;
-                }
-            } else {
+                  }
+              }
+              x[currentFocus].click();
+          }else{
+            curr = $('#terminal-input').val().split(' ')[0].toLowerCase()
+            if(curr != 'tag' && curr != 'new_folder' && !curr.startsWith('#'))
                 terminalListen(inp);
-                //            $(window).off('keydown');
-                //            $(window).keydown = key;
+//                $(window).off('keydown');
+//                $(window).keydown = key;
             }
+        }else{
+            terminalListen(inp);
+//            $(window).off('keydown');
+//            $(window).keydown = key;
         }
-    });
-
-    function terminalAddActive(x) {
-        if (!x) return false;
-        terminalRemoveActive(x);
-        //    if (!currentFocus) currentFocus = -1;
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
-        x[currentFocus].classList.add("autocomplete-active");
+      }
+  });
+  function terminalAddActive(x) {
+    if (!x) return false;
+    terminalRemoveActive(x);
+//    if (!currentFocus) currentFocus = -1;
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+  function terminalRemoveActive(x) {
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
     }
-
-    function terminalRemoveActive(x) {
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
+  }
+  function terminalCloseAllLists(elmnt) {
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
     }
-
-    function terminalCloseAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-                x[i].parentNode.removeChild(x[i]);
-            }
-        }
-        //    $(document).off("keydown");
-    }
-    document.addEventListener("click", function(e) {
-        terminalCloseAllLists(e.target);
-    });
+//    $(document).off("keydown");
+  }
+  document.addEventListener("click", function (e) {
+      terminalCloseAllLists(e.target);
+  });
 }
 
 var searchArr = [];
-
-function searchByTag(currValArray) {
-    //    tempArr = currValArray;
-    if (!arraysEqual(searchArr, currValArray)) {
+function searchByTag(currValArray){
+//    tempArr = currValArray;
+    if(!arraysEqual(searchArr, currValArray)){
         console.log('search');
         searchArr = currValArray;
-        //        LoadStart();
+//        LoadStart();
         $.ajax({
             url: "/search_by_tags",
             type: 'POST',
@@ -482,9 +540,9 @@ function searchByTag(currValArray) {
                 search_tags: searchArr
             }),
             timeout: 5000,
-            success: function(data) {
+            success: function(data){
                 data = JSON.parse(data);
-                if (data) {
+                if(data){
                     data = data.root_ic;
                     g_root.universe.data = data;
                     g_project.skip = SEARCH_HISTORY;
@@ -493,22 +551,22 @@ function searchByTag(currValArray) {
                 }
             },
             error: function($jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown + ": " + $jqXHR.responseText);
+                console.log( errorThrown + ": " + $jqXHR.responseText );
                 MakeSnackbar($jqXHR.responseText);
                 LoadStop();
             }
         });
-    } else {
+    }else{
         console.log('skipping search');
     }
 }
 
-function searchByName(currValArray) {
-    //    tempArr = currValArray;
-    if (!arraysEqual(searchArr, currValArray)) {
+function searchByName(currValArray){
+//    tempArr = currValArray;
+    if(!arraysEqual(searchArr, currValArray)){
         console.log('search');
         searchArr = currValArray;
-        //        LoadStart();
+//        LoadStart();
         $.ajax({
             url: "/search_by_name",
             type: 'POST',
@@ -517,9 +575,9 @@ function searchByName(currValArray) {
                 search_names: searchArr
             }),
             timeout: 5000,
-            success: function(data) {
+            success: function(data){
                 data = JSON.parse(data);
-                if (data) {
+                if(data){
                     data = data.root_ic;
                     g_root.universe.data = data;
                     g_project.skip = SEARCH_HISTORY;
@@ -528,23 +586,23 @@ function searchByName(currValArray) {
                 }
             },
             error: function($jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown + ": " + $jqXHR.responseText);
+                console.log( errorThrown + ": " + $jqXHR.responseText );
                 MakeSnackbar($jqXHR.responseText);
                 LoadStop();
             }
         });
-    } else {
+    }else{
         console.log('skipping search');
     }
 }
 
 function arraysEqual(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length !== b.length) return false;
 
-    for (var i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) return false;
-    }
-    return true;
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 }

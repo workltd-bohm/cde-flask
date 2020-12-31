@@ -84,6 +84,7 @@ function AddPost(obj) {
     args['doc'] = documents;
     args['3d-view'] = $("#3d-view-link")[0].value;
     console.log(args);
+    args['tags'] = [];
 
     $.ajax({
         url: "/create_post",

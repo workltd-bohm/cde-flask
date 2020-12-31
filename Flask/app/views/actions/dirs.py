@@ -271,7 +271,7 @@ def create_dir():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        if request_data['project_name'] == '':
+        if 'project_name' in request_data.keys() and request_data['project_name'] == '':
             request_data['project_name'] = session['project']['name']
         set_project_data(request_data, True)
         #print(request_data)
