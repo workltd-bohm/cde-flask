@@ -106,7 +106,7 @@
 
 .menu-activity.opend {
   width: 20%;
-  background-color:#e1e1e1;
+  background-color: var(--cur-activity-menu-bg); /*e1e1e1*/
 }
 
 .menu-fixed .logo {
@@ -222,8 +222,10 @@
   width: 100%;
   margin-top: 40px;
 }
+
+/*Side menu - padding between icons and the rest*/
 .menu-fixed .menu li {
-  padding: 20px 0px 20px 0px;
+  padding: 2vh 0px 2vh 0px;
   /*padding: 15px; adding around the icons*/
   width: 40%;
   margin: auto;
@@ -267,10 +269,11 @@
   z-index: 999;
   position: relative;
   color: #fff;
-  left: 40px;
-  top: 20px;
+  left: 2vw;
+  top: 2vh;
   overflow: visible;
   position: absolute;
+  font-size: 2vh;
 }
 .material-icons.info {
   color: #eb4034; /*I see no effext for this*/
@@ -312,8 +315,8 @@
 }
 
 .side-menu-icon{
-    height: 2.3vw;
-    width: 2.3vw;
+    height: 5vh;
+    width: 5vh;
     opacity: 70%;
 }
 

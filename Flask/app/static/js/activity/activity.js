@@ -471,7 +471,7 @@ function resetCommentSearch(event)
     if(allProjectComments != null)
     {
         document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
-        document.getElementById("seachcomments").value = "";
+        document.getElementById("searchcomments").value = "";
     }
 }
 
@@ -508,13 +508,13 @@ function serviceCommentSearchQuery(event)
     // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
     // if user presses enter, filter directory comments using text in the searchbox, and show results
     let keyPressedByUser = window.event.keyCode;
-    let searchCommentBoxId = "seachcomments";
+    let searchCommentBoxId = "searchcomments";
     let searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
 
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let commentsearchAutocompleteDivId = "seachcomments" + "autocomplete-list";
+    let commentsearchAutocompleteDivId = "searchcomments" + "autocomplete-list";
     if (keyPressedByUser == 13) //enter
     {
         if(document.getElementById(commentsearchAutocompleteDivId)== null || 
