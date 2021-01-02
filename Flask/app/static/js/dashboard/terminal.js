@@ -421,7 +421,7 @@ function LoadTag(terminal){
                 tagSpan = document.createElement("span");
                 tagSpan.className = "remove-tag";
                 tagSpan.onclick = function(){
-                    removeTag(tag + ' ' + color);
+                    removeTag(tag, color);
                 };
                 tagSpan.innerHTML = 'x';
 
