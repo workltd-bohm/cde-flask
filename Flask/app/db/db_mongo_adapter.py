@@ -1441,16 +1441,19 @@ class DBMongoAdapter:
         return tags
 
     def get_all_tags_with_ics(self):
-        col = self._db.Tags
+        col = self._db.Tags 
         result = col.find()
         tags = list(result)
-        # tags.pop('_id', None)
-        # if result:
-        #     for tag in result:
-        #         tag.pop('_id', None)
-        #         tags.append(tag)
+
+        search = tags[0]
+        for key in tags[0]:
+            if isinstance(search[key], list): # check if it's not _id or id
+                for obj in search[key]: # iterate through objects in this array
+                    if 'post_id' in obj.keys():
+                        search[key].remove(obj)
+                        
         self._close_connection()
-        return tags
+        return [search]
 
     def add_access(self, request_data, session_user):
         col = self._db.Projects
