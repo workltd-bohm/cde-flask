@@ -99,7 +99,7 @@ function SendProject(data) {
     };
     SEARCH_HISTORY = data;
     console.log('************1111111**************');
-    // history.pushState(SESSION, null, '');
+    history.pushState(SESSION, null, '');
     console.log('************END 1111111**************');
     $.ajax({
         url: "/set_project",
@@ -172,6 +172,7 @@ function SelectProject() {
                     console.log(SESSION)
                 }
                 console.log('************22222222**************');
+                history.pushState(SESSION, null, '');
                 console.log('************END 2222222**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
