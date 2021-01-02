@@ -207,16 +207,44 @@ function createTempTag(name, color='white'){
     t_inner.append(tag);
     t_inner.style.backgroundColor = color;
     tag.style.color = (color == 'white') ? 'black' : 'white';
+
+    let span_name = document.createElement("span");
+    span_name.className = 'remove-tag';
+    span_name.onclick = function(){
+        deleteTempTag(t_container);
+    };
+    span_name.innerText = "x";
+    t_container.append(span_name);
+
+    // apply changes to container
     all_tags.append(t_container);
+
+}
+
+function deleteTempTag(elem){
+    let name = elem.getElementsByTagName("i")[0].innerText;
+    alert(name);
+    console.log(tagBuffer);
+
+    for (let i = 0; i < tagBuffer.length; i++){
+        if (tagBuffer[i].tag == name) {
+            tagBuffer.splice(i);
+            elem.remove();
+        }
+    }
 }
 
 function bufferTag(terminal){
     for (i = 1; i < terminal.length; i++){
         if (isString(terminal[i])) {
             if (terminal[i].startsWith("#")){
+                // prevent duplication
+                if (tagBuffer.includes(terminal[i])) { continue; }
+
                 // check if has color
                 if (i + 1 <= terminal.length) {
                     if (isColor(terminal[i+1])) {
+
                         tagBuffer.push({
                             tag: terminal[i],
                             color: terminal[i+1]
