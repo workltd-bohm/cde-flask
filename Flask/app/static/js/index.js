@@ -15,26 +15,29 @@ document.addEventListener('DOMContentLoaded', function() {
 //  $(document).ready(function(){
 //    $('.fixed-action-btn').floatingActionButton();
 //  });
+window.onbeforeunload = function(){
+    history.pushState(SESSION, null, '');
+}
 
 window.onload = function () {
     console.log(history);
+    console.log('a')
     if (typeof history.pushState === "function") {
         console.log('here0.0');
         console.log(SESSION);
 //        SESSION['project'] = null;
-        history.pushState(SESSION, null, null);
-        console.log(history);
+        // history.pushState(SESSION, null, null);
         window.onpopstate = function () {
 //            history.pushState('newjibberish', null, '');
             console.log('here');
             console.log(history);
 //            console.log(history.state);
 //            console.log(SESSION);
-//            SESSION = history.state
+           SESSION = history.state
 //            console.log(SESSION);
 
             // this function is the one that should be uncommented
-//            SendProjectBackButton();
+           SendProjectBackButton();
             // Handle the back (or forward) buttons here
             // Will NOT handle refresh, use onbeforeunload for this.
         };
