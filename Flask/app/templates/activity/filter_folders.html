@@ -80,17 +80,19 @@
             <div class="comments-div">
               <div class="comment-div">
                 <div id="seachcommentsDiv" class="autocomplete">
-                  <input type="text" id="seachcomments" name="searchcomments" onkeypress="serviceCommentSearchQuery(event)" onkeydown="serviceCommentSearchQuery(event)" placeholder="Filter colab by @Users or #hashtag..."><br>
+                  <input type="text" id="seachcomments" name="searchcomments" onkeypress="serviceCommentSearchQuery(event)" onkeydown="serviceCommentSearchQuery(event)" placeholder="Filter colab by @Users or #hashtag...">
+                  <button type="button" id = "resetCommentSearchButton" onclick="resetCommentSearch(event)">Reset</button>
+                  <br>
                 </div>
                 <div class="img-comment-container">
                   <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/>
                   <div id="makecommentsDiv" class="autocomplete">
-                    <textarea id="comment" rows="2" onkeypress="commentOnProject(event)" onkeydown="commentOnProject(event)" placeholder="Comment..."></textarea><br>
+                    <div class="comment-send-container"><textarea id="comment" rows="2" onkeypress="commentOnProject(event)" onkeydown="commentOnProject(event)" placeholder="Comment..."></textarea><img class="send-icon" src="{{ url_for('static', filename='img/send.png') }}" onclick="sendCommentPress()"/></div><br>
                   </div>
                 </div>
               </div>
               <br>
-              <div class="activity-tab-div-comment">
+              <div class="activity-tab-div-comment" id="activity-tab-div-comments">
                 {% for comment in comments|reverse %}
                 {% include 'activity/single_comment.html' %}
                 {% endfor %}

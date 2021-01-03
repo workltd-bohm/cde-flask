@@ -290,10 +290,15 @@ p.details_date.comment-date {
     margin-bottom: 21px;
     vertical-align: top;
 }
-
+div#makecommentsDiv {
+    width: 100%;
+}
+div#seachcommentsDiv {
+    width: 100%;
+}
 #comment {
     position: relative;
-    width: 100%;
+    width: 336px;
     margin-left: 10px;
     margin-right: 2px;
     /*border-radius: 15px;*/
@@ -301,7 +306,18 @@ p.details_date.comment-date {
     height: 40px !important;
     top: 6px;
 }
-
+img.send-icon {
+    height: 32px;
+    width: 32px;
+    top: 10px;
+    position: relative;
+    right: 36px;
+    cursor: pointer;
+}
+.comment-send-container {
+    width: 100%;
+    display: flex;
+}
 .comment-container-all {
     width: 100%;
     margin-right: 20px;
@@ -547,7 +563,7 @@ div#add-tagautocomplete-list {
 
 input#user_name {
     font-family: inherit;
-    width: 100%;
+    width: 120px;
     border: 0;
     border-bottom: none !important;
     outline: 0;
@@ -564,7 +580,7 @@ input.add-user {
     width: 34px;
     height: 30px;
     position: relative;
-    right: 38px;
+    right: 35px;
     border: 1px solid black;
     top: 5px;
 }
@@ -589,12 +605,33 @@ label.form__label.access:focus {
 }
 
 select#role {
-    width: 30%;
-    left: -24px;
+    width: 49%;
+    left: -18px;
+    position: relative;
+}
+div#button-date-icon {
+    display: flex;
+    left: -40px;
+    position: relative;
+}
+#button-date-icon p {
+    top: 7px;
+    position: relative;
+    margin-left: 10px;
+}
+
+#button-date-icon img {
+    cursor: pointer;
+    top: 4px;
     position: relative;
 }
 
-
+div#experation-date {
+    display: none;
+    top: 5px;
+    position: relative;
+    left: 40px;
+}
 /*media screen*/
 
 

@@ -69,6 +69,12 @@ def get_project():
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
 
+        if 'project' in request_data:
+            print(request_data['project'])
+            if request_data['project'] == {'position': None, 'section': 'project'}:
+                print('here333')
+                return redirect(url_for('get_root_project', data={}))
+
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')
@@ -162,12 +168,17 @@ def get_my_projects():
     return resp
 
 
-@app.route('/get_root_project', methods=['POST'])
+@app.route('/get_root_project', methods=['GET', 'POST'])
 def get_root_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
-        request_data = json.loads(request.get_data())
+        request_data = {}
+        if request.get_data():
+            request_data = json.loads(request.get_data())
+        else:
+            request_data = {'project': {'name': None, 'position': None}}
+
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None
         dirs.set_project_data(request_data)

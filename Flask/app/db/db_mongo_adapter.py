@@ -375,7 +375,6 @@ class DBMongoAdapter:
         return message, ic
 
     def rename_ic(self, request_data, user):
-        print("Pamir******* : I am here!\n\n\n")
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
@@ -386,6 +385,8 @@ class DBMongoAdapter:
             # print(project.to_json())
             add = project.rename_ic(request_data, user, project.root_ic)
             if add == msg.IC_SUCCESSFULLY_RENAMED:
+                if request_data['parent_id'] == 'root':
+                    project.name = request_data['new_name']
                 file_updated = True
                 if not request_data['is_directory']:
                     print('shouldnt be here\n\n\n')
@@ -405,13 +406,14 @@ class DBMongoAdapter:
                         print(msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND
                 if file_updated:
-                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+                    print(project.to_json())
+                    col.update_one({'project_name': request_data['project_name']}, {'$set': project.to_json()})
 
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
         self._close_connection()
-        return add
+        return add, project
 
     # TODO update all users that share the project's trash
     def trash_ic(self, ic_data):

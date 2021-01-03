@@ -302,7 +302,11 @@ def rename_ic():
                 "is_directory": True if "is_directory" in request_data else False,
             }
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
-            result = db.rename_ic(db_adapter, rename, u)
+            result, project = db.rename_ic(db_adapter, rename, u)
+            if request_data['parent_id'] == 'root':
+                # request_data['project_name'] = request_data["new_name"]
+                # set_project_data(request_data, True)
+                session['project']['name'] = request_data["new_name"]
             logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
             resp = Response()
             resp.status_code = result["code"]
@@ -577,8 +581,11 @@ def zipdir(path, ziph):
 
 
 def set_project_data(data, save=False):
+    print(data)
+    print(session.get("project"))
     if "project" in data:
-        session.get("project").update(data["project"])
+        if data["project"]:
+            session.get("project").update(data["project"])
 
     if "name" in session.get("project"):
         project_name = session.get("project")["name"]

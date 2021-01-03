@@ -21,17 +21,18 @@ $(document).ready(function() {
     ACTIVITY_HEAD = d3.select("#activity-head");
 
     //CreateProject();
-    //SelectProject();
+    // SelectProject();
     CheckSession();
 });
 
 $(document).on('keypress', function(e) {
     if (e.which == 13) {
-        target = $("input[type=button]");
-        if (target.length > 0 && target.hasClass("keypress")) {
-            console.log("onclick activate");
-            $("input[type=button]").trigger("click");
-        }
+        $("input[type=button]").each(function(i) {
+            if ($(this).hasClass("keypress")) {
+                // console.log("onclick activate", this);
+                $(this).trigger("click");
+            }
+        });
         return false;
     }
 });
@@ -76,7 +77,7 @@ function CheckSession() {
 
 function SendProject(data) {
     // console.log(data);
-    //console.log(SESSION);
+    // console.log(SESSION);
     SESSION["position"] = {
         project_name: data.path.split('/')[0],
         parent_id: data.parent_id,
@@ -97,11 +98,30 @@ function SendProject(data) {
         revision: data.revision
     };
     SEARCH_HISTORY = data;
+    console.log('************1111111**************');
+    // history.pushState(SESSION, null, '');
+    console.log('************END 1111111**************');
     $.ajax({
         url: "/set_project",
         type: 'POST',
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            //MakeSnackbar($jqXHR.responseText);
+        }
+    });
+}
+
+function SendProjectBackButton() {
+    $.ajax({
+        url: "/set_project",
+        type: 'POST',
+        data: JSON.stringify({ project: SESSION }),
+        timeout: 5000,
+        success: function(data) {
+            CreateProject(history.state);
+        },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             //MakeSnackbar($jqXHR.responseText);
@@ -151,6 +171,9 @@ function SelectProject() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
+                console.log('************22222222**************');
+                // history.pushState(SESSION, null, '');
+                console.log('************END 2222222**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -167,8 +190,13 @@ function CreateProject(position = null) {
     //     g_project.project_position_mix = null;
     // }
 
+    // if (position != null) {
+    //     SESSION = position;
+    // }
+
     ClearProject();
     SwitchDash(0);
+    console.log(SESSION['position'])
     $.ajax({
         url: "/get_project",
         type: 'POST',
