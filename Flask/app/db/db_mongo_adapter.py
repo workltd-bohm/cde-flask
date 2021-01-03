@@ -7,6 +7,7 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
+from app.model.tag import Tags
 import app.model.messages as msg
 import json
 from datetime import datetime
@@ -388,6 +389,7 @@ class DBMongoAdapter:
                     project.name = request_data['new_name']
                 file_updated = True
                 if not request_data['is_directory']:
+                    print('shouldnt be here\n\n\n')
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
                     file_json = col_file.find_one(file_query)
@@ -771,13 +773,51 @@ class DBMongoAdapter:
 
     def create_post(self, request_json):
         col = self._db.Marketplace.Posts
+        col_tags = self._db.Tags
+
         posts_query = {'post_id': request_json['post_id']}
         message = msg.POST_ALREADY_EXISTS
         post_id = ''
+
         if col.find_one(posts_query, {'_id': 0}) is None:
             post_id = col.insert_one(request_json).inserted_id
-            col.update_one({'post_id': 'default'},
-                           {'$set': {'post_id': str(post_id)}})
+            post_id = str(post_id)
+            col.update_one({'post_id': 'default'}, {'$set': {'post_id': post_id}})
+            
+            if len(request_json['tags']):
+                tags = col_tags.find()
+                results = list(tags)
+                request_tags = request_json['tags']
+                tag_json = {}
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    for i in range(0, len(request_tags)):
+                        tag = request_tags[i]
+                        if tag['tag'] in tags:
+                            if tag['tag'].startswith('#'):
+                                # add this post to a tag
+                                tags[tag['tag']].append({'post_id': post_id})
+                                col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                                break
+                        else:
+                            # create a new tag and add this post
+                            if request_tags[i]['tag'].startswith('#'):
+                                tag_json[request_tags[i]['tag']] = [{'post_id': post_id}]
+                                col_tags.update({'id': tags['id']}, {'$set': tag_json})
+                    print('Tags added successfully')
+                else:
+                    # if no tags exist in db, create new entry
+                    for i in range(0, len(request_tags)):
+                        tag = request_tags[i]['tag']
+
+                        if tag.startswith('#'):
+                            tag_json[tag] = [{'post_id': post_id}]
+
+                    tag_json['id'] = 'tags_collection'
+                    col_tags.insert_one(tag_json)
+                    print('Tags added successfully')
+
             message = msg.POST_CREATED
             print(Post.json_to_obj(request_json).product.name)
         self._close_connection()
@@ -1211,6 +1251,9 @@ class DBMongoAdapter:
         return message
 
     def add_tag(self, request_data, tags):
+        if 'post_id' in request_data.keys():
+            return self.add_tag_to_post(request_data)
+
         col = self._db.Projects
         col_tags = self._db.Tags
         project_query = {'project_name': request_data['project_name']}
@@ -1231,9 +1274,10 @@ class DBMongoAdapter:
                         if request_tags[i] in tags:
                             if request_tags[i].startswith('#'):
                                 already_exists = False
-                                for ic in tags[request_tags[i]]:
-                                    if ic['ic_id'] == request_data['ic_id']:
-                                        already_exists = True
+                                for obj in tags[request_tags[i]]:
+                                    if 'ic_id' in obj.keys():
+                                        if obj['ic_id'] == request_data['ic_id']:
+                                            already_exists = True
                                         break
                                 if not already_exists:
                                     tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
@@ -1269,7 +1313,61 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def add_tag_to_post(self, request_data):
+        col_posts = self._db.Marketplace.Posts
+        col_tags = self._db.Tags
+
+        post_query = {'post_id': request_data['post_id']}
+        post_json = col_posts.find_one(post_query, {'_id': 0})
+
+        if post_json: 
+            post = Post.json_to_obj(post_json)
+            message = post.add_tag(request_data['tags']) # <- check if post already has this tag, and add it
+            if message == msg.TAG_SUCCESSFULLY_ADDED:
+                # check if tag is not duplicate in db
+                col_posts.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tags = request_data['tags']
+                tag_json = {}
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i] in tags:
+                            if request_tags[i].startswith('#'):
+                                already_exists = False
+                                for obj in tags[request_tags[i]]:
+                                    if 'post_id' in obj.keys():
+                                        if obj['post_id'] == request_data['post_id']:
+                                            already_exists = True
+                                            break
+                                if not already_exists:
+                                    tags[request_tags[i]].append({'post_id': post.post_id})
+
+                                col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                                break
+                        else:
+                            if request_tags[i].startswith('#'):
+                                tag_json[request_tags[i]] = [{'post_id': request_data['post_id']}]
+
+                                col_tags.update({'id': tags['id']}, {'$set': tag_json})
+                else:
+                    for i in range(1, len(request_tags)):
+                        if request_tags[i].startswith('#'):
+                            tag_json[request_tags[i]] = [{'post_id': request_data['post_id']}]
+                    tag_json['id'] = 'tags_collection'
+                    col_tags.insert_one(tag_json)
+        else:
+            message = msg.POST_NOT_FOUND
+            
+        self._close_connection()
+        return message           
+
     def remove_tag(self, request_data, tag):
+        if 'post_id' in request_data.keys():
+            return self.remove_tag_from_post(request_data, tag)
+
         col = self._db.Projects
         col_tags = self._db.Tags
         project_query = {'project_name': request_data['project_name']}
@@ -1300,6 +1398,38 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def remove_tag_from_post(self, request_data, tag):
+        col = self._db.Marketplace.Posts
+        col_tags = self._db.Tags
+
+        post_query = {'post_id': request_data['post_id']}
+        post_json = col.find_one(post_query, {'_id': 0})
+
+        if post_json:
+            post = Post.json_to_obj(post_json)
+            message = post.remove_tag(tag)
+
+            if message == msg.TAG_SUCCESSFULLY_REMOVED:
+                col.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
+                tags = col_tags.find()
+                results = list(tags)
+                request_tag = request_data['tag']
+                if len(results) != 0:
+                    results[0].pop('_id', None)
+                    tags = results[0]
+                    if request_tag in tags:
+                        try:
+                            tags[request_tag].remove({'post_id': post.post_id})
+
+                            col_tags.update_one({'id': tags['id']}, {'$set': tags})
+                        except:
+                            print('tag not in a list')
+
+        else:
+            message = msg.POST_NOT_FOUND
+        self._close_connection()
+        return message
+
     def get_all_tags(self):
         col = self._db.Tags
         result = col.find()
@@ -1313,16 +1443,19 @@ class DBMongoAdapter:
         return tags
 
     def get_all_tags_with_ics(self):
-        col = self._db.Tags
+        col = self._db.Tags 
         result = col.find()
         tags = list(result)
-        # tags.pop('_id', None)
-        # if result:
-        #     for tag in result:
-        #         tag.pop('_id', None)
-        #         tags.append(tag)
+
+        search = tags[0]
+        for key in tags[0]:
+            if isinstance(search[key], list): # check if it's not _id or id
+                for obj in search[key]: # iterate through objects in this array
+                    if 'post_id' in obj.keys():
+                        search[key].remove(obj)
+                        
         self._close_connection()
-        return tags
+        return [search]
 
     def add_access(self, request_data, session_user):
         col = self._db.Projects

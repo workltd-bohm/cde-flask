@@ -427,10 +427,10 @@ def add_tag():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        if request_data['project_name'] == '':
-            request_data['project_name'] = session['project']['name']
+        if 'project_name' in request_data.keys():
+            if request_data['project_name'] == '':
+                request_data['project_name'] = session['project']['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
-
         if db.connect(db_adapter):
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:
