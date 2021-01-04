@@ -573,12 +573,21 @@ function commentOnProject(event)
         autocompleteUsername(commentboxText, commentBoxId);
         return true;
     }
-    
-    if(document.getElementById(commentAutocompleteDivId)== null || 
-    document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0)
+
+    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId)== null);
+    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true:(document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
+    if(autocompleteDivNotPresent || noOptionsInAutocompleteDiv)
     {
-        sendComment(event);
-        document.getElementById("comment").value = ""; //clear after sending
+        event.preventDefault();
+        if(!event.shiftKey)
+        {
+            sendComment(event);
+            document.getElementById("comment").value = ""; //clear after sending
+        }
+        else
+        {
+            document.getElementById("comment").value += "\n";
+        }
     }
 }
 
