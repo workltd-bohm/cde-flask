@@ -414,15 +414,13 @@ function openToggleInfoHistory() {
 var allProjectComments=null;
 function filterDirectoryComments(searchCommentboxText)
 {
+    isClearSearchButtonVisible(true);
     divWithAllComments = document.getElementById("activity-tab-div-comments");
     
     if(allProjectComments == null)
-    {
         allProjectComments = divWithAllComments.innerHTML;
-        isClearSearchButtonVisible(true);
-    }
     else
-    divWithAllComments.innerHTML = allProjectComments;
+        divWithAllComments.innerHTML = allProjectComments;
     
     
     comments = divWithAllComments.children;
@@ -562,6 +560,8 @@ function serviceCommentSearchQuery(event)
         }
         else
             autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    
+        filterDirectoryComments(searchCommentboxText);
     }
 }
 
