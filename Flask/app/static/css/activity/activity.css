@@ -150,7 +150,7 @@ img.img-copy {
 
 .comment-container {
     padding-top: 15px;
-    padding-left: 10px;
+    padding-left: 0px;
     display: flex;
 }
 
@@ -161,7 +161,8 @@ img.img-copy {
 
 .comments_field {
     width: 100%;
-    background: none repeat scroll 0 0 white;
+    background: none repeat scroll 0 0 /*white*/;
+    border-bottom: 1px solid #7d7d7d;
     /*border-radius: 15px;
     border: 1px dashed #bbb;*/
     margin-left: 10px;
