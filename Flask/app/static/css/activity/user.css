@@ -4,8 +4,9 @@
 }
 
 .profile-icon{
-    height: 35px;
-    width: 35px;
+    height: 6vh;
+    width: 6vh;
+    border: 2px dotted #ffffff;
     border-radius: 50%;
 }
 

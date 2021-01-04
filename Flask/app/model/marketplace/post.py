@@ -1,6 +1,8 @@
 from app.model.marketplace.product import Product
 from app.model.marketplace.bid import Bid
 from enum import Enum
+import app.model.messages as msg
+from app.model.tag import Tags
 
 
 class Status(Enum):
@@ -11,7 +13,7 @@ class Status(Enum):
 class Post:
 
     def __init__(self, post_id, title, user_owner, product, description, date_created, date_expired, documents, bids,
-                 current_best_bid, comments, visibility, location, status):
+                 current_best_bid, comments, visibility, location, status, tags):
         self._post_id = post_id
         self._title = title
         self._user_owner = user_owner
@@ -26,6 +28,7 @@ class Post:
         self._visibility = visibility
         self._location = location
         self._status = status
+        self._tags = tags
 
     @property
     def post_id(self):
@@ -139,6 +142,39 @@ class Post:
     def status(self, value):
         self._status = value
 
+    @property
+    def tags(self):
+        return self._tags
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = value
+
+    def add_tag(self, new_tags):
+        for i in range(1, len(new_tags)):
+            if new_tags[i].startswith('#'):
+                t = Tags(new_tags[i])
+                
+                if i < len(new_tags)-1:
+                    if not new_tags[i + 1].startswith('#'):
+                        t.color = new_tags[i+1]
+                        i = i+1
+                
+                # prevent duplication
+                for tag in self.tags:
+                    if tag.tag == t.tag and tag.color == t.color:
+                        return msg.TAG_ALREADY_EXISTS
+                
+                self.tags.append(t)
+        return msg.TAG_SUCCESSFULLY_ADDED        
+
+    def remove_tag(self, tag):
+        for t in self.tags:
+            if t.tag == tag:
+                self.tags.remove(t)
+                break
+        return msg.TAG_SUCCESSFULLY_REMOVED
+
     def to_json(self):
         return {
                     'post_id': self._post_id,
@@ -149,12 +185,13 @@ class Post:
                     'date_created': self._date_created,
                     'date_expired': self._date_expired,
                     'documents': self._documents,
-                    'bids': self._bids,
+                    'bids': [x.bid_id for x in self._bids],
                     'current_best_bid': self._current_best_bid,
                     'comments': self._comments,
                     'visibility': self._visibility,
                     'location': self._location,
-                    'status': self._status
+                    'status': self._status,
+                    'tags': [x.to_json() for x in self._tags]
                 }
 
     @staticmethod
@@ -172,5 +209,6 @@ class Post:
                     json_file['comments'],
                     json_file['visibility'],
                     json_file['location'],
-                    json_file['status']
+                    json_file['status'],
+                    [Tags.json_to_obj(x) for x in json_file['tags']]
                     )

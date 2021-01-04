@@ -102,9 +102,18 @@ def get_filter_activity():
             resp.data = str(msg.DEFAULT_OK['message'])
             return resp
 
+        if name == 'Shared':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
         if db.connect(db_adapter):
-            project_name = session['project']['name']
-            result = db.get_ic_object(db_adapter, project_name, request_data, name)
+            result = None
+            if request_data['project_name'] == 'Shared':
+                result = db.get_ic_object_from_shared(db_adapter, request_data, session['user'])
+            else:
+                project_name = session['project']['name']
+                result = db.get_ic_object(db_adapter, project_name, request_data, name)
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 details = [x.to_json() for x in result.history]
@@ -113,10 +122,14 @@ def get_filter_activity():
                 path = result.path
                 share_link = ''
                 comments = [x.to_json() for x in result.comments]
+                access = [x.to_json() for x in result.access]
+                for a in access:
+                    a['role'] = Role(a['role']).name
 
                 response = {
                     'html': render_template("activity/filter_folders.html",
                                             project_name=session.get("project")["name"],
+                                            profile_picture=session['user']['picture'],
                                             search=filter_file,
                                             details=details,
                                             tags=tags,
@@ -125,13 +138,18 @@ def get_filter_activity():
                                             path=path,
                                             share_link=share_link,
                                             parent_id=result.parent_id,
-                                            ic_id=result.ic_id
+                                            ic_id=result.ic_id,
+                                            access=access
                                             ),
                     'data': []
                 }
                 # print(response)
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
+                return resp
+            else:
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
                 return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
@@ -153,7 +171,7 @@ def search_by_tags():
             if result:
                 ics = []
                 for tag in request_data['search_tags']:
-                    if not ics:
+                    if len(ics) == 0:
                         if tag in result[0]:
                             ics = result[0][tag]
                             continue
@@ -165,6 +183,7 @@ def search_by_tags():
                                     new_ics.append(tag_ic)
                                     break
                     ics = new_ics
+                # print(ics)
                 response = {
                     "project_name": "Search",
                     "root_ic": {
@@ -185,20 +204,22 @@ def search_by_tags():
                 for ic in ics:
                     project.current_ic = None
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
-                    path = file.name if file.is_directory else file.name + file.type
-                    ic_type = '' if file.is_directory else file.type
-                    proj_obj = {
-                        "ic_id": file.ic_id,
-                        "parent_id": file.parent_id,
-                        "name": file.name,
-                        "parent": "Search",
-                        "history": [],
-                        "path": "Search/" + path,
-                        "type": ic_type,
-                        "overlay_type": "search_target",
-                        "is_directory": False,
-                    }
-                    response['root_ic']["sub_folders"].append(proj_obj)
+                    # print(file)
+                    if file:
+                        path = file.name if file.is_directory else file.name + file.type
+                        ic_type = '' if file.is_directory else file.type
+                        proj_obj = {
+                            "ic_id": file.ic_id,
+                            "parent_id": file.parent_id,
+                            "name": file.name,
+                            "parent": "Search",
+                            "history": [],
+                            "path": "Search/" + path,
+                            "type": ic_type,
+                            "overlay_type": "search_target",
+                            "is_directory": False,
+                        }
+                        response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
@@ -229,12 +250,14 @@ def search_by_name():
                 for i in range(0, len(names)):
                     if i == 0:
                         project.search_by_name(names[i], project.root_ic, ics)
+                        # print('first', ics)
                     else:
                         new_ics = []
                         for ic in ics:
                             if names[i].lower() in ic.name.lower():
                                 new_ics.append(ic)
                                 break
+                        # print('second', ics)
                         ics = new_ics
                 response = {
                     "project_name": "Search",

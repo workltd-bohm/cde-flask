@@ -30,7 +30,7 @@ function MoveCreate(obj, data) {
         .attr("cy", 0)
         .attr("r", g_OverlayRadius*CHECKED_SELECT_RATIO)
 
-    AddMoveText(data, MULTI.to_copy? "COPY":"MOVE");
+    AddMoveText(data, data.name, MULTI.to_copy? "Copy to":"Move to");
 
     data.move.children = data.move.object.append("g")
         .attr("class","move items")
@@ -51,14 +51,14 @@ function MoveCreate(obj, data) {
         .attr("x",-10)
         .attr("y",0)
         .style("text-anchor", "end")
-        .html("Select Destination")
+        .html("Accept")
 
     data.move.allgroup.append("text")
         .attr("class", "move text_allgroup")
         .attr("x",-10)
         .attr("y",0)
         .style("text-anchor", "end")
-        .html("Select Destination")
+        .html("Accept")
         .on("mouseup",function(d){
             ApllyMove(data);
         });
@@ -84,20 +84,30 @@ function MoveCreate(obj, data) {
 
 }
 
-function AddMoveText(data, text) {
+function AddMoveText(data, name, text) {
     var newobj = data.move;
     newobj.text = newobj.object.append("g")
         .attr("class", "move text")
     var tmp = newobj.text.append("text")
         .attr("class", "text_back")
         .attr("x",0)
-        .attr("y",0)
+        .attr("y",-10)
         .html(text)
     tmp = newobj.text.append("text")
         .attr("class", "text_front")
         .attr("x",0)
-        .attr("y",0)
+        .attr("y",-10)
         .html(text)
+    tmp = newobj.text.append("text")
+        .attr("class", "text_back")
+        .attr("x",0)
+        .attr("y",10)
+        .html(name)
+    tmp = newobj.text.append("text")
+        .attr("class", "text_front")
+        .attr("x",0)
+        .attr("y",10)
+        .html(name)
 }
 
 function ApllyMove(data){
@@ -112,6 +122,7 @@ function ApllyMove(data){
         success: function(d){
             CreateProject();
             LoadStop();
+            MakeSnackbar(d);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log( errorThrown + ": " + $jqXHR.responseText );

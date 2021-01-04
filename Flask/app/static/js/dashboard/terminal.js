@@ -16,6 +16,10 @@ function onFocus(){
     }
 }
 
+function onFocusOut(){
+    $("#terminal-input").val("");
+}
+
 $(window).keydown(function(e){
 //    console.log(e.keyCode);
     terInput = $('#terminal-input').val();
@@ -174,18 +178,122 @@ function get_help_suggest(field=''){
     }
 }
 
-function addTag(terminal){
+/* move these to helper.js */
+function isColor(strColor){
+    var s = new Option().style;
+    s.color = strColor;
+    return s.color == strColor;
+}
+
+function isString(variable){
+    return typeof variable == 'string';
+}
+/* * * * helper fs * * * */
+
+function createTempTag(name, color='white'){
+    let t_container;
+    let t_inner;
+    let tag;
+    let all_tags = document.getElementsByClassName('activity-tab-container-inside')[0];
+    t_container = document.createElement("div");
+    t_container.className = "tag-container";
+    t_inner = document.createElement('div');
+    t_inner.className = "tag";
+    tag = document.createElement('i'); 
+    tag.append(name);
+
+    all_tags.append(t_container);
+    t_container.append(t_inner);
+    t_inner.append(tag);
+    t_inner.style.backgroundColor = color;
+    tag.style.color = (color == 'white') ? 'black' : 'white';
+
+    let span_name = document.createElement("span");
+    span_name.className = 'remove-tag';
+    span_name.onclick = function(){
+        deleteTempTag(t_container);
+    };
+    span_name.innerText = "x";
+    t_container.append(span_name);
+
+    // apply changes to container
+    all_tags.append(t_container);
+
+}
+
+function deleteTempTag(elem){
+    let name = elem.getElementsByTagName("i")[0].innerText;
+    alert(name);
+    console.log(tagBuffer);
+
+    for (let i = 0; i < tagBuffer.length; i++){
+        if (tagBuffer[i].tag == name) {
+            tagBuffer.splice(i);
+            elem.remove();
+        }
+    }
+}
+
+function bufferTag(terminal){
+    for (i = 1; i < terminal.length; i++){
+        if (isString(terminal[i])) {
+            if (terminal[i].startsWith("#")){
+                // prevent duplication
+                if (tagBuffer.includes(terminal[i])) { continue; }
+
+                // check if has color
+                if (i + 1 <= terminal.length) {
+                    if (isColor(terminal[i+1])) {
+
+                        tagBuffer.push({
+                            tag: terminal[i],
+                            color: terminal[i+1]
+                        });
+
+                        createTempTag(terminal[i], color=terminal[i+1]);
+                        i++; 
+                        continue;
+                    }
+                }
+                tagBuffer.push({
+                    tag: terminal[i]
+                });
+                
+                createTempTag(terminal[i]);                    
+            }
+        }
+    }
+}
+
+var tagBuffer = [];
+function addTag(terminal, buffer=false){
     LoadStart();
+
+    if (buffer){
+        bufferTag(terminal);
+        return;
+    }
+
+    let post_id = $("#post_id").val();
+    let project_name;
+    if (SESSION['position']){ // todo when market has session, find another way to filter out
+        project_name = SESSION['position'].project_name;
+    }
+
     $.ajax({
         url: "/add_tag",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify(project_name ? {
             project_name: SESSION['position'].project_name,
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             tags: terminal
-        }),
+            } : {
+                post_id: post_id,
+                tags: terminal
+            }
+        ),
         timeout: 5000,
         success: function(data){
             MakeSnackbar(data);
@@ -203,36 +311,49 @@ function addTag(terminal){
 }
 
 var addTagActive = false;
-function addTagListen(el){
+function addTagListen(el, buffer=false){
     if(!addTagActive){
         getTags(document.getElementById("add-tag"));
-
     }
+
     var key = window.event.keyCode;
     if(key != 13)
         return true;
     if (key === 13 && el.shiftKey){
         return true;
     }
+
     tagsValue = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
     if(tagsValue[0] != "tag"){
         tagsValue.unshift("tag");
     }
-    addTag(tagsValue);
+
+    addTag(tagsValue, buffer);
 }
 
 function removeTag(tagName, tagColor){
     LoadStart();
+
+    let post_id = $("#post_id").val();
+    let project_name;
+    if (SESSION['position']){ // todo when market has session, find another way to filter out
+        project_name = SESSION['position'].project_name;
+    }
+
     $.ajax({
         url: "/remove_tag",
         type: 'POST',
-        data: JSON.stringify({
+        data: JSON.stringify(project_name ? {
             project_name: SESSION['position'].project_name,
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
+            tag: tagName,
+            color: tagColor
+        } : {
+            post_id: post_id,
             tag: tagName,
             color: tagColor
         }),
@@ -300,7 +421,7 @@ function LoadTag(terminal){
                 tagSpan = document.createElement("span");
                 tagSpan.className = "remove-tag";
                 tagSpan.onclick = function(){
-                    removeTag(tag + ' ' + color);
+                    removeTag(tag, color);
                 };
                 tagSpan.innerHTML = 'x';
 

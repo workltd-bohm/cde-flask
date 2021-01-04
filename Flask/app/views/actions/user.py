@@ -101,7 +101,7 @@ def get_profile_image(image_id):
                 resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
                 return resp
         else:
-            print(str(msg.DB_FAILURE))
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])

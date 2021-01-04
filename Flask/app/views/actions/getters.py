@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+from datetime import datetime
 
 from app import *
 
@@ -68,15 +69,51 @@ def get_project():
             resp.data = str(msg.NO_PROJECT_SELECTED['message'])
             return resp
 
+        if 'project' in request_data:
+            print(request_data['project'])
+            if request_data['project'] == {'position': None, 'section': 'project'}:
+                print('here333')
+                return redirect(url_for('get_root_project', data={}))
+
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')
         if db.connect(db_adapter):
-            result = db.get_project(db_adapter, project_name, user)
+            if project_name == 'Shared':
+                result, ic_shares = db.get_my_shares(db_adapter, user)
+                name_id = str(uuid.uuid1())
+                us = {'user_id': session['user']['id'],
+                        'username': session['user']['username'],
+                        'picture': session['user']['picture']}
+                access = Access(us, '', '', Role.ADMIN.value)
+                
+                u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+                details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), 'Shared')
+                root_obj = IC(name_id,
+                            'Shared',
+                            ".",
+                            [details],
+                            'Shared',
+                            'root',
+                            '',
+                            [],
+                            [],
+                            [],
+                            [access])
+                project = Project("default", 'Shared', root_obj)
+                for ic in result:
+                    project.root_ic.sub_folders.append(ic)
+                result = project.to_json()
+            else:
+                result = db.get_project(db_adapter, project_name, user)
             if result:
-                project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
+                project = Project.json_to_obj(result)
+                # p = Project(project.project_id, project.project_name, None)
+                project = project.filter_by_access(session['user'], project.root_ic)
+                # project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
                 resp.status_code = msg.DEFAULT_OK['code']
+                # print(project.to_json())
                 resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
                 return resp
             else:
@@ -95,12 +132,53 @@ def get_project():
     return resp
 
 
-@app.route('/get_root_project', methods=['POST'])
+@app.route('/get_my_projects', methods=['POST'])
+def get_my_projects():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        user = session.get('user')
+        # print(request_data)
+        if db.connect(db_adapter):
+            result = db.get_my_projects(db_adapter, user)
+
+            response = {
+                    'html': render_template("popup/folder_structure.html",
+                                            ),
+                    'data': result
+                }
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+
+            # resp.status_code = msg.DEFAULT_OK['code']
+            # resp.data = resp.data = json.dumps({"data": result, "project" : False, "session": session.get("project")})
+            # resp.data = json.dumps(result)
+            # return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_root_project', methods=['GET', 'POST'])
 def get_root_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
-        request_data = json.loads(request.get_data())
+        request_data = {}
+        if request.get_data():
+            request_data = json.loads(request.get_data())
+        else:
+            request_data = {'project': {'name': None, 'position': None}}
+
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None
         dirs.set_project_data(request_data)
@@ -133,6 +211,23 @@ def get_root_project():
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
 
+            result, ic_shares = db.get_my_shares(db_adapter, user)
+            if result:
+            # for share in result:
+            #     if share:
+                # pr = db.get_my_project(db_adapter, share["project_id"])
+                # pr.current_ic = None
+                # ic = pr.find_ic_by_id(share, share['ic_id'], pr.root)
+                shared_obj = {
+                    "ic_id": "",
+                    "name": 'Shared',
+                    "parent": "Projects",
+                    "history": [],
+                    "path": "Projects/shared",
+                    "is_directory": False,
+                }
+                response['root_ic']["sub_folders"].append(shared_obj)
+
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})
             return resp
@@ -143,6 +238,81 @@ def get_root_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+@app.route('/get_trash', methods=['POST'])
+def get_trash():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        request_data["project"]["name"] = None
+        request_data["project"]["position"] = None  # reset position
+        dirs.set_project_data(request_data)
+        user = session.get('user')
+        # print(request_data)
+
+        if db.connect(db_adapter):
+
+            # setup trash container to take in information
+            response = {
+                "project_name": "Trash",
+                "root_ic": {
+                    "ic_id": "",
+                    "name": "Trash",
+                    "history": [],
+                    "path": ".",
+                    "overlay_type": "trash",
+                    "is_directory": True,
+                    "sub_folders": []
+                }
+            }
+
+            # gets project list from Users.Roles 'trash' -> project id & role (lvl of access)
+            my_trashed_items = db.get_my_trash(db_adapter, user)
+
+            for trashed_project in my_trashed_items:
+                proj_obj = dict()
+
+                if trashed_project:
+                    proj_obj['project_id'] = trashed_project['project_id']
+                    proj_obj['parent'] = "Trash"
+                    proj_obj['history'] = []
+                    proj_obj['overlay_type'] = "trash_planet"
+
+                    if 'project_name' in trashed_project.keys():
+                        proj_obj['name'] =          trashed_project['project_name']
+                        proj_obj['is_directory'] =  "" 
+                        proj_obj['ic_id'] =         ""
+                        proj_obj['parent_id'] =     "root"
+                    else:
+                        proj_obj['name'] =          trashed_project['name']
+                        if 'type' in trashed_project.keys():
+                            proj_obj['name'] += trashed_project['type']
+                        proj_obj['is_directory'] =  trashed_project['is_directory']
+                        proj_obj['ic_id'] =         trashed_project['ic_id']
+                        proj_obj['parent_id'] =     trashed_project['parent_id']
+
+                    proj_obj['path'] = "Trash/" + proj_obj['name'] # TODO maybe leave path
+
+                    # fill root container with found items (which will later become planets)
+                    response['root_ic']["sub_folders"].append(proj_obj)
+
+            resp.status_code = msg.DEFAULT_OK['code'] # get response code
+            session.get("project").update({'section': 'trash'})
+            resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})
+            return resp
+        else:
+            # failsafe
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    # user not logged
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
@@ -216,25 +386,41 @@ def get_root_market():
                     "overlay_type": "market",
                     "is_directory": False,
                     "sub_folders": [
-                        {
-                            "ic_id": "",
-                            "name": "Bids",
-                            "parent": "Market",
-                            "history": [],
-                            "path": "Market",
-                            "is_directory": False,
-                        },
-                        {
-                            "ic_id": "",
-                            "name": "Posts",
-                            "parent": "Market",
-                            "history": [],
-                            "path": "Market",
-                            "is_directory": False,
-                        }
+                        # {
+                        #     "ic_id": "",
+                        #     "name": "Bids",
+                        #     "parent": "Market",
+                        #     "history": [],
+                        #     "path": "Market",
+                        #     "is_directory": False,
+                        # },
+                        # {
+                        #     "ic_id": "",
+                        #     "name": "Posts",
+                        #     "parent": "Market",
+                        #     "history": [],
+                        #     "path": "Market",
+                        #     "is_directory": False,
+                        # }
                     ]
                 }
             }
+
+            result = db.get_all_posts(db_adapter)
+
+            for post in result:
+                proj_obj = {
+                    "ic_id": post['post_id'],
+                    # "parent_id": ic.parent_id,
+                    "name": post['title'],
+                    "parent": "Market",
+                    "history": [],
+                    "path": "Market/" + post['title'],
+                    # "type": ic_type,
+                    "overlay_type": "post_ic",
+                    "is_directory": False,
+                }
+                response['root_ic']["sub_folders"].append(proj_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps({"json": response, "project" : False})
@@ -300,6 +486,31 @@ def get_all_tags():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+@app.route('/get_all_users', methods=['GET'])
+def get_all_users():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            usernames = db.get_all_users(db_adapter)
+            response = {
+                'users': usernames
+            }
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp

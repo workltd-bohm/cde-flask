@@ -1,5 +1,5 @@
 from app import *
-
+from uuid import uuid1
 
 @app.route('/make_ticket_bid', methods=['POST'])
 def make_ticket_bid():
@@ -16,7 +16,7 @@ def make_ticket_bid():
         # resp.status_code = msg.DEFAULT_OK['code']
         # resp.data = json.dumps(response)
         # return resp
-        return render_template("dashboard/market/bid.html")
+        return render_template("dashboard/market/bid_old.html")
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -111,21 +111,33 @@ def make_edit_bid():
     return resp
 
 
-@app.route('/make_activity_bid_edit', methods=['POST'])
-def make_activity_bid_edit():
+@app.route('/make_post_view_activity', methods=['POST'])
+def make_post_view_activity():
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_json = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
-        response = {
-            'html': render_template("dashboard/market/bid_edit_activity.html",
-                                    # TODO
-                                    ),
-            'data': []
-        }
+        if db.connect(db_adapter):
+            post = db.get_single_post(db_adapter, request_json)[0]
+            response = {
+                'html': render_template("dashboard/market/post_view_activity.html",
+                                        post=post,
+                                        bids=[],
+                                        profile_picture=session['user']['picture']
+                                        # tags=[]
+                                        ),
+                'data': []
+            }
 
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
 
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
@@ -164,9 +176,7 @@ def make_ticket_post_new():
         description = request_json['data']['name']
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_form.html",
-                                    username=session['user']['username'],
-                                    description=description
+            'html': render_template("dashboard/market/post_new_form_1.html",
                                     ),
             'data': []
         }
@@ -209,26 +219,52 @@ def make_view_post():
     resp = Response()
     if main.IsLogin():
         if db.connect(db_adapter):
-            result = db.get_single_post(db_adapter, request_json)
-            post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
-            logger.log(LOG_LEVEL, 'DB result: {}'.format(result[0]))
-            response = {
-                'html': render_template("dashboard/market/bid_all_posts.html",
-                                        post_id=result[0]["post_id"],
-                                        username=result[0]["user_owner"]["username"],
-                                        title=result[0]["title"],
-                                        description=result[0]["description"],
-                                        date=result[0]["date_expired"],
-                                        location=result[0]["location"],
-                                        status=status.Status(int(result[0]["status"])).name,
-                                        dview=result[0]['documents']['3d-view'],
-                                        doc=result[0]['documents']['doc'],
-                                        image=result[0]['documents']['image'],
-                                        offer=0
+            post = db.get_single_post(db_adapter, request_json)
+            # post = db.get_single_post(db_adapter, {'post_id': result[0]["post_id"]})
+            logger.log(LOG_LEVEL, 'DB result: {}'.format(post))
+            if session['user']["username"] == post[0]["user_owner"]["username"]:
+                response = {
+                'html': render_template("dashboard/market/post_edit_1.html",
+                                        post_id=request_json['post_id'],
+                                        username=post[0]["user_owner"]["username"],
+                                        title=post[0]["title"],
+                                        description=post[0]["description"],
+                                        quantity=post[0]["product"]["quantity"],
+                                        date=post[0]["date_expired"],
+                                        location=post[0]["location"],
+                                        lowest_bid=post[0]["current_best_bid"],
+                                        dview=post[0]['documents']['3d-view'],
+                                        doc=post[0]['documents']['doc'],
+                                        image=post[0]['documents']['image'],
+                                        bids=[]
                                         ),
-                'data': {'image': result[0]['documents']['image'],
-                         'doc': result[0]['documents']['doc']}
-            }
+                'data': {
+                    'type': 'edit',
+                    'bids': post[0]['bids'],
+                    'image': post[0]['documents']['image'],
+                    'doc': post[0]['documents']['doc']}
+                }
+            else:
+                # bid = db.get_my_bids(db_adapter, session['user'])
+                response = {
+                    'html': render_template("dashboard/market/post_view.html",
+                                            post_id=post[0]["post_id"],
+                                            username=post[0]["user_owner"]["username"],
+                                            title=post[0]["title"],
+                                            description=post[0]["description"],
+                                            date=post[0]["date_expired"],
+                                            location=post[0]["location"],
+                                            status=status.Status(int(post[0]["status"])).name,
+                                            dview=post[0]['documents']['3d-view'],
+                                            doc=post[0]['documents']['doc'],
+                                            image=post[0]['documents']['image'],
+                                            offer=0
+                                            ),
+                    'data': {
+                        'type': 'view',
+                        'image': post[0]['documents']['image'],
+                        'doc': post[0]['documents']['doc']}
+                }
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps(response)
@@ -268,7 +304,7 @@ def make_edit_post():
                                         dview=result[0]['documents']['3d-view'],
                                         doc=result[0]['documents']['doc'],
                                         image=result[0]['documents']['image'],
-                                        bids=[]
+                                        bids=result[0]['bids']
                                         ),
                 'data': [{'bids': result[0]['bids'],
                           'image': result[0]['documents']['image'],
@@ -295,8 +331,9 @@ def make_activity_post_new():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_activity.html",
-                                    # TODO
+            'html': render_template("dashboard/market/post_new_activity_1.html",
+                                    profile_picture=session['user']['picture'],
+                                    post_id= uuid1()
                                     ),
             'data': []
         }
@@ -318,19 +355,23 @@ def make_activity_post_edit():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
         if db.connect(db_adapter):
+            post = db.get_single_post(db_adapter, request_json)[0]
             bids = []
-            req_bids = request_json['bids']
-            if isinstance(request_json['bids'], str):
+            req_bids = post['bids']
+            if isinstance(post['bids'], str):
                 # TODO: fix this
-                req_bids = json.loads(request_json['bids'])
+                req_bids = json.loads(post['bids'])
             for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
             div = []
             for bid in bids:
                 div.append(bid['offer'])
             response = {
-                'html': render_template("dashboard/market/post_edit_activity.html",
-                                        bids=div
+                'html': render_template("dashboard/market/post_edit_activity_1.html",
+                                        post=post,
+                                        comments=[],
+                                        bids=div,
+                                        profile_picture=session['user']['picture']
                                         ),
                 'data': []
             }
@@ -361,6 +402,8 @@ def get_my_posts_popup():
         if db.connect(db_adapter):
             result = db.get_my_posts(db_adapter, session.get('user'))
             logger.log(LOG_LEVEL, 'DB result: {}'.format(result))
+            print(result)
+            print(request_json)
             response = {
                 'html': render_template("dashboard/market/popup/my_posts_popup.html",
                                         posts=result,

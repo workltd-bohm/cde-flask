@@ -148,8 +148,11 @@ def upload_file_process(request_json, file=None):
     directory = request_json['parent_path']
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
     # if request_json['is_file']:  directory = directory[:directory.rfind('/')]
-    details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'] +
-                        "." + request_json['new_name'].split('.')[-1])
+    us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+    access = Access(us, request_json['parent_id'], '', Role.ADMIN.value)
+    details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'])
     file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['new_name'].split('.')[:-1]),
                     file.filename if file else request_json["original_name"],
@@ -162,6 +165,7 @@ def upload_file_process(request_json, file=None):
                     [],
                     [],
                     [],
+                    [access], # access
                     '',
                     'description') # request_json['description'])
     try:
@@ -185,8 +189,8 @@ def upload_file_process(request_json, file=None):
             result = db.upload_file(db_adapter, request_json['project_name'], file_obj, encoded)
         else:
             file_obj.stored_id = request_json["stored_id"]
-            result, ic = db.create_folder(db_adapter, request_json['project_name'], file_obj)
-            #result = db.upload_file(db_adapter, request_json['project_name'], file_obj)
+            #result, ic = db.create_folder(db_adapter, request_json['project_name'], file_obj)
+            result = db.upload_file(db_adapter, request_json['project_name'], file_obj)
         if result:
             logger.log(LOG_LEVEL, ">> {}".format(result["message"]))
             resp = Response()
@@ -204,6 +208,7 @@ def upload_file_process(request_json, file=None):
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    # print(session['project'])
     if main.IsLogin():
         # print(json.loads(request.get_data()))
         if 'file' not in request.files:
@@ -229,6 +234,10 @@ def upload_file():
 def create_dir_process(request_data):
     logger.log(LOG_LEVEL, "Create Dir Process")
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+    us = {'user_id': session['user']['id'],
+                 'username': session['user']['username'],
+                 'picture': session['user']['picture']}
+    access = Access(us, request_data['parent_id'], '', Role.ADMIN.value)
     details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
     folder = Directory(str(uuid.uuid1()),
                         request_data['new_name'],
@@ -239,7 +248,8 @@ def create_dir_process(request_data):
                         '',
                         [],
                         [],
-                        [])
+                        [],
+                        [access])
     if db.connect(db_adapter):
         result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
@@ -261,7 +271,7 @@ def create_dir():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        if request_data['project_name'] == '':
+        if 'project_name' in request_data.keys() and request_data['project_name'] == '':
             request_data['project_name'] = session['project']['name']
         set_project_data(request_data, True)
         #print(request_data)
@@ -292,7 +302,11 @@ def rename_ic():
                 "is_directory": True if "is_directory" in request_data else False,
             }
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
-            result = db.rename_ic(db_adapter, rename, u)
+            result, project = db.rename_ic(db_adapter, rename, u)
+            if request_data['parent_id'] == 'root':
+                # request_data['project_name'] = request_data["new_name"]
+                # set_project_data(request_data, True)
+                session['project']['name'] = request_data["new_name"]
             logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
             resp = Response()
             resp.status_code = result["code"]
@@ -310,6 +324,115 @@ def rename_ic():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route("/trash_ic", methods=['POST'])
+def trash_ic():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        ic_data = json.loads(request.get_data())
+        set_project_data(ic_data, True) # session['project']
+        ic_data['user_id'] = session['user']['id']
+        
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(ic_data)) 
+
+        if db.connect(db_adapter):
+            result = db.trash_ic(db_adapter, ic_data)
+
+            if result == msg.PROJECT_SUCCESSFULLY_TRASHED \
+                or result == msg.IC_SUCCESSFULLY_TRASHED:
+                session.get("project").update({'section': 'trash'})
+                session.get("project").update({'position': None})
+                session.modified = True
+
+            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+@app.route("/empty_trash", methods=['POST'])
+def empty_trash():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        #set_project_data(ic_data, True)
+        user = session['user']
+        user['user_id'] = user['id']
+        if db.connect(db_adapter):
+            result = db.empty_my_trash(db_adapter, user)
+
+            if result == msg.PROJECT_SUCCESSFULLY_TRASHED:
+                session.get("project").update({'section': 'project'})
+                session.get("project").update({'position': None})
+                session.modified = True
+
+            #logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+@app.route("/restore_ic", methods=['POST'])
+def restore_ic():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        ic_data = json.loads(request.get_data())
+        set_project_data(ic_data, True)
+        ic_data['user_id'] = session['user']['id']
+        
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(ic_data)) 
+
+        if db.connect(db_adapter):
+            result = db.restore_ic(db_adapter, ic_data)
+
+            if result == msg.PROJECT_SUCCESSFULLY_RESTORED \
+                or result == msg.IC_SUCCESSFULLY_RESTORED:
+                session.get("project").update({'section': 'trash'})
+                session.get("project").update({'position': ''})
+                session.modified = True
+
+            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+
+            resp = Response()
+            resp.status_code = result["code"]
+            resp.data = result["message"]
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 @app.route('/delete_ic', methods=['POST'])
 def delete_ic():
@@ -407,10 +530,12 @@ def path_to_obj(path, parent=False, parent_id=""):
                          '',
                          [],
                          [],
+                         [],
+                         [],
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [],  '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [], [], '', '')
     return root
 
 
@@ -456,8 +581,11 @@ def zipdir(path, ziph):
 
 
 def set_project_data(data, save=False):
+    print(data)
+    print(session.get("project"))
     if "project" in data:
-        session.get("project").update(data["project"])
+        if data["project"]:
+            session.get("project").update(data["project"])
 
     if "name" in session.get("project"):
         project_name = session.get("project")["name"]

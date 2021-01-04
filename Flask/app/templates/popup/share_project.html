@@ -1,20 +1,20 @@
 <h3>Share project</h3>
 <div class="scroll">
   <div class="form__group field">
-    <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
-    <label for="user_name" class="form__label">User</label>
+    <input type="text" class="form__field" id="user_name_share" name="user_name_share" placeholder="username" required />
+    <label for="user_name_share" class="form__label">User</label>
   </div>
 
   <div class="form__group field">
-      <select class="form__field" name="role" id='role' required >
+      <select class="form__field" name="role_share" id='role_share' required >
         <option></option>
         <option>ADMIN</option>
         <option>WATCHER</option>
         <option>DEVELOPER</option>
         <option>OWNER</option>
       </select>
-      <label for="role" class="form__label">Role</label>
+      <label for="role_share" class="form__label">Role</label>
   </div>
   <br>
 </div>
-<input type="button" value="Share" onclick="ShareProject('{{ project_id }}')" />
+<input type="button" class="keypress" value="Share" onclick="ShareProject('{{ project_id }}')" />

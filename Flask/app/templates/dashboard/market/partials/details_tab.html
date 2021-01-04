@@ -1,0 +1,36 @@
+<div id="filter-details" style="display: block;">
+    <form id="filter-form-details">
+        <h6 class="tab-title">{{ post['title'] }}</h6>
+
+        <div class="activity-tab-container">
+            <br>
+            {{ post['description'] }}
+            <br>
+        </div>
+        
+        <div class="activity-tab-container">
+            <br>
+            <p><b>Status:</b> {{ post['status'] }}</p>
+            <p><b>Product:</b> {{ post['product'] }}</p>
+            <p><b>Project:</b> TODO</p>
+            <p><b>Location:</b> {{ post['location'] }}</p>
+            <p><b>Expiration:</b> {{ post['date_expired'] }}</p>
+            <br>
+        </div>
+
+        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+        <div class="activity-tab-container" id="tags">
+            <div class="activity-tab-container-inside" id="activity-tag-container">
+                {% for tag in post['tags'] %}
+                <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                    <div class="tag" style="background-color: {{ tag['color'] }}">
+                        <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                         {{ tag['tag'] }}
+                        </i>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>

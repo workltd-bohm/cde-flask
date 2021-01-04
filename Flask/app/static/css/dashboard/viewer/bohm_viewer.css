@@ -1,0 +1,16 @@
+body {
+    margin: 0;
+    height: 100vh;
+}
+
+canvas {
+    /*
+    A canvas's default display mode is inline. Inline elements can end up adding whitespace to what is displayed.
+    By setting the canvas to block that issue goes away.
+    this solves the scroll bars*/
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+}
+

@@ -1,0 +1,14 @@
+<div class="project-tab">
+    {% block tabs %}{% endblock %}
+</div>
+<div class="activity-tab-div">
+    <div class="scroll">
+        <div class="project-view">
+            <input type="hidden" id="post_id" value="{{ post['post_id'] if post is defined }}" required/>
+            {% block details %}{% endblock %}
+            {% block comments %}{% endblock %}
+            {% block bids %}{% endblock %}
+            {% block access %}{% endblock %}
+        </div>
+    </div>
+</div>

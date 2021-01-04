@@ -1,0 +1,32 @@
+{% extends 'dashboard/market/post_activity.html' %}
+
+{% block tabs %}
+    <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
+        <p>Details</p>
+    </div>
+    <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
+        <p>Comments</p>
+    </div>
+    <div class="project-box" id="filter-bids-tab" onclick="FilterSwap('bids')">
+        <p>Bids</p>
+    </div>
+    <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
+        <p>Access</p>
+    </div>
+{% endblock %}
+
+{% block details %}
+    {% include 'dashboard/market/partials/details_form.html' %}
+{% endblock %}
+
+{% block comments %}
+    {% include 'dashboard/market/partials/comments_tab.html' %}
+{% endblock %}
+
+{% block bids %}
+    {% include 'dashboard/market/partials/bids_tab.html' %}
+{% endblock %}
+
+{% block access %}
+    {% include 'dashboard/market/partials/access_tab.html' %}
+{% endblock %}

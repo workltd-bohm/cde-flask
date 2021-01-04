@@ -15,6 +15,7 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
+from app.model.access import Access
 
 from app.logs import logger
 

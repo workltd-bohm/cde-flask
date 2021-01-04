@@ -1,4 +1,3 @@
-
 const $MARKET = $("#MARKET");
 const MARKET = d3.select("#MARKET");
 
@@ -13,13 +12,13 @@ g_market = {
 };
 
 g_marketTypes = {
-    bids: {main: "/make_ticket_bid_all", many: "/make_ticket_bid"}, 
-    posts: {main: "/make_ticket_post_new", many: "/make_ticket_post"}, 
+    bids: { main: "/make_ticket_bid_all", many: "/make_ticket_bid" },
+    posts: { main: "/make_ticket_post_new", many: "/make_ticket_post" },
 };
 
 var g_template = null;
 
-function MarketOpen(type, data, run=null, run_data=null){ // type depricated?
+function MarketOpen(type, data, run = null, run_data = null) { // type depricated?
     console.log(type);
 
     // switch(type){
@@ -36,15 +35,15 @@ function MarketOpen(type, data, run=null, run_data=null){ // type depricated?
     //         GetTicketTemplate(data.many, g_marketTypes.posts.many, UpdateAllPostTicket, GetPostId);
     //         break;
     // }
-    if(run != null){
-        if(run.name == 'NewPost'){
+    if (run != null) {
+        if (run.name == 'NewPost') {
             run(run_data[0], run_data[1]);
-        }else{
+        } else {
             run(run_data[0], run_data[1], run_data[2]);
         }
-    }else{
+    } else {
         CreateTicket(data.one, null, null, GetID);
-        for (var obj of JSON.parse(data.many)){
+        for (var obj of JSON.parse(data.many)) {
             CreateTicket(obj.html, obj, null, GetID);
         }
     }
@@ -70,14 +69,14 @@ function MarketOpen(type, data, run=null, run_data=null){ // type depricated?
 //     });
 // }
 
-function CreateTicket(template, obj=null, updater=null, getId=null){
+function CreateTicket(template, obj = null, updater = null, getId = null) {
     //console.log("ovde " + obj.html);
-    var id  = 0;
-    if(obj != null)
+    var id = 0;
+    if (obj != null)
         id = getId(obj);
     var tmp = {};
-    tmp.body =  MARKET.append("div")
-        .attr("class","ticket")
+    tmp.body = MARKET.append("div")
+        .attr("class", "ticket")
         .attr("id", id)
         .style("opacity", 0)
 
@@ -93,7 +92,7 @@ function CreateTicket(template, obj=null, updater=null, getId=null){
     tmp.data = obj;
     g_market.childs.push(tmp);
 
-    if(obj != null && updater != null){
+    if (obj != null && updater != null) {
         updater(obj, id);
     }
 }
@@ -126,55 +125,57 @@ function CreateTicket(template, obj=null, updater=null, getId=null){
 // }
 
 
-function GetID(json){
+function GetID(json) {
     if (json.post_id) return json.post_id;
     if (json.bid_id) return json.bid_id;
     return -1;
 }
 
-function GetPostId(json){
+function GetPostId(json) {
     return json.post_id
 }
 
-function GetBidId(json){
+function GetBidId(json) {
     return json.bid_id
 }
 
 
-function MarketGet(choose_market, run=null, run_data=null){
-    ClearMarket();
-    SwitchDash(1);
+function MarketGet(choose_market, run = null, run_data = null) {
+    // console.log(run_data);
+    ClearProject(true);
+    SwitchDash(0);
     $.ajax({
-        url: choose_market == "Bids" ? "/get_my_bids" : "/get_my_posts",
+        url: choose_market == "Bids" ? "/get_my_bids_planetary" : "/get_my_posts_planetary",
         type: 'POST',
-        data: JSON.stringify({project: {market: choose_market}}),
+        data: JSON.stringify({ project: { market: choose_market } }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
-                MarketOpen(choose_market, data, run, run_data);
+            if (data) {
+                // MarketOpen(choose_market, data, run, run_data);
+                DashboardCreate([data.json.root_ic]);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
         }
     });
 }
 
-function OpenEditor(html, data){
+function OpenEditor(html, data) {
     EDITOR.html(html);
     $MARKET.fadeOut(ANIM_TICKET_FADE);
     $EDITOR.fadeIn(ANIM_TICKET_FADE);
 
 }
 
-function ClearMarket(){
+function ClearMarket() {
     $MARKET.empty();
 }
 
 
-function TabSwap(target){
+function MarketTabSwap(target) {
     $(".edit-section.view").children().hide();
     $(".edit-box").removeClass("selected");
     $("#" + target).show();

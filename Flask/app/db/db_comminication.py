@@ -45,6 +45,13 @@ def get_all_projects(db_adapter):
 def get_my_projects(db_adapter, user):
     return db_adapter.get_my_projects(user)
 
+# TODO TRASH
+def get_my_trash(db_adapter, user):
+    return db_adapter.get_my_trash(user)
+
+def get_my_shares(db_adapter, user):
+    return db_adapter.get_my_shares(user)
+
 
 def get_project(db_adapter, project_name, user):
     return db_adapter.get_project(project_name, user)
@@ -54,21 +61,28 @@ def upload_file(db_adapter, project, file_obj, file=None):
     return db_adapter.upload_file(project, file_obj, file)
 
 
+def update_file(db_adapter, project, file_obj, file=None):
+    return db_adapter.update_file(project, file_obj, file)
+
+
 def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
-
-
-def move_ic(db_adapter, project_name, folder):
-    return db_adapter.move_ic(project_name, folder)
 
 
 def rename_ic(db_adapter, request_data, user):
     return db_adapter.rename_ic(request_data, user)
 
+def trash_ic(db_adapter, ic_data):
+    return db_adapter.trash_ic(ic_data)
+
+def restore_ic(db_adapter, ic_data):
+    return db_adapter.restore_ic(ic_data)
 
 def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)
 
+def empty_my_trash(db_adapter, user):
+    return db_adapter.empty_my_trash(user)
 
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
@@ -76,6 +90,10 @@ def get_file(db_adapter, file_name):
 
 def get_ic_object(db_adapter, project_name, request_data, file_name):
     return db_adapter.get_ic_object(project_name, request_data, file_name)
+
+
+def get_ic_object_from_shared(db_adapter, request_data, user):
+    return db_adapter.get_ic_object_from_shared(request_data, user)
 
 
 def get_post_file(db_adapter, request_json):
@@ -142,9 +160,18 @@ def share_project(db_adapter, request_data, user):
     return db_adapter.share_project(request_data, user)
 
 
+def remove_share_project(db_adapter, request_data, session_user):
+    return db_adapter.remove_share_project(request_data, session_user)
+
+
 def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
+def update_comment(db_adapter, request_data):
+    return db_adapter.update_comment(request_data)
+
+def delete_comment(db_adapter, request_data):
+    return db_adapter.delete_comment(request_data)
 
 def add_tag(db_adapter, request_data, tags):
     return db_adapter.add_tag(request_data, tags)
@@ -160,6 +187,14 @@ def get_all_tags(db_adapter):
 
 def get_all_tags_with_ics(db_adapter):
     return db_adapter.get_all_tags_with_ics()
+
+
+def add_access(db_adapter, request_data, session_user):
+    return db_adapter.add_access(request_data, session_user)
+
+
+def remove_access(db_adapter, request_data, session_user):
+    return db_adapter.remove_access(request_data, session_user)
 
 
 def clear_db(db_adapter, user):

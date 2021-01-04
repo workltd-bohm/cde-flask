@@ -1,69 +1,127 @@
 @import url("../../common/colors.css");
-
 .drop-area {
-  border: 2px dashed #ccc;
-  border-radius: 20px;
-  width: 80%;
-  font-family: sans-serif;
-  margin: 100px auto;
-  padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 80%;
+    font-family: sans-serif;
+    margin: 100px auto;
+    padding: 20px;
+    color: white;
 }
-.drop-area.highlight {
-  border-color: purple;
+
+.drop-area.drop-highlight {
+    border-color: purple;
 }
+
 p {
-  margin-top: 0;
+    margin-top: 0;
 }
+
 .my-form {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
+
 #gallery {
-  margin-top: 10px;
+    display: inline-flex;
+    margin-top: 10px;
 }
+
 #gallery img {
-  width: 150px;
-  margin-bottom: 10px;
-  margin-right: 10px;
-  vertical-align: middle;
+    width: 150px;
+    margin-top: 10px;
+    margin-left: 10px;
+    vertical-align: top;
 }
+
 .button {
-  display: inline-block;
-  padding: 10px;
-  background: #ccc;
-  cursor: pointer;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+    display: inline-block;
+    padding: 10px;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
+
 .button:hover {
-  background: #ddd;
+    background: #ddd;
 }
+
 #image {
-  display: none;
+    display: none;
 }
+
 #doc {
-  display: none;
+    display: none;
 }
+
+.d3view-preview {
+    display: flex;
+}
+
+#d3view-preview {
+    position: relative;
+    height: 33vw;
+    width: 100%;
+    margin-top: 2%;
+}
+
+.d3-preview-button {
+    margin-left: 10px;
+    width: 80px;
+}
+
 #file-preview {
-  margin-top: 10px;
-  color: var(--file-preview-text);
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--file-preview-text);
 }
+
 .file-preview-div {
-    position:relative;
+    position: relative;
+    display: flex;
+    margin-left: 10px;
+    vertical-align: top;
 }
-.file-preview-name{
-    display:inline-block;
+
+.file-preview-name {
+    display: block;
 }
-.file-preview-button{
-    display:inline-block;
+
+.file-preview-button {
+    display: inline-block;
     width: 20px;
     height: 20px;
-    margin-left: 15px;
-    background-color:rgba(192,192,192,0.5);
+    margin-left: 10px;
+    color: #000;
+    background-color: rgba(192, 192, 192, 0.3);
+    text-align: center;
 }
-.file-preview-button:hover{
+
+.file-preview-button:hover {
+    color: #fff;
+    background-color: #121212;
+    cursor: pointer;
+}
+
+.image-preview-div {
+    position: relative;
+    margin-left: 10px;
+    vertical-align: top;
+}
+
+.image-preview-button {
+    display: inline-block;
     width: 20px;
     height: 20px;
-    margin-left: 15px;
-    background-color:rgba(192,192,192,0.1);
+    margin-left: -21px;
+    margin-top: 10px;
+    color: #000;
+    background-color: rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.image-preview-button:hover {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.9);
     cursor: pointer;
 }

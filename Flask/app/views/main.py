@@ -1,10 +1,18 @@
 from app import *
+import os
 
 
 def IsLogin():
     if session.get('user'):
         return True
     return False
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'img/user_profile/brush2.png',
+                               mimetype='img/user_profile/brush2.png')
 
 
 @app.route('/')

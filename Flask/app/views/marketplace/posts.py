@@ -26,6 +26,15 @@ def create_post():
         request_json['current_best_bid'] = None
         request_json['comments'] = []
         request_json['status'] = 0
+        print('\n\n\n before: ', request_json['tags'])
+        for i, tag in enumerate(request_json['tags']):
+            # if 'tag' in tag.keys() and 'color' in tag.keys():
+            #     request_json['tags'][i] = {'tag': tag['tag'], 'color': tag['color']}
+            # elif 'tag' in tag.keys():
+            #     request_json['tags'][i] = {'tag': tag['tag'], 'color': 'white'}
+            if 'color' not in tag.keys():
+                request_json['tags'][i]['color'] = 'white'
+        print('\n\n\n after: ', request_json['tags'])
 
     if main.IsLogin():
         request_json['user_owner'] = session.get('user')
@@ -72,7 +81,6 @@ def edit_post():
         request_json.pop('image', None)
         request_json['bids'] = []
         request_json['current_best_bid'] = None
-        request_json['comments'] = []
         request_json['status'] = 0
 
     if main.IsLogin():
@@ -127,6 +135,121 @@ def get_all_posts():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+@app.route('/get_all_posts_planetary', methods=['POST', 'GET'])
+def get_all_posts_planetary():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        # if "name" not in session.get("project"):
+        #     logger.log(LOG_LEVEL, str(msg.NO_PROJECT_SELECTED))
+        #     resp.status_code = msg.NO_PROJECT_SELECTED['code']
+        #     resp.data = str(msg.NO_PROJECT_SELECTED['message'])
+        #     return resp
+
+        if db.connect(db_adapter):
+
+            response = {
+                    "project_name": "All posts",
+                    "root_ic": {
+                        "ic_id": "",
+                        "name": "All posts",
+                        "history": [],
+                        "path": "Market/All posts",
+                        "overlay_type": "",
+                        "is_directory": True,
+                        "sub_folders": []
+                    }
+                }
+
+            result = db.get_all_posts(db_adapter)
+
+            for post in result:
+                proj_obj = {
+                    "ic_id": post['post_id'],
+                    # "parent_id": ic.parent_id,
+                    "name": post['title'],
+                    "parent": "All posts",
+                    "history": [],
+                    "path": "All posts/" + post['title'],
+                    # "type": ic_type,
+                    "overlay_type": "all_post_ic",
+                    "is_directory": False,
+                }
+                response['root_ic']["sub_folders"].append(proj_obj)
+
+            resp.status_code = msg.DEFAULT_OK['code']
+            # print(project.to_json())
+            resp.data = json.dumps({"json": response})
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+
+@app.route('/get_my_posts_planetary', methods=['POST'])
+def get_my_posts_planetary():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        dirs.set_project_data(request_data)
+        # if "name" not in session.get("project"):
+        #     logger.log(LOG_LEVEL, str(msg.NO_PROJECT_SELECTED))
+        #     resp.status_code = msg.NO_PROJECT_SELECTED['code']
+        #     resp.data = str(msg.NO_PROJECT_SELECTED['message'])
+        #     return resp
+
+        # position = session.get("project")["position"]
+        # project_name = session.get("project")["name"]
+        # user = session.get('user')
+        if db.connect(db_adapter):
+            request_data = json.loads(request.get_data())
+
+            response = {
+                    "project_name": "My posts",
+                    "root_ic": {
+                        "ic_id": "",
+                        "name": "My posts",
+                        "history": [],
+                        "path": "Market/My posts",
+                        "overlay_type": "posts",
+                        "is_directory": True,
+                        "sub_folders": []
+                    }
+                }
+
+            result = db.get_my_posts(db_adapter, session.get('user'))
+
+            for post in result:
+                    # path = ic.name if ic.is_directory else ic.name + ic.type
+                    # ic_type = '' if ic.is_directory else ic.type
+                    proj_obj = {
+                        "ic_id": post['post_id'],
+                        # "parent_id": ic.parent_id,
+                        "name": post['title'],
+                        "parent": "My posts",
+                        "history": [],
+                        "path": "My posts/" + post['title'],
+                        # "type": ic_type,
+                        "overlay_type": "all_post_ic",
+                        "is_directory": False,
+                    }
+                    response['root_ic']["sub_folders"].append(proj_obj)
+
+            resp.status_code = msg.DEFAULT_OK['code']
+            # print(project.to_json())
+            resp.data = json.dumps({"json": response})
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
 
 
 @app.route('/get_my_posts', methods=['POST', 'GET'])
@@ -234,6 +357,10 @@ def upload_post_file():
         # print(request.form['data'])
         request_json = json.loads(request.form['data'])
         request_json['user'] = session['user']['username']
+        if '.' in request_json['file_name']:
+            request_json['type'] = request_json['file_name'].split('.')[:-1]
+
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
 
         if db.connect(db_adapter):
             result, id = db.upload_post_file(db_adapter, request_json, file)
