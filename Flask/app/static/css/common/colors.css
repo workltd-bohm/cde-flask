@@ -8,8 +8,8 @@
     --dashboard-bg: #121212;
     --dashboard-bg-light: #ffffff;
 
-    --side-menu: #e8e8e8;
-    --side-menu-light: #e8e8e8;
+    --side-menu: #e8e8e8; /*I think this is not used anywhere*/
+    --side-menu-light: #e8e8e8; /*I think this is not used anywhere*/
 
     --sun-default-bg: #ffffff;
     --sun-default-bg-light: #ababab;
@@ -17,6 +17,8 @@
     --planet-default-bg: #ffffff;
     --planet-default-bg-light: #ffffff;
 
+    --activity-menu-bg: #ebebeb; /*e1e1e1*/
+    --activity-menu-bg-light: #e8e8e8;
 
     --left-side-menu: #121212;
     --side-menu-text: #b8b8b8; /*NOT USED ANY MORE - color of the text next to the icon (in an expanded menu)*/
@@ -34,4 +36,5 @@
     --cur-side-menu: var(--side-menu);
     --cur-sun-default-bg: var(--sun-default-bg);
     --cur-planet-default-bg: var(--planet-default-bg);
+    --cur-activity-menu-bg:var(--activity-menu-bg);
 }

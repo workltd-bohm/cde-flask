@@ -134,6 +134,7 @@ function sendComment(el) {
 var tmp_comment = "";
 
 function editComment(elem) {
+    elem = elem.closest('.comments_field');
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
@@ -144,13 +145,13 @@ function editComment(elem) {
 
     elem.getElementsByClassName('comment-inline')[0].innerHTML =
         '<textarea id="comment-editmode" ' +
-        'onkeypress="updateComment(event, this.parentElement.parentElement.parentElement.parentElement.dataset)">' +
-        "</textarea>";
+        'onkeypress="updateComment(event, this)"></textarea>';
 
     $('#comment-editmode').focus().val(comment_text.trim());
 }
 
-function updateComment(el, dataset) {
+function updateComment(el, container) {
+    let dataset = container.closest('.comment-container').dataset;
     var key = window.event.keyCode;
     if (key != 13)
         return true;
@@ -166,7 +167,6 @@ function updateComment(el, dataset) {
         // prompt to delete
     }
 
-    console.log(dataset['id']);
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
@@ -216,13 +216,15 @@ function resetComment() {
 }
 
 function deleteComment(elem) {
+    elem = elem.closest('.comment-container');
+
+    // data
     project_name = $('#project_name').val();
     parent_id = $('#parent_id').val();
     ic_id = $('#ic_id').val();
     div = $('.activity-tab-div-comment');
     post_id = $('#post_id').val();
     comment_id = elem.dataset.id;
-    console.log(elem);
 
     $.ajax({
         url: "/delete_comment",
@@ -412,12 +414,13 @@ function openToggleInfoHistory() {
 var allProjectComments=null;
 function filterDirectoryComments(searchCommentboxText)
 {
+    isClearSearchButtonVisible(true);
     divWithAllComments = document.getElementById("activity-tab-div-comments");
     
     if(allProjectComments == null)
-    allProjectComments = divWithAllComments.innerHTML;
+        allProjectComments = divWithAllComments.innerHTML;
     else
-    divWithAllComments.innerHTML = allProjectComments;
+        divWithAllComments.innerHTML = allProjectComments;
     
     
     comments = divWithAllComments.children;
@@ -465,14 +468,23 @@ function filterDirectoryComments(searchCommentboxText)
     }
 }
 
+function isClearSearchButtonVisible(isVisible)
+{
+    if(!isVisible)
+        document.getElementById("resetCommentSearchButton").style.visibility = "hidden"; //hide button
+    else
+        document.getElementById("resetCommentSearchButton").style.visibility = "visible";
+}
+
 function resetCommentSearch(event)
 {
     console.log("reset search");
     if(allProjectComments != null)
     {
         document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
-        document.getElementById("seachcomments").value = "";
+        document.getElementById("searchcomments").value = "";
     }
+    isClearSearchButtonVisible(false);
 }
 
 function isUsernameSuggestionWanted(searchText)
@@ -508,13 +520,13 @@ function serviceCommentSearchQuery(event)
     // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
     // if user presses enter, filter directory comments using text in the searchbox, and show results
     let keyPressedByUser = window.event.keyCode;
-    let searchCommentBoxId = "seachcomments";
+    let searchCommentBoxId = "searchcomments";
     let searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
 
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let commentsearchAutocompleteDivId = "seachcomments" + "autocomplete-list";
+    let commentsearchAutocompleteDivId = "searchcomments" + "autocomplete-list";
     if (keyPressedByUser == 13) //enter
     {
         if(document.getElementById(commentsearchAutocompleteDivId)== null || 
@@ -548,6 +560,8 @@ function serviceCommentSearchQuery(event)
         }
         else
             autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    
+        filterDirectoryComments(searchCommentboxText);
     }
 }
 
@@ -571,12 +585,21 @@ function commentOnProject(event)
         autocompleteUsername(commentboxText, commentBoxId);
         return true;
     }
-    
-    if(document.getElementById(commentAutocompleteDivId)== null || 
-    document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0)
+
+    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId)== null);
+    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true:(document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
+    if(autocompleteDivNotPresent || noOptionsInAutocompleteDiv)
     {
-        sendComment(event);
-        document.getElementById("comment").value = ""; //clear after sending
+        event.preventDefault();
+        if(!event.shiftKey)
+        {
+            sendComment(event);
+            document.getElementById("comment").value = ""; //clear after sending
+        }
+        else
+        {
+            document.getElementById("comment").value += "\n";
+        }
     }
 }
 

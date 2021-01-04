@@ -13,14 +13,14 @@
   <hr>
   </div>
   <ul class="menu">
-    <li class="menu-link tooltip" onclick="UserProfile()"><img class="profile-icon " src="/get_profile_image/{{ picture }}"/><p class="info-tooltip">{{ username }}</p></li>
+    <li class="menu-link tooltip" onclick="UserProfile()"><img class="profile-icon " src="/get_profile_image/{{ picture }}"/><!--<p class="info-tooltip">{{ username }}</p>--></li>
     <li class="menu-link tooltip" onclick="SelectProject()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_project.png')}}"/><p class="info-tooltip">Project</p></li>
     <li class="menu-link tooltip" onclick="SelectMarket()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_market.png')}}"/><p class="info-tooltip">Market</p></li>
-    <li class="menu-link tooltip" onclick="Select3D()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_3d.png')}}"/><p class="info-tooltip">3D View</p></li>
+    <li class="menu-link tooltip" onclick="Select3D()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_3d.png')}}"/><p class="info-tooltip">3D</p></li>
 <!--    <li class="menu-link" href="/upload_project"><i class="material-icons w3-xxlarge">&#xE87A;</i><p>upload_project</p></li>-->
   </ul>
   <ul class="menu icon-menu">
-    <li class="menu-link tooltip" onclick="SelectTrash()"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/><p class="info-tooltip">Trash Bin</p></li>
+    <li class="menu-link tooltip" onclick="SelectTrash()"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/><p class="info-tooltip">Trash</p></li>
     <li class="menu-link tooltip" href="/logout"><img class="side-menu-icon down" src="{{url_for('static', filename='img/side_menu/icon_exit.png')}}"/><p class="info-tooltip">Logout</p></li>
   </ul>
 </td>
