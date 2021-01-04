@@ -39,14 +39,14 @@ function SunFadeout(data) {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("transform", "rotate(" + (-g_root.deg) + ")")
-    // data.values.shader.transition()
-    //     .ease("linear")
-    //     .duration(ORBIT_ANIM_MOVE)
-    //     .style("opacity", 0)
-    // data.values.gloss.transition()
-    //     .ease("linear")
-    //     .duration(ORBIT_ANIM_MOVE)
-    //     .style("opacity", 0)
+        // data.values.shader.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .style("opacity", 0)
+        // data.values.gloss.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .style("opacity", 0)
     data.values.back.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -130,6 +130,7 @@ function GetWarp(data) {
                 CreateSpace(g_project.skip);
                 break;
             case "project":
+                backButtonFlag = false;
                 WrapGetProject(g_project.skip);
                 break;
             case "market":

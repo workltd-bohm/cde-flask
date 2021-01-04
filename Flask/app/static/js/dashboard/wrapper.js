@@ -100,9 +100,7 @@ function SendProject(data) {
     SEARCH_HISTORY = data;
 
     if (!backButtonFlag) {
-        console.log('************1111111**************');
         history.pushState(SESSION, null, '');
-        console.log('************END 1111111**************');
     }
     backButtonFlag = false;
 
@@ -178,9 +176,10 @@ function SelectProject() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                console.log('************22222222**************');
-                history.pushState(SESSION, null, '');
-                console.log('************END 2222222**************');
+                if (!backButtonFlag) {
+                    history.pushState(SESSION, null, '');
+                }
+                backButtonFlag = false;
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -203,13 +202,19 @@ function CreateProject(position = null) {
 
     ClearProject();
     SwitchDash(0);
+    pos = null;
+    if (SESSION != null) {
+        if (SESSION.hasOwnProperty('position')) {
+            pos = SESSION['position'];
+        }
+    }
     // console.log(SESSION['position'])
     $.ajax({
         url: "/get_project",
         type: 'POST',
         data: JSON.stringify({
             project: {
-                position: SESSION["position"] = !null ? SESSION["position"] : null,
+                position: pos,
                 section: "project",
             }
         }),
@@ -250,9 +255,7 @@ function SelectMarket() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                console.log('************333333333**************');
                 history.pushState(SESSION, null, '');
-                console.log('************END 3333333**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -299,9 +302,7 @@ function SelectTrash() {
                 if (data.session) {
                     SESSION = data.session;
                 }
-                console.log('************44444444**************');
                 history.pushState(SESSION, null, '');
-                console.log('************END 4444444**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
