@@ -414,12 +414,13 @@ function openToggleInfoHistory() {
 var allProjectComments=null;
 function filterDirectoryComments(searchCommentboxText)
 {
+    isClearSearchButtonVisible(true);
     divWithAllComments = document.getElementById("activity-tab-div-comments");
     
     if(allProjectComments == null)
-    allProjectComments = divWithAllComments.innerHTML;
+        allProjectComments = divWithAllComments.innerHTML;
     else
-    divWithAllComments.innerHTML = allProjectComments;
+        divWithAllComments.innerHTML = allProjectComments;
     
     
     comments = divWithAllComments.children;
@@ -467,6 +468,14 @@ function filterDirectoryComments(searchCommentboxText)
     }
 }
 
+function isClearSearchButtonVisible(isVisible)
+{
+    if(!isVisible)
+        document.getElementById("resetCommentSearchButton").style.visibility = "hidden"; //hide button
+    else
+        document.getElementById("resetCommentSearchButton").style.visibility = "visible";
+}
+
 function resetCommentSearch(event)
 {
     console.log("reset search");
@@ -475,6 +484,7 @@ function resetCommentSearch(event)
         document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
         document.getElementById("searchcomments").value = "";
     }
+    isClearSearchButtonVisible(false);
 }
 
 function isUsernameSuggestionWanted(searchText)
@@ -550,6 +560,8 @@ function serviceCommentSearchQuery(event)
         }
         else
             autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    
+        filterDirectoryComments(searchCommentboxText);
     }
 }
 
