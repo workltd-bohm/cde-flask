@@ -98,9 +98,14 @@ function SendProject(data) {
         revision: data.revision
     };
     SEARCH_HISTORY = data;
-    console.log('************1111111**************');
-    history.pushState(SESSION, null, '');
-    console.log('************END 1111111**************');
+
+    if (!backButtonFlag) {
+        console.log('************1111111**************');
+        history.pushState(SESSION, null, '');
+        console.log('************END 1111111**************');
+    }
+    backButtonFlag = false;
+
     $.ajax({
         url: "/set_project",
         type: 'POST',
@@ -112,6 +117,7 @@ function SendProject(data) {
         }
     });
 }
+var backButtonFlag = false;
 
 function SendProjectBackButton() {
     $.ajax({
@@ -120,6 +126,7 @@ function SendProjectBackButton() {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
+            backButtonFlag = true;
             CreateProject(history.state);
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -196,13 +203,13 @@ function CreateProject(position = null) {
 
     ClearProject();
     SwitchDash(0);
-    console.log(SESSION['position'])
+    // console.log(SESSION['position'])
     $.ajax({
         url: "/get_project",
         type: 'POST',
         data: JSON.stringify({
             project: {
-                position: SESSION["position"] ? SESSION["position"] : null,
+                position: SESSION["position"] = !null ? SESSION["position"] : null,
                 section: "project",
             }
         }),
@@ -243,6 +250,9 @@ function SelectMarket() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
+                console.log('************333333333**************');
+                history.pushState(SESSION, null, '');
+                console.log('************END 3333333**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -289,7 +299,9 @@ function SelectTrash() {
                 if (data.session) {
                     SESSION = data.session;
                 }
-
+                console.log('************44444444**************');
+                history.pushState(SESSION, null, '');
+                console.log('************END 4444444**************');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
