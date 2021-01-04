@@ -417,7 +417,10 @@ function filterDirectoryComments(searchCommentboxText)
     divWithAllComments = document.getElementById("activity-tab-div-comments");
     
     if(allProjectComments == null)
-    allProjectComments = divWithAllComments.innerHTML;
+    {
+        allProjectComments = divWithAllComments.innerHTML;
+        isClearSearchButtonVisible(true);
+    }
     else
     divWithAllComments.innerHTML = allProjectComments;
     
@@ -467,6 +470,14 @@ function filterDirectoryComments(searchCommentboxText)
     }
 }
 
+function isClearSearchButtonVisible(isVisible)
+{
+    if(!isVisible)
+        document.getElementById("resetCommentSearchButton").style.visibility = "hidden"; //hide button
+    else
+        document.getElementById("resetCommentSearchButton").style.visibility = "visible";
+}
+
 function resetCommentSearch(event)
 {
     console.log("reset search");
@@ -475,6 +486,7 @@ function resetCommentSearch(event)
         document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
         document.getElementById("searchcomments").value = "";
     }
+    isClearSearchButtonVisible(false);
 }
 
 function isUsernameSuggestionWanted(searchText)
