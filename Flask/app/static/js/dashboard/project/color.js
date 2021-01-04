@@ -10,7 +10,7 @@ const colorScale = [
     "#afc556",
     "#448449",
     "#56c5af",
-    "#94c7c9"];
+    "#ffffff"];
 
 function ColorPicker(data) {
     var defaultColor = $(".foregin .material-icons").css("color");
