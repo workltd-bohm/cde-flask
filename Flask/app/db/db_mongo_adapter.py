@@ -420,97 +420,129 @@ class DBMongoAdapter:
         # database tables
         users =         self._db.Users.Roles
         projects =      self._db.Projects
-        trash =         self._db.Trash          # trashed items
-        users_trash =   self._db.Users.Trash    # user trash info
-        files =         self._db.fs.files
-        file_chunks =   self._db.fs.chunks
+        trash =         self._db.Trash              # trashed items
+        users_trash =   self._db.Users.Trash        # user's trash info
+        shared =        self._db.Projects.Shared
 
-        project_query = {'project_name': ic_data['project_name']}
-        project_json = projects.find_one(project_query, {'_id': 0}) # get project from DB
+        if ic_data['project_name'] != 'Shared':
+            project_query = {'project_name': ic_data['project_name']}
+        else:
+            project_query = {'project_id': ic_data['project_id']}
 
-        # check if user has privileges TODO 
+        project_json = projects.find_one(project_query, {'_id': 0})
 
         if project_json:
             # Trashing projects
             if ic_data['parent_id'] == 'root':
+                # Check user rights => if you want jsut owner, you can put != Role.OWNER.value, etc.
+                this_user = users.find_one({'user_id': ic_data['user_id']}, {'_id': 0})
+                if this_user:
+                    for obj in this_user['projects']:
+                        if obj['project_id'] == project_json['project_id']:
+                            if obj['role'] > Role.ADMIN.value:
+                                return msg.USER_NO_RIGHTS                        
+                else:
+                    return msg.USER_NOT_FOUND
+
                 # 'move' project to Trash
                 trash.insert_one(project_json)
                 projects.delete_one(project_query)
+
+                # update user's info (projects & trash)
                 all_users = users.find()
                 if all_users:
-                    # iterate thru users in Users.Roles
                     for user in all_users:
-                        # iterate through their projects
                         for count, user_project in enumerate(user['projects']):
-                            # if its the one deleting
-                            if user_project['project_id'] == project_json['project_id']:
-                                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
-                                # if this user has any trash
+                            # skip irrelevant projects
+                            if user_project['project_id'] != project_json['project_id']:
+                                continue
+                            
+                            # update owners's trash
+                            if user_project['role'] == Role.OWNER.value:
                                 new_trash = {
                                     'type': 'project',
-                                    'project_id': user['projects'][count]['project_id'],
+                                    'project_id': user_project['project_id'],
                                     'project_name': ic_data['project_name']
                                 }
 
+                                my_trash = users_trash.find_one({'user_id': user['user_id']}, {'_id':0})
+
                                 if my_trash:
                                     my_trash['trash'].append(new_trash)
-                                    users_trash.update_one({'user_id': ic_data['user_id']},
-                                                            {'$set': 
-                                                                {'trash': my_trash['trash']}
-                                                            }
-                                                        )
+                                    users_trash.update_one({'user_id': user['user_id']}, 
+                                        {'$set': {'trash': my_trash['trash']}})
                                 else:
                                     trash_tmp = []
                                     trash_tmp.append(new_trash)
-                                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
+                                    users_trash.insert_one({'user_id': user['user_id'], 'trash': trash_tmp})
                                     del trash_tmp
-                                # update user's projects
-                                del user['projects'][count]
-                                users.update_one({'user_id': ic_data['user_id']},
-                                                {'$set': 
-                                                    {'projects': user['projects']}
-                                                }
-                                            )
-                                            
+
                                 delete = msg.PROJECT_SUCCESSFULLY_TRASHED
+
+                            # update user's projects
+                            del user['projects'][count]
+                            users.update_one({'user_id': user['user_id']}, 
+                                {'$set': {'projects': user['projects']}})                                        
                 
             # Trashing ic/sub folders or files
             else:
-                project = Project.json_to_obj(project_json)
                 # find the ic in project ...
-                this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
                 # ... add project_id to it
-                this_ic['project_id'] = project.project_id
                 # put this IC to Trash collection
+
+                # check trash privileges
+                all_shared = shared.find()
+                for shared_ic in all_shared:
+                    if ic_data['user_id'] in shared_ic.keys():
+                        for obj in shared_ic[ic_data['user_id']]:
+                            if obj['ic_id'] == ic_data['ic_id']:
+                                if obj['role'] > Role.ADMIN.value:
+                                    return msg.USER_NO_RIGHTS
+
+                project = Project.json_to_obj(project_json)
+                this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
+                this_ic['project_id'] = project.project_id
                 trash.insert_one(this_ic)
                 
-                # update user's trash
-                new_trash = {
-                        'type': 'ic',
-                        'project_id': this_ic['project_id'],
-                        'ic_id': ic_data['ic_id']
-                    }
-                
-                # if this user has trash already or to make new entry
-                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
-                if my_trash:
-                    my_trash['trash'].append(new_trash)
-                    users_trash.update_one({'user_id': ic_data['user_id']},
-                                            {'$set': 
-                                                {'trash': my_trash['trash']}
-                                            }
-                                        )
-                else:
-                    trash_tmp = []
-                    trash_tmp.append(new_trash)
-                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
-                    del trash_tmp
-
                 # delete ic/update from the project
                 delete = project.trash_ic(ic_data, project.root_ic)
 
                 # update project
                 projects.update_one({'project_id': this_ic['project_id']}, {'$set': project.to_json()})
+
+                roles = self._db.Roles
+                owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
+                
+                print('\n\n\n\n owner id: \n\n\n', owner_id)
+                
+                # update user's shared projects
+                this_user_shared = shared.find()[0]
+                for i, obj in enumerate(this_user_shared[ic_data['user_id']]):
+                    if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                        del this_user_shared[ic_data['user_id']][i]
+
+                shared.update_one({'_id': this_user_shared['_id']}, 
+                    {'$set': {ic_data['user_id'] : this_user_shared[ic_data['user_id']]}})
+
+                # update owner's trash
+                if owner_id:
+                    new_trash = {
+                        'type': 'ic',
+                        'project_id': this_ic['project_id'],
+                        'ic_id': ic_data['ic_id']
+                    }
+                    
+                    my_trash = users_trash.find_one({'user_id': owner_id}, {'_id':0})
+                    if my_trash:
+                        my_trash['trash'].append(new_trash)
+                        users_trash.update_one({'user_id': owner_id}, {'$set': {'trash': my_trash['trash']}})
+                    else:
+                        trash_tmp = []
+                        trash_tmp.append(new_trash)
+                        users_trash.insert_one({'user_id': owner_id, 'trash': trash_tmp})
+                        del trash_tmp                    
+                    
+                    delete = msg.IC_SUCCESSFULLY_TRASHED
         else:
             print("trash_ic", msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND

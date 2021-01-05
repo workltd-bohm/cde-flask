@@ -301,6 +301,7 @@ def get_trash_ic():
                     'html': render_template("popup/trash_ic_popup.html",
                                             parent_path=request_data["parent_path"],
                                             parent_id=request_data["parent_id"],
+                                            project_id=request_data["project_id"] if "project_id" in request_data else None,
                                             ic_id=request_data["ic_id"],
                                             project_name=project_name,
                                             delete_name=request_data["delete_name"],

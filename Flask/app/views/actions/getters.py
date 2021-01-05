@@ -106,15 +106,22 @@ def get_project():
                 result = project.to_json()
             else:
                 result = db.get_project(db_adapter, project_name, user)
+
             if result:
                 project = Project.json_to_obj(result)
                 # p = Project(project.project_id, project.project_name, None)
                 project = project.filter_by_access(session['user'], project.root_ic)
                 # project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
+                project = project.to_json()
+                
+                if project_name == 'Shared':
+                    for i, ic in enumerate(project['root_ic']['sub_folders']):
+                        project['root_ic']['sub_folders'][i]['project_id'] = ic_shares[i]['project_id']
+
                 resp.status_code = msg.DEFAULT_OK['code']
                 # print(project.to_json())
-                resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
+                resp.data = json.dumps({"json": project, "project" : position, "session": session.get("project")})
                 return resp
             else:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))

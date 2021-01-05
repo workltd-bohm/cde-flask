@@ -25,6 +25,7 @@ IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}
 
 TRASH_SUCCESSFULLY_EMPTIED = {"message": "Trash successfully emptied", "code": 200}
 
+
 PROJECT_NOT_FOUND = {"message": "Project with the specific ID not found", "code": 404}
 PROJECT_ALREADY_EXISTS = {"message": "Project with the given name already exists", "code": 409}
 PROJECT_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
@@ -71,4 +72,4 @@ PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
 FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}
 
-USER_NO_RIGHTS = {"message": "User does not have rights to share!", "code": 404}
+USER_NO_RIGHTS = {"message": "Permission denied. User has no rights.", "code": 401}

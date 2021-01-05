@@ -2,6 +2,7 @@
 <div class="scroll">
   {% if not multi %}
   <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+  <input type="hidden" name="project_id" value="{{ project_id if project_id is defined }}" required />
   <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
   <input type="hidden" name="project_name" value="{{ project_name }}" required />
   <input type="hidden" name="parent_path" value="{{ parent_path }}" required />

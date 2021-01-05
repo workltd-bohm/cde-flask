@@ -288,6 +288,7 @@ function TrashFile(form, json) {
         parent_path: o[i].parent,
         delete_name: o[i].name,
         is_directory: o[i].is_directory,
+        project_id: o[i].project_id
     });
 
     if (o.length > 0) {
@@ -313,6 +314,7 @@ function TrashFile(form, json) {
             delete_name: json.name,
             parent_id: json.parent_id,
             parent_path: json.parent,
+            project_id: json.project_id
         }),
         timeout: 5000,
         success: function(data) {
