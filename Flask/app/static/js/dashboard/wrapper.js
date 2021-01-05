@@ -77,7 +77,7 @@ function CheckSession() {
 
 function SendProject(data) {
     // console.log(data);
-    // console.log(SESSION);
+    // console.log(SESSION);    
     SESSION["position"] = {
         project_name: data.path.split('/')[0],
         parent_id: data.parent_id,
@@ -98,9 +98,12 @@ function SendProject(data) {
         revision: data.revision
     };
     SEARCH_HISTORY = data;
-    console.log('************1111111**************');
-    // history.pushState(SESSION, null, '');
-    console.log('************END 1111111**************');
+
+    if (!backButtonFlag) {
+        history.pushState(SESSION, null, '');
+    }
+    backButtonFlag = false;
+
     $.ajax({
         url: "/set_project",
         type: 'POST',
@@ -112,6 +115,7 @@ function SendProject(data) {
         }
     });
 }
+var backButtonFlag = false;
 
 function SendProjectBackButton() {
     $.ajax({
@@ -120,6 +124,7 @@ function SendProjectBackButton() {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
+            backButtonFlag = true;
             CreateProject(history.state);
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -171,9 +176,10 @@ function SelectProject() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                console.log('************22222222**************');
-                // history.pushState(SESSION, null, '');
-                console.log('************END 2222222**************');
+                if (!backButtonFlag) {
+                    history.pushState(SESSION, null, '');
+                }
+                backButtonFlag = false;
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -196,13 +202,19 @@ function CreateProject(position = null) {
 
     ClearProject();
     SwitchDash(0);
-    console.log(SESSION['position'])
+    pos = null;
+    if (SESSION != null) {
+        if (SESSION.hasOwnProperty('position')) {
+            pos = SESSION['position'];
+        }
+    }
+    // console.log(SESSION['position'])
     $.ajax({
         url: "/get_project",
         type: 'POST',
         data: JSON.stringify({
             project: {
-                position: SESSION["position"] ? SESSION["position"] : null,
+                position: pos,
                 section: "project",
             }
         }),
@@ -243,6 +255,7 @@ function SelectMarket() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
+                history.pushState(SESSION, null, '');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -289,7 +302,7 @@ function SelectTrash() {
                 if (data.session) {
                     SESSION = data.session;
                 }
-
+                history.pushState(SESSION, null, '');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },

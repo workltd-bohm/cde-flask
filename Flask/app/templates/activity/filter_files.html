@@ -58,7 +58,7 @@
                     {% for detail in details %}
                       <div class="details_field">
                           <div class="user-details-container">
-                            <img class="img-details" src="{{ url_for('static', filename='img/add-user.png') }}" />
+                            <img class="img-details" src="/get_profile_image/{{ profile_picture }}" />
                             <div class="user-details-event-date">
                                 <p class="details_event_user">{{ detail['user']['username'] }}</p>
                                 <p class="details_event_name">{{ detail['event_name'] }}</p>
@@ -167,7 +167,7 @@
                               {% if 'DEVELOPER' is  in a['role'] %}
                               <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
                               {% endif %}
-                            </div><!--{{ url_for('static', filename='img/user.png') }}-->
+                            </div>
                             <div class="access-column-two">
                               {% if 'WATCHER' is  in a['role'] %}
                               <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
@@ -196,7 +196,7 @@
                               <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
                               <p class="details_event date-columne" >Accessebility date</p>
                               {% endif %}
-                              {% if 'OWNER' not in a['role'] %}
+                              {% if 'OWNER' not in a['role'] and user_id != a['user']['user_id'] %}
                               <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
                               {% endif %}
                             </div>

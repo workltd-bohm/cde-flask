@@ -125,11 +125,20 @@ def get_filter_activity():
                 access = [x.to_json() for x in result.access]
                 for a in access:
                     a['role'] = Role(a['role']).name
+                    m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+                    a['user']['picture'] = user['picture']
+                    a['user']['username'] = user['username']
+
+                for c in comments:
+                    m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
+                    c['user']['picture'] = user['picture']
+                    c['user']['username'] = user['username']
 
                 response = {
                     'html': render_template("activity/filter_folders.html",
                                             project_name=session.get("project")["name"],
                                             profile_picture=session['user']['picture'],
+                                            user_id=session['user']['id'],
                                             search=filter_file,
                                             details=details,
                                             tags=tags,

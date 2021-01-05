@@ -72,7 +72,7 @@ def edit_post():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if request.get_data():
         request_json['user_owner'] = session['user']
-        request_json['product'] = {"quantity": request_json['quantity'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
+        request_json['product'] = {"quantity": request_json['product'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
         request_json['date_edited'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'],
                                      'image': request_json['image']}

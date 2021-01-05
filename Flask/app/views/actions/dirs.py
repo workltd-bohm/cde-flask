@@ -151,7 +151,7 @@ def upload_file_process(request_json, file=None):
     us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-    access = Access(us, request_json['parent_id'], '', Role.ADMIN.value)
+    access = Access(us, request_json['parent_id'], '', Role.OWNER.value)
     details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'])
     file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['new_name'].split('.')[:-1]),

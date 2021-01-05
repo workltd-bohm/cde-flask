@@ -111,6 +111,7 @@ function UpdatePost(obj, data) {
     args['image'] = images;
     args['doc'] = documents;
     args['3d-view'] = $("#3d-view-link")[0].value;
+    args['post_id'] = $("#post_id").val();
     console.log(args)
 
     $.ajax({
