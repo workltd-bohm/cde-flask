@@ -1447,7 +1447,9 @@ class DBMongoAdapter:
         result = col.find()
         tags = list(result)
 
-        search = tags[0]
+        search = None
+        if len(tags) > 0:
+            search = tags[0]
         for key in tags[0]:
             if isinstance(search[key], list): # check if it's not _id or id
                 for obj in search[key]: # iterate through objects in this array

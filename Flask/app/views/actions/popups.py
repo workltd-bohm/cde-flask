@@ -27,6 +27,14 @@ def get_open_file():
                 access = [x.to_json() for x in result.access]
                 for a in access:
                     a['role'] = Role(a['role']).name
+                    m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+                    a['user']['picture'] = user['picture']
+                    a['user']['username'] = user['username']
+
+                for c in comments:
+                    m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
+                    c['user']['picture'] = user['picture']
+                    c['user']['username'] = user['username']
 
                 response = {
                     'html': render_template("popup/open_file.html",
@@ -34,6 +42,7 @@ def get_open_file():
                                             ),
                     'activity': render_template("activity/filter_files.html",
                                                 profile_picture=session['user']['picture'],
+                                                user_id=session['user']['id'],
                                                 details=details,
                                                 tags=tags,
                                                 file_name=file_name,

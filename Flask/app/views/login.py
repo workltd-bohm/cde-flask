@@ -30,6 +30,8 @@ def login_data():
             json_user.update({'project_code': 'SV'}) # temp, until drawn from project
             if json_user['picture'] == '':
                 json_user.update({'picture': set_random_profile_picture(json_user['username'])})
+                message = db.edit_user(db_adapter, json_user)
+                logger.log(LOG_LEVEL, 'DB response: {}'.format(message))
             session['user'] = json_user
             session['project'] = {}
             session.modified = True
