@@ -628,6 +628,9 @@ function autocomplete(inp, arr) {
                 newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
                 inp.value = newText;
                 closeAllLists();
+
+                searchCommentboxText = $("#searchcomments").val();
+                filterDirectoryComments(searchCommentboxText);
             });
             a.appendChild(b);
           }
