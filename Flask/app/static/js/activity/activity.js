@@ -470,10 +470,10 @@ function filterDirectoryComments(searchCommentboxText)
 
 function isClearSearchButtonVisible(isVisible)
 {
-    if(!isVisible)
-        document.getElementById("resetCommentSearchButton").style.visibility = "hidden"; //hide button
-    else
+    if(isVisible)
         document.getElementById("resetCommentSearchButton").style.visibility = "visible";
+    else
+        document.getElementById("resetCommentSearchButton").style.visibility = "hidden";
 }
 
 function resetCommentSearch(event)
@@ -526,7 +526,7 @@ function serviceCommentSearchQuery(event)
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let commentsearchAutocompleteDivId = "searchcomments" + "autocomplete-list";
+    let commentsearchAutocompleteDivId = searchCommentBoxId + "autocomplete-list";
     if (keyPressedByUser == 13) //enter
     {
         if(document.getElementById(commentsearchAutocompleteDivId)== null || 
