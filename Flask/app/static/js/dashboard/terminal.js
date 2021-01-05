@@ -53,16 +53,16 @@ function terminalListen(el) {
 
     if (terminal[0] == 'new_folder') {
         if (terminal.length > 1) {
-            terminal.shift();
+            // terminal.shift();
             args = {
-                parent_id: SESSION['position'].parent_id,
-                ic_id: SESSION['position'].ic_id,
-                project_name: SESSION['position'].project_name,
-                parent_path: SESSION['position'].path,
-                new_name: terminal.join(' ')
-            }
-            $('#terminal-input').val('');
-            terminal = [];
+                    parent_id: SESSION['position'].parent_id,
+                    ic_id: SESSION['position'].ic_id,
+                    project_name: SESSION['position'].project_name,
+                    parent_path: SESSION['position'].path,
+                    new_name: terminal.slice(1).join(' ')
+                }
+                // $('#terminal-input').val('');
+                // terminal = [];
             FormSubmit('create_dir', args, true, CreateProject);
         } else {
             PopupOpen(NewFolder, SESSION['position']);
