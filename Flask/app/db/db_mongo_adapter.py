@@ -517,12 +517,15 @@ class DBMongoAdapter:
                 
                 # update user's shared projects
                 this_user_shared = shared.find()[0]
-                for i, obj in enumerate(this_user_shared[ic_data['user_id']]):
-                    if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
-                        del this_user_shared[ic_data['user_id']][i]
+                for key in this_user_shared.keys():
+                    if key == '_id':
+                        continue
 
-                shared.update_one({'_id': this_user_shared['_id']}, 
-                    {'$set': {ic_data['user_id'] : this_user_shared[ic_data['user_id']]}})
+                    for i, obj in enumerate(this_user_shared[key]):
+                        if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                            del this_user_shared[key][i]
+
+                shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
 
                 # update owner's trash
                 if owner_id:
