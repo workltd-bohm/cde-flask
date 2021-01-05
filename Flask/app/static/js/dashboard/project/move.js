@@ -16,7 +16,7 @@ function MoveCreate(obj, data) {
 
     g_project.move = data.move.object;
     g_OverlayRadius = g_SunRadius;
-    g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
+    g_OverlayItemSize = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
     data.move.object.append("circle")
         .attr("class","move pattern " + (MULTI.to_copy? "copy": "move"))

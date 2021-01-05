@@ -171,11 +171,11 @@ g.path.draw > g.text > text {
 }
 .foregin .material-icons.planet{
     color: #ffffff;
-    background-color: black;
+    /* background-color: black; */
 }
 .foregin .material-icons.planet.select{
     color: #ffffff;
-    background-color: #00000000;
+    /* background-color: #00000000; */
 }
 
 .foregin .material-icons.history{

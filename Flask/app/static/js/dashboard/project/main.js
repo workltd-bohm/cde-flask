@@ -268,18 +268,18 @@ function AddChildren(obj, data, parent, position = 0) {
         });
 
     data.values.checked = data.values.this.append("foreignObject")
-        .attr("x", -g_OverlayItem / 2)
-        .attr("y", -g_OverlayItem / 2)
-        .attr("width", g_OverlayItem)
-        .attr("height", g_OverlayItem)
-        .attr("transform", "translate(0, " + (-g_PlanetRadius) + ")")
+        .attr("x", -g_OverlayItemSize / 2)
+        .attr("y", -g_OverlayItemSize / 2)
+        .attr("width", g_OverlayItemSize)
+        .attr("height", g_OverlayItemSize)
+        .attr("transform", "translate(0, " + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
         .style("opacity", 0)
 
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
         .append("i")
         .attr("class", "planet material-icons select")
-        .style("font-size", g_OverlayItem + "px")
+        .style("font-size", g_OverlayItemSize + "px")
         .html("check_circle")
 
 }

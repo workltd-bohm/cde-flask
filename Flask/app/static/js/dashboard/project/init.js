@@ -43,7 +43,10 @@ const HISTORY_ORBIT_COEF = 1.1;
 const HISTORY_TEXT_PADDING = 3;
 
 const OVERLAY_SUN_RATIO = 5;
-const OVERLAY_MARG = 2;
+const OVERLAY_SUN_MARGIN = 2;
+const OVERLAY_PLANET_RATIO = 5;
+const OVERLAY_PLANET_MARGIN = 10;
+
 const OVERLAY_SELECT_RATIO = 1.1;
 const OVARLAY_DESELECT_RATIO = 0.8;
 const OVERLAY_SELECT_PLANET_RATIO = 1;
@@ -105,7 +108,7 @@ var g_PlanetRadius_old = 0;
 var g_PathRadius = 0;
 var g_HistRadius = 0;
 var g_OverlayRadius = 0;
-var g_OverlayItem = 0;
+var g_OverlayItemSize = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},
