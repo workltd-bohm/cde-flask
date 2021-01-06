@@ -66,7 +66,7 @@ function AddSun(obj, data) {
     data.values.rotation = 1;
     data.values.sun = true;
 
-    g_root.universe.data.overlay_type == "ic" ? WrapOpenFile(data, false) : 1;
+    data.overlay_type == "ic" ? WrapOpenFile(data, false) : 1;
 
     data.id = data.ic_id; // .replace(/[\/.]/g, "-");
     //data.par_id = parent.ic_id.replace(/\//g,"-");

@@ -7,6 +7,7 @@ var currentActiveArr = '';
 var currField = '';
 
 function onFocus() {
+    $("#terminal-span").show();
     terInput = $('#terminal-input').val();
     if (terInput.split(' ').length > 1) {
         if (currentActiveArr == 'suggests' || currentActiveArr == '') getTags(document.getElementById("terminal-input"));
@@ -16,7 +17,11 @@ function onFocus() {
 }
 
 function onFocusOut() {
+    console.log('kokokokok');
     $("#terminal-input").val("");
+    if ($('#terminal-span').data('clicked')) {
+        deleteTerminalInput();
+    }
 }
 
 $(window).keydown(function(e) {
@@ -663,4 +668,8 @@ function arraysEqual(a, b) {
         if (a[i] !== b[i]) return false;
     }
     return true;
+}
+
+function deleteTerminalInput() {
+    location.reload();
 }
