@@ -514,33 +514,47 @@ function autocompleteUsername(searchText, idOfInputHtml)
     } 
 }
 
+var focusIsOnSearch = false;
+function searchIfSearchIsActive()
+{
+    if(focusIsOnSearch){
+        searchCommentboxText = $("#searchcomments").val();
+        filterDirectoryComments(searchCommentboxText);
+    }
+}
+
 function serviceCommentSearchQuery(event)
 {
     // monitor text in the search-comments box after every key-press event
     // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
     // if user presses enter, filter directory comments using text in the searchbox, and show results
-    let keyPressedByUser = window.event.keyCode;
-    let searchCommentBoxId = "searchcomments";
-    let searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
+    focusIsOnSearch = true; //global
+    keyPressedByUser = window.event.keyCode;
+    searchCommentBoxId = "searchcomments";
+    searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
 
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let commentsearchAutocompleteDivId = searchCommentBoxId + "autocomplete-list";
+    commentsearchAutocompleteDivId = searchCommentBoxId + "autocomplete-list";
+    autocompleteDivExists = (document.getElementById(commentsearchAutocompleteDivId) != null);
+    autocompleteDivHasOptions = autocompleteDivExists ? (document.getElementById(commentsearchAutocompleteDivId).innerHTML != "") : false;
+    
     if (keyPressedByUser == 13) //enter
     {
-        if(document.getElementById(commentsearchAutocompleteDivId)== null || 
-        document.getElementById(commentsearchAutocompleteDivId).getElementsByTagName("div").length == 0)
+        if(!autocompleteDivExists || !autocompleteDivHasOptions)
         {
             filterDirectoryComments(searchCommentboxText);
         }
     }
     else if(keyPressedByUser == 27) //esc
     {
-        if(document.getElementById(commentsearchAutocompleteDivId) != null)
+        if(autocompleteDivExists)
         {
-            if(document.getElementById(commentsearchAutocompleteDivId).innerHTML != "")
-                document.getElementById(commentsearchAutocompleteDivId).innerHTML = "";
+            if(autocompleteDivHasOptions){
+                autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
+                autocompleteDiv.innerHTML = "";
+            }
             else
                 resetCommentSearch();
         }
@@ -567,6 +581,7 @@ function serviceCommentSearchQuery(event)
 
 function commentOnProject(event)
 {
+    focusIsOnSearch = false; //global
     let keyPressedByUser = window.event.keyCode;
     if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
@@ -629,8 +644,7 @@ function autocomplete(inp, arr) {
                 inp.value = newText;
                 closeAllLists();
 
-                searchCommentboxText = $("#searchcomments").val();
-                filterDirectoryComments(searchCommentboxText);
+                searchIfSearchIsActive();
             });
             a.appendChild(b);
           }
