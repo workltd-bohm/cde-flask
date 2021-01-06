@@ -48,54 +48,54 @@ function terminalListen(el) {
 
     $('#terminal-input').val('');
 
-    //    console.log(terminal);
-    console.log(SESSION);
+    // console.log(terminal);
+    // console.log(SESSION);
 
-    if (terminal[0] == 'new_folder') {
-        if (terminal.length > 1) {
-            // terminal.shift();
-            args = {
+    switch (terminal[0]) {
+        case 'new_folder':
+            if (terminal.length > 1) {
+                args = {
                     parent_id: SESSION['position'].parent_id,
                     ic_id: SESSION['position'].ic_id,
                     project_name: SESSION['position'].project_name,
                     parent_path: SESSION['position'].path,
                     new_name: terminal.slice(1).join(' ')
                 }
-                // $('#terminal-input').val('');
-                // terminal = [];
-            FormSubmit('create_dir', args, true, CreateProject);
-        } else {
-            PopupOpen(NewFolder, SESSION['position']);
-        }
+                FormSubmit('create_dir', args, true, CreateProject);
+            } else {
+                PopupOpen(NewFolder, SESSION['position']);
+            }
+            break;
+        case 'create_file':
+            OpenFileDialog(SESSION['position']);
+            break;
+        case 'open':
+            if (SESSION['position'].is_directory) {
+                OpenFilterActivity(SESSION['position'], open);
+            } else {
+                PreviewOpen(OpenFile, SESSION['position'], null, open);
+            }
+            break;
+        case 'rename':
+            PopupOpen(RenameFile, SESSION['position']);
+            break;
+        case 'help':
+            PopupOpen(Help);
+            break;
+        case 'tag':
+            addTag(terminal);
+            break;
+        default:
+            if (!keyWordsArr.includes(terminal[0]) && !tagsArr.includes(terminal[0])) {
+                console.log(terminal);
+                $('#terminal-input').val(terminal.join(' '));
+                searchByName(terminal);
+            }
+            break;
 
     }
-    if (terminal[0] == 'create_file') {
-        OpenFileDialog(SESSION['position'])
-    }
-    if (terminal[0] == 'open') {
-        if (SESSION['position'].is_directory) {
-            OpenFilterActivity(SESSION['position'], open);
-        } else {
-            PreviewOpen(OpenFile, SESSION['position'], null, open);
-        }
-    }
-    if (terminal[0] == 'rename') {
-        PopupOpen(RenameFile, SESSION['position']);
-    }
-    if (terminal[0] == 'help') {
-        PopupOpen(Help);
-    }
-    if (terminal[0] == 'tag') {
-        addTag(terminal);
-    }
-    if (!keyWordsArr.includes(terminal[0]) && !tagsArr.includes(terminal[0])) {
-        console.log(terminal);
-        $('#terminal-input').val(terminal.join(' '));
-        searchByName(terminal);
-    }
-
-
 }
+
 
 function RemoveLastDirectoryPartOf(the_url) {
     var the_arr = the_url.split('/');

@@ -482,6 +482,12 @@ def add_access():
         if db.connect(db_adapter):
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+            if request_data['user_name'] == session['user']['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message']
+                return resp
             if request_data['parent_id'] == 'root':
                 result = db.share_project(db_adapter, request_data, session['user'])
                 # result = db.add_access(db_adapter, request_data, session['user'])
