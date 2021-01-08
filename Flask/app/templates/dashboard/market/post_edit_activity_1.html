@@ -30,3 +30,9 @@
 {% block access %}
     {% include 'dashboard/market/partials/access_tab.html' %}
 {% endblock %}
+
+{% block editPostButton %}
+<div class="edit-box hover right button" onclick="UpdatePost(this, '{{ post_id }}');" style="display: flex ; justify-content: center; align-items: center;">
+    <h4>Edit POST</h4>
+</div>
+{% endblock %}
