@@ -1,0 +1,13 @@
+<form class="complex_tags" id="complex_tags" onchange="updateComplexTags();">
+    {% for key, value in complex_tags.items() %}
+    <div class="form__group field">
+        <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+            <option></option>
+            {% for val in value.elements %}
+            <option {% for tag in tags %}{{ 'selected' if tag.tag == val else '' }}{% endfor %} value="{{ val }}">{{ val }}</option>
+            {% endfor %}
+        </select>
+        <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+    </div>
+    {% endfor %}
+</form>

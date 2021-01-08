@@ -176,10 +176,11 @@ def delete_comment(db_adapter, request_data):
 def add_tag(db_adapter, request_data, tags):
     return db_adapter.add_tag(request_data, tags)
 
-
 def remove_tag(db_adapter, request_data, tag):
     return db_adapter.remove_tag(request_data, tag)
 
+def update_iso_tags(db_adapter, request_data):
+    return db_adapter.update_iso_tags(request_data)
 
 def get_all_tags(db_adapter):
     return db_adapter.get_all_tags()

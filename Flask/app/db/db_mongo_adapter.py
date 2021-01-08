@@ -9,6 +9,7 @@ from app.model.marketplace.bid import Bid
 from app.model.role import Role
 from app.model.tag import Tags
 import app.model.messages as msg
+from app.model.helper import get_iso_tags
 import json
 from datetime import datetime
 
@@ -1463,6 +1464,72 @@ class DBMongoAdapter:
 
         else:
             message = msg.POST_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def update_iso_tags(self, data):
+        print('\nupdate_iso_tags():')
+        # tables
+        projects = self._db.Projects
+        tags = self._db.Tags
+        
+        # queries
+        complex_query = {'id': 'complex_tags'}
+        project_query = {'project_name': data['project_name']}
+
+        project_json = projects.find_one(project_query, {'_id': 0})
+        if not project_json: return msg.PROJECT_NOT_FOUND # failsafe no project
+
+        complex_json = tags.find_one(complex_query, {'_id': 0})
+
+        # create complex table
+        if not complex_json:
+            tags.insert_one(complex_query)
+            for key, value in get_iso_tags().items():
+                for val in value['elements']:
+                    tags.update_one(query, {'$push': {key: {val: []}}})
+            complex_json = tags.find_one(complex_query, {'_id': 0})
+
+        # this ic obj
+        obj = {
+            'project_name': data['project_name'],
+            'ic_id':        data['ic_id'],
+            'parent_id':    data['parent_id']
+        }
+
+        # find ic 
+        project = Project.json_to_obj(project_json)
+        old_ic = project.find_ic_by_id(data, data['ic_id'], project.root_ic)
+        ic = old_ic
+        
+        # delete
+        for key in complex_json.keys():
+            if key == 'id' or key == '_id': continue
+            for i, val in enumerate(complex_json[key]):
+                for jkey in val.keys():
+                    if obj in complex_json[key][i][jkey]:
+                        complex_json[key][i][jkey].remove(obj)
+                    for tag in ic.tags:
+                        if jkey == tag.tag:
+                            ic.tags.remove(tag)
+
+        # write
+        for key in complex_json.keys():
+            for ikey in data['tags'].keys():
+                if key == ikey:
+                    for i, val in enumerate(complex_json[key]):
+                        for jkey in val.keys():
+                            if jkey == data['tags'][key]:
+                                if not obj in complex_json[key][i][jkey]:
+                                    complex_json[key][i][jkey].append(obj)
+                                    ic.tags.append(Tags(jkey, 'gray'))
+
+        project.update_ic(ic, old_ic)
+        tags.update_one(complex_query, {"$set": complex_json})
+        projects.update_one(project_query, {"$set": project.to_json()})
+
+        message = msg.TAG_SUCCESSFULLY_ADDED
+
         self._close_connection()
         return message
 

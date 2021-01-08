@@ -472,6 +472,29 @@ def remove_tag():
 
     return redirect('/')
 
+@app.route('/update_iso_tags', methods=['POST'])
+def update_iso_tags():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
+        if db.connect(db_adapter):
+            result = db.update_iso_tags(db_adapter, request_data)
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    return redirect('/')
 
 @app.route('/add_access', methods=['POST'])
 def add_access():
