@@ -23,3 +23,9 @@
 {% block access %}
     {% include 'dashboard/market/partials/access_tab.html' %}
 {% endblock %}
+
+{% block createPostButton %}
+<div class="edit-box hover right button" onclick="AddPost();" style="display: flex ; justify-content: center; align-items: center;">
+    <h4>CREATE POST</h4>
+</div>
+{% endblock %}
