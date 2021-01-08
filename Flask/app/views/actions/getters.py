@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import base64
 from datetime import datetime
 
 from app import *
@@ -186,6 +187,8 @@ def get_root_project():
         else:
             request_data = {'project': {'name': None, 'position': None}}
 
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None
         dirs.set_project_data(request_data)
@@ -256,6 +259,7 @@ def get_trash():
 
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None  # reset position
         dirs.set_project_data(request_data)
@@ -331,6 +335,7 @@ def get_user_profile():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         dirs.set_project_data(request_data)
         user = session.get('user')
         # print(request_data)
@@ -378,6 +383,7 @@ def get_root_market():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         request_data["project"]["market"] = None
         dirs.set_project_data(request_data)
         user = session.get('user')
@@ -450,6 +456,7 @@ def get_viewer():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         response = {
             'html': render_template("dashboard/viewer/activity.html",
                                     # TODO
@@ -521,6 +528,65 @@ def get_all_users():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
+
+
+@app.route('/get_encoded_data', methods=['POST', 'GET'])
+def get_encoded_data():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = request.get_data()
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    if main.IsLogin():
+        base64_bytes = base64.b64encode(request_data)
+        return base64_bytes
+    else:
+        return redirect('/login')
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
+@app.route('/get_shared_ic/<path:ic_data>', methods=['POST', 'GET'])
+def get_shared_ic(ic_data):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = base64.b64decode(ic_data).decode('utf-8')
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            request_json = json.loads(request_data)
+
+            project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
+
+            if project_json:
+                project = Project.json_to_obj(project_json)
+
+                ic = project.find_ic_by_id(request_json['project']['position'],
+                                           request_json['project']['position']['ic_id'],
+                                           project.root_ic)
+
+                success = False
+                for access in ic.access:
+                    if session['user']['id'] == access.user['user_id']:
+                        success = True
+                        break
+
+                if success:
+                    dirs.set_project_data(request_json)
+                    return redirect('/')
+                else:
+                    resp = Response()
+                    resp.status_code = msg.NO_ACCESS['code']
+                    resp.data = str(msg.NO_ACCESS['message'])
+                    return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+    return redirect('/login')
 
 
 def get_input_file_fixed():

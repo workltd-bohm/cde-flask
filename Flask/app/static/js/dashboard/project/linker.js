@@ -99,15 +99,33 @@ function WrapShare(data) {
     var tmp = data.values.data;
     tmp.project_name = SESSION["name"];
 
-    var dummy = document.createElement('input'),
-        text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
+    // var dummy = document.createElement('input'),
+    //     text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
 
-    document.body.appendChild(dummy);
-    dummy.value = text;
-    dummy.select();
-    document.execCommand('copy');
-    document.body.removeChild(dummy);
-    MakeSnackbar("Copied to clipboard");
+    $.ajax({
+        url: "/get_encoded_data",
+        type: 'POST',
+        data: JSON.stringify({ project: SESSION }),
+        timeout: 5000,
+        success: function(data) {
+            var dummy = document.createElement('input'),
+                text = window.location.href + 'get_shared_ic/' + data;
+
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            MakeSnackbar("Copied to clipboard");
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+        }
+    });
+
+
 
 }
 

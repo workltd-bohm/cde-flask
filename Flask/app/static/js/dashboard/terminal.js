@@ -17,11 +17,8 @@ function onFocus() {
 }
 
 function onFocusOut() {
-    console.log('kokokokok');
     $("#terminal-input").val("");
-    if ($('#terminal-span').data('clicked')) {
-        deleteTerminalInput();
-    }
+
 }
 
 $(window).keydown(function(e) {
