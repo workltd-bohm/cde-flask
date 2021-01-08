@@ -1468,7 +1468,7 @@ class DBMongoAdapter:
         return message
 
     def update_iso_tags(self, data):
-        print('\nupdate_iso_tags():')
+        print('\nupdate_iso_tags():\n')
         # tables
         projects = self._db.Projects
         tags = self._db.Tags
@@ -1487,7 +1487,7 @@ class DBMongoAdapter:
             tags.insert_one(complex_query)
             for key, value in get_iso_tags().items():
                 for val in value['elements']:
-                    tags.update_one(query, {'$push': {key: {val: []}}})
+                    tags.update_one(complex_query, {'$push': {key: {val: []}}})
             complex_json = tags.find_one(complex_query, {'_id': 0})
 
         # this ic obj
@@ -1524,11 +1524,12 @@ class DBMongoAdapter:
                                     complex_json[key][i][jkey].append(obj)
                                     ic.tags.append(Tags(jkey, 'gray'))
 
+        # update
         project.update_ic(ic, old_ic)
         tags.update_one(complex_query, {"$set": complex_json})
         projects.update_one(project_query, {"$set": project.to_json()})
 
-        message = msg.TAG_SUCCESSFULLY_ADDED
+        message = msg.TAG_SUCCESSFULLY_UPDATED
 
         self._close_connection()
         return message

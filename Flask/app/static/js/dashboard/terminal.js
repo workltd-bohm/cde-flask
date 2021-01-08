@@ -472,6 +472,7 @@ function updateComplexTags(element){
         success: function(data) {
             MakeSnackbar(data);
             LoadStop();
+            // TODO update current tags (append complex tags to normal tags)
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

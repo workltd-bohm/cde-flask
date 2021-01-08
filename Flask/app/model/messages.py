@@ -14,6 +14,7 @@ COMMENT_SUCCESSFULLY_DELETED = {"message": "Deleted successfully", "code": 200}
 
 TAG_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
 TAG_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
+TAG_SUCCESSFULLY_UPDATED = {"message": "Tags successfully updated", "code": 200}
 TAG_ALREADY_EXISTS = {"message": "Tag already exists", "code": 400}
 
 ACCESS_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
