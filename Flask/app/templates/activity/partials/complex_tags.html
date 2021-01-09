@@ -4,7 +4,7 @@
         <select class="form__field" name="{{ key }}" id='{{ key }}' required >
             <option></option>
             {% for val in value.elements %}
-            <option {% for tag in tags %}{{ 'selected' if tag.tag == val else '' }}{% endfor %} 
+            <option {% for tag in tags %}{{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}{% endfor %} 
                 value="{{ val }}">{{ val }}</option>
             {% endfor %}
         </select>
