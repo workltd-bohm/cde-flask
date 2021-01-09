@@ -2,41 +2,45 @@
 
 <div class="project-tab">
   <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
-    <p>Info</p>
+  <p>Info</p>
   </div>
   <div class="project-box" id="filter-comments-tab" onclick="FilterSwap('comments')">
-    <p>Comments</p>
+  <p>Comments</p>
   </div>
   <div class="project-box" id="filter-post-tab" onclick="FilterSwap('post')">
-    <p>Post</p>
+  <p>Post</p>
   </div>
   <div class="project-box" id="filter-access-tab" onclick="FilterSwap('access')">
-    <p>Access</p>
-  </div>
+  <p>Access</p>
+</div>
 </div>
 <div class="activity-tab-div">
     <div class="scroll">
         <div class="project-view">
           <div id="filter-details" style="display: none;">
-              <form id="filter-form-details">
-                <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
-                <div class="activity-tab-container" id="tags">
-                    <div class="activity-tab-container-inside" id="activity-tag-container">
-                        <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
-                        <br>
-                        {% for tag in tags %}
-                          <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
-                              <div class="tag" style="background-color: {{ tag['color'] }}">
-                                  <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                                  {{ tag['tag'] }}
-                                  </i>
-                              </div>
-                              <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
-                          </div>
-                        {% endfor %}
-                        <br>
-                    </div>
-                  </div>
+            <form id="filter-form-details">
+              <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+              <div class="activity-tab-container" id="tags">
+                  <div class="activity-tab-container-inside" id="activity-tag-container">
+                      <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
+                      <br>
+                      {% for tag in tags %}
+                        <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
+                            <div class="tag" style="background-color: {{ tag['color'] }}">
+                                <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                                {{ tag['tag'] if ',' not in tag['tag'] else tag['tag'].replace("_", ".") }}
+                                </i>
+                            </div>
+                            <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
+                        </div>
+                      {% endfor %}
+                      <br>
+                </div>
+            </form>
+
+            {% include 'activity/partials/complex_tags.html' %}
+
+          </div>
 
                 <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoIC()">details</h6>
                 <div class="activity-tab-container" id="ic">
@@ -70,7 +74,6 @@
                     {% endfor %}
                     <br>
                 </div>
-              </form>
           </div>
           <div id="filter-comments" style="display: none;">
               <form id="filter-form-comments">
