@@ -581,8 +581,8 @@ def zipdir(path, ziph):
 
 
 def set_project_data(data, save=False):
-    print(data)
-    print(session.get("project"))
+    # print(data)
+    # print(session.get("project"))
     if "project" in data:
         if data["project"]:
             session.get("project").update(data["project"])

@@ -1,25 +1,33 @@
-import app.controller.send_email as email
 import random
 import os
-from app import *
 import base64
 
+from app.views.actions import dirs
+from app import *
+import app.controller.send_email as email
 
-@app.route('/login')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template("login/login.html")
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    login_ic_data = ''
+    if request.args.get('data'):
+        login_ic_data = request.args.get('data')
+    return render_template("login/login.html", login_ic_data=login_ic_data)
 
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return render_template("login/login.html")
+    return redirect(url_for('login'))
 
 
 @app.route('/login_data', methods=['POST'])
 def login_data():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     json_data = json.loads(request.get_data())
+    login_ic_data = json_data['login_ic_data']
+    json_data.pop('login_ic_data', None)
     logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
 
     if db.connect(db_adapter):
@@ -35,6 +43,9 @@ def login_data():
             session['user'] = json_user
             session['project'] = {}
             session.modified = True
+            if login_ic_data != '':
+                request_data = base64.b64decode(login_ic_data).decode('utf-8')
+                dirs.set_project_data(json.loads(request_data))
             return redirect(url_for('index'))
         else:
             resp = Response()

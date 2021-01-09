@@ -71,9 +71,7 @@ def get_project():
             return resp
 
         if 'project' in request_data:
-            print(request_data['project'])
             if request_data['project'] == {'position': None, 'section': 'project'}:
-                print('here333')
                 return redirect(url_for('get_root_project', data={}))
 
         position = session.get("project")["position"]
@@ -586,7 +584,7 @@ def get_shared_ic(ic_data):
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
                 return resp
 
-    return redirect('/login')
+    return redirect(url_for('login', data=ic_data), code=307)
 
 
 def get_input_file_fixed():
