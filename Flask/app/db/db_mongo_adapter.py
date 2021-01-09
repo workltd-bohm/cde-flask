@@ -1474,21 +1474,35 @@ class DBMongoAdapter:
         tags = self._db.Tags
         
         # queries
-        complex_query = {'id': 'complex_tags'}
+        tags_query = {'id': 'tags_collection'}
         project_query = {'project_name': data['project_name']}
 
         project_json = projects.find_one(project_query, {'_id': 0})
         if not project_json: return msg.PROJECT_NOT_FOUND # failsafe no project
 
-        complex_json = tags.find_one(complex_query, {'_id': 0})
+        # convert iso tripplets to tags
+        iso_tags = get_iso_tags()
+        for key, value in iso_tags.items():
+            for i, val in enumerate(value['elements']):
+                iso_tags[key]['elements'][i] = '#' + val.replace(".", "_")
+            del iso_tags[key]['name']
+            del iso_tags[key]['order']
 
-        # create complex table
-        if not complex_json:
-            tags.insert_one(complex_query)
-            for key, value in get_iso_tags().items():
+        tags_json = tags.find_one(tags_query, {'_id': 0})
+        # create tags if dont exist
+        if not tags_json: 
+            tags.insert_one(tags_query)
+            tags_json = tags.find_one(tags_query, {'_id': 0})
+            # put empty keys in json
+            for key, value in iso_tags.items():
                 for val in value['elements']:
-                    tags.update_one(complex_query, {'$push': {key: {val: []}}})
-            complex_json = tags.find_one(complex_query, {'_id': 0})
+                    if not val in tags_json.keys():
+                        tags_json[val] = []
+            tags.update_one(tags_query, {"$set": tags_json})
+
+        # convert request tags
+        for key, value in data['tags'].items():
+            data['tags'][key] = "#" + value.replace(".", "_")        
 
         # this ic obj
         obj = {
@@ -1503,30 +1517,32 @@ class DBMongoAdapter:
         ic = old_ic
         
         # delete
-        for key in complex_json.keys():
-            if key == 'id' or key == '_id': continue
-            for i, val in enumerate(complex_json[key]):
-                for jkey in val.keys():
-                    if obj in complex_json[key][i][jkey]:
-                        complex_json[key][i][jkey].remove(obj)
-                    for tag in ic.tags:
-                        if jkey == tag.tag:
-                            ic.tags.remove(tag)
+        for key, value in iso_tags.items():
+            for tag in value['elements']:
+                for itag in tags_json.keys():
+                    if itag == tag:    # failsafe check (maybe not necessary)
+                        for i, val in enumerate(tags_json[tag]):
+                            if obj in tags_json[tag]:
+                                tags_json[tag].remove(obj)
+                                # break
+                            for tag_obj in ic.tags:
+                                if tag == tag_obj.tag:
+                                    ic.tags.remove(tag_obj)
 
         # write
-        for key in complex_json.keys():
-            for ikey in data['tags'].keys():
-                if key == ikey:
-                    for i, val in enumerate(complex_json[key]):
-                        for jkey in val.keys():
-                            if jkey == data['tags'][key]:
-                                if not obj in complex_json[key][i][jkey]:
-                                    complex_json[key][i][jkey].append(obj)
-                                    ic.tags.append(Tags(jkey, 'gray'))
+        for key, tag in data['tags'].items():
+            for itag in tags_json.keys():
+                print(itag)
+                if itag == tag:
+                    if not obj in tags_json[tag]:
+                        print('accepted.')
+                        tags_json[tag].append(obj)
+                        ic.tags.append(Tags(tag, 'gray'))
+                        break
 
         # update
         project.update_ic(ic, old_ic)
-        tags.update_one(complex_query, {"$set": complex_json})
+        tags.update_one(tags_query, {"$set": tags_json})
         projects.update_one(project_query, {"$set": project.to_json()})
 
         message = msg.TAG_SUCCESSFULLY_UPDATED
