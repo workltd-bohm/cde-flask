@@ -1525,9 +1525,6 @@ class DBMongoAdapter:
                             if obj in tags_json[tag]:
                                 tags_json[tag].remove(obj)
                                 # break
-                            for tag_obj in ic.tags:
-                                if tag == tag_obj.tag:
-                                    ic.tags.remove(tag_obj)
 
         # write
         for key, tag in data['tags'].items():
