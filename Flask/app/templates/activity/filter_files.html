@@ -28,7 +28,7 @@
                         <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
                             <div class="tag" style="background-color: {{ tag['color'] }}">
                                 <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                                {{ tag['tag'] }}
+                                {{ tag['tag'] if ',' not in tag['tag'] else tag['tag'].replace("_", ".") }}
                                 </i>
                             </div>
                             <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>

@@ -1550,6 +1550,22 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def get_ic_tags(self, request_data):
+        Projects = self._db.Projects
+        project_query = {'project_name': request_data['project_name']}
+        project_json = Projects.find_one(project_query, {"_id": 0})
+
+        if not project_json: return msg.PROJECT_NOT_FOUND
+
+        project = Project.json_to_obj(project_json)
+        ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+
+        if not ic: return msg.IC_PATH_NOT_FOUND
+
+        ic = ic.to_json()
+        
+        return ic['tags']
+
     def get_all_tags(self):
         col = self._db.Tags
         result = col.find()

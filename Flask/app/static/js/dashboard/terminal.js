@@ -219,7 +219,6 @@ function createTempTag(name, color = 'white') {
 
     // apply changes to container
     all_tags.append(t_container);
-
 }
 
 function deleteTempTag(elem) {
@@ -300,8 +299,6 @@ function addTag(terminal, buffer = false) {
             MakeSnackbar(data);
             LoadTag(terminal);
             LoadStop();
-
-            //            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -333,6 +330,37 @@ function addTagListen(el, buffer = false) {
     }
 
     addTag(tagsValue, buffer);
+}
+
+function refreshTags(){
+    let project_name = SESSION['position'].project_name;
+
+    $.ajax({
+        url: "/get_ic_tags",
+        type: 'POST',
+        data: JSON.stringify(project_name ? {
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory
+        } : {
+            post_id: post_id,
+            tag: tagName,
+            color: tagColor
+        }),
+        timeout: 5000,
+        success: function(data) {
+            data = JSON.parse(data);
+            $(".tag-container").remove();
+            for(let i = 0; i < data.length; i++) createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+        }
+    });
 }
 
 function removeTag(tagName, tagColor) {
@@ -472,6 +500,7 @@ function updateComplexTags(element){
         success: function(data) {
             MakeSnackbar(data);
             LoadStop();
+            refreshTags();
             // TODO update current tags (append complex tags to normal tags)
         },
         error: function($jqXHR, textStatus, errorThrown) {

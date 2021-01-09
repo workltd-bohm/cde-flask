@@ -138,7 +138,6 @@ def get_project():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
-
 @app.route('/get_my_projects', methods=['POST'])
 def get_my_projects():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -173,7 +172,6 @@ def get_my_projects():
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
-
 
 @app.route('/get_root_project', methods=['GET', 'POST'])
 def get_root_project():
@@ -324,7 +322,6 @@ def get_trash():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
-
 @app.route('/get_user_profile', methods=['POST'])
 def get_user_profile():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -466,20 +463,19 @@ def get_viewer():
     return resp
 
 
-@app.route('/get_all_tags', methods=['GET'])
-def get_all_tags():
+@app.route('/get_ic_tags', methods=['POST'])
+def get_ic_tags():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     resp = Response()
     if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print('\n\n', request_data)
         if db.connect(db_adapter):
-            result = db.get_all_tags(db_adapter)
+            result = db.get_ic_tags(db_adapter, request_data)
             if result:
-                response = {
-                    'data': result
-                }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
-                resp.data = json.dumps(response)
+                resp.data = json.dumps(result)
                 return resp
             else:
                 resp = Response()

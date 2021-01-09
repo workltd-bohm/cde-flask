@@ -185,6 +185,8 @@ def update_iso_tags(db_adapter, request_data):
 def get_all_tags(db_adapter):
     return db_adapter.get_all_tags()
 
+def get_ic_tags(db_adapter, request_data):
+    return db_adapter.get_ic_tags(request_data)
 
 def get_all_tags_with_ics(db_adapter):
     return db_adapter.get_all_tags_with_ics()
