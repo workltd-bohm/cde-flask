@@ -4,7 +4,6 @@ from app import *
 
 import app.views.actions.getters as gtr
 
-
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -54,7 +53,8 @@ def get_open_file():
                                                 ic_id=result.ic_id,
                                                 stored_id=result.stored_id,
                                                 name=name+type,
-                                                access=access
+                                                access=access,
+                                                complex_tags=gtr.get_input_file_fixed()
                                                 ),
                     'data': []
                 }
