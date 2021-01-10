@@ -68,7 +68,7 @@ function FilterSwap(target) {
     }
 
     // show edit-post button only on details tab
-    editPostButton = document.getElementsByClassName("edit-box hover right button")[0];
+    editPostButton = document.getElementById("edit-post-button");
     if(target != "details")
         editPostButton.style.display = 'none';
     else
