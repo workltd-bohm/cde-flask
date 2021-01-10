@@ -12,7 +12,7 @@ def create_bid():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
 
         request_json['bid_id'] = "default"
-        request_json.update({'offer': request_json['offer'] + ' ' + request_json['per']})
+        request_json.update({'offer': request_json['offer'] + ' per ' + request_json['per']})
         request_json.update({'status': request_json["status"]})
         request_json['date_created'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json['description'] = ""
