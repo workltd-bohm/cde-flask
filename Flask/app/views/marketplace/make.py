@@ -363,14 +363,12 @@ def make_activity_post_edit():
                 req_bids = json.loads(post['bids'])
             for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
-            div = []
-            for bid in bids:
-                div.append(bid['offer'])
+
             response = {
                 'html': render_template("dashboard/market/post_edit_activity_1.html",
                                         post=post,
                                         comments=[],
-                                        bids=div,
+                                        bids=bids,
                                         profile_picture=session['user']['picture']
                                         ),
                 'data': []
