@@ -2,8 +2,8 @@ import random
 import os
 import base64
 
-from app.views.actions import dirs
 from app import *
+from app.views.actions import dirs
 import app.controller.send_email as email
 
 
