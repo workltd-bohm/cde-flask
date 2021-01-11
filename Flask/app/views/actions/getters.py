@@ -498,6 +498,39 @@ def get_ic_tags():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
+@app.route('/get_all_tags', methods=['GET'])
+def get_all_tags():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            result = db.get_all_tags(db_adapter)
+            if result:
+                response = {
+                    'data': result
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps({'data': []})
+                return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+
 @app.route('/get_all_users', methods=['GET'])
 def get_all_users():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
