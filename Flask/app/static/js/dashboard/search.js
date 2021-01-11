@@ -66,6 +66,13 @@ function FilterSwap(target) {
         $(".filter-" + target).show();
         $(".filter-" + target + "-tab").addClass("selected");
     }
+
+    // show edit-post button only on details tab
+    editPostButton = document.getElementById("edit-post-button");
+    if(target != "details")
+        editPostButton.style.display = 'none';
+    else
+        editPostButton.style.display = 'block';
 }
 
 function SearchOpen(data) {
