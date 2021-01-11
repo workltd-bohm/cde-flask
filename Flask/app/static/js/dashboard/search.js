@@ -51,6 +51,9 @@ function FilterOut(obj) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -58,8 +61,8 @@ function FilterOut(obj) {
 function FilterSwap(target) {
     $(".project-view").children().hide();
     $(".project-box").removeClass("selected");
-    
-    if ($("#filter-" + target).length){
+
+    if ($("#filter-" + target).length) {
         $("#filter-" + target).show();
         $("#filter-" + target + "-tab").addClass("selected");
     } else if ($(".filter-" + target)) {

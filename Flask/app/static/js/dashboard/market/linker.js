@@ -60,6 +60,9 @@ function NewPost(obj, request_data = '') {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -99,6 +102,9 @@ function AddPost(obj) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -126,6 +132,9 @@ function UpdatePost(obj, data) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -149,6 +158,9 @@ function UpdateBid(obj, data) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -172,6 +184,9 @@ function Bid(obj, data, t, s) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -194,6 +209,9 @@ function GetAllPost() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -217,6 +235,9 @@ function OpenActivityBid(obj, data) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -247,6 +268,9 @@ function ViewPost(obj, post_id, json = '') {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -273,6 +297,9 @@ function EditPost(obj, post_id, json = '') {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -359,6 +386,9 @@ function OpenActivityEditPost(obj, url, post_id) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -386,6 +416,9 @@ function EditBid(obj, data) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -410,6 +443,9 @@ function OpenActivityEditBid(obj) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

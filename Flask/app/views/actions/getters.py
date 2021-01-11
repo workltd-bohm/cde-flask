@@ -20,8 +20,8 @@ def input():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -29,13 +29,18 @@ def input():
 def get_session():
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    if main.IsLogin() and session.get("project"):
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(session.get("project"))
-        return resp
+    if main.IsLogin():
+        if session.get("project"):
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(session.get("project"))
+            return resp
+        else:
+            resp.status_code = msg.DEFAULT_ERROR['code']
+            resp.data = str(msg.DEFAULT_ERROR['message'])
+            return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -51,8 +56,8 @@ def set_project():
         resp.data = str(msg.DEFAULT_OK['message'])
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -133,8 +138,8 @@ def get_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_my_projects', methods=['POST'])
@@ -168,8 +173,8 @@ def get_my_projects():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_root_project', methods=['GET', 'POST'])
@@ -244,8 +249,8 @@ def get_root_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_trash', methods=['POST'])
@@ -320,8 +325,8 @@ def get_trash():
             return resp
 
     # user not logged
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_user_profile', methods=['POST'])
@@ -367,8 +372,8 @@ def get_user_profile():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -440,8 +445,8 @@ def get_root_market():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -463,8 +468,8 @@ def get_viewer():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -494,8 +499,8 @@ def get_ic_tags():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -526,8 +531,8 @@ def get_all_tags():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -552,8 +557,8 @@ def get_all_users():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 

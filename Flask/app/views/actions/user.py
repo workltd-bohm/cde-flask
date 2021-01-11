@@ -27,8 +27,8 @@ def make_user_profile_activity():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -68,9 +68,8 @@ def update_user():
             resp.data = str(msg.USER_NOT_FOUND['message'])
             return resp
 
-    logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
-    resp.status_code = msg.DB_FAILURE['code']
-    resp.data = str(msg.DB_FAILURE['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -108,6 +107,6 @@ def get_profile_image(image_id):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

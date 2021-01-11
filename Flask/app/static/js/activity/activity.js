@@ -46,7 +46,8 @@ function AppendActivityTab(parent, child) {
 function ClearActivityTab(parent) {
     parent.html('');
 }
-function sendCommentPress(){
+
+function sendCommentPress() {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
@@ -81,9 +82,13 @@ function sendCommentPress(){
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
+
 function sendComment(el) {
     console.log("sending comment");
     var key = window.event.keyCode;
@@ -126,6 +131,9 @@ function sendComment(el) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
@@ -200,6 +208,9 @@ function updateComment(el, container) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
@@ -247,6 +258,9 @@ function deleteComment(elem) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -274,6 +288,9 @@ function AddAccess() {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -302,6 +319,9 @@ function removeAccess(access) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -332,6 +352,9 @@ function addLink(el) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
@@ -359,6 +382,9 @@ function PostList(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -411,56 +437,46 @@ function openToggleInfoHistory() {
     }
 }
 
-var allProjectComments=null;
-function filterDirectoryComments(searchCommentboxText)
-{
+var allProjectComments = null;
+
+function filterDirectoryComments(searchCommentboxText) {
     isClearSearchButtonVisible(true);
     divWithAllComments = document.getElementById("activity-tab-div-comments");
-    
-    if(allProjectComments == null)
+
+    if (allProjectComments == null)
         allProjectComments = divWithAllComments.innerHTML;
     else
         divWithAllComments.innerHTML = allProjectComments;
-    
-    
+
+
     comments = divWithAllComments.children;
     numOfAtSymbols = searchCommentboxText.split("@").length - 1;
     noSpacesInSearchText = (searchCommentboxText.lastIndexOf(" ") == -1);
-    if (numOfAtSymbols == 1 && noSpacesInSearchText)
-    {
+    if (numOfAtSymbols == 1 && noSpacesInSearchText) {
         //filter comments from this user
         console.log("showing all comments from " + searchCommentboxText);
         numComments = comments.length;
-        whichComment=0;
-        while(whichComment < numComments)
-        {
+        whichComment = 0;
+        while (whichComment < numComments) {
             username = comments[whichComment].getElementsByClassName("details_event_user comments")[0].innerText;
-            if(username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1))//1 to skip @
+            if (username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1)) //1 to skip @
             {
                 whichComment++;
-            }
-            else
-            {
+            } else {
                 divWithAllComments.removeChild(comments[whichComment]);
                 numComments--;
             }
         }
-    }
-    else
-    {
+    } else {
         // filter comments for occurrence of search-text substring
         console.log("searching through " + divWithAllComments.childElementCount + " comments");
         numComments = comments.length;
-        whichComment=0;
-        while(whichComment < numComments)
-        {
+        whichComment = 0;
+        while (whichComment < numComments) {
             comment = comments[whichComment].getElementsByClassName("details_event comment-events")[0].innerText;
-            if(comment.toLowerCase().includes(searchCommentboxText.toLowerCase()))
-            {
+            if (comment.toLowerCase().includes(searchCommentboxText.toLowerCase())) {
                 whichComment++;
-            }
-            else
-            {
+            } else {
                 divWithAllComments.removeChild(comments[whichComment]);
                 numComments--;
             }
@@ -468,151 +484,127 @@ function filterDirectoryComments(searchCommentboxText)
     }
 }
 
-function isClearSearchButtonVisible(isVisible)
-{
-    if(isVisible)
+function isClearSearchButtonVisible(isVisible) {
+    if (isVisible)
         document.getElementById("resetCommentSearchButton").style.visibility = "visible";
     else
         document.getElementById("resetCommentSearchButton").style.visibility = "hidden";
 }
 
-function resetCommentSearch(event)
-{
+function resetCommentSearch(event) {
     console.log("reset search");
-    if(allProjectComments != null)
-    {
+    if (allProjectComments != null) {
         document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
         document.getElementById("searchcomments").value = "";
     }
     isClearSearchButtonVisible(false);
 }
 
-function isUsernameSuggestionWanted(searchText)
-{
+function isUsernameSuggestionWanted(searchText) {
     // check if user wants username suggestions
     posOfLastAt = searchText.lastIndexOf("@");
-    userWantsUsernameSuggestions = (posOfLastAt==0);
-    if (posOfLastAt > 0)
-    {
-        userWantsUsernameSuggestions = (searchText.charAt(posOfLastAt-1)==' ') &&
-                                        (searchText.substring(posOfLastAt).lastIndexOf(" ") == -1);
-    }    
+    userWantsUsernameSuggestions = (posOfLastAt == 0);
+    if (posOfLastAt > 0) {
+        userWantsUsernameSuggestions = (searchText.charAt(posOfLastAt - 1) == ' ') &&
+            (searchText.substring(posOfLastAt).lastIndexOf(" ") == -1);
+    }
     return userWantsUsernameSuggestions;
 }
 
-function autocompleteUsername(searchText, idOfInputHtml)
-{
-    if (isUsernameSuggestionWanted(searchText))
-    {
-        $.get( "/get_all_users")
-        .done(function(data) {
-            response_json = JSON.parse(data);
-            allUsers = response_json.users;
-            console.log("all users in db = " + allUsers);
-            autocomplete(document.getElementById(idOfInputHtml), allUsers);
-        });
-    } 
+function autocompleteUsername(searchText, idOfInputHtml) {
+    if (isUsernameSuggestionWanted(searchText)) {
+        $.get("/get_all_users")
+            .done(function(data) {
+                response_json = JSON.parse(data);
+                allUsers = response_json.users;
+                console.log("all users in db = " + allUsers);
+                autocomplete(document.getElementById(idOfInputHtml), allUsers);
+            });
+    }
 }
 
 var focusIsOnSearch = false;
-function searchIfSearchIsActive()
-{
-    if(focusIsOnSearch){
+
+function searchIfSearchIsActive() {
+    if (focusIsOnSearch) {
         searchCommentboxText = $("#searchcomments").val();
         filterDirectoryComments(searchCommentboxText);
     }
 }
 
-function serviceCommentSearchQuery(event)
-{
+function serviceCommentSearchQuery(event) {
     // monitor text in the search-comments box after every key-press event
     // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
     // if user presses enter, filter directory comments using text in the searchbox, and show results
     focusIsOnSearch = true; //global
     keyPressedByUser = window.event.keyCode;
     searchCommentBoxId = "searchcomments";
-    searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
+    searchCommentboxText = $('#' + searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
 
-    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+    if (keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
     commentsearchAutocompleteDivId = searchCommentBoxId + "autocomplete-list";
     autocompleteDivExists = (document.getElementById(commentsearchAutocompleteDivId) != null);
     autocompleteDivHasOptions = autocompleteDivExists ? (document.getElementById(commentsearchAutocompleteDivId).innerHTML != "") : false;
-    
+
     if (keyPressedByUser == 13) //enter
     {
-        if(!autocompleteDivExists || !autocompleteDivHasOptions)
-        {
+        if (!autocompleteDivExists || !autocompleteDivHasOptions) {
             filterDirectoryComments(searchCommentboxText);
         }
-    }
-    else if(keyPressedByUser == 27) //esc
+    } else if (keyPressedByUser == 27) //esc
     {
-        if(autocompleteDivExists)
-        {
-            if(autocompleteDivHasOptions){
+        if (autocompleteDivExists) {
+            if (autocompleteDivHasOptions) {
                 autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
                 autocompleteDiv.innerHTML = "";
-            }
-            else
+            } else
                 resetCommentSearch();
-        }
-        else
-        {
+        } else {
             resetCommentSearch();
         }
-    }
-    else
-    {
+    } else {
         controlCharacterUpper = 31;
         deleteAscii = 127;
-        if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii))
-        {
+        if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
             searchCommentboxText += String.fromCharCode(keyPressedByUser);
             autocompleteUsername(searchCommentboxText, searchCommentBoxId);
-        }
-        else
+        } else
             autocompleteUsername(searchCommentboxText, searchCommentBoxId);
-    
+
         filterDirectoryComments(searchCommentboxText);
     }
 }
 
-function commentOnProject(event)
-{
+function commentOnProject(event) {
     focusIsOnSearch = false; //global
     let keyPressedByUser = window.event.keyCode;
-    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+    if (keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
     let commentAutocompleteDivId = "comment" + "autocomplete-list";
-    if(keyPressedByUser == 27) //esc key
+    if (keyPressedByUser == 27) //esc key
     {
-        if(document.getElementById(commentAutocompleteDivId) != null)
+        if (document.getElementById(commentAutocompleteDivId) != null)
             document.getElementById(commentAutocompleteDivId).innerHTML = "";
     }
 
-    if (keyPressedByUser != 13)
-    {
+    if (keyPressedByUser != 13) {
         commentboxText = $('#comment').val() + String.fromCharCode(keyPressedByUser);
         commentBoxId = "comment";
         autocompleteUsername(commentboxText, commentBoxId);
         return true;
     }
 
-    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId)== null);
-    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true:(document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
-    if(autocompleteDivNotPresent || noOptionsInAutocompleteDiv)
-    {
+    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId) == null);
+    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true : (document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
+    if (autocompleteDivNotPresent || noOptionsInAutocompleteDiv) {
         event.preventDefault();
-        if(!event.shiftKey)
-        {
+        if (!event.shiftKey) {
             sendComment(event);
             document.getElementById("comment").value = ""; //clear after sending
-        }
-        else
-        {
+        } else {
             document.getElementById("comment").value += "\n";
         }
     }
@@ -622,89 +614,93 @@ function autocomplete(inp, arr) {
     var currentFocusHere = -1;
     inp.addEventListener("input", function(e) {
         var a, b, i, searchText = this.value;
-        if(!isUsernameSuggestionWanted(searchText)) { return;}
+        if (!isUsernameSuggestionWanted(searchText)) { return; }
         posOfLastAt = searchText.lastIndexOf("@");
-        lookingFor = searchText.substring(posOfLastAt+1);
+        lookingFor = searchText.substring(posOfLastAt + 1);
         var val = lookingFor;
         closeAllLists();
-        if (!val) { return false;}
+        if (!val) { return false; }
         currentFocusHere = -1;
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
-          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-            b = document.createElement("DIV");
-            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-            b.innerHTML += arr[i].substr(val.length);
-            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-            b.addEventListener("click", function(e) {
-                newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
-                inp.value = newText;
-                closeAllLists();
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function(e) {
+                    newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
+                    inp.value = newText;
+                    closeAllLists();
 
-                searchIfSearchIsActive();
-            });
-            a.appendChild(b);
-          }
+                    searchIfSearchIsActive();
+                });
+                a.appendChild(b);
+            }
         }
     });
     inp.addEventListener("keydown", function(e) {
-      var x = document.getElementById(this.id + "autocomplete-list");
-      if (x) x = x.getElementsByTagName("div");
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 40) {
-          currentFocusHere++;
-          addActive(x);
+            currentFocusHere++;
+            addActive(x);
         } else if (e.keyCode == 38) {
-          currentFocusHere--;
-          addActive(x);
+            currentFocusHere--;
+            addActive(x);
         } else if (e.keyCode == 13) {
-          e.preventDefault();
-          if (currentFocusHere > -1) {
-            if (x) x[currentFocusHere].click();
-          }
+            e.preventDefault();
+            if (currentFocusHere > -1) {
+                if (x) x[currentFocusHere].click();
+            }
         }
     });
+
     function addActive(x) {
-      if (!x) return false;
-      removeActive(x);
-      if (currentFocusHere >= x.length) currentFocusHere = 0;
-      if (currentFocusHere < 0) currentFocusHere = (x.length - 1);
-      x[currentFocusHere].classList.add("autocomplete-active");
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocusHere >= x.length) currentFocusHere = 0;
+        if (currentFocusHere < 0) currentFocusHere = (x.length - 1);
+        x[currentFocusHere].classList.add("autocomplete-active");
     }
+
     function removeActive(x) {
-      for (var i = 0; i < x.length; i++) {
-        x[i].classList.remove("autocomplete-active");
-      }
-    }
-    function closeAllLists(elmnt) {
-      var x = document.getElementsByClassName("autocomplete-items");
-      for (var i = 0; i < x.length; i++) {
-        if (elmnt != x[i] && elmnt != inp) {
-          x[i].parentNode.removeChild(x[i]);
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
         }
-      }
     }
-    document.addEventListener("click", function (e) {
+
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    document.addEventListener("click", function(e) {
         closeAllLists(e.target);
     });
-  }
-  function openDate() {
+}
+
+function openDate() {
     var x = document.getElementById("experation-date");
     var y = document.getElementById("permanet");
     var z = document.getElementById("role");
-    var i=  document.getElementById("button-for-date");
+    var i = document.getElementById("button-for-date");
     console.log("t");
-      if (x.style.display  === "none") {
-      x.style.display = "block";
-      y.style.display = "none";
-      z.style.width ="103%";
-      i.style.left= "35px";
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+        z.style.width = "103%";
+        i.style.left = "35px";
     } else {
-      x.style.display = "none";
-      y.style.display = "block";
-      z.style.width ="49%";
-      i.style.left= "";
+        x.style.display = "none";
+        y.style.display = "block";
+        z.style.width = "49%";
+        i.style.left = "";
     }
-  } 
+}

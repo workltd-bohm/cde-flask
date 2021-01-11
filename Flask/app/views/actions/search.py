@@ -83,8 +83,8 @@ def get_filtered_files():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -161,8 +161,8 @@ def get_filter_activity():
                 resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
                 return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -234,8 +234,8 @@ def search_by_tags():
                 resp.data = json.dumps(response)
                 return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -303,6 +303,6 @@ def search_by_name():
                 resp.data = json.dumps(response)
                 return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

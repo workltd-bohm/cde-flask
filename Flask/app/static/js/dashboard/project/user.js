@@ -1,30 +1,32 @@
-
-function UserActivity(data){
+function UserActivity(data) {
     UserProfileActivity();
 }
 
-function UpdateUser(){
+function UpdateUser() {
     var data = {};
-    $("#user-form").serializeArray().map(function(x){data[x.name] = x.value;}); 
-    if(data.lenght == 0) MakeSnackbar("Form empty?");
+    $("#user-form").serializeArray().map(function(x) { data[x.name] = x.value; });
+    if (data.lenght == 0) MakeSnackbar("Form empty?");
     return data;
 }
 
-function UserProfileActivity(){
+function UserProfileActivity() {
     $.ajax({
         url: "/make_user_profile_activity",
         type: 'POST',
         //data: JSON.stringify({ic_id: data.ic_id, color: data.color}),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
-            if(data){
+            if (data) {
                 OpenActivity(data.html, data.head);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

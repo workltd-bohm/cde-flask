@@ -42,8 +42,8 @@ def get_file(file_name):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -81,8 +81,8 @@ def get_shared_file(file_name):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -138,8 +138,8 @@ def get_folder(parent_id, folder_name):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -226,8 +226,8 @@ def upload_file():
         return upload_file_process(request_json, file)
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -279,8 +279,8 @@ def create_dir():
         return create_dir_process(request_data)
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -320,8 +320,8 @@ def rename_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route("/trash_ic", methods=['POST'])
@@ -358,8 +358,8 @@ def trash_ic():
             return resp
     
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route("/empty_trash", methods=['POST'])
@@ -392,8 +392,8 @@ def empty_trash():
             return resp
     
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route("/restore_ic", methods=['POST'])
@@ -430,8 +430,8 @@ def restore_ic():
             return resp
     
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/delete_ic', methods=['POST'])
@@ -461,8 +461,8 @@ def delete_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 # ----------------------------------------------------
