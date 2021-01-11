@@ -44,6 +44,12 @@ g_OverPlanet = [
     { name: "SELECT", icon: "check_circle", link: SelectPlanet },
     { name: "OPEN", icon: "preview", link: WrapOpenFile },
     { name: "TRASH", icon: "delete", link: WrapTrash },
+    { name: "RENAME", icon: "create", link: WrapRename },
+    { name: "COPY", icon: "content_copy", link: WrapCopy },
+    { name: "MOVE", icon: "open_with", link: WrapMove },
+    { name: "SHARE", icon: "share", link: WrapShare },
+    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
+    { name: "COLOR", icon: "color_lens", link: ColorPicker },
 ]
 
 g_OverTrash = [
@@ -112,7 +118,10 @@ function OverlayCreate(obj, data, parent, planet = false) {
 
     if (planet) {
         if (data.overlay_type != "trash_planet") {
-            type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }, {...g_OverPlanet[2] }];
+            type = [];
+            for(let i = 0; i < g_OverPlanet.length; i++) {
+                type.push({...g_OverPlanet[i] });
+            }
         }
         if (data.checked) type[0].icon = "check_circle_outline";
     }
@@ -216,7 +225,7 @@ function AddItem(obj, data, parent, position = 0) {
     data.values.rotation = position * 360 / data.values.back.items.length - 90;
     
     if (!data.values.data.values.sun) {
-        g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO;
+        g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO * .8;
         g_OverlayRadius = g_PlanetRadius + .5 * ( g_OverlayItemSize + OVERLAY_PLANET_MARGIN );
     }
     
