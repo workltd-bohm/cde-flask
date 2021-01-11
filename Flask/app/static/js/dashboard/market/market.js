@@ -159,6 +159,9 @@ function MarketGet(choose_market, run = null, run_data = null) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

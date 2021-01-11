@@ -70,7 +70,10 @@ def get_open_file():
         return resp
 
     else:
-        return redirect('/')
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
 
 
 @app.route('/get_all_projects')
@@ -103,8 +106,8 @@ def get_all_projects():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -122,8 +125,8 @@ def get_new_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -141,8 +144,8 @@ def get_upload_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -184,8 +187,8 @@ def get_new_folder():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -234,8 +237,8 @@ def get_new_file():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -281,8 +284,8 @@ def get_rename_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_trash_ic', methods=['POST'])
@@ -334,8 +337,8 @@ def get_trash_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
             
 @app.route('/get_restore_ic', methods=['POST'])
@@ -387,8 +390,8 @@ def get_restore_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
             
 @app.route('/get_delete_ic', methods=['POST'])
@@ -439,8 +442,8 @@ def get_delete_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_empty_trash', methods=['POST'])
@@ -475,8 +478,8 @@ def get_empty_trash():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_share', methods=['GET'])
@@ -516,8 +519,8 @@ def get_share():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -552,8 +555,8 @@ def get_help():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -576,6 +579,6 @@ def get_help_suggest():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

@@ -35,8 +35,8 @@ def create_bid():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -78,8 +78,8 @@ def edit_bid():
         resp.data = str(msg.DEFAULT_OK['message'])
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -112,8 +112,8 @@ def get_all_bids():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -149,8 +149,8 @@ def get_my_bids():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -216,11 +216,16 @@ def get_my_bids_planetary():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
 
 @app.route('/get_single_bid', methods=['POST', 'GET'])
 def get_single_bid():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     request_json = app.test_json_request_get_single_bid
+    resp = Response()
     if request.get_data(): request_json.update(json.loads(request.get_data()))
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if main.IsLogin():
@@ -237,3 +242,7 @@ def get_single_bid():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
+    
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp

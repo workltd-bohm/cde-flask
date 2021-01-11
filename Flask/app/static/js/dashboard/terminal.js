@@ -306,6 +306,9 @@ function addTag(terminal, buffer = false) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -334,7 +337,7 @@ function addTagListen(el, buffer = false) {
     addTag(tagsValue, buffer);
 }
 
-function refreshTags(){
+function refreshTags() {
     let project_name = SESSION['position'].project_name;
 
     $.ajax({
@@ -354,13 +357,16 @@ function refreshTags(){
         success: function(data) {
             data = JSON.parse(data);
             $(".tag-container").remove();
-            for(let i = 0; i < data.length; i++) createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
+            for (let i = 0; i < data.length; i++) createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -401,6 +407,9 @@ function removeTag(tagName, tagColor) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -471,7 +480,7 @@ function addTagInArrayIfMissing(element, array) {
     array.indexOf(element) === -1 ? array.push(element) : console.log("This item already exists in the local array");
 }
 
-function updateComplexTags(element){
+function updateComplexTags(element) {
     let form = $("#complex_tags");
     args = {}
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
@@ -482,7 +491,7 @@ function updateComplexTags(element){
         alert("Error. No active session found.")
         return;
     }
-    
+
     let ic = SESSION.position;
 
     // TODO only pass filled parameters
@@ -490,14 +499,12 @@ function updateComplexTags(element){
     $.ajax({
         url: "/update_iso_tags",
         type: 'POST',
-        data: JSON.stringify(
-            {
-                project_name:   ic.project_name,
-                ic_id:          ic.ic_id,
-                parent_id:      ic.parent_id,
-                tags:           args
-            }
-        ),
+        data: JSON.stringify({
+            project_name: ic.project_name,
+            ic_id: ic.ic_id,
+            parent_id: ic.parent_id,
+            tags: args
+        }),
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
@@ -509,6 +516,9 @@ function updateComplexTags(element){
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -684,6 +694,9 @@ function searchByTag(currValArray) {
                 console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 LoadStop();
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
             }
         });
     } else {
@@ -719,6 +732,9 @@ function searchByName(currValArray) {
                 console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 LoadStop();
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
             }
         });
     } else {

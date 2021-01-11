@@ -39,8 +39,8 @@ def select_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -88,8 +88,8 @@ def create_project():
             return resp
     
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -253,7 +253,11 @@ def upload_existing_project():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
-    return redirect('/login')
+    
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/upload_project')
@@ -275,7 +279,10 @@ def upload_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/set_color', methods=['POST'])
@@ -306,8 +313,8 @@ def set_color():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -335,7 +342,10 @@ def share_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/send_comment', methods=['POST'])
@@ -366,7 +376,10 @@ def send_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/update_comment', methods=['POST'])
 def update_comment():
@@ -393,7 +406,10 @@ def update_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/delete_comment', methods=['POST'])
 def delete_comment():
@@ -420,7 +436,10 @@ def delete_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/add_tag', methods=['POST'])
 def add_tag():
@@ -446,7 +465,10 @@ def add_tag():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/remove_tag', methods=['POST'])
@@ -494,7 +516,10 @@ def update_iso_tags():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/add_access', methods=['POST'])
 def add_access():
@@ -529,7 +554,10 @@ def add_access():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
     
 
 @app.route('/remove_access', methods=['POST'])
@@ -557,7 +585,10 @@ def remove_access():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/activate_undo', methods=['POST'])
@@ -589,6 +620,6 @@ def activate_undo():
                     resp.data = str(msg.DEFAULT_OK['message']) #json.dumps({"json": project.to_json(), "project" : position})
                     return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

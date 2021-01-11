@@ -102,6 +102,9 @@ function uploadPostFile(file, fileType) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -252,6 +255,9 @@ function removeFile(file) {
                 console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 LoadStop();
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
             }
         });
     }
@@ -322,6 +328,9 @@ function OpenFolderStructurePopup(form, post_id) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
