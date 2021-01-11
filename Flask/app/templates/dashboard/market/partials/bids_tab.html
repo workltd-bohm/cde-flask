@@ -18,7 +18,14 @@
             <div class="post-block-comment">
                 {% if bid["comments"] != '' %}
                 <div class="post-block-comment" style="border: 1px solid grey; background-color: gainsboro;">
-                    <h6>{{ bid["comments"] }}</h6>
+                <details>
+                    <summary style="border:none; outline: none;">
+                        {% set nWords = 3 if (3 < bid["comments"]|length) else bid["comments"]|length %}
+                        {#{ ' '.join(bid["comments"].split()[0:nWords]) }#} ... 
+                    </summary>
+
+                    <p>{{ bid["comments"] }}</p>
+                </details>
                 </div>
                 {% endif %}
             </div>
