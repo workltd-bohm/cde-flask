@@ -16,16 +16,20 @@ const colorScale = [
 function ColorPicker(data) {
     var defaultColor = $(".foregin .material-icons").css("color");
 
-    var pie = d3.layout.pie().sort(null);
-    var arc = d3.svg.arc().innerRadius(g_OverlayRadius).outerRadius(g_OverlayRadius * 1.5);
+    let _radius = g_OverlayRadius;
+    if (!data.values.data.values.sun) {
+        _radius = g_PlanetRadius;
+    }
 
+    var pie = d3.layout.pie().sort(null);
+    var arc = d3.svg.arc().innerRadius(_radius*.5).outerRadius(_radius);
     var wheel = data.values.back.object.append("g")
         .attr("class", "color_wheel")
         .attr("x", 0)
         .attr("y", 0)
 
     var circle = wheel.append("circle")
-        .attr("r", g_OverlayRadius)
+        .attr("r", _radius)
         .attr("fill", defaultColor)
 
     wheel.datum(Array(colorScale.length).fill(1))
