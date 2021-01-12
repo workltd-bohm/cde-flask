@@ -79,6 +79,9 @@ function ShareProject(data) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -157,6 +160,9 @@ function createProject(files, folders) {
                 console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 PopupClose();
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
             }
         });
     }
@@ -241,6 +247,9 @@ function sendFile(files, folders, current) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 

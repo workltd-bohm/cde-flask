@@ -22,8 +22,8 @@ def load_viewer():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 

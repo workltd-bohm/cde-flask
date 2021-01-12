@@ -71,6 +71,9 @@ function CheckSession() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             //MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -111,6 +114,9 @@ function SendProject(data) {
         timeout: 5000,
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
             //MakeSnackbar($jqXHR.responseText);
         }
     });
@@ -130,6 +136,9 @@ function SendProjectBackButton() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             //MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -157,6 +166,9 @@ function UserProfile() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -186,6 +198,9 @@ function SelectProject() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -235,6 +250,9 @@ function CreateProject(position = null) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -262,6 +280,9 @@ function SelectMarket() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -283,6 +304,9 @@ function Select3D() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -310,6 +334,9 @@ function SelectTrash() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

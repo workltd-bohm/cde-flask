@@ -1,8 +1,11 @@
 from app import *
+from datetime import timedelta
 import os
 
 
 def IsLogin():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=3)
     if session.get('user'):
         return True
     return False
@@ -11,8 +14,8 @@ def IsLogin():
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'img/user_profile/brush2.png',
-                               mimetype='img/user_profile/brush2.png')
+                               'img/brush2.png',
+                               mimetype='img/brush2.png')
 
 
 @app.route('/')

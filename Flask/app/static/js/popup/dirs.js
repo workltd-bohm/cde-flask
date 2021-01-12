@@ -28,6 +28,9 @@ function OpenFile(form, json, file, open) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -66,6 +69,9 @@ function NewFolder(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -199,6 +205,9 @@ function NewFile(form, json, file) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -273,6 +282,9 @@ function RenameFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -334,6 +346,9 @@ function TrashFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -394,6 +409,9 @@ function RestoreFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -449,6 +467,9 @@ function DeleteFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -475,6 +496,9 @@ function EmptyTrash(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

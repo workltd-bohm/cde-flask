@@ -1,11 +1,36 @@
 <div class="filter-bids" style="display: none;">
     <form id="filter-form-bids">
+        
         <h6 class="tab-title">BIDS LIST FOR:<br>{{ post['title'] }}</h6>
         {% for bid in bids %}
         <div class="post-header">
-            <div class="post-block">
-                <h5>{{ bid }}</h5>
+            <div class="post-block" style="border: none; white-space:nowrap; display: flex; justify-content: left;">
+                
+                <div class="post-block-user-image" style="display: inline-block; vertical-align: middle; margin-right: 2px;">
+                    <img class="profile-icon" src="/get_profile_image/{{ bid['user']['picture'] }}"/>
+                </div> 
+
+                <h5 style="display: inline; white-space:nowrap;">
+                    {{ bid["user"]["username"] }} BIDS {{ bid["offer"] }}
+                </h5>
             </div>
+
+            <div class="post-block-comment">
+                {% if bid["comments"] != '' %}
+                <div class="post-block-comment" style="border: 1px solid grey; background-color: gainsboro;">
+                <details>
+                    <summary style="border:none; outline: none;">
+                        {% set nWords = 3 if (3 < bid["comments"]|length) else bid["comments"]|length %}
+                        {#{ ' '.join(bid["comments"].split()[0:nWords]) }#} ... 
+                    </summary>
+
+                    <p>{{ bid["comments"] }}</p>
+                </details>
+                </div>
+                {% endif %}
+            </div>
+
+            <hr>
         </div>
         {% endfor %}
     </form>

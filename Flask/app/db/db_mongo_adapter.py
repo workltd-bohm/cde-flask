@@ -1494,11 +1494,11 @@ class DBMongoAdapter:
             tags.insert_one(tags_query)
             tags_json = tags.find_one(tags_query, {'_id': 0})
             # put empty keys in json
-            for key, value in iso_tags.items():
-                for val in value['elements']:
-                    if not val in tags_json.keys():
-                        tags_json[val] = []
-            tags.update_one(tags_query, {"$set": tags_json})
+        for key, value in iso_tags.items():
+            for val in value['elements']:
+                if not val in tags_json.keys():
+                    tags_json[val] = []
+        tags.update_one(tags_query, {"$set": tags_json})
 
         # convert request tags
         for key, value in data['tags'].items():
@@ -1532,10 +1532,10 @@ class DBMongoAdapter:
         # write
         for key, tag in data['tags'].items():
             for itag in tags_json.keys():
-                print(itag)
+                # print(itag)
                 if itag == tag:
                     if not obj in tags_json[tag]:
-                        print('accepted.')
+                        # print('accepted.')
                         tags_json[tag].append(obj)
                         ic.tags.append(Tags(tag, 'gray'))
                         break

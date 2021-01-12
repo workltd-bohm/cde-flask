@@ -18,8 +18,8 @@ def make_ticket_bid():
         # return resp
         return render_template("dashboard/market/bid_old.html")
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -39,8 +39,8 @@ def make_ticket_bid_all():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -71,8 +71,8 @@ def make_activity_bid():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -106,8 +106,8 @@ def make_edit_bid():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -139,8 +139,8 @@ def make_post_view_activity():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -185,8 +185,8 @@ def make_ticket_post_new():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -206,8 +206,8 @@ def make_activity_post():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -275,8 +275,8 @@ def make_view_post():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -320,8 +320,8 @@ def make_edit_post():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -342,8 +342,8 @@ def make_activity_post_new():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -363,14 +363,12 @@ def make_activity_post_edit():
                 req_bids = json.loads(post['bids'])
             for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
-            div = []
-            for bid in bids:
-                div.append(bid['offer'])
+
             response = {
                 'html': render_template("dashboard/market/post_edit_activity_1.html",
                                         post=post,
                                         comments=[],
-                                        bids=div,
+                                        bids=bids,
                                         profile_picture=session['user']['picture']
                                         ),
                 'data': []
@@ -386,8 +384,8 @@ def make_activity_post_edit():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -421,6 +419,6 @@ def get_my_posts_popup():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

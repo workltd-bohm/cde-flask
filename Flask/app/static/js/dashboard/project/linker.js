@@ -122,6 +122,9 @@ function WrapShare(data) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
