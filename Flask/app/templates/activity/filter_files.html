@@ -25,14 +25,16 @@
                       <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
                       <br>
                       {% for tag in tags %}
+                        {% if ',' not in tag['tag'] %}
                         <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
                             <div class="tag" style="background-color: {{ tag['color'] }}">
                                 <i style="color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
-                                {{ tag['tag'] if ',' not in tag['tag'] else tag['tag'].replace("_", ".") }}
+                                {{ tag['tag'] }}
                                 </i>
                             </div>
                             <span class='remove-tag' onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">x</span>
                         </div>
+                        {% endif %}
                       {% endfor %}
                       <br>
                 </div>

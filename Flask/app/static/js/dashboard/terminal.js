@@ -357,7 +357,11 @@ function refreshTags() {
         success: function(data) {
             data = JSON.parse(data);
             $(".tag-container").remove();
-            for (let i = 0; i < data.length; i++) createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
+            for (let i = 0; i < data.length; i++) {
+                if (!data[i].tag.includes(",")) {
+                    createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
+                }
+            } 
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
