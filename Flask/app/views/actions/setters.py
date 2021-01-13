@@ -207,39 +207,42 @@ def upload_existing_project():
                         parent_ic = project.root_ic
                         for i in range(0, len(current_dir_path)):
                             name = current_dir_path[i]
-                            new_id = str(uuid.uuid1())
-                            if i < 1:
-                                parent_directory = ('/').join(current_full_path[0:1])
-                                path = ('/').join(current_full_path[0:1])
-                            else:
-                                parent_directory = ('/').join(current_full_path[0:i + 1])
-                                path = ('/').join(current_full_path[0:i + 1])
-                            path = path + '/' + name
+                            if name != '':
+                                new_id = str(uuid.uuid1())
+                                if i < 1:
+                                    parent_directory = ('/').join(current_full_path[0:1])
+                                    path = ('/').join(current_full_path[0:1])
+                                else:
+                                    parent_directory = ('/').join(current_full_path[0:i + 1])
+                                    path = ('/').join(current_full_path[0:i + 1])
+                                path = path + '/' + name
 
-                            details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
-                            ic_new = Directory(new_id,
-                                               name,
-                                               parent_directory,
-                                               [details],
-                                               path,
-                                               parent_id,
-                                               '',
-                                               [],
-                                               [],
-                                               [],
-                                               [access]
-                                               )
+                                details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                                ic_new = Directory(new_id,
+                                                name,
+                                                parent_directory,
+                                                [details],
+                                                path,
+                                                parent_id,
+                                                '',
+                                                [],
+                                                [],
+                                                [],
+                                                [access]
+                                                )
 
-                            parent_id = new_id
+                                parent_id = new_id
 
-                            project.added = False
-                            message, ic = project.update_ic(ic_new, parent_ic)
-                            # message, ic = db.create_folder(db_adapter, project.name, ic_new)
-                            parent_ic = ic_new
-                            logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
-                            if message == msg.IC_ALREADY_EXISTS:
-                                parent_id = ic.ic_id
-                                parent_ic = ic
+                                project.added = False
+                                message, ic = project.update_ic(ic_new, parent_ic)
+                                print('ovde', ic_new.to_json())
+                                print(message)
+                                # message, ic = db.create_folder(db_adapter, project.name, ic_new)
+                                parent_ic = ic_new
+                                logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
+                                if message == msg.IC_ALREADY_EXISTS:
+                                    parent_id = ic.ic_id
+                                    parent_ic = ic
                         message = db.update_project(db_adapter, project, user)
                         logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
 

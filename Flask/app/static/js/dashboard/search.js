@@ -72,10 +72,13 @@ function FilterSwap(target) {
 
     // show edit-post button only on details tab
     editPostButton = document.getElementById("edit-post-button");
-    if(target != "details")
-        editPostButton.style.display = 'none';
-    else
-        editPostButton.style.display = 'block';
+    if (target != "details") {
+        if (editPostButton != null)
+            editPostButton.style.display = 'none';
+    } else {
+        if (editPostButton != null)
+            editPostButton.style.display = 'block';
+    }
 }
 
 function SearchOpen(data) {

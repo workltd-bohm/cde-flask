@@ -174,8 +174,9 @@ function sendFile(files, folders, current) {
     var formData = new FormData();
     var request = new XMLHttpRequest();
     let path = ''
+        // console.log(files);
     if (counter > total) {
-        console.log(folders)
+        // console.log(folders);
         if (folders.length == 0) {
             CheckSession();
             //CreateProject();
@@ -228,7 +229,7 @@ function sendFile(files, folders, current) {
                 MakeSnackbar(data);
                 //                PopupClose();
                 //                console.log(data);
-                if (data == "Project successfully uploaded") {
+                if (data == "Successfully uploaded") {
                     //                    counter = 1;
                     CheckSession();
                     //CreateProject();

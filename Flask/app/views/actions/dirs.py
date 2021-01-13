@@ -608,7 +608,6 @@ def set_project_data(data, save=False):
                     session.get("undo")["user"] = session.get('user')
                     session.get("project")["undo"] = True
 
-    #print(session.get("project"))
     session.modified = True
 
 

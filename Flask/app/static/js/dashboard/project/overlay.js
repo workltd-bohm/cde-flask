@@ -15,7 +15,7 @@ g_OverSearch = [
 
 g_OverFolder = [
     { name: "DETAILS", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
+    // { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
     { name: "TRASH", icon: "delete", link: WrapTrash },
@@ -29,7 +29,7 @@ g_OverFolder = [
 
 g_OverFile = [
     { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
+    // { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
     { name: "TRASH", icon: "delete", link: WrapTrash },
@@ -119,7 +119,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (planet) {
         if (data.overlay_type != "trash_planet") {
             type = [];
-            for(let i = 0; i < g_OverPlanet.length; i++) {
+            for (let i = 0; i < g_OverPlanet.length; i++) {
                 type.push({...g_OverPlanet[i] });
             }
         }
@@ -223,12 +223,12 @@ function AddItem(obj, data, parent, position = 0) {
     data.values.back = parent.overlay;
 
     data.values.rotation = position * 360 / data.values.back.items.length - 90;
-    
+
     if (!data.values.data.values.sun) {
         g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO * .8;
-        g_OverlayRadius = g_PlanetRadius + .5 * ( g_OverlayItemSize + OVERLAY_PLANET_MARGIN );
+        g_OverlayRadius = g_PlanetRadius + .5 * (g_OverlayItemSize + OVERLAY_PLANET_MARGIN);
     }
-    
+
     // if (data.values.sun)
     // {
     //     g_OverlayItemSize = g_SunRadius / OVERLAY_SUN_RATIO;
@@ -237,7 +237,7 @@ function AddItem(obj, data, parent, position = 0) {
     //     g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO;
     //     g_OverlayRadius = g_PlanetRadius + g_OverlayItemSize + OVERLAY_PLANET_MARGIN;
     // }
-    
+
     let margin = data.values.data.values.sun ? OVERLAY_SUN_MARGIN : OVERLAY_PLANET_MARGIN;
 
     data.values.this.attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + (g_OverlayRadius - g_OverlayItemSize - margin) + ", 0), rotate(" + (-data.values.rotation) + ")");

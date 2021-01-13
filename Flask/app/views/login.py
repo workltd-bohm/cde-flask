@@ -36,7 +36,10 @@ def login_data():
             json_user = user # .to_json()
             json_user.pop('password', None)
             json_user.update({'project_code': 'SV'}) # temp, until drawn from project
-            if json_user['picture'] == '':
+            request_json = {
+                'file_id': json_user['picture']
+            }
+            if not db.get_post_file(db_adapter, request_json):
                 json_user.update({'picture': set_random_profile_picture(json_user['username'])})
                 message = db.edit_user(db_adapter, json_user)
                 logger.log(LOG_LEVEL, 'DB response: {}'.format(message))

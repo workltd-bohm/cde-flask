@@ -4,8 +4,9 @@ import os
 
 
 def IsLogin():
-    session.permanent = True
+    # session.permanent = True
     app.permanent_session_lifetime = timedelta(days=3)
+    # print('IsLogin()', session['project'])
     if session.get('user'):
         return True
     return False

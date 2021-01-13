@@ -80,7 +80,7 @@ function CheckSession() {
 
 function SendProject(data) {
     // console.log(data);
-    console.log(SESSION);
+    // console.log(SESSION);
     SESSION["position"] = {
         project_name: data.path.split('/')[0],
         parent_id: data.parent_id,

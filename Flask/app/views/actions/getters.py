@@ -31,6 +31,7 @@ def get_session():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         if session.get("project"):
+            logger.log(LOG_LEVEL, 'RESPONSE data: {}'.format(session.get("project")))
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps(session.get("project"))
             return resp
@@ -50,6 +51,7 @@ def set_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         dirs.set_project_data(request_data)
 
         resp.status_code = msg.DEFAULT_OK['code']

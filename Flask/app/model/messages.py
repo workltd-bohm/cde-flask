@@ -66,7 +66,7 @@ MESSAGE_SENT_TO_ADMIN = {"message": "Wait until admin confirms your account", "c
 SUCCESSFULLY_SHARED = {"message": "Project successfully shared", "code": 200}
 SUCCESSFULLY_REMOVED_PROJECT_ACCESS = {"message": "Removed Project access successfully", "code": 200}
 
-PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Project successfully uploaded", "code": 200}
+PROJECT_SUCCESSFULLY_UPLOADED = {"message": "Successfully uploaded", "code": 200}
 PROJECT_SUCCESSFULLY_TRASHED = {"message": "Project successfully moved to trash", "code": 200}
 PROJECT_SUCCESSFULLY_RESTORED = {"message": "Project successfully restored from trash", "code": 200}
 PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code": 200}
