@@ -10,7 +10,7 @@ const colorScale = [
     "#afc556",
     "#448449",
     "#56c5af",
-    "#ffffff"
+    "#e8e8e8"
 ];
 
 function ColorPicker(data) {

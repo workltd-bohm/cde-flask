@@ -59,6 +59,9 @@
 
 .shader.star {
     fill : url("#gradient_shadow_sun");
+    /*fill: var(--cur-sun-default-bg);*/
+    /*stroke: rgba(250, 250, 250, 0.5);
+    stroke-width: 2;  */
     /*fill: none;*/
 }
 .shader.planet {

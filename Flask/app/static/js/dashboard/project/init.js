@@ -15,17 +15,17 @@ const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;
 
 const SUN_MIN_SIZE = 100;
-const SUN_SIZE_COEF = 4;
+const SUN_SIZE_COEF = 4; //g_SunRadius = frame/SUN_SIZE_COEF;
 const SUN_SCROLL_X_COEF = 2;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 1.2;
 
-const SUN_BG_RATIO = 1.5;
+const SUN_BG_RATIO = 1.5; //How much around the sun can be seen (used for effects)
 
 const PLANET_MAX_NUMBER_MIN = 9;
 const PLANET_MAX_NUMBER_MAX = 12;
 
-const PLANET_SUN_RATIO = 1.5;
+const PLANET_SUN_RATIO = 1.5; // g_PlanetRadius = g_SunRadius/PLANET_SUN_RATIO;
 const PLANET_MIN_MAX_COEF = 0.5;
 const PLANET_SHADOW_RAD = 0.7;
 const PLANET_ORBIT_COEF = 1.8;
@@ -52,7 +52,7 @@ const OVARLAY_DESELECT_RATIO = 0.8;
 const OVERLAY_SELECT_PLANET_RATIO = 1;
 
 const CHECKED_SELECT_RATIO = 1.2;
-const CHECKED_ALLGROUP_OFFSET = 2.5;
+const CHECKED_ALLGROUP_OFFSET = 2.5; //offset of Select All/Clear All in the Y direction -g_OverlayRadius * CHECKED_ALLGROUP_OFFSET
 
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;

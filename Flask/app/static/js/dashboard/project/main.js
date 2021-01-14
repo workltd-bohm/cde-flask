@@ -92,9 +92,10 @@ function AddSun(obj, data) {
             .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_COEF) + ", 0)"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
 
-    data.values.effect = data.values.this.append("circle")
+    //Milos commented this out on 14.01.2021
+    /*data.values.effect = data.values.this.append("circle")
         .attr("class", "star effect")
-        .attr("r", g_SunRadius * SUN_BG_RATIO);
+        .attr("r", g_SunRadius * SUN_BG_RATIO);*/
 
     data.values.children = data.values.this.append("g").attr("class", "star child");
 

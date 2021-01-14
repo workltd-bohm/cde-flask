@@ -19,10 +19,11 @@
 .remove-bar {
   display: none;
 }
-/*This is the Menu when it is collapsed*/
+/*This is the Menu on the right when it is collapsed
+Its color should be the same as the dashboard*/
 .menu-fixed.closed {
   width: 5%; /*5%*/
-  background-color: #121212;
+  background-color: var(--cur-dashboard-bg);
   transition: all 0.3s;
 }
 .menu-fixed.closed > a .material-icons.back {
