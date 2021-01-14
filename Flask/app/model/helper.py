@@ -48,3 +48,11 @@ def get_iso_tags():
             order = 9
         filter_file[key] = {'elements': elements, 'name': name, 'order': order}
     return filter_file
+
+
+def get_iso_filename(file_ic):
+    # TODO fix the check by ,
+    tag_code_list = [x['tag'].split(',')[0][1:].replace("_", ".") for x in file_ic.to_json()['tags'] if ',' in x['tag']]
+    file_name = file_ic.name + file_ic.type
+    iso_name = '-'.join(tag_code_list) + '_' + file_name
+    return iso_name

@@ -790,6 +790,33 @@ class DBMongoAdapter:
         self._close_connection()
         return stored_file
 
+    def get_file_size(self, stored_id, asstr):
+        Files = self._db.fs.files
+        file_query = {"file_id": stored_id}
+        file_json = Files.find_one(file_query, {"_id": 0})
+        if not file_json: return msg.STORED_FILE_NOT_FOUND
+        size = int(file_json['length'])
+        unit = 0
+        while len(str(size).split('.')[0]) > 3:
+            size = round(size / 1024, 2)
+            unit += 1
+
+        if unit == 0:
+            unit = 'B'
+        elif unit == 1:
+            unit = 'KB'
+        elif unit == 2:
+            unit = 'MB'
+        elif unit == 3:
+            unit = 'GB'
+            
+        if asstr:
+            try:
+                size = str(size) + ' ' + unit
+            except:
+                size = str(size) + ' ' + str(unit)
+        return size
+
     def change_color(self, file_obj):
         col = self._db.Projects
         project_query = {'project_name': file_obj["project_name"]}

@@ -100,6 +100,10 @@ def get_post_file(db_adapter, request_json):
     return db_adapter.get_post_file(request_json)
 
 
+def get_file_size(db_adapter, stored_id, asstr=False):
+    return db_adapter.get_file_size(stored_id, asstr)
+
+
 def change_color(db_adapter, file_obj):
     return db_adapter.change_color(file_obj)
 
