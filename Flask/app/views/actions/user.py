@@ -110,3 +110,19 @@ def get_profile_image(image_id):
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+@app.route('/upload_new_profile_picture', methods=['POST'])
+def updateProfilePicture():
+    if 'newProfilePicture' not in request.files:
+        logger.log(LOG_LEVEL, "no image present in request")
+        return redirect(request.url)
+    newProfilePicture = request.files['newProfilePicture']
+    
+    picturesOriginalName = newProfilePicture.filename
+    picturesOriginalExtension = picturesOriginalName.split('.')[-1]
+
+    print("name of image = ", picturesOriginalName)
+
+    import os
+    newProfilePicture.save("newProfileImage." + picturesOriginalExtension)
+    return redirect(url_for('uploaded_file', filename=picturesOriginalName))
