@@ -15,7 +15,7 @@ g_OverSearch = [
 
 g_OverFolder = [
     { name: "DETAILS", icon: "preview", link: WrapOpenFile },
-    // { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
+    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
     { name: "TRASH", icon: "delete", link: WrapTrash },
@@ -29,7 +29,7 @@ g_OverFolder = [
 
 g_OverFile = [
     { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
-    // { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
+    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
     { name: "RENAME", icon: "create", link: WrapRename },
     { name: "TRASH", icon: "delete", link: WrapTrash },

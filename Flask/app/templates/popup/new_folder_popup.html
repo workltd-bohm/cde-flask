@@ -1,52 +1,23 @@
-<h3>New folder/Upload folder(s), file(s)</h3>
-<div class="popup-tab">
-  <div class="popup-box" id="filter-newfile-tab" onclick="TabSwap('newfile')">
-    <p>New Folder</p>
-  </div>
-  <div class="popup-box" id="filter-upload-tab" onclick="TabSwap('upload')">
-    <p>Upload Folder(s)/File(s)</p>
-  </div>
-</div>
+<h3>New folder</h3>
 
 <div class="popup-tab-div">
   <div class="scroll">
-  <div class="popup-view">
-    <div id="popup-newfile">
+    <div class="popup-view">
+      <div id="popup-newfile">
 
-      <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
-      <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
-      <input type="hidden" name="project_name" value="{{ project_name }}" required />
-      <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
-      <br>
-      <div class="form__group field">
-        <input type="text" class="form__field" id="new_name" name="new_name" required />
-        <label for="new_name" class="form__label">Folder name</label>
-      </div>
-      <br>
-      <input type="button" class="keypress" value="Upload" onclick="FormSubmit('create_dir', null, true, CreateProject)" />
-
-    </div>
-  </div>
-  </div>
-</div>
-
-<div class="popup-tab-div">
-  <div class="scroll">
-  <div class="popup-view">
-    <div id="popup-upload" style="display: none;">
-
-      <div id="dropAreaFolders" class="area">
-
-        <p>Drop your folder/files here!</p>
-      <input id="file" type="file" title="If you want to select folder, empty folders inside will not be uploaded.
-      In order to enable that functionality, please use drag&drop" directory allowdirs webkitdirectory multiple/>
+        <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+        <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
+        <input type="hidden" name="project_name" value="{{ project_name }}" required />
+        <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
+        <br>
+        <div class="form__group field">
+          <input type="text" class="form__field" id="new_name" name="new_name" required />
+          <label for="new_name" class="form__label">Folder name</label>
+        </div>
+        <br>
+        <input type="button" class="keypress" value="Create" onclick="FormSubmit('create_dir', null, true, CreateProject)" />
 
       </div>
-      <br>
-      <span id="listing"></span>
-      <span id="box"></span>
-      <span id="wait"></span>
-
     </div>
   </div>
 </div>

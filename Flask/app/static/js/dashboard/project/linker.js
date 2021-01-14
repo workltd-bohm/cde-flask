@@ -44,8 +44,8 @@ function WrapOpenFile(data, open = true) {
 function WrapCreateFile(data) {
     var tmp = data.values.data;
     //console.log(tmp);
-    //    PopupOpen(NewFile, tmp);
-    OpenFileDialog(tmp);
+    PopupOpen(NewFile, tmp);
+    // OpenFileDialog(tmp);
 }
 
 function WrapRename(data) {

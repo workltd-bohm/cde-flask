@@ -53,15 +53,15 @@ function NewFolder(form, json) {
             form.empty();
             form.append(html);
 
-            listing = document.getElementById('listing');
-            box = document.getElementById('box');
-            dropArea = document.getElementById("dropAreaFolders");
-            dropArea.addEventListener("dragover", dragHandler);
-            dropArea.addEventListener("dragleave", dragLeave);
-            dropArea.addEventListener("change", filesDroped);
-            dropArea.addEventListener("drop", filesDroped);
+            // listing = document.getElementById('listing');
+            // box = document.getElementById('box');
+            // dropArea = document.getElementById("dropAreaFolders");
+            // dropArea.addEventListener("dragover", dragHandler);
+            // dropArea.addEventListener("dragleave", dragLeave);
+            // dropArea.addEventListener("change", filesDroped);
+            // dropArea.addEventListener("drop", filesDroped);
 
-            folders_only = true;
+            // folders_only = true;
 
             LoadStop();
         },
@@ -196,8 +196,18 @@ function NewFile(form, json, file) {
             form.empty();
             form.append(html);
 
-            FileDataInit();
-            OnFileUpload(file);
+            listing = document.getElementById('listing');
+            box = document.getElementById('box');
+            dropArea = document.getElementById("dropAreaFolders");
+            dropArea.addEventListener("dragover", dragHandler);
+            dropArea.addEventListener("dragleave", dragLeave);
+            dropArea.addEventListener("change", filesDroped);
+            dropArea.addEventListener("drop", filesDroped);
+
+            folders_only = true;
+
+            // FileDataInit();
+            // OnFileUpload(file);
 
             LoadStop();
         },
