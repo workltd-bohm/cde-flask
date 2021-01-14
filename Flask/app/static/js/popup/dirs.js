@@ -517,6 +517,7 @@ function DownloadMulti(path, multi) {
     LoadStart();
     var link = document.createElement('a');
     link.href = path + JSON.stringify(multi);
+    console.log(link.href);
     link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
@@ -539,11 +540,14 @@ function DownloadIC(path, name) {
 function DownloadICs(json) {
     var o = Object.values(CHECKED);
     var multi = [];
+    
     for (var i = 0; i < o.length; i++) multi.push({
         parent_id: o[i].parent_id,
         ic_name: (!o[i].is_directory) ? o[i].name + o[i].type : o[i].name
     });
+
     console.log(multi);
+    
     if (o.length > 0) {
         if (o.length == 1) {
             console.log(o[0]);

@@ -325,12 +325,14 @@ def get_ic_multi(json_obj):
         request_data = json.loads(json_obj)
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
         if db.connect(db_adapter):
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
             project = Project.json_to_obj(response)
             path = os.getcwd() + '\\'
             millis = int(round(time.time() * 1000))
+
             try:
                 if not os.path.exists(path + 'tmp\\'):
                     os.mkdir(path + 'tmp\\')
@@ -341,6 +343,7 @@ def get_ic_multi(json_obj):
             except OSError as err:
                 print("Creation of the directory %s failed" % path + '\n' + err)
                 logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
+
             for req in request_data:
                 project.current_ic = None
                 project.added = False

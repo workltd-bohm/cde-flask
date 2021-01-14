@@ -49,6 +49,8 @@
                     <br>
                     <p><b style="color:  #b0b0b0;">Name:</b></p>
                     <p>{{ file_name }}</p>
+                    <p><b style="color:  #b0b0b0;">Full name:</b></p>
+                    <p>{{ full_name }}</p>
                     <p><b style="color:  #b0b0b0;">Size:</b></p>
                     <p>{{ size }}</p>
                     <p><b style="color:  #b0b0b0;">Full Path:</b></p>
@@ -64,7 +66,7 @@
                     {% for detail in details %}
                       <div class="details_field">
                           <div class="user-details-container">
-                            <img class="img-details" src="/get_profile_image/{{ profile_picture }}" />
+                            <img class="img-details" src="/get_profile_image/{{ user['profile_picture'] }}" />
                             <div class="user-details-event-date">
                                 <p class="details_event_user">{{ detail['user']['username'] }}</p>
                                 <p class="details_event_name">{{ detail['event_name'] }}</p>
@@ -90,7 +92,7 @@
                       <br>
                     </div>
                     <div class="img-comment-container">
-                    <img class="profile-icon" src="/get_profile_image/{{ profile_picture }}"/>
+                    <img class="profile-icon" src="/get_profile_image/{{ user['profile_picture'] }}"/>
                     <div id="makecommentsDiv" class="autocomplete">
                       <div class="comment-send-container">
                         <div class="comment-send-container"><textarea id="comment" rows="2" onkeypress="commentOnProject(event)" onkeydown="commentOnProject(event)" placeholder="Comment..."></textarea><img class="send-icon" src="{{ url_for('static', filename='img/send.png') }}" onclick="sendCommentPress()"/>
@@ -201,7 +203,7 @@
                               <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
                               <p class="details_event date-columne" >Accessebility date</p>
                               {% endif %}
-                              {% if 'OWNER' not in a['role'] and user_id != a['user']['user_id'] %}
+                              {% if 'OWNER' not in a['role'] and user['user_id'] != a['user']['user_id'] %}
                               <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
                               {% endif %}
                             </div>

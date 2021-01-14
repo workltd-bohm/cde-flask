@@ -3,6 +3,7 @@ import json
 from app import *
 
 import app.views.actions.getters as gtr
+import app.model.helper as helper
 
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
@@ -17,12 +18,6 @@ def get_open_file():
             project_name = session['project']['name']
             result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
-                details = [x.to_json() for x in result.history]
-                tags = [x.to_json() for x in result.tags]
-                file_name = result.name + result.type
-                path = result.path
-                share_link = 'http://bohm.cloud/get_shared_file/' + file_name
-                comments = [x.to_json() for x in result.comments]
                 access = [x.to_json() for x in result.access]
                 for a in access:
                     a['role'] = Role(a['role']).name
@@ -30,31 +25,42 @@ def get_open_file():
                     a['user']['picture'] = user['picture']
                     a['user']['username'] = user['username']
 
+                comments = [x.to_json() for x in result.comments]
                 for c in comments:
                     m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
+                file_name =         result.name + result.type
+                file_iso_name =     helper.get_iso_filename(result)
+                file_details =      [x.to_json() for x in result.history]
+                file_tags =         [x.to_json() for x in result.tags]
+                file_size =         db.get_file_size(db_adapter, result.stored_id, True)
+                file_path =         result.path
+                file_share_link =   'http://bohm.cloud/get_shared_file/' + file_name
+
+                print(session.get('user'))
                 response = {
                     'html': render_template("popup/open_file.html",
                                             preview='/get_shared_file/' + name + type
                                             ),
                     'activity': render_template("activity/filter_files.html",
-                                                profile_picture=session['user']['picture'],
-                                                user_id=session['user']['id'],
-                                                details=details,
-                                                tags=tags,
-                                                file_name=file_name,
-                                                path=path,
-                                                share_link=share_link,
-                                                comments=comments,
-                                                project_name=project_name,
-                                                parent_id=result.parent_id,
-                                                ic_id=result.ic_id,
-                                                stored_id=result.stored_id,
-                                                name=name+type,
-                                                access=access,
-                                                complex_tags=gtr.get_input_file_fixed()
+                                                user =              session.get('user'),
+                                                details =           file_details,
+                                                tags =              file_tags,
+                                                file_name =         file_name,
+                                                name =              name+type,
+                                                full_name =         file_iso_name,
+                                                path =              file_path,
+                                                share_link =        file_share_link,
+                                                comments =          comments,
+                                                project_name =      project_name,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                stored_id =         result.stored_id,
+                                                access =            access,
+                                                complex_tag_list =  gtr.get_input_file_fixed(),
+                                                size =              file_size
                                                 ),
                     'data': []
                 }
@@ -194,6 +200,7 @@ def get_new_folder():
 
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
+    print('\n\n\n\n we are trying to upload a file \n\n')
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -207,14 +214,14 @@ def get_new_file():
                 filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
-                                            project_path=request_data["project_path"],
-                                            parent_id=request_data["parent_id"],
-                                            ic_id=request_data["ic_id"],
-                                            project_name=project_name,
-                                            project_code=user['project_code'],
-                                            company_code=user['company_code'],
-                                            is_file=request_data["is_file"],
-                                            inputs=filter_file
+                                            project_path =  request_data["project_path"],
+                                            parent_id =     request_data["parent_id"],
+                                            ic_id =         request_data["ic_id"],
+                                            project_name =  project_name,
+                                            project_code =  user['project_code'],
+                                            company_code =  user['company_code'],
+                                            is_file =       request_data["is_file"],
+                                            inputs =        filter_file
                                             ),
                     'data': []
                 }

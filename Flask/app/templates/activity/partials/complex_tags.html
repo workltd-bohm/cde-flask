@@ -1,14 +1,30 @@
 <form class="complex_tags" id="complex_tags" onchange="updateComplexTags();">
-    {% for key, value in complex_tags.items() %}
     <div class="form__group field">
+        <label for="project_code" class="form__label">Project Code</label>
+        <select class="form__field" name="project_code" id="project_code" required disabled>
+            <option>{{ user['project_code'] }}</option>
+        </select>
+    </div>
+
+    <div class="form__group field">
+        <label for="company_code" class="form__label">Company Code</label>
+        <select class="form__field" name="company_code" id="company_code" required disabled>
+            <option>{{ user['company_code'] }}</option>
+        </select>
+    </div>
+
+    {% for key, value in complex_tag_list.items() %}
+    <div class="form__group field">
+        <label for="{{ key }}" class="form__label">{{ value.name }}</label>
         <select class="form__field" name="{{ key }}" id='{{ key }}' required >
             <option></option>
             {% for val in value.elements %}
-            <option {% for tag in tags %}{{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}{% endfor %} 
+            <option {% for tag in tags %}
+                        {{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}
+                    {% endfor %} 
                 value="{{ val }}">{{ val }}</option>
             {% endfor %}
         </select>
-        <label for="{{ key }}" class="form__label">{{ value.name }}</label>
     </div>
     {% endfor %}
 </form>
