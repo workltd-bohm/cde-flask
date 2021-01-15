@@ -129,7 +129,7 @@ Its color should be the same as the dashboard*/
 /*This is the transition logo of the menu*/
 .menu-fixed .logo span {
   display: block;
-  background: var(--side-menu-logo-bg);
+  background: var(--cur-dashboard-bg);
   position: absolute;
   margin: auto;
   left: 0;
@@ -137,18 +137,18 @@ Its color should be the same as the dashboard*/
   top: 50vh;
   width: 0;
   height: 0;
-  border-left: 15px solid rgb(232, 232, 232);
-  border-right: 15px solid rgb(18, 18, 18);
-  border-top: 15px solid rgba(0, 0, 0, 0);
-  border-bottom: 15px solid rgba(0, 0, 0, 0);
+  border-left: 15px solid var(--cur-activity-arrow);
+  border-right: 15px solid var(--cur-dashboard-bg);
+  border-top: 15px solid var(--cur-dashboard-bg);/*rgba(0, 0, 0, 0);*/
+  border-bottom: 15px solid var(--cur-dashboard-bg); /*rgba(0, 0, 0, 0);*/
   transition: all 0.2s;
   transform: rotateZ(-180deg) translateX(10px);
   -webkit-transform: rotateZ(-180deg) translateX(10px);
-  background: var(--side-menu-logo-bg-right);
+  background: var(--cur-dashboard-bg);
 }
 
 .menu-right .logo  span {
-    background: /*var(--side-menu)*/ #121212;
+    background: /*var(--side-menu)*/ --cur-dashboard-bg;
   /*border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
 }
 
@@ -177,7 +177,7 @@ Its color should be the same as the dashboard*/
   display: block;
   width: 0;
   height: 0;
-  border-left: 8px solid #121212;
+  border-left: 8px solid var(--cur-dashboard-bg);
   /*border-right: 8px solid rgb(232, 232, 232);*/
   border-top: 8px solid rgba(0, 0, 0, 0);
   border-bottom: 8px solid rgba(0, 0, 0, 0);
@@ -200,7 +200,7 @@ Its color should be the same as the dashboard*/
 }*/
 
 .menu-left .logo:hover > span::after {
-  border-left: 8px solid var(--cur-left-side-menu); /*This is the little arrow of the logo when hovered*/
+  border-left: 8px solid var(--cur-dashboard-bg); /*This is the little arrow of the logo when hovered*/
 }
 
 /*This is the little text under the Logo text - not used at the moment*/

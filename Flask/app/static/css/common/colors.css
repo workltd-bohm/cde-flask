@@ -23,6 +23,9 @@
     --activity-tab-title-bg: #cccccc; /*e1e1e1*/
     --activity-tab-title-bg-light: #cccccc;
 
+    --activity-arrow: #e8e8e8; /*e1e1e1*/
+    --activity-arrow-light: #121212;
+
     --left-side-menu: #121212;
     --left-side-menu-light: #545454;
 
@@ -45,4 +48,5 @@
     --cur-activity-menu-bg:var(--activity-menu-bg);
     --cur-activity-tab-title-bg:var(--activity-tab-title-bg);
     --cur-dashboard-text: var(--dashboard-text);
+    --cur-activity-arrow: var(--activity-arrow);
 }
