@@ -12,6 +12,8 @@ from app.model.file import File
 from app.model.details import Details
 from app.model.comment import Comments
 from app.model.project import Project
+from app.model.site import Site
+from app.model.building import Building
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role

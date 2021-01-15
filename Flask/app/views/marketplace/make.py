@@ -1,6 +1,8 @@
 from app import *
 from uuid import uuid1
 
+import app.views.actions.getters as gtr
+
 @app.route('/make_ticket_bid', methods=['POST'])
 def make_ticket_bid():
     resp = Response()
@@ -422,3 +424,109 @@ def get_my_posts_popup():
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/get_filter_activity', methods=['POST'])
+def get_filter_activity():
+    resp = Response()
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        name = request_data['name']
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
+        if name == 'Projects':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        if name == 'Shared':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        if db.connect(db_adapter):
+            result = None
+            if request_data['project_name'] == 'Shared':
+                result = db.get_ic_object_from_shared(db_adapter, request_data, session['user'])
+            else:
+                project_name = session['project']['name']
+                result = db.get_ic_object(db_adapter, project_name, request_data, name)
+            if result:
+                filter_file = gtr.get_input_file_fixed()
+                details = [x.to_json() for x in result.history]
+                tags = [x.to_json() for x in result.tags]
+                file_name = result.name
+                path = result.path
+                share_link = ''
+                comments = [x.to_json() for x in result.comments]
+                access = [x.to_json() for x in result.access]
+                is_owner = False
+                for a in access:
+                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                        is_owner = True
+                    a['role'] = Role(a['role']).name
+                    m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+                    a['user']['picture'] = user['picture']
+                    a['user']['username'] = user['username']
+
+                for c in comments:
+                    m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
+                    c['user']['picture'] = user['picture']
+                    c['user']['username'] = user['username']
+
+                if result.parent_id == 'root':
+                    project = db.get_project(db_adapter, session['project']['name'], session['user'])
+                    response = {
+                        'html': render_template("activity/activity_menu_project.html",
+                                                project_name=session.get("project")["name"],
+                                                profile_picture=session['user']['picture'],
+                                                user_id=session['user']['id'],
+                                                is_owner=str(is_owner),
+                                                is_iso19650=project['is_iso19650'],
+                                                project=project,
+                                                details=details,
+                                                tags=tags,
+                                                comments = comments,
+                                                file_name=file_name,
+                                                path=path,
+                                                share_link=share_link,
+                                                parent_id=result.parent_id,
+                                                ic_id=result.ic_id,
+                                                access=access
+                                                ),
+                        'data': []
+                    }
+                else:
+
+                    response = {
+                        'html': render_template("activity/filter_folders.html",
+                                                project_name=session.get("project")["name"],
+                                                profile_picture=session['user']['picture'],
+                                                user_id=session['user']['id'],
+                                                search=filter_file,
+                                                details=details,
+                                                tags=tags,
+                                                comments = comments,
+                                                file_name=file_name,
+                                                path=path,
+                                                share_link=share_link,
+                                                parent_id=result.parent_id,
+                                                ic_id=result.ic_id,
+                                                access=access
+                                                ),
+                        'data': []
+                    }
+                # print(response)
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+                return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+

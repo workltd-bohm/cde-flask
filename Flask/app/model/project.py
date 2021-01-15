@@ -21,8 +21,14 @@ class Project:
         self._code = ''
         self._number = ''
         self._status = ''
+        self._notes = ''
+        self._ref = ''
+        self._originator = ''
+        self._disclaimer = ''
+        self._custom = ''
         self._site = Site('', '', '', '', '')
         self._building = Building('', '')
+        self._is_iso19650 = False
         self._added = False
         self._deleted = False
         self._message = ""
@@ -101,6 +107,46 @@ class Project:
         self._status = value
 
     @property
+    def notes(self):
+        return self._notes
+
+    @notes.setter
+    def notes(self, value):
+        self._notes = value
+
+    @property
+    def ref(self):
+        return self._ref
+
+    @ref.setter
+    def ref(self, value):
+        self._ref = value
+
+    @property
+    def originator(self):
+        return self._originator
+
+    @originator.setter
+    def originator(self, value):
+        self._originator = value
+
+    @property
+    def disclaimer(self):
+        return self._disclaimer
+
+    @disclaimer.setter
+    def disclaimer(self, value):
+        self._disclaimer = value
+
+    @property
+    def custom(self):
+        return self._custom
+
+    @custom.setter
+    def custom(self, value):
+        self._custom = value
+
+    @property
     def site(self):
         return self._site
 
@@ -115,6 +161,14 @@ class Project:
     @building.setter
     def building(self, value):
         self._building = value
+
+    @property
+    def is_iso19650(self):
+        return self._is_iso19650
+
+    @is_iso19650.setter
+    def is_iso19650(self, value):
+        self._is_iso19650 = value
 
     def update_file(self, file, ic=None):
         if not ic:
@@ -522,7 +576,13 @@ class Project:
             'number': self._number,
             'status': self._status,
             'site': self._site.to_json(),
-            'building': self._building.to_json()
+            'building': self._building.to_json(),
+            'is_iso19650': self._is_iso19650,
+            'notes': self._notes,
+            'ref': self._ref,
+            'originator': self._originator,
+            'disclaimer': self._disclaimer,
+            'custom': self._custom
         }
 
     @staticmethod
@@ -576,6 +636,12 @@ class Project:
         project.status = json_file['status']
         project.site = Site.json_to_obj(json_file['site'])
         project.building = Building.json_to_obj(json_file['building'])
+        project.is_iso19650 = json_file['is_iso19650']
+        project.notes = json_file['notes']
+        project.ref = json_file['ref']
+        project.originator = json_file['originator']
+        project.disclaimer = json_file['disclaimer']
+        project.custom = json_file['custom']
         return project
 
     def extract_files(self, ic, files):

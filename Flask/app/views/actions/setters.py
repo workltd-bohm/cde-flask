@@ -626,3 +626,68 @@ def activate_undo():
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/set_project_config', methods=['POST'])
+def set_project_config():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            result = db.get_project(db_adapter, request_data['project_name'], session['user'])
+            
+            if result:
+                project = Project.json_to_obj(result)
+
+                project.name = request_data['project-name-activity']
+                project.description = request_data['project-description-activity']
+                project.code = request_data['project-code-activity']
+                project.number = request_data['project-number-activity']
+                project.status = request_data['project-status-activity']
+                project.notes = request_data['project-notes-activity']
+                project.ref = request_data['project-ref-activity']
+                project.originator = request_data['originator-activity']
+                project.disclaimer = request_data['disclaimer-activity']
+                project.custom = request_data['project-custom-activity']
+
+                site = Site(request_data['site-name-activity'], 
+                            request_data['site-description-activity'], 
+                            request_data['site-full-address-activity'],
+                            request_data['site-gross-perimeter-activity'],
+                            request_data['site-gross-area-activity'])
+                site.custom = request_data['site-custom-activity']
+
+                building = Building(request_data['building-name-activity'],
+                                    request_data['building-description-activity'])
+                building.custom = request_data['building-custom-activity']
+
+                
+                project.site = site
+                project.building = building
+
+                project.is_iso19650 = request_data['iso19650']
+
+                message = db.update_project(db_adapter, project, session['user'])
+
+                resp = Response()
+                resp.status_code = message["code"]
+                resp.data = message['message']
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND["code"]
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
