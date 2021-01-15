@@ -19,7 +19,7 @@
         <div class="project-view">
           <div id="filter-details" style="display: none;">
             <form id="filter-form-details">
-              <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+              <h6 class="tab-title" id="open-toggle" onclick="openToggle('tags')">Tags</h6>
               <div class="activity-tab-container" id="tags">
                   <div class="activity-tab-container-inside" id="activity-tag-container">
                       <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tag">
@@ -44,7 +44,7 @@
 
           </div>
 
-                <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoIC()">details</h6>
+                <h6 class="tab-title" id="open-toggle" onclick="openToggle('ic')">details</h6>
                 <div class="activity-tab-container" id="ic">
                     <br>
                     <p><b style="color:  #b0b0b0;">Name:</b></p>
@@ -60,7 +60,7 @@
                     <br>
                 </div>
 
-                <h6 class="tab-title id="open-toggle" onclick="openToggleInfoHistory()">History</h6>
+                <h6 class="tab-title id="open-toggle" onclick="openToggle('history')">History</h6>
                 <div class="activity-tab-container" id="history">
                     <br>
                     {% for detail in details %}

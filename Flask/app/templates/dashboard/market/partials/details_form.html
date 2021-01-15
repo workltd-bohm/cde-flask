@@ -23,7 +23,7 @@
 
         {% if post is not defined %}
         <!-- create post tags -->
-        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+        <h6 class="tab-title" id="open-toggle" onclick="openToggle('tags')">Tags</h6>
         <div class="activity-tab-container" id="tags">
             <div class="activity-tab-container-inside" id="activity-tag-container">
                 <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event, true);" placeholder="Add tags here..">
@@ -32,7 +32,7 @@
         </div>
         {% else %}
         <!-- edit post tags -->
-        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
+        <h6 class="tab-title" id="open-toggle" onclick="openToggle('tags')">Tags</h6>
         <div class="activity-tab-container" id="tags">
             <div class="activity-tab-container-inside" id="activity-tag-container">
                 <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tags here..">
