@@ -123,9 +123,9 @@ div.content > .form > .scroll {
     border: 0;
     border-bottom: 2px solid #9b9b9b;
     outline: 0;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #777;
-    padding: 7px 0;
+    padding: 10px 0;
     background: transparent;
     transition: border-color 0.2s;
 }
@@ -133,7 +133,7 @@ div.content > .form > .scroll {
     color: transparent;
 }
 .form__field:placeholder-shown ~ .form__label {
-    font-size: 1.3rem;
+    font-size: 1rem;
     cursor: text;
     top: 20px;
 }
@@ -144,7 +144,7 @@ div.content > .form > .scroll {
     display: block;
     transition: 0.2s;
     font-size: 1rem;
-    color: #9b9b9b;
+    color: #7a7a7a;
 }
 
 .form__field:focus {
