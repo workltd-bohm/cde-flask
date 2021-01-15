@@ -484,12 +484,29 @@ function addTagInArrayIfMissing(element, array) {
     array.indexOf(element) === -1 ? array.push(element) : console.log("This item already exists in the local array");
 }
 
+let iso_number = "ISO 19650";
+function checkISOCompilant(){
+    let form = $("#complex_tags");
+    let elem = $("#iso_compilant");
+    let color = 'green';
+    let is_compilant = ' ';
+    form.serializeArray().map(function(x) { 
+        if (x.name !== "uniclass_2015") {
+            if (x.value === ""){
+                color = 'red';
+                is_compilant = ' not ';
+            }  
+        }
+    });
+
+    elem.css("color", color);
+    elem.text(iso_number + is_compilant + 'compilant');
+}
+
 function updateComplexTags(element) {
     let form = $("#complex_tags");
     args = {}
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
-    console.log(SESSION.position);
-    console.log(args);
 
     if (!SESSION) {
         alert("Error. No active session found.")
@@ -515,6 +532,7 @@ function updateComplexTags(element) {
             LoadStop();
             refreshTags();
             // TODO update current tags (append complex tags to normal tags)
+            checkISOCompilant();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

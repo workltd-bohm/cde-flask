@@ -86,6 +86,39 @@ function ShareProject(data) {
     });
 }
 
+function ProjectConfigSubmit() {
+    var form = $("#filter-form-project-conf");
+
+    if (!CheckAval(form)) return;
+    var d = { project_name: SESSION['name'], 'iso19650': $('#iso19650-checkbox').prop('checked') };
+    form.serializeArray().map(function(x) { d[x.name] = x.value; });
+    // if (!args) args = d;
+    //    console.log(args);
+    console.log(d);
+
+    LoadStart();
+    $.ajax({
+        url: '/set_project_config',
+        type: 'POST',
+        data: JSON.stringify(d),
+        //dataType: "json",
+        processData: false,
+        contentType: false,
+        timeout: 5000,
+        success: function(data) {
+            MakeSnackbar(data);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
 var folders_only = false;
 var counter = 1;
 var total = 0;

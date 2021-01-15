@@ -42,7 +42,7 @@ def get_open_file():
                 print(session.get('user'))
                 response = {
                     'html': render_template("popup/open_file.html",
-                                            preview='/get_shared_file/' + name + type
+                                            preview = '/get_shared_file/' + name + type
                                             ),
                     'activity': render_template("activity/filter_files.html",
                                                 user =              session.get('user'),
