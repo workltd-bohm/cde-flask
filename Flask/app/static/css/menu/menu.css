@@ -200,7 +200,7 @@ Its color should be the same as the dashboard*/
 }*/
 
 .menu-left .logo:hover > span::after {
-  border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
+  border-left: 8px solid var(--cur-left-side-menu); /*This is the little arrow of the logo when hovered*/
 }
 
 /*This is the little text under the Logo text - not used at the moment*/
@@ -265,11 +265,13 @@ Its color should be the same as the dashboard*/
   line-height: 30px;
   text-shadow: 1px 1px 8px #fff;
 }
+/*This is the tooltip when we hover over the left side Menu icon
+At the moment the colors follows the planet text color*/
 .menu-link.tooltip:hover .info-tooltip {
   display: block !important;
   z-index: 999;
   position: relative;
-  color: #fff;
+  color: var(--cur-dashboard-text);
   left: 2vw;
   top: 2vh;
   overflow: visible;
@@ -304,7 +306,7 @@ Its color should be the same as the dashboard*/
 }
 
 .menu-left{
-    background-color: var(--left-side-menu);
+    background-color: var(--cur-left-side-menu);
     height: 100%;
 }
 

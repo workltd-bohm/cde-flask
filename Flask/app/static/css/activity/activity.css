@@ -118,7 +118,7 @@ p.details_date {
 .tab-title {
     width: 100%;
     text-align: center;
-    background-color: #cccccc;
+    background-color: var(--cur-activity-tab-title-bg);
     padding-top: 5px;
     padding-bottom: 5px;
     text-transform: uppercase;

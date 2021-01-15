@@ -20,7 +20,7 @@ const SUN_SCROLL_X_COEF = 2;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 1.2;
 
-const SUN_BG_RATIO = 1.5; //How much around the sun can be seen (used for effects)
+const SUN_BG_RATIO = 1; //How much around the sun can be seen (used for effects) - 1.5 if you want to see the shadow
 
 const PLANET_MAX_NUMBER_MIN = 9;
 const PLANET_MAX_NUMBER_MAX = 12;
