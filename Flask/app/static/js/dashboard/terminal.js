@@ -291,6 +291,7 @@ function addTag(terminal, buffer = false) {
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
+            iso: 'simple',
             tags: terminal
         } : {
             post_id: post_id,
@@ -528,7 +529,7 @@ function updateComplexTags(element) {
             project_name: ic.project_name,
             ic_id: ic.ic_id,
             parent_id: ic.parent_id,
-            is_complex: true,
+            iso: 'ISO19650',
             tags: args
         }),
         timeout: 5000,

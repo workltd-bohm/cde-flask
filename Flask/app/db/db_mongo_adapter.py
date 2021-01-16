@@ -7,7 +7,7 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
-from app.model.tag import Tags
+from app.model.tag import SimpleTag, ISO19650
 import app.model.messages as msg
 from app.model.helper import get_iso_tags
 import json
@@ -1388,7 +1388,7 @@ class DBMongoAdapter:
 
         if post_json: 
             post = Post.json_to_obj(post_json)
-            message = post.add_tag(request_data['tags']) # <- check if post already has this tag, and add it
+            message = post.add_tag(request_data['tags'], request_data) # <- check if post already has this tag, and add it
             if message == msg.TAG_SUCCESSFULLY_ADDED:
                 # check if tag is not duplicate in db
                 col_posts.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
@@ -1566,7 +1566,7 @@ class DBMongoAdapter:
                     if not obj in tags_json[tag]:
                         # print('accepted.')
                         tags_json[tag].append(obj)
-                        ic.tags.append(Tags(tag, 'gray'))
+                        ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
                         break
 
         # update

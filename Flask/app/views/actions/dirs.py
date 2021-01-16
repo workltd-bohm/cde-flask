@@ -31,7 +31,7 @@ def get_file_name():
                     # for t in ic.tags:
                     #     print(t.to_json())
                     name = helper.get_iso_filename(ic) + request_json['type']
-                    print(name)
+                    # print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}
                 logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
                 resp = Response()

@@ -1,7 +1,7 @@
 from .details import Details
 from .comment import Comments
 from .role import Role
-from .tag import Tags
+from app.model.tag import Tags, SimpleTag, ISO19650
 from .access import Access
 from .directory import Directory
 from .site import Site
@@ -408,7 +408,7 @@ class Project:
         if request['parent_id'] == 'root':
             for i in range(1, len(tags)):
                 if tags[i].startswith('#'):
-                    t = Tags(tags[i])
+                    t = SimpleTag(tags[i], request['iso'])
                     if i < len(tags)-1:
                         if not tags[i + 1].startswith('#'):
                             t.color = tags[i+1]
@@ -425,7 +425,7 @@ class Project:
                 if sub_f.ic_id == request['ic_id']:
                     for i in range(1, len(tags)):
                         if tags[i].startswith('#'):
-                            t = Tags(tags[i])
+                            t = SimpleTag(tags[i], request['iso'])
                             if i < len(tags)-1:
                                 if not tags[i + 1].startswith('#'):
                                     t.color = tags[i + 1]
@@ -587,6 +587,12 @@ class Project:
 
     @staticmethod
     def json_folders_to_obj(json_file):
+        tags = []
+        for tag in json_file['tags']:
+            if tag['iso'] == 'ISO19650':
+                tags.append(ISO19650.json_to_obj(tag))
+            else:
+                tags.append(Tags.json_to_obj(tag))
         if json_file['is_directory']:
             root = Directory(json_file['ic_id'],
                              json_file['name'],
@@ -596,7 +602,7 @@ class Project:
                              json_file['parent_id'],
                              json_file['color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
-                             [Tags.json_to_obj(x) for x in json_file['tags']],
+                             tags,
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                              [Access.json_to_obj(x) for x in json_file['access']])
         else:
@@ -610,7 +616,7 @@ class Project:
                         json_file['parent_id'],
                         json_file['color'],
                         [Comments.json_to_obj(x) for x in json_file['comments']],
-                        [Tags.json_to_obj(x) for x in json_file['tags']],
+                        tags,
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         [Access.json_to_obj(x) for x in json_file['access']],
                         json_file['stored_id'],
