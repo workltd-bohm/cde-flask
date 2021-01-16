@@ -11,22 +11,72 @@ import time
 from app import *
 
 from pathlib import Path
+import app.model.helper as helper
 
 
-@app.route('/get_file/<path:file_name>', methods=['POST', 'GET'])
-def get_file(file_name):
+@app.route('/get_file_name', methods=['POST', 'GET'])
+def get_file_name():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_json = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json)) 
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            project_name = session.get("project")["name"]
+            result = db.get_project(db_adapter, project_name, session['user'])
+            if result:
+                project = Project.json_to_obj(result)
+                name = request_json['file_name'] + request_json['type']
+                if project.is_iso19650:
+                    ic = project.find_ic_by_id(request_json, request_json['ic_id'], project.root_ic)
+                    # for t in ic.tags:
+                    #     print(t.to_json())
+                    name = helper.get_iso_filename(ic) + request_json['type']
+                    print(name)
+                response = {'name': name, 'is_iso19650': project.is_iso19650}
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_file/<path:ic_id>', methods=['POST', 'GET'])
+def get_file(ic_id):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
-                        'file_name': file_name}
+                        'ic_id': ic_id}
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, request_json['file_name'])
+            result = db.get_file(db_adapter, request_json['ic_id'])
             if result:
+                project_name = session.get("project")["name"]
+                pr = db.get_project(db_adapter, project_name, session['user'])
+                if pr:
+                    project = Project.json_to_obj(pr)
+                    print('is ISO19650 comliant', project.is_iso19650)
+                    result.file_name = 'nesto'
                 # logger.log(LOG_LEVEL, result.file_name)
                 response = make_response(result.read())
-                # response.mimetype = result.file_name.split('.')[-1]
+                response.mimetype = result.file_name
                 return response
             else:
                 logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
@@ -560,7 +610,7 @@ def json_to_temp_folder_struct(path, ic):
             json_to_temp_folder_struct(path + ic.name + '\\', sub_folder)
     else:
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, ic.name + ic.type)
+            result = db.get_file(db_adapter, ic.ic_id)
             if result:
                 # print(result.file_name)
                 response = result.read()

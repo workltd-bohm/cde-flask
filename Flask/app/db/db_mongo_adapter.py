@@ -303,7 +303,8 @@ class DBMongoAdapter:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name+file_obj.type, 
+                                                        file_name=file_obj.name+file_obj.type,
+                                                        ic_id=file_obj.ic_id, 
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
@@ -330,7 +331,8 @@ class DBMongoAdapter:
                         if file:
                             file_obj.stored_id = str(self._fs.put(file,
                                                             file_id='default',
-                                                            file_name=file_obj.name+file_obj.type, 
+                                                            file_name=file_obj.name+file_obj.type,
+                                                            ic_id=file_obj.ic_id, 
                                                             parent=file_obj.parent,
                                                             parent_id=file_obj.parent_id,
                                                             description=file_obj.description,
@@ -747,9 +749,9 @@ class DBMongoAdapter:
             users_trash.find_one_and_delete(user_query)
         return
 
-    def get_file(self, file_name):
+    def get_file(self, ic_id):
         stored_file = None
-        for grid_out in self._fs.find({"file_name": file_name}, no_cursor_timeout=True):
+        for grid_out in self._fs.find({"ic_id": ic_id}, no_cursor_timeout=True):
             stored_file = grid_out
         self._close_connection()
         return stored_file

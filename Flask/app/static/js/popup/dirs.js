@@ -540,21 +540,23 @@ function DownloadIC(path, name) {
 function DownloadICs(json) {
     var o = Object.values(CHECKED);
     var multi = [];
-    
+
     for (var i = 0; i < o.length; i++) multi.push({
         parent_id: o[i].parent_id,
         ic_name: (!o[i].is_directory) ? o[i].name + o[i].type : o[i].name
     });
 
     console.log(multi);
-    
+    console.log(o);
+    console.log(json);
+
     if (o.length > 0) {
         if (o.length == 1) {
             console.log(o[0]);
             if (o[0].is_directory) {
                 DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
             } else {
-                DownloadIC("/get_file/" + o[0].name + o[0].type, o[0].name + o[0].type);
+                GetNameAndDownloadIC(o[0])
             }
         } else {
             DownloadMulti("/get_ic_multi/", multi);
@@ -563,7 +565,47 @@ function DownloadICs(json) {
         if (json.is_directory) {
             DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
         } else {
-            DownloadIC("/get_file/" + json.name + json.type, json.name + json.type);
+            GetNameAndDownloadIC(json)
+                // DownloadIC("/get_file/" + json.ic_id, json.name + json.type);
         }
     }
+}
+
+function GetNameAndDownloadIC(o) {
+    $.ajax({
+        url: "/get_file_name",
+        type: 'POST',
+        data: JSON.stringify({
+            project_id: o.project_id,
+            parent_id: o.parent_id,
+            ic_id: o.ic_id,
+            file_name: o.name,
+            type: o.type
+        }),
+        timeout: 5000,
+        success: function(data) {
+            console.log(data);
+            input_json2 = JSON.parse(data);
+            name = input_json2['name'];
+            is_iso19650 = input_json2['is_iso19650']
+            if (is_iso19650) {
+                if (checkISOCompilant()) {
+                    DownloadIC("/get_file/" + o.ic_id, name);
+                } else {
+                    MakeSnackbar('Your file is not ISO 19650 compliant, although it has to be, Please tag it!');
+                }
+            } else {
+                DownloadIC("/get_file/" + o.ic_id, name);
+            }
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
 }
