@@ -361,7 +361,7 @@ function refreshTags() {
                 if (!data[i].tag.includes(",")) {
                     createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
                 }
-            } 
+            }
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -485,22 +485,26 @@ function addTagInArrayIfMissing(element, array) {
 }
 
 let iso_number = "ISO 19650";
-function checkISOCompilant(){
+
+function checkISOCompilant() {
     let form = $("#complex_tags");
     let elem = $("#iso_compilant");
     let color = 'green';
     let is_compilant = ' ';
-    form.serializeArray().map(function(x) { 
+    let response = true;
+    form.serializeArray().map(function(x) {
         if (x.name !== "uniclass_2015") {
-            if (x.value === ""){
+            if (x.value === "") {
                 color = 'red';
                 is_compilant = ' not ';
-            }  
+                response = false;
+            }
         }
     });
 
     elem.css("color", color);
     elem.text(iso_number + is_compilant + 'compilant');
+    return response
 }
 
 function updateComplexTags(element) {
@@ -524,6 +528,7 @@ function updateComplexTags(element) {
             project_name: ic.project_name,
             ic_id: ic.ic_id,
             parent_id: ic.parent_id,
+            is_complex: true,
             tags: args
         }),
         timeout: 5000,
