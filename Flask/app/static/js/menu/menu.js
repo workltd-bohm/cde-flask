@@ -1,6 +1,5 @@
 
 $( document ).ready(function(){
-    //$("li[class='menu-link'][href*='/']").click(function(){location.href= $(this).attr("href");});
     $("li").click(function(){
         if ($(this).hasClass("menu-link")){
             if ($(this).attr('href')){
@@ -9,9 +8,9 @@ $( document ).ready(function(){
         }
     });
 
-    $(".menu-fixed > .open").click(function(d){
-        $(this).parent().addClass("opend");
-        $(this).parent().removeClass("closed");
+    $(".activity-button").click(function(){
+        $(".activity-menu").removeClass("closed");
+        $(".activity-menu").addClass("opend");
     });
     
     $(".menu-fixed > .close").click(function(d){

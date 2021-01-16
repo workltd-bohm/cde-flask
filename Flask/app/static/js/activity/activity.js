@@ -1,3 +1,7 @@
+$(document).ready(function(){
+
+});
+
 function OpenActivity(html, head = null, open = true) {
     if (html) ACTIVITY.html(html);
     if (head) {
