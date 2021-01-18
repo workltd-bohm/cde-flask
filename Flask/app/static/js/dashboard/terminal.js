@@ -487,24 +487,29 @@ function addTagInArrayIfMissing(element, array) {
 
 let iso_number = "ISO 19650";
 
-function checkISOCompilant() {
+function checkISOCompliant() {
     let form = $("#complex_tags");
-    let elem = $("#iso_compilant");
+    let elem = $("#iso_compliant");
     let color = 'green';
-    let is_compilant = ' ';
+    let is_compliant = ' ';
     let response = true;
     form.serializeArray().map(function(x) {
         if (x.name !== "uniclass_2015") {
             if (x.value === "") {
                 color = 'red';
-                is_compilant = ' not ';
+                is_compliant = ' not ';
                 response = false;
             }
         }
     });
+    if ($("#project_code").val() === "" || $("#company_code").val() === "") {
+        color = 'red';
+        is_compliant = 'not ';
+        response = false;
+    }
 
     elem.css("color", color);
-    elem.text(iso_number + is_compilant + 'compilant');
+    elem.text(is_compliant + iso_number + 'compliant');
     return response
 }
 
@@ -538,7 +543,7 @@ function updateComplexTags(element) {
             LoadStop();
             refreshTags();
             // TODO update current tags (append complex tags to normal tags)
-            checkISOCompilant();
+            checkISOCompliant();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

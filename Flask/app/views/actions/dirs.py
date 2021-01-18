@@ -28,9 +28,10 @@ def get_file_name():
                 name = request_json['file_name'] + request_json['type']
                 if project.is_iso19650:
                     ic = project.find_ic_by_id(request_json, request_json['ic_id'], project.root_ic)
-                    # for t in ic.tags:
-                    #     print(t.to_json())
-                    name = helper.get_iso_filename(ic) + request_json['type']
+                    for t in ic.tags:
+                        # S1-M0-CP-H-3201.0-S0-P01_testtxt1.txt
+                        print(t.to_json())
+                    name = helper.get_iso_filename(ic, result, session['user'])
                     # print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}
                 logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
@@ -161,7 +162,7 @@ def get_folder(parent_id, folder_name):
             except OSError as err:
                 logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
             path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
-            json_to_temp_folder_struct(path, ic)
+            json_to_temp_folder_struct(path, ic, response)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
 
@@ -600,21 +601,21 @@ def path_to_dict(path):
     return d
 
 
-def json_to_temp_folder_struct(path, ic):
+def json_to_temp_folder_struct(path, ic, project):
     if ic.is_directory:
         try:
             os.mkdir(path + ic.name)
         except OSError:
             print("Creation of the directory %s failed" % path)
         for sub_folder in ic.sub_folders:
-            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder)
+            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder, project)
     else:
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, ic.ic_id)
             if result:
                 # print(result.file_name)
                 response = result.read()
-                f = open(path + ic.name + ic.type, "wb+")
+                f = open(path + helper.get_iso_filename(ic, project, session['user']), "wb+")
                 f.write(response)
                 f.close()
             else:

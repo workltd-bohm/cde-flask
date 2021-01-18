@@ -22,6 +22,8 @@ function OpenFile(form, json, file, open) {
 
             FilterSwap('details');
 
+            checkISOCompliant();
+
             LoadStopPreview();
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -589,11 +591,11 @@ function GetNameAndDownloadIC(o) {
             name = input_json2['name'];
             is_iso19650 = input_json2['is_iso19650']
             if (is_iso19650) {
-                if (checkISOCompilant()) {
-                    DownloadIC("/get_file/" + o.ic_id, name);
-                } else {
-                    MakeSnackbar('Your file is not ISO 19650 compliant, although it has to be, Please tag it!');
-                }
+                // if (checkISOCompliant()) {
+                DownloadIC("/get_file/" + o.ic_id, name);
+                // } else {
+                //     MakeSnackbar('Your file is not ISO 19650 compliant, although it has to be, Please tag it!');
+                // }
             } else {
                 DownloadIC("/get_file/" + o.ic_id, name);
             }

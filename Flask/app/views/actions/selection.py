@@ -350,7 +350,7 @@ def get_ic_multi(json_obj):
                 ic = project.find_ic(req, req['ic_name'], project.root_ic)
                 if ic:
                     path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\BOHM_download\\'
-                    dirs.json_to_temp_folder_struct(path, ic)
+                    dirs.json_to_temp_folder_struct(path, ic, response)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip', 'w', zipfile.ZIP_DEFLATED)
             # zip_buffer.seek(0)

@@ -18,6 +18,7 @@ def get_open_file():
             project_name = session['project']['name']
             result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
+                project = db.get_project(db_adapter, project_name, session['user'])
                 access = [x.to_json() for x in result.access]
                 for a in access:
                     a['role'] = Role(a['role']).name
@@ -32,7 +33,7 @@ def get_open_file():
                     c['user']['username'] = user['username']
 
                 file_name =         result.name + result.type
-                file_iso_name =     helper.get_iso_filename(result)
+                file_iso_name =     helper.get_iso_filename(result, project, session['user'])
                 file_details =      [x.to_json() for x in result.history]
                 file_tags =         [x.to_json() for x in result.tags]
                 file_size =         db.get_file_size(db_adapter, result.stored_id, True)
@@ -60,7 +61,8 @@ def get_open_file():
                                                 stored_id =         result.stored_id,
                                                 access =            access,
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
-                                                size =              file_size
+                                                size =              file_size,
+                                                project_code =      project['code']
                                                 ),
                     'data': []
                 }
