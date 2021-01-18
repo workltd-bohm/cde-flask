@@ -120,7 +120,7 @@ def updateProfilePicture():
     
     picturesOriginalName = newProfilePicture.filename
     picturesOriginalExtension = picturesOriginalName.split('.')[-1]
-    print("name of image = ", picturesOriginalName)
+    logger.log(LOG_LEVEL, 'Original name of uploaded image = :: {}'.format(picturesOriginalName))
 
     user = session.get('user')
     username = user['username']
@@ -138,8 +138,7 @@ def updateProfilePicture():
                 # put picture in the database and get the insertion id
                 message, file_id = db.upload_profile_image(db_adapter, picUpdate_request_json, newProfilePicture)
                 if message == msg.IC_SUCCESSFULLY_ADDED:
-                    print("added picture to db with id : ", file_id)
-
+                    logger.log(LOG_LEVEL, 'Added new picture to db with id :: {}'.format(file_id))
                     # update user account with this new id
                     json_user['picture'] = file_id
                     message = db.edit_user(db_adapter, json_user)
@@ -152,9 +151,10 @@ def updateProfilePicture():
                         # remove picture with the old id from the database
                         
                     else:
-                        print("couldn't update db")
+                        logger.log(LOG_LEVEL, 'Could not update picture id of user in db')
+
                 else:
-                    print("could not insert image into db")
+                    logger.log(LOG_LEVEL, 'Could not insert image into db')
 
             resp.status_code = message['code']
             resp.data = str(message['message'])
