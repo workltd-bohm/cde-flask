@@ -120,9 +120,46 @@ def updateProfilePicture():
     
     picturesOriginalName = newProfilePicture.filename
     picturesOriginalExtension = picturesOriginalName.split('.')[-1]
-
     print("name of image = ", picturesOriginalName)
 
-    import os
-    newProfilePicture.save("newProfileImage." + picturesOriginalExtension)
-    return redirect(url_for('uploaded_file', filename=picturesOriginalName))
+    user = session.get('user')
+    username = user['username']
+    oldPictureId = user['picture']
+
+    resp = Response()
+    if main.IsLogin():
+        picUpdate_request_json = {'file_name': picturesOriginalName, 'type': picturesOriginalName.split('.')[:-1], 'user': username}
+        user_data = session.get('user')
+        original_picture_id = user_data['picture']
+        if db.connect(db_adapter):
+            user_id_json = {'id': user_data["id"]}
+            message, json_user = db.get_user(db_adapter, user_id_json)
+            if message == msg.LOGGED_IN:
+                # put picture in the database and get the insertion id
+                message, file_id = db.upload_profile_image(db_adapter, picUpdate_request_json, newProfilePicture)
+                if message == msg.IC_SUCCESSFULLY_ADDED:
+                    print("added picture to db with id : ", file_id)
+
+                    # update user account with this new id
+                    json_user['picture'] = file_id
+                    message = db.edit_user(db_adapter, json_user)
+
+                    if message == msg.ACCOUNT_CHANGED:
+                        json_user.pop('password', None)
+                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        session['user'] = json_user
+                        session.modified = True
+                        # remove picture with the old id from the database
+                        
+                    else:
+                        print("couldn't update db")
+                else:
+                    print("could not insert image into db")
+
+            resp.status_code = message['code']
+            resp.data = str(message['message'])
+            return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
