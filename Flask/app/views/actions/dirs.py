@@ -98,16 +98,16 @@ def get_file(ic_id):
     return resp
 
 
-@app.route('/get_shared_file/<path:file_name>', methods=['POST', 'GET'])
-def get_shared_file(file_name):
+@app.route('/get_shared_file/<path:ic_id>', methods=['POST', 'GET'])
+def get_shared_file(ic_id):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
-                        'file_name':file_name}
+                        'ic_id': ic_id}
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, request_json['file_name'])
+            result = db.get_file(db_adapter, request_json['ic_id'])
             if result:
                 # logger.log(LOG_LEVEL, result.file_name)
                 resp = Response(result.file_name)

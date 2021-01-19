@@ -10,9 +10,10 @@ def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         name = request_data['name']
         type = request_data['type']
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        ic_id = request_data['ic_id']
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
@@ -40,11 +41,18 @@ def get_open_file():
                 file_path =         result.path
                 file_share_link =   'http://bohm.cloud/get_shared_file/' + file_name
 
-                print(session.get('user'))
+                # print(session.get('user'))
+                if result.type == '.pdf':
+                    html = render_template("popup/open_file_pdf.html",
+                                            preview = '/get_shared_file/' + ic_id,
+                                            file_name = file_name
+                                            )
+                else:
+                    html = render_template("popup/open_file.html",
+                                            preview = '/get_shared_file/' + ic_id
+                                            )
                 response = {
-                    'html': render_template("popup/open_file.html",
-                                            preview = '/get_shared_file/' + name + type
-                                            ),
+                    'html': html,
                     'activity': render_template("activity/filter_files.html",
                                                 user =              session.get('user'),
                                                 details =           file_details,
