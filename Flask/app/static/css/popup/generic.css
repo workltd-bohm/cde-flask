@@ -88,7 +88,7 @@ div.preview>div.content {
     position: absolute;
     z-index: 2;
     top: 50%;
-    left: 38.5%;
+    left: 38.6%;
     transform: translate(-50%, -50%);
     background-color: var(--cur-activity-menu-bg);
     margin: auto;
