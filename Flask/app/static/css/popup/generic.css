@@ -88,14 +88,14 @@ div.preview>div.content {
     position: absolute;
     z-index: 2;
     top: 50%;
-    left: 39%;
+    left: 38.5%;
     transform: translate(-50%, -50%);
     background-color: var(--cur-activity-menu-bg);
     margin: auto;
     padding: 5px;
-    /*border: 1px solid #888;/
-    /border-radius: 25px;*/
-    width: 78%;
+    /*border: 1px solid #888;*/
+    /*border-radius: 25px;*/
+    width: 76%;
     height: 100%;
     overflow: unset;
 }
