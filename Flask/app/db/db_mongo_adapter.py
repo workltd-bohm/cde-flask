@@ -254,29 +254,8 @@ class DBMongoAdapter:
         if project_json:
             project = Project.json_to_obj(project_json)
             if file:
-                # file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                #                                             "file_name": file_obj.name+file_obj.type,
-                #                                             "file": file,
-                #                                             "description": file_obj.description})
-                #                         .inserted_id)
-                # print('delete', {'ic_id': file_obj.ic_id})
-                # r = col_chunks.bulk_write([DeleteMany({'files_id': file_obj.stored_id})])
-                # tried delete_many, delete_one, delete (for GridFS obj)
-                r = col_chunks.remove({"files_id": file_obj.stored_id})
-                # print(r.bulk_api_result, " documents deleted.")
-                # print(r.deleted_count, " documents deleted.")
-                # print('delete', {'file_id': file_obj.stored_id})
-                # print(self._fs.exists({'file_id': file_obj.stored_id}))
+                r = col_chunks.delete_many({"files_id": ObjectId(file_obj.stored_id)})
                 r = col_file.remove({'file_id': file_obj.stored_id})
-                # print(self._fs.exists({'file_id': file_obj.stored_id}))
-                # print('is deleted', r)
-                
-                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
-                # print(r, " documents deleted.")
-                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
-                # print(r.deleted_count, " documents deleted.")
-                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
-                # print(r.deleted_count, " documents deleted.")
                 file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
                                                         file_name=file_obj.name+file_obj.type, 
@@ -288,7 +267,7 @@ class DBMongoAdapter:
                                                         ))
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                project.update_file(file_obj) # TODO: NOT OK, also needs old chunk delete inside
+                project.update_file(file_obj)
             else:
                 file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} 
                 # print(file_query)
