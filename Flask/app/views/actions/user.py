@@ -122,14 +122,12 @@ def updateProfilePicture():
     picturesOriginalExtension = picturesOriginalName.split('.')[-1]
     logger.log(LOG_LEVEL, 'Original name of uploaded image = :: {}'.format(picturesOriginalName))
 
-    user = session.get('user')
-    username = user['username']
-    oldPictureId = user['picture']
 
     resp = Response()
     if main.IsLogin():
-        picUpdate_request_json = {'file_name': picturesOriginalName, 'type': picturesOriginalName.split('.')[:-1], 'user': username}
         user_data = session.get('user')
+        username = user_data['username']
+        picUpdate_request_json = {'file_name': picturesOriginalName, 'type': picturesOriginalName.split('.')[:-1], 'user': username}
         original_picture_id = user_data['picture']
         if db.connect(db_adapter):
             user_id_json = {'id': user_data["id"]}
@@ -149,7 +147,11 @@ def updateProfilePicture():
                         session['user'] = json_user
                         session.modified = True
                         # remove picture with the old id from the database
-                        
+                        delMsg = db.delete_profile_image(db_adapter, original_picture_id)
+                        if delMsg != msg.IC_SUCCESSFULLY_REMOVED :
+                            logger.log(LOG_LEVEL, 'Could not remove original profile picture with id {}'.format(original_picture_id))
+                        else:
+                            logger.log(LOG_LEVEL, 'Removed original profile picture with id {}'.format(original_picture_id))
                     else:
                         logger.log(LOG_LEVEL, 'Could not update picture id of user in db')
 
