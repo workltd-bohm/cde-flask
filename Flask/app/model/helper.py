@@ -59,17 +59,20 @@ def get_iso_filename(file_ic, project, user):
             tag_code_list[tag['key']] = tag['tag'].split(',')[0][1:].replace("_", ".")
     file_name = file_ic.name + file_ic.type
     # iso_name = '-'.join(tag_code_list) + '_' + file_name
-    try:
-        iso_name = project['code'] + '-' \
-                    + user['company_code'] + '-' \
-                    + tag_code_list['project_volume_or_system'] + '-' \
-                    + tag_code_list['project_level'] + '-' \
-                    + tag_code_list['type_of_information'] + '-' \
-                    + tag_code_list['role_code'] + '-' \
-                    + tag_code_list['file_number'] + '-' \
-                    + tag_code_list['status'] + '-' \
-                    + tag_code_list['revision'] \
-                    + '_' + file_name
-    except:
+    if project['is_iso19650']:
+        try:
+            iso_name = project['code'] + '-' \
+                        + user['company_code'] + '-' \
+                        + tag_code_list['project_volume_or_system'] + '-' \
+                        + tag_code_list['project_level'] + '-' \
+                        + tag_code_list['type_of_information'] + '-' \
+                        + tag_code_list['role_code'] + '-' \
+                        + tag_code_list['file_number'] + '-' \
+                        + tag_code_list['status'] + '-' \
+                        + tag_code_list['revision'] \
+                        + '_' + file_name
+        except:
+            iso_name = file_name
+    else:
         iso_name = file_name
     return iso_name

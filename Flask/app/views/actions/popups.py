@@ -14,6 +14,7 @@ def get_open_file():
         name = request_data['name']
         type = request_data['type']
         ic_id = request_data['ic_id']
+        parent_id = request_data['parent_id']
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
@@ -39,17 +40,20 @@ def get_open_file():
                 file_tags =         [x.to_json() for x in result.tags]
                 file_size =         db.get_file_size(db_adapter, result.stored_id, True)
                 file_path =         result.path
-                file_share_link =   'http://bohm.cloud/get_shared_file/' + file_name
+                file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
 
                 # print(session.get('user'))
                 if result.type == '.pdf':
                     html = render_template("popup/open_file_pdf.html",
-                                            preview = '/get_shared_file/' + ic_id,
-                                            file_name = file_name
+                                            preview =      '/get_shared_file/' + result.stored_id,
+                                            file_name =    file_name,
+                                            project_name = project_name,
+                                            parent_id =    parent_id,
+                                            ic_id =        ic_id
                                             )
                 else:
                     html = render_template("popup/open_file.html",
-                                            preview = '/get_shared_file/' + ic_id
+                                            preview = '/get_shared_file/' + result.stored_id
                                             )
                 response = {
                     'html': html,

@@ -75,5 +75,6 @@ PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code
 
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
 FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}
+FILE_SUCCESSFULLY_UPDATED = {"message": "File successfully updated", "code": 200}
 
 USER_NO_RIGHTS = {"message": "Permission denied. User has no rights.", "code": 401}

@@ -173,7 +173,7 @@ class Project:
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic
-        if not ic.is_directory:
+        if ic.is_directory:
             for x in ic.sub_folders:
                 self.update_file(file, x)
                 if self._added:
@@ -181,7 +181,7 @@ class Project:
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
-                # print(ic.to_json())
+                print("ovdeeeeeee", ic.to_json())
                 self._added = True
 
         return self, self._added

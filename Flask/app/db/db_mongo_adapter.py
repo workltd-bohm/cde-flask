@@ -1,4 +1,5 @@
 from pymongo import *
+# from pymongo import DeleteMany
 import gridfs
 from pymongo.errors import ConnectionFailure
 import uuid
@@ -247,6 +248,7 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
+        col_chunks = self._db.fs.chunks
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -257,12 +259,31 @@ class DBMongoAdapter:
                 #                                             "file": file,
                 #                                             "description": file_obj.description})
                 #                         .inserted_id)
+                # print('delete', {'ic_id': file_obj.ic_id})
+                # r = col_chunks.bulk_write([DeleteMany({'files_id': file_obj.stored_id})])
+                # tried delete_many, delete_one, delete (for GridFS obj)
+                r = col_chunks.remove({"files_id": file_obj.stored_id})
+                # print(r.bulk_api_result, " documents deleted.")
+                # print(r.deleted_count, " documents deleted.")
+                # print('delete', {'file_id': file_obj.stored_id})
+                # print(self._fs.exists({'file_id': file_obj.stored_id}))
+                r = col_file.remove({'file_id': file_obj.stored_id})
+                # print(self._fs.exists({'file_id': file_obj.stored_id}))
+                # print('is deleted', r)
+                
+                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
+                # print(r, " documents deleted.")
+                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
+                # print(r.deleted_count, " documents deleted.")
+                # r = col_chunks.delete_many({'files_id': file_obj.stored_id})
+                # print(r.deleted_count, " documents deleted.")
                 file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
                                                         file_name=file_obj.name+file_obj.type, 
+                                                        ic_id=file_obj.ic_id,
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
-                                                        description=file_obj.description,
+                                                        description='file_obj.description',
                                                         from_project=True
                                                         ))
                 col_file.update_one({'file_id': 'default'},
@@ -287,7 +308,7 @@ class DBMongoAdapter:
             col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
         self._close_connection()
-        return msg.DEFAULT_OK
+        return msg.FILE_SUCCESSFULLY_UPDATED
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
@@ -327,7 +348,7 @@ class DBMongoAdapter:
                         # # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
                         # file_obj.stored_id = str(col_file.insert_one(file_json)
                         #                 .inserted_id)
-                        file = self.get_file(file_json["file_name"])
+                        file = self.get_file({'file_name': file_json["file_name"]})
                         if file:
                             file_obj.stored_id = str(self._fs.put(file,
                                                             file_id='default',
@@ -749,9 +770,10 @@ class DBMongoAdapter:
             users_trash.find_one_and_delete(user_query)
         return
 
-    def get_file(self, ic_id):
+    def get_file(self, request):
         stored_file = None
-        for grid_out in self._fs.find({"ic_id": ic_id}, no_cursor_timeout=True):
+        print('get_file', request)
+        for grid_out in self._fs.find(request, no_cursor_timeout=True):
             stored_file = grid_out
         self._close_connection()
         return stored_file

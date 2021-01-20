@@ -7,9 +7,93 @@
 
 			content:{location: { url: "{{ preview }}" }},
 			metaData:{fileName: "{{ file_name }}" }
-		}, {});
+		}, { showAnnotationTools: true });
 
 
+		/* Options to control save behavior */
+		const saveOptions = {
+								autoSaveFrequency: 0,
+								enableFocusPolling: false,
+								showSaveButton: true
+							}
+
+		/* Register save callback */
+		adobeDCView.registerCallback(
+			AdobeDC.View.Enum.CallbackType.SAVE_API,
+			function(metaData, content, options) {
+				/* Write down your own save implementation here... and based on that resolve or reject response in given format */
+				
+				/* Save callback success case */
+				//uploadFile(content);
+				return new Promise((resolve, reject) => {
+					uploadFile(content);
+					
+					resolve({
+						code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+						data: {
+						metaData: Object.assign(metaData, {fileName: "{{ file_name }}" })
+						}
+					});
+				});
+
+				/* Save callback failure case */
+				/* return new Promise((resolve, reject) => {
+					reject({
+						code: AdobeDC.View.Enum.ApiResponseCode.FAIL,
+						data: {
+							<Optional>
+						}
+					});
+					}); */
+
+				/* Save callback file modified case */
+				/* return new Promise((resolve, reject) => {
+					resolve({
+						code: AdobeDC.View.Enum.ApiResponseCode.FILE_MODIFIED,
+						data: {
+							modifiedBy: {
+							name: <Username of the user who modified the file>,
+							mail: <Email of the user who modified the file>,
+							}
+						}
+					});
+					}); */
+			},
+			saveOptions
+		);
 
 	});
+
+	function uploadFile(content){
+		var fdUploadFile = new FormData();
+		fdUploadFile.append('data', JSON.stringify({
+												file_name: '{{ file_name }}',
+												project_name: '{{ project_name }}',
+												parent_id: '{{ parent_id }}',
+												ic_id: '{{ ic_id }}'
+											})
+		);
+		blob = new Blob([new Uint8Array(content, 0, content.length)]);
+		fdUploadFile.append('file', blob);
+
+		$.ajax({
+			url: "/update_file",
+			type: 'POST',
+			data: fdUploadFile,
+			processData: false,
+        	contentType: false,
+			timeout: 5000,
+			success: function(data) {
+				console.log(data);
+				MakeSnackbar(data);
+			},
+			error: function($jqXHR, textStatus, errorThrown) {
+				console.log(errorThrown + ": " + $jqXHR.responseText);
+				MakeSnackbar($jqXHR.responseText);
+				if ($jqXHR.status == 401) {
+					location.reload();
+				}
+			}
+		}).then();
+	}
 </script>
