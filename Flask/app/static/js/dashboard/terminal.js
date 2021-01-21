@@ -631,13 +631,15 @@ function terminalAutocomplete(inp, arr) {
                     }
                 }
                 // console.log(currValArray);
-                if (currValArray[0].startsWith('#')) {
-                    console.log(currValArray);
-                    searchByTag(currValArray);
-                } else {
-                    if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                if (currentArr.length > 0) {
+                    if (currValArray[0].startsWith('#')) {
                         console.log(currValArray);
-                        searchByName(currValArray);
+                        searchByTag(currValArray);
+                    } else {
+                        if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                            console.log(currValArray);
+                            searchByName(currValArray);
+                        }
                     }
                 }
             }
@@ -685,13 +687,15 @@ function terminalAutocomplete(inp, arr) {
                         currVal = x[currentFocus].getElementsByTagName('input')[0].value;
                         currValArray.push(currVal);
                         // console.log(currValArray);
-                        if (currValArray[0].startsWith('#')) {
-                            console.log(currValArray);
-                            searchByTag(currValArray);
-                        } else {
-                            if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                        if (currentArr.length > 0) {
+                            if (currValArray[0].startsWith('#')) {
                                 console.log(currValArray);
-                                searchByName(currValArray);
+                                searchByTag(currValArray);
+                            } else {
+                                if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                                    console.log(currValArray);
+                                    searchByName(currValArray);
+                                }
                             }
                         }
                     }
@@ -736,7 +740,7 @@ function terminalAutocomplete(inp, arr) {
         //    $(document).off("keydown");
     }
     document.addEventListener("click", function(e) {
-        $('#terminal-input').focus();
+        // $('#terminal-input').focus();
         terminalCloseAllLists(e.target);
         if ($('#terminal-input').is(":focus")) {
             // console.log($('#terminal-input').val());
@@ -760,8 +764,8 @@ function terminalAutocomplete(inp, arr) {
                     }
                 }
             }
-            // console.log(currValArray);
-            if (currentArr.length > 1) {
+            console.log(currValArray.length);
+            if (currentArr.length > 0) {
                 if (currValArray[0].startsWith('#')) {
                     console.log(currValArray);
                     searchByTag(currValArray);
