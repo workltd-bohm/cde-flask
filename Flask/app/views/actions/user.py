@@ -159,7 +159,10 @@ def updateProfilePicture():
                     logger.log(LOG_LEVEL, 'Could not insert image into db')
 
             resp.status_code = message['code']
-            resp.data = str(message['message'])
+            resp.data = json.dumps({
+                "message" : str(message['message']),
+                "new_profilePicture_id" : str(file_id)
+            })
             return resp
 
     resp.status_code = msg.UNAUTHORIZED['code']

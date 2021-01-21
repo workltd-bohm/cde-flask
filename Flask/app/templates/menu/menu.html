@@ -13,7 +13,7 @@
   <hr>
   </div>
   <ul class="menu">
-    <li class="menu-link tooltip" onclick="UserProfile()"><img class="profile-icon " src="/get_profile_image/{{ picture }}"/><!--<p class="info-tooltip">{{ username }}</p>--></li>
+    <li class="menu-link tooltip" onclick="UserProfile()"><img class="profile-icon " id="side_menu_profile_picture" src="/get_profile_image/{{ picture }}"/><!--<p class="info-tooltip">{{ username }}</p>--></li>
     <li class="menu-link tooltip" onclick="SelectProject()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_project.png')}}"/><p class="info-tooltip">Project</p></li>
     <li class="menu-link tooltip" onclick="SelectMarket()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_market.png')}}"/><p class="info-tooltip">Market</p></li>
     <li class="menu-link tooltip" onclick="Select3D()"><img class="side-menu-icon " src="{{url_for('static', filename='img/side_menu/icon_3d.png')}}"/><p class="info-tooltip">3D</p></li>

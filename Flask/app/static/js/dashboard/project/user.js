@@ -17,8 +17,24 @@ function uploadNewProfilePicture(e)
 
     formData = new FormData();
     formData.append("newProfilePicture", selectedImage);
-    fetch('/upload_new_profile_picture', {method: "POST", body: formData});
 
+    $.ajax({
+      url: 'upload_new_profile_picture',
+      data: formData,
+      processData: false,
+      contentType: false,
+      type: 'POST',
+      success: function(data){
+        data = JSON.parse(data);
+        newProfilePictureRequestUrl = "/get_profile_image/" + data['new_profilePicture_id'];
+        
+        profilePictureDiv = document.getElementById("currentProfilePictureDisplay");
+        profilePictureDiv.style.backgroundImage= "url(" + newProfilePictureRequestUrl + ")";
+      
+        sideMenuProfilePic = document.getElementById("side_menu_profile_picture");
+        sideMenuProfilePic.src = newProfilePictureRequestUrl;
+    }
+    });
     fileInput.value = '' //reset fileInput
 }
 
