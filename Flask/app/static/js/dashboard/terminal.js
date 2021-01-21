@@ -50,7 +50,7 @@ function terminalListen(el) {
 
     $('#terminal-input').val('');
 
-    // console.log(terminal);
+    console.log(terminal);
     // console.log(SESSION);
 
     switch (terminal[0]) {
@@ -609,14 +609,36 @@ function terminalAutocomplete(inp, arr) {
         if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 32) {
             if ($('#terminal-input').is(":focus")) {
-                currValArray = $('#terminal-input').val().split(' ');
+                // console.log($('#terminal-input').val());
+                if ($('#terminal-input').val().startsWith('#')) {
+                    currValArray = $('#terminal-input').val().split('#');
+                    // console.log(currValArray);
+                    for (i = 0; i < currValArray.length; i++) {
+                        if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                            currValArray[i] = "#" + currValArray[i]
+                        }
+                    }
+
+                } else {
+                    currValArray = $('#terminal-input').val().split(' ');
+                }
+                for (i = 0; i < currValArray.length; i++) {
+                    if (currValArray[i] == '') {
+                        currValArray.indexOf(currValArray[i])
+                        if (i !== -1) {
+                            currValArray.splice(i, 1);
+                        }
+                    }
+                }
+                // console.log(currValArray);
                 if (currValArray[0].startsWith('#')) {
                     console.log(currValArray);
                     searchByTag(currValArray);
-                }
-                if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
-                    console.log(currValArray);
-                    searchByName(currValArray);
+                } else {
+                    if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                        console.log(currValArray);
+                        searchByName(currValArray);
+                    }
                 }
             }
         }
@@ -639,17 +661,38 @@ function terminalAutocomplete(inp, arr) {
             if (currentFocus > -1) {
                 if (x) {
                     if ($('#terminal-input').is(":focus")) {
-                        currValArray = $('#terminal-input').val().split(' ');
+                        if ($('#terminal-input').val().startsWith('#')) {
+                            currValArray = $('#terminal-input').val().split('#');
+                            for (i = 0; i < currValArray.length; i++) {
+                                if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                                    currValArray[i] = "#" + currValArray[i]
+                                }
+                            }
+                        } else {
+                            currValArray = $('#terminal-input').val().split(' ');
+                        }
+                        // console.log(currValArray);
                         currValArray.splice(currValArray.length - 1);
+                        for (i = 0; i < currValArray.length; i++) {
+                            if (currValArray[i] == '') {
+                                currValArray.indexOf(currValArray[i])
+                                if (i !== -1) {
+                                    currValArray.splice(i, 1);
+                                }
+                            }
+                        }
+                        // console.log(currValArray);
                         currVal = x[currentFocus].getElementsByTagName('input')[0].value;
                         currValArray.push(currVal);
+                        // console.log(currValArray);
                         if (currValArray[0].startsWith('#')) {
                             console.log(currValArray);
                             searchByTag(currValArray);
-                        }
-                        if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
-                            console.log(currValArray);
-                            searchByName(currValArray);
+                        } else {
+                            if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                                console.log(currValArray);
+                                searchByName(currValArray);
+                            }
                         }
                     }
                     x[currentFocus].click();
@@ -693,7 +736,46 @@ function terminalAutocomplete(inp, arr) {
         //    $(document).off("keydown");
     }
     document.addEventListener("click", function(e) {
+        $('#terminal-input').focus();
         terminalCloseAllLists(e.target);
+        if ($('#terminal-input').is(":focus")) {
+            // console.log($('#terminal-input').val());
+            if ($('#terminal-input').val().startsWith('#')) {
+                currValArray = $('#terminal-input').val().split('#');
+                // console.log(currValArray);
+                for (i = 0; i < currValArray.length; i++) {
+                    if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                        currValArray[i] = "#" + currValArray[i]
+                    }
+                }
+
+            } else {
+                currValArray = $('#terminal-input').val().split(' ');
+            }
+            for (i = 0; i < currValArray.length; i++) {
+                if (currValArray[i] == '') {
+                    currValArray.indexOf(currValArray[i])
+                    if (i !== -1) {
+                        currValArray.splice(i, 1);
+                    }
+                }
+            }
+            // console.log(currValArray);
+            if (currentArr.length > 1) {
+                if (currValArray[0].startsWith('#')) {
+                    console.log(currValArray);
+                    searchByTag(currValArray);
+                } else {
+                    if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                        console.log(currValArray);
+                        searchByName(currValArray);
+                    }
+                    if (keyWordsArr.includes(currValArray[0])) {
+                        terminalListen(document);
+                    }
+                }
+            }
+        }
     });
 }
 
@@ -701,8 +783,10 @@ var searchArr = [];
 
 function searchByTag(currValArray) {
     //    tempArr = currValArray;
+    // console.log('search arr', searchArr);
+    // console.log('curr val arr', currValArray);
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('search');
+        console.log('searchByTag');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -733,14 +817,14 @@ function searchByTag(currValArray) {
             }
         });
     } else {
-        console.log('skipping search');
+        console.log('skipping searchByTag');
     }
 }
 
 function searchByName(currValArray) {
     //    tempArr = currValArray;
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('search');
+        console.log('searchByName');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -771,7 +855,7 @@ function searchByName(currValArray) {
             }
         });
     } else {
-        console.log('skipping search');
+        console.log('skipping searchByName');
     }
 }
 
