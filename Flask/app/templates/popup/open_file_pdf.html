@@ -7,7 +7,7 @@
 
 			content:{location: { url: "{{ preview }}" }},
 			metaData:{fileName: "{{ file_name }}" }
-		}, { showAnnotationTools: true });
+		}, { showAnnotationTools: true});
 
 
 		/* Options to control save behavior */
@@ -61,6 +61,25 @@
 			},
 			saveOptions
 		);
+
+		const profile = {
+			userProfile: {
+				name: "{{ user['username'] }}",
+				email: "{{ user['email'] }}"
+			}
+		};
+
+		adobeDCView.registerCallback(
+			AdobeDC.View.Enum.CallbackType.GET_USER_PROFILE_API,
+			function() {
+				return new Promise((resolve, reject) => {
+					resolve({
+						code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+						data: profile
+					});
+				});
+			},
+		{});
 
 	});
 

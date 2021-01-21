@@ -49,7 +49,8 @@ def get_open_file():
                                             file_name =    file_name,
                                             project_name = project_name,
                                             parent_id =    parent_id,
-                                            ic_id =        ic_id
+                                            ic_id =        ic_id,
+                                            user =         session['user']
                                             )
                 else:
                     html = render_template("popup/open_file.html",
