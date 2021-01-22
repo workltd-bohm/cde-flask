@@ -24,7 +24,7 @@ window.onload = function() {
     // console.log('a')
     if (typeof history.pushState === "function") {
         // console.log('here0.0');
-        // console.log(SESSION);
+        console.log(SESSION);
         //        SESSION['project'] = null;
         // history.pushState(SESSION, null, null);
         window.onpopstate = function() {

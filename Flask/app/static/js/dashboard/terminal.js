@@ -281,6 +281,9 @@ function addTag(terminal, buffer = false) {
     let project_name;
     if (SESSION['position']) { // todo when market has session, find another way to filter out
         project_name = SESSION['position'].project_name;
+        if (project_name == '') {
+            project_name = SESSION['name'];
+        }
     }
 
     $.ajax({
@@ -525,13 +528,15 @@ function updateComplexTags(element) {
 
     let ic = SESSION.position;
 
+    console.log(SESSION);
+
     // TODO only pass filled parameters
 
     $.ajax({
         url: "/update_iso_tags",
         type: 'POST',
         data: JSON.stringify({
-            project_name: ic.project_name,
+            project_name: SESSION['name'],
             ic_id: ic.ic_id,
             parent_id: ic.parent_id,
             iso: 'ISO19650',
@@ -741,7 +746,9 @@ function terminalAutocomplete(inp, arr) {
     }
     document.addEventListener("click", function(e) {
         terminalCloseAllLists(e.target);
+        console.log(currField.id);
         if (currField.id == 'terminal-input') {
+            currField = '';
             $('#terminal-input').focus();
             if ($('#terminal-input').val().startsWith('#')) {
                 currValArray = $('#terminal-input').val().split('#');
@@ -781,6 +788,7 @@ function terminalAutocomplete(inp, arr) {
         }
         if (currField.id == 'add-tag') {
             $('#add-tag').focus();
+            currField = '';
         }
     });
 }

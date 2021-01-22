@@ -9,6 +9,7 @@ from .building import Building
 from .file import File
 import app.model.messages as msg
 from datetime import datetime
+import re
 
 
 class Project:
@@ -205,11 +206,14 @@ class Project:
     def rename_ic(self, request_data, user, ic=None):
         if request_data['parent_id'] == 'root':
             ic.name = request_data['new_name']
-            details = Details(user, 'Renamed',
+            details = Details(user, 'Renamed project',
                                 datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                 request_data['old_name'] + ' to ' + request_data['new_name'])
-            ic.history.append(details)                        
-            ic.path = '/' + request_data['new_name']
+            ic.history.append(details)
+            self.rename_children(ic, request_data['new_name'])                        
+            ic.path = request_data['new_name']
+            ic.parent = '.'
+            self._added = True
             return msg.IC_SUCCESSFULLY_RENAMED
         if ic.ic_id == request_data['parent_id']:
             for sub_folder in ic.sub_folders:
@@ -230,9 +234,10 @@ class Project:
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                       name + ' to ' + new_name_backup)
                     sub_folder.history.append(details)
-                    sub_folder.name = new_name                        
+                    sub_folder.name = new_name
+                    self.rename_children(sub_folder, parent + '/' + request_data['new_name'])                        
                     sub_folder.path = parent + '/' + request_data['new_name']
-                    # ic.parent = parent # no need?
+                    sub_folder.parent = parent # no need?
                     self._message = msg.IC_SUCCESSFULLY_RENAMED
                     self._added = True
                     break
@@ -245,6 +250,13 @@ class Project:
         if not self._added:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
+
+    def rename_children(self, parent, new_parent_path):
+        for child in parent.sub_folders:
+            old_parent_path = '/'.join(child.path.split('/')[:-1])
+            child.path = re.sub( old_parent_path, new_parent_path, child.path)
+            child.parent = new_parent_path
+            self.rename_children(child, child.path)
 
     def trash_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:

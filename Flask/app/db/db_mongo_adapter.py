@@ -1349,6 +1349,7 @@ class DBMongoAdapter:
                                 if not already_exists:
                                     tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
                                                                   'project_name': request_data['project_name'],
+                                                                  'project_id': project.project_id,
                                                                   'parent_id': request_data['parent_id']})
 
                                 col_tags.update_one({'id': tags['id']}, {'$set': tags})
@@ -1360,6 +1361,7 @@ class DBMongoAdapter:
                             if request_tags[i].startswith('#'):
                                 tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                               'project_name': request_data['project_name'],
+                                                              'project_id': project.project_id,
                                                               'parent_id': request_data['parent_id']}]
 
                                 col_tags.update({'id': tags['id']}, {'$set': tag_json})
@@ -1371,6 +1373,7 @@ class DBMongoAdapter:
                         if request_tags[i].startswith('#'):
                             tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                           'project_name': request_data['project_name'],
+                                                          'project_id': project.project_id,
                                                           'parent_id': request_data['parent_id']}]
                     tag_json['id'] = 'tags_collection'
                     col_tags.insert_one(tag_json)
@@ -1454,6 +1457,7 @@ class DBMongoAdapter:
                         try:
                             tags[request_tag].remove({'ic_id': request_data['ic_id'],
                                                       'project_name': request_data['project_name'],
+                                                      'project_id': project.project_id,
                                                       'parent_id': request_data['parent_id']})
 
                             col_tags.update_one({'id': tags['id']}, {'$set': tags})
@@ -1538,6 +1542,7 @@ class DBMongoAdapter:
         obj = {
             'project_name': data['project_name'],
             'ic_id':        data['ic_id'],
+            'project_id':   project_json['project_id'],
             'parent_id':    data['parent_id']
         }
 
