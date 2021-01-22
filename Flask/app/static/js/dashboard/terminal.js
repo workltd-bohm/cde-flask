@@ -740,10 +740,9 @@ function terminalAutocomplete(inp, arr) {
         //    $(document).off("keydown");
     }
     document.addEventListener("click", function(e) {
-        // $('#terminal-input').focus();
         terminalCloseAllLists(e.target);
-        if ($('#terminal-input').is(":focus")) {
-            // console.log($('#terminal-input').val());
+        if (currField.id == 'terminal-input') {
+            $('#terminal-input').focus();
             if ($('#terminal-input').val().startsWith('#')) {
                 currValArray = $('#terminal-input').val().split('#');
                 // console.log(currValArray);
@@ -779,6 +778,9 @@ function terminalAutocomplete(inp, arr) {
                     }
                 }
             }
+        }
+        if (currField.id == 'add-tag') {
+            $('#add-tag').focus();
         }
     });
 }
