@@ -110,3 +110,61 @@ def get_profile_image(image_id):
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+@app.route('/upload_new_profile_picture', methods=['POST'])
+def updateProfilePicture():
+    if 'newProfilePicture' not in request.files:
+        logger.log(LOG_LEVEL, "no image present in request")
+        return redirect(request.url)
+    newProfilePicture = request.files['newProfilePicture']
+    
+    picturesOriginalName = newProfilePicture.filename
+    picturesOriginalExtension = picturesOriginalName.split('.')[-1]
+    logger.log(LOG_LEVEL, 'Original name of uploaded image = :: {}'.format(picturesOriginalName))
+
+
+    resp = Response()
+    if main.IsLogin():
+        user_data = session.get('user')
+        username = user_data['username']
+        picUpdate_request_json = {'file_name': picturesOriginalName, 'type': picturesOriginalName.split('.')[:-1], 'user': username}
+        original_picture_id = user_data['picture']
+        if db.connect(db_adapter):
+            user_id_json = {'id': user_data["id"]}
+            message, json_user = db.get_user(db_adapter, user_id_json)
+            if message == msg.LOGGED_IN:
+                # put picture in the database and get the insertion id
+                message, file_id = db.upload_profile_image(db_adapter, picUpdate_request_json, newProfilePicture)
+                if message == msg.IC_SUCCESSFULLY_ADDED:
+                    logger.log(LOG_LEVEL, 'Added new picture to db with id :: {}'.format(file_id))
+                    # update user account with this new id
+                    json_user['picture'] = file_id
+                    message = db.edit_user(db_adapter, json_user)
+
+                    if message == msg.ACCOUNT_CHANGED:
+                        json_user.pop('password', None)
+                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        session['user'] = json_user
+                        session.modified = True
+                        # remove picture with the old id from the database
+                        delMsg = db.delete_profile_image(db_adapter, original_picture_id)
+                        if delMsg != msg.IC_SUCCESSFULLY_REMOVED :
+                            logger.log(LOG_LEVEL, 'Could not remove original profile picture with id {}'.format(original_picture_id))
+                        else:
+                            logger.log(LOG_LEVEL, 'Removed original profile picture with id {}'.format(original_picture_id))
+                    else:
+                        logger.log(LOG_LEVEL, 'Could not update picture id of user in db')
+
+                else:
+                    logger.log(LOG_LEVEL, 'Could not insert image into db')
+
+            resp.status_code = message['code']
+            resp.data = json.dumps({
+                "message" : str(message['message']),
+                "new_profilePicture_id" : str(file_id)
+            })
+            return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp

@@ -100,6 +100,16 @@ class DBMongoAdapter:
         self._close_connection()
         return message, str(stored_id)
 
+    def delete_profile_image(self, image_id):
+        message = msg.IC_PATH_NOT_FOUND
+        image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
+        if(image_exists):
+            self._db.fs.files.delete_one({"_id":ObjectId(image_id)})
+            self._db.fs.chunks.delete_many({"files_id":ObjectId(image_id)})
+            message = msg.IC_SUCCESSFULLY_REMOVED
+        self._close_connection()
+        return message
+
     def confirm_account(self, user):
         col = self._db.Users
         message = msg.USER_NOT_FOUND
