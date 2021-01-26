@@ -1,5 +1,3 @@
-
-
 <div class="project-tab">
   <div class="project-box" id="filter-details-tab" onclick="FilterSwap('details')">
     <p>Info</p>
@@ -92,7 +90,7 @@
                 </div>
               </div>
               <br>
-              <div class="activity-tab-div-comment" id="activity-tab-div-comments">
+              <div class="activity-tab-div-comment" id="activity-comments-container">
                 {% for comment in comments|reverse %}
                 {% include 'activity/single_comment.html' %}
                 {% endfor %}

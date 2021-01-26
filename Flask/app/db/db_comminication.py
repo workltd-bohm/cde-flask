@@ -177,6 +177,9 @@ def update_comment(db_adapter, request_data):
 def delete_comment(db_adapter, request_data):
     return db_adapter.delete_comment(request_data)
 
+def get_comments(db_adapter, request_data):
+    return db_adapter.get_comments(request_data)
+
 def add_tag(db_adapter, request_data, tags):
     return db_adapter.add_tag(request_data, tags)
 
@@ -206,3 +209,7 @@ def remove_access(db_adapter, request_data, session_user):
 
 def clear_db(db_adapter, user):
     return db_adapter.clear_db(user)
+
+def close_connection(db_adapter):
+    print("closing db communication")
+    db_adapter._close_connection()

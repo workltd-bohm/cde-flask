@@ -336,7 +336,7 @@ body {
     color: green;*/
     color: #fff;
     border-radius: 50%;
-    border: 2px dotted #00d5ff;
+    border: 2px dotted var(--neon-blue);
     /*font-family: monospace;*/
     text-align: center;
     font-size: 2.5vh;
@@ -344,7 +344,7 @@ body {
 
 .terminal-div {
     position: absolute;
-    top: 75px;
+    top: 8vh;
     left: 120px;
     border: none;
     width: 25%;
@@ -353,7 +353,7 @@ body {
   -webkit-animation-iteration-count: infinite;
   animation: pulse 3s;
   animation-iteration-count: infinite;*/
-    border-bottom: 2px solid #00d5ff;
+    border-bottom: 2px solid var(--neon-blue);
     background: transparent;
     color: #bbb;
     outline: 0;

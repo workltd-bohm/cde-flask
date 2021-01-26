@@ -36,13 +36,15 @@
     /* marketplace post */
     --file-preview-text: #ffffff;
 
+    --neon-blue: #00d5ff;
+
     /*Currently used (when we have dark/light themes JS will simply change the --cur-bg value*/
-    --cur-dashboard-bg: var(--dashboard-bg);
-    --cur-side-menu: var(--side-menu-light);/*not used anywhere at the moment I think*/
-    --cur-left-side-menu: var(--left-side-menu);
-    --cur-sun-default-bg: var(--sun-default-bg);
-    --cur-planet-default-bg: var(--planet-default-bg);
-    --cur-activity-menu-bg:var(--activity-menu-bg);
-    --cur-activity-tab-title-bg:var(--activity-tab-title-bg);
-    --cur-dashboard-text: var(--dashboard-text);
+    --cur-dashboard-bg:             var(--dashboard-bg);
+    --cur-side-menu:                var(--side-menu-light);/*not used anywhere at the moment I think*/
+    --cur-left-side-menu:           var(--left-side-menu);
+    --cur-sun-default-bg:           var(--sun-default-bg);
+    --cur-planet-default-bg:        var(--planet-default-bg);
+    --cur-activity-menu-bg:         var(--activity-menu-bg);
+    --cur-activity-tab-title-bg:    var(--activity-tab-title-bg);
+    --cur-dashboard-text:           var(--dashboard-text);
 }

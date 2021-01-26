@@ -623,6 +623,55 @@ def get_shared_ic(ic_data):
     return redirect(url_for('login', data=ic_data), code=307)
 
 
+@app.route('/get_comments', methods=['POST'])
+def get_comments():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            # TODO for marketplace
+            request_data = json.loads(request.get_data())
+            logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
+
+            project = db.get_project(db_adapter, request_data['project_name'], session.get('user'))
+            project = Project.json_to_obj(project)
+            ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+
+            access = [x.to_json() for x in ic.access]
+            is_owner = False
+            for a in access:
+                if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                    is_owner = True
+
+            these_comments = []
+            for comment in ic.comments:
+                this_comment = comment.to_json()
+                this_comment_rendered = render_template("activity/single_comment.html",
+                                                comment =   this_comment,
+                                                picture =   this_comment['user']['picture'],
+                                                is_owner =  str(is_owner)
+                                                )
+
+                these_comments.append(this_comment_rendered)
+            
+            resp.data = json.dumps(these_comments)
+            return resp
+        else:
+            resp.status_code =  msg.DB_FAILURE['code']
+            resp.data =         msg.DB_FAILURE['message']
+            return resp
+
+    else:
+        resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+        resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+        return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+    
+
 def get_input_file_fixed():
     doc = open('app/static/file/input.json', 'r')
     file = json.loads(doc.read())
@@ -671,5 +720,3 @@ def get_input_file_fixed():
             order = 9
         filter_file[key] = {'elements': elements, 'name': name, 'order': order}
     return filter_file
-
-

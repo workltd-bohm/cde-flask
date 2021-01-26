@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOHM</title>
 <!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
@@ -32,7 +33,7 @@
 </head>
     <body>
         <div id="index" class="container-fluid">
-            <div class="row">
+            <div class="row m-0">
                 {{ menu|safe }}
                 {{ dashboard|safe }}
                 {{ activity|safe }}
@@ -45,7 +46,8 @@
         <!--      <input type="text" class="terminal-sign" value=">" readonly>-->
         <!--<div id="terminal-sign" class="terminal-sign"><p>{{ sign }}</p></div>-->
         <div id="terminal-main" class="terminal-div" onfocusout="onFocusOut();">
-            <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" onfocus="onFocus();" placeholder="TAG, SEARCH, CREATE...">
+            <input type="text" class="terminal" id="terminal-input" onkeypress="terminalListen(event)" 
+                onfocus="onFocus();" placeholder="TAG, SEARCH, CREATE...">
             <!--        <i>_</i>-->
             <span id="terminal-span" class="terminal-span" style="display: none;" onclick="deleteTerminalInput()">X</span>
         </div>

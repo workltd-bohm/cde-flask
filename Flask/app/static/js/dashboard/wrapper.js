@@ -15,8 +15,8 @@ const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 
 $(document).ready(function() {
-    $ACTIVITY = $("#activity-body");
-    ACTIVITY = d3.select("#activity-body");
+    $ACTIVITY = $("#activity-container");
+    ACTIVITY = d3.select("#activity-container");
     $ACTIVITY_HEAD = $("#activity-head");
     ACTIVITY_HEAD = d3.select("#activity-head");
 
@@ -186,7 +186,7 @@ function SelectProject() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION)
+                    console.log(SESSION);
                 }
                 if (!backButtonFlag) {
                     history.pushState(SESSION, null, '');
@@ -241,7 +241,7 @@ function CreateProject(position = null) {
                 //                console.log(data);
                 if (data.session) {
                     SESSION = data.session;
-                    // console.log(SESSION)
+                    console.log(SESSION);
                 }
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..

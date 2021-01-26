@@ -20,7 +20,8 @@ function OpenFile(form, json, file, open) {
 
             OpenActivity(activity, null, open);
 
-            FilterSwap('details');
+            // show details on load TODO change
+            SwitchTabs($(".activity-tab").first());
 
             LoadStopPreview();
         },

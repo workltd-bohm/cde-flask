@@ -1,9 +1,34 @@
 $(document).ready(function(){
+    // bind onclick events
+    $("body").on('click', '.activity-collapsible', function(){
+        openToggle($(this));
+    });
 
+    $("body").on('click', '.activity-tab', function(){
+        SwitchTabs($(this));
+    });
+
+    $("body").on("change", "#filter-form-project-conf", function(){
+        $(".btn-update").addClass("glow");
+    });
+
+    $("body").on('click', '.btn-update', function(){
+        $(this).removeClass("glow");
+    });
+
+    setInterval(function(){
+        getComments();
+    }, 5000);
 });
 
 function OpenActivity(html, head = null, open = true) {
-    if (html) ACTIVITY.html(html);
+    if (html) 
+    {
+        var div = document.createElement("div");
+        div.innerHTML = html;
+        document.getElementById("activity-container").appendChild(div);
+    }
+    console.log(html);
     if (head) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
@@ -27,8 +52,7 @@ function ExtractActivity(html = null, head = null, open = true) {
 }
 
 function CloseActivity() {
-    $ACTIVITY.parent().removeClass("opend");
-    $ACTIVITY.parent().addClass("closed");
+    $ACTIVITY.parent().removeClass("opened");
 }
 
 function ClearActivity(close = true) {
@@ -51,15 +75,36 @@ function ClearActivityTab(parent) {
     parent.html('');
 }
 
+function getComments(){
+    $.ajax({
+        url: "/get_comments",
+        type: "POST",
+        data: JSON.stringify({
+            project_name:   SESSION['position'].project_name,
+            ic_id:          SESSION['position'].ic_id,
+            parent_id:      SESSION['position'].parent_id,
+        }),
+        timeout: 5000,
+        success: function(data){
+            $(".activity-comments-container").empty();
+            data = JSON.parse(data);
+            for(var i = 0; i < data.length; i++)
+            {
+                $(".activity-comments-container").prepend(data[i]);
+            }
+        }
+    });
+}
+
 function sendCommentPress() {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    let project_name =  $('#project_name').val();
+    let parent_id =     $('#parent_id').val();
+    let ic_id =         $('#ic_id').val();
+    let div =           $('#activity-comments-container');
+    let post_id =       $('#post_id').val();
     console.log(comment);
 
     $.ajax({
@@ -80,7 +125,7 @@ function sendCommentPress() {
             //console.log(data);
             div.prepend(data);
             $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            div.animate({ scrollTop: "0" });
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -104,11 +149,11 @@ function sendComment(el) {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    let project_name =  $('#project_name').val();
+    let parent_id =     $('#parent_id').val();
+    let ic_id =         $('#ic_id').val();
+    let post_id =       $('#post_id').val();
+    let div =           $('#activity-comments-container');
     console.log(comment);
 
     $.ajax({
@@ -129,7 +174,7 @@ function sendComment(el) {
             //console.log(data);
             div.prepend(data);
             $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            div.animate({ scrollTop: "0" });
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -144,9 +189,8 @@ function sendComment(el) {
 }
 
 var tmp_comment = "";
-
 function editComment(elem) {
-    elem = elem.closest('.comments_field');
+    elem = elem.closest('.comment-info-text');
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
@@ -231,7 +275,7 @@ function resetComment() {
 }
 
 function deleteComment(elem) {
-    elem = elem.closest('.comment-container');
+    elem = elem.closest('.activity-comment-box');
 
     // data
     project_name = $('#project_name').val();
@@ -245,13 +289,13 @@ function deleteComment(elem) {
         url: "/delete_comment",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            comment: comment,
-            project_name: project_name,
-            parent_id: parent_id,
-            ic_id: ic_id,
-            comment_id: comment_id
+            comment:        comment,
+            project_name:   project_name,
+            parent_id:      parent_id,
+            ic_id:          ic_id,
+            comment_id:     comment_id
         } : {
-            post_id: post_id,
+            post_id:    post_id,
             comment_id: comment_id
         }),
         timeout: 5000,
@@ -269,32 +313,84 @@ function deleteComment(elem) {
     });
 }
 
+function SwitchTabs(elem) {
+    if (!elem) {return;}
+    if (elem.hasClass("selected")) {return;}
+    $(".activity-tab").removeClass("selected");
+    elem.addClass("selected");
+    let tab = elem.data("tab");
+    $(".activity-box").hide();
+    $("#activity-" + tab).fadeIn();
+
+
+    // TODO
+    // show edit-post button only on details tab
+    // editPostButton = document.getElementById("edit-post-button");
+    // if (target != "details") {
+    //     if (editPostButton != null)
+    //         editPostButton.style.display = 'none';
+    // } else {
+    //     if (editPostButton != null)
+    //         editPostButton.style.display = 'block';
+    // }
+}
+
 function AddAccess() {
     /*LoadStart();*/
+    let add_username =  document.getElementById("access-add-username").value;
+    let add_role =      document.getElementById("access-add-role").value;
+
+    if (!add_username || !add_role)
+    {
+        MakeSnackbar("Please fill all required fields");
+        return;
+    }
+
     $.ajax({
         url: "/add_access",
         type: 'POST',
         data: JSON.stringify({
-            project_name: SESSION['position'].project_name,
-            ic_id: SESSION['position'].ic_id,
-            parent_id: SESSION['position'].parent_id,
-            is_directory: SESSION['position'].is_directory,
-            user_name: document.getElementById('user_name').value,
-            role: $("#role option:selected").text()
+            project_name:   SESSION['position'].project_name,
+            ic_id:          SESSION['position'].ic_id,
+            parent_id:      SESSION['position'].parent_id,
+            is_directory:   SESSION['position'].is_directory,
+            user_name:      add_username,
+            role:           add_role
         }),
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
             LoadStop();
-            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
-            if ($jqXHR.status == 401) {
-                location.reload();
-            }
+            // if ($jqXHR.status == 401) {
+            //     location.reload();
+            // }
+        }
+    });
+}
+
+function getAccess(){
+    let project_name =  SESSION['position'].project_name;
+    let ic_id =         SESSION['position'].ic_id;
+    let parent_id =     SESSION['position'].parent_id;
+
+    $.ajax({
+        url: "/get_access",
+        type: "POST",
+        data: JSON.stringify({}),
+        success: function(data){
+
+        },
+        timeout: 5000,
+        error: function($jqXHR, textStatus, errorThrown)
+        {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
         }
     });
 }
@@ -318,6 +414,7 @@ function removeAccess(access) {
             MakeSnackbar(data);
             LoadStop();
             location.reload();
+            // TODO load access!
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -399,20 +496,15 @@ function PostListPopupResults(obj, json) {
     MarketOpen('Posts', '', ViewPost, [obj, sel.value, json])
 }
 
-function openToggle(teggleId) {
-    var box = document.getElementById(teggleId);
-    if (box.style.display != 'none' && box.style.display != "") {
-        box.style.display = 'none';
-    } else {
-        box.style.display = 'block';
-    }
+function openToggle(elem) {
+    elem.toggleClass("selected");
 }
 
 var allProjectComments = null;
 
 function filterDirectoryComments(searchCommentboxText) {
     isClearSearchButtonVisible(true);
-    divWithAllComments = document.getElementById("activity-tab-div-comments");
+    divWithAllComments = document.getElementById("activity-comments-container");
 
     if (allProjectComments == null)
         allProjectComments = divWithAllComments.innerHTML;
@@ -465,7 +557,7 @@ function isClearSearchButtonVisible(isVisible) {
 function resetCommentSearch(event) {
     console.log("reset search");
     if (allProjectComments != null) {
-        document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
+        document.getElementById("activity-comments-container").innerHTML = allProjectComments;
         document.getElementById("searchcomments").value = "";
     }
     isClearSearchButtonVisible(false);
@@ -519,33 +611,63 @@ function serviceCommentSearchQuery(event) {
     autocompleteDivExists = (document.getElementById(commentsearchAutocompleteDivId) != null);
     autocompleteDivHasOptions = autocompleteDivExists ? (document.getElementById(commentsearchAutocompleteDivId).innerHTML != "") : false;
 
-    if (keyPressedByUser == 13) //enter
-    {
-        if (!autocompleteDivExists || !autocompleteDivHasOptions) {
-            filterDirectoryComments(searchCommentboxText);
-        }
-    } else if (keyPressedByUser == 27) //esc
-    {
-        if (autocompleteDivExists) {
-            if (autocompleteDivHasOptions) {
-                autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
-                autocompleteDiv.innerHTML = "";
-            } else
+    switch(keyPressedByUser){
+        case 13: // enter
+            if (!autocompleteDivExists || !autocompleteDivHasOptions) {
+                filterDirectoryComments(searchCommentboxText);
+            }
+            break;
+        case 27: // escape
+            if (autocompleteDivExists) {
+                if (autocompleteDivHasOptions) {
+                    autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
+                    autocompleteDiv.innerHTML = "";
+                } else
+                    resetCommentSearch();
+            } else {
                 resetCommentSearch();
-        } else {
-            resetCommentSearch();
-        }
-    } else {
-        controlCharacterUpper = 31;
-        deleteAscii = 127;
-        if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
-            searchCommentboxText += String.fromCharCode(keyPressedByUser);
-            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
-        } else
-            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+            }
+            break;
+        default:
+            controlCharacterUpper = 31;
+            deleteAscii = 127;
+            if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
+                searchCommentboxText += String.fromCharCode(keyPressedByUser);
+                autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+            } else
+                autocompleteUsername(searchCommentboxText, searchCommentBoxId);
 
-        filterDirectoryComments(searchCommentboxText);
+            filterDirectoryComments(searchCommentboxText);
+            break;
     }
+    
+    // if (keyPressedByUser == 13) //enter
+    // {
+    //     if (!autocompleteDivExists || !autocompleteDivHasOptions) {
+    //         filterDirectoryComments(searchCommentboxText);
+    //     }
+    // } else if (keyPressedByUser == 27) //esc
+    // {
+    //     if (autocompleteDivExists) {
+    //         if (autocompleteDivHasOptions) {
+    //             autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
+    //             autocompleteDiv.innerHTML = "";
+    //         } else
+    //             resetCommentSearch();
+    //     } else {
+    //         resetCommentSearch();
+    //     }
+    // } else {
+    //     controlCharacterUpper = 31;
+    //     deleteAscii = 127;
+    //     if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
+    //         searchCommentboxText += String.fromCharCode(keyPressedByUser);
+    //         autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    //     } else
+    //         autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+
+    //     filterDirectoryComments(searchCommentboxText);
+    // }
 }
 
 function commentOnProject(event) {

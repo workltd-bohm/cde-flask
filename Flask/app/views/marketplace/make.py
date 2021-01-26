@@ -475,25 +475,26 @@ def get_filter_activity():
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
+                db.close_connection(db_adapter)
                 if result.parent_id == 'root':
                     project = db.get_project(db_adapter, session['project']['name'], session['user'])
                     response = {
                         'html': render_template("activity/activity_menu_project.html",
-                                                project_name=session.get("project")["name"],
-                                                profile_picture=session['user']['picture'],
-                                                user_id=session['user']['id'],
-                                                is_owner=str(is_owner),
-                                                is_iso19650=project['is_iso19650'],
-                                                project=project,
-                                                details=details,
-                                                tags=tags,
-                                                comments = comments,
-                                                file_name=file_name,
-                                                path=path,
-                                                share_link=share_link,
-                                                parent_id=result.parent_id,
-                                                ic_id=result.ic_id,
-                                                access=access
+                                                project_name =      session.get("project")["name"],
+                                                profile_picture =   session['user']['picture'],
+                                                user_id =           session['user']['id'],
+                                                is_owner =          str(is_owner),
+                                                is_iso19650 =       project['is_iso19650'],
+                                                project =           project,
+                                                details =           details,
+                                                tags =              tags,
+                                                comments =          comments,
+                                                file_name =         file_name,
+                                                path =              path,
+                                                share_link =        share_link,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                access =            access
                                                 ),
                         'data': []
                     }
@@ -501,19 +502,19 @@ def get_filter_activity():
 
                     response = {
                         'html': render_template("activity/filter_folders.html",
-                                                project_name=session.get("project")["name"],
-                                                profile_picture=session['user']['picture'],
-                                                user_id=session['user']['id'],
-                                                search=filter_file,
-                                                details=details,
-                                                tags=tags,
-                                                comments = comments,
-                                                file_name=file_name,
-                                                path=path,
-                                                share_link=share_link,
-                                                parent_id=result.parent_id,
-                                                ic_id=result.ic_id,
-                                                access=access
+                                                project_name =      session.get("project")["name"],
+                                                profile_picture =   session['user']['picture'],
+                                                user_id =           session['user']['id'],
+                                                search =            filter_file,
+                                                details =           details,
+                                                tags =              tags,
+                                                comments =          comments,
+                                                file_name =         file_name,
+                                                path =              path,
+                                                share_link =        share_link,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                access =            access
                                                 ),
                         'data': []
                     }
@@ -529,4 +530,3 @@ def get_filter_activity():
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
-
