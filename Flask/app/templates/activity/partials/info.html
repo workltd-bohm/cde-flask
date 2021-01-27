@@ -1,0 +1,94 @@
+<div id="activity-details" class="activity-box">
+        <!-- TAGS collapsible box -->
+        <h6 class="activity-collapsible mt-3 selected">Tags 
+            <span class="collapsible-closed">▸</span>
+            <span class="collapsible-opened">▾</span>
+        </h6>
+        <div class="activity-collapsible-body">
+            <form>
+                <div class="input-group mb-3 rounded-0">
+                    <input type="text" class="form-control" id="add-tag" 
+                        onkeypress="addTagListen(event)" placeholder="#tag color">
+                    <button type="button" class="btn" 
+                        onclick="addTagListen(event)">Add</button>
+                </div>
+
+                <div class="tag-wrapper mb-3">
+                {% for tag in tags %}
+                    {% if ',' not in tag['tag'] %}
+                    <div class="tag-container mb-1" id="{{ tag['tag'] }} {{ tag['color'] }}" 
+                        title="Click to copy!"
+                        style="background-color: {{ tag['color'] }}; color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
+                        <div class="tag" onclick="copyToClipboard(this, 'i');">
+                            <i>{{ tag['tag'] }}</i>
+                        </div>
+                        <span class='tag-x' style="background-color: {{ tag['color'] }}" 
+                            onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">✕</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </form>
+        </div>
+
+        {% if size is defined %}
+            {% include 'activity/partials/complex_tags.html' %}
+        {% endif %}
+        
+        <!-- DETAILS collapsible box -->
+        <h6 class="activity-collapsible">details 
+            <span class="collapsible-closed">▸</span>
+            <span class="collapsible-opened">▾</span>
+        </h6>
+        <div class="activity-collapsible-body">
+            <p>
+                <b>Name: </b>{{ file_name }}
+            </p>
+
+            {% if full_name is defined %}
+            <p>
+                <b>Full name: </b>{{ full_name }}
+            </p>
+            {% endif %}
+
+            <p>
+                <b>Full Path: </b>{{ path }}
+            </p>
+
+            {% if size is defined %}
+            <p>
+                <b>Size: </b>{{ size }}
+            </p>
+            {% endif %}
+            
+            {% if share_link is defined and share_link != '' %}
+            <label for="share-link" class="form-label fw-bold">Share link:</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="share-link" value="{{ share_link }}">
+                <button class="material-icons btn rounded-0"
+                    onclick="copyToClipboard(this.parentElement.parentElement, 'input');">content_copy</button>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- HISTORY collapsible box -->
+        <h6 class="activity-collapsible">History 
+            <span class="collapsible-closed">▸</span>
+            <span class="collapsible-opened">▾</span>
+        </h6>
+        <div class="activity-collapsible-body">
+            <div class="activity-history-container">
+                {% for detail in details|reverse %}
+                <div class="activity-history-box p-2">
+                    <img class="history-img" src="/get_profile_image/{{ profile_picture }}" />
+                    <div class="history-info ms-2">
+                        <div class="history-info-user fw-bold">{{ detail['user']['username'] }}</div>
+                        <div class="history-info-event">{{ detail['event_name'] }} {{ detail['event_value'] }}</div>
+                        <div class="history-info-date" >{{ detail['date'].replace('-', ' @ ') }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>

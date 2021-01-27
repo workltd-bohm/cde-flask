@@ -18,7 +18,7 @@ function OpenFilterActivity(json, open = false) {
             data = JSON.parse(data);
             if (data) {
                 OpenActivity(data.html, null, open);
-                FilterSwap('details');
+                SwitchTabs($(".activity-tab").first());
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -56,29 +56,6 @@ function FilterOut(obj) {
             }
         }
     });
-}
-
-function FilterSwap(target) {
-    $(".project-view").children().hide();
-    $(".project-box").removeClass("selected");
-
-    if ($("#filter-" + target).length) {
-        $("#filter-" + target).show();
-        $("#filter-" + target + "-tab").addClass("selected");
-    } else if ($(".filter-" + target)) {
-        $(".filter-" + target).show();
-        $(".filter-" + target + "-tab").addClass("selected");
-    }
-
-    // show edit-post button only on details tab
-    editPostButton = document.getElementById("edit-post-button");
-    if (target != "details") {
-        if (editPostButton != null)
-            editPostButton.style.display = 'none';
-    } else {
-        if (editPostButton != null)
-            editPostButton.style.display = 'block';
-    }
 }
 
 function SearchOpen(data) {
