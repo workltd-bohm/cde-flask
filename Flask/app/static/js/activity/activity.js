@@ -18,7 +18,7 @@ $(document).ready(function(){
 
     setInterval(function(){
         getComments();
-    }, 5000);
+    }, 50000);
 });
 
 function OpenActivity(html, head = null, open = true) {
@@ -190,24 +190,35 @@ function sendComment(el) {
 
 var tmp_comment = "";
 function editComment(elem) {
-    elem = elem.closest('.comment-info-text');
+    elem = elem.closest('.activity-comment-box');
+
+    // find editable comment and change it back to last saved tmp comment
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
     }
 
-    tmp_comment = elem.getElementsByClassName('comment-inline')[0].innerHTML;
-    let comment_text = elem.getElementsByClassName('comment-events')[0].innerHTML;
+    tmp_comment =       elem.getElementsByClassName('comment-info')[0].innerHTML;
+    let comment =       elem.getElementsByClassName('comment-info-text')[0];
+    let comment_text =  comment.textContent;
+    comment.classList.add("d-none");
 
-    elem.getElementsByClassName('comment-inline')[0].innerHTML =
-        '<textarea id="comment-editmode" ' +
-        'onkeypress="updateComment(event, this)"></textarea>';
+    let edit_box = document.createElement("textarea");
+    edit_box.className =    "form-control w-100";
+    edit_box.id =           "comment-editmode";
+    edit_box.onkeypress =   function(event){
+        updateComment(event, this);
+    }
+    elem.getElementsByClassName('comment-info')[0].appendChild(edit_box);
+    // elem.getElementsByClassName('comment-info-text')[0].innerHTML =
+    //     '<textarea id="comment-editmode" ' +
+    //     'onkeypress="updateComment(event, this)"></textarea>';
 
+    // set focus and cursor at the end of the text
     $('#comment-editmode').focus().val(comment_text.trim());
 }
 
-function updateComment(el, container) {
-    let dataset = container.closest('.comment-container').dataset;
+function updateComment(el, elem) {
     var key = window.event.keyCode;
     if (key != 13)
         return true;
@@ -215,34 +226,55 @@ function updateComment(el, container) {
         return true;
     }
 
-    let editmode = document.getElementById('comment-editmode');
-    let parent = editmode.parentElement;
-    let comment = editmode.value;
+    // get comment's dataset & comment text element
+    elem =              elem.closest('.activity-comment-box');
+    let dataset =       elem.dataset;
+    let comment =       elem.getElementsByClassName('comment-info-text')[0];
 
-    if (comment.length < 1) {
-        // prompt to delete
+    // get edited comment values and remove editable comment
+    let editmode =      document.getElementById('comment-editmode');
+    let comment_text =  editmode.value;
+    editmode.remove();
+
+    // prompt to delete if comment submitted is empty
+    if (comment_text.length < 1) {
+        if (confirm("Delete this comment?"))
+        {
+            deleteComment(comment);
+        }
+        else 
+        {
+            // show non-updated comment
+            comment.classList.remove("d-none");
+        }
+        return;
     }
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    // update and show the comment
+    comment.textContent = comment_text;
+    comment.classList.remove("d-none");
+
+    let project_name =  $('#project_name').val();
+    let parent_id =     $('#parent_id').val();
+    let ic_id =         $('#ic_id').val();
+    let div =           $('.activity-tab-div-comment');
+    let post_id =       $('#post_id').val();
 
     $.ajax({
         url: "/update_comment",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            comment: comment,
-            project_name: project_name,
-            parent_id: parent_id,
-            ic_id: ic_id,
-            comment_id: dataset.id,
-            comment: comment,
+            // project's ics' comment
+            project_name:   project_name,
+            parent_id:      parent_id,
+            ic_id:          ic_id,
+            comment_id:     dataset.id,
+            comment:        comment_text,
         } : {
-            post_id: post_id,
-            comment_id: dataset.id,
-            comment: comment,
+            // marketplace posts' comment
+            post_id:        post_id,
+            comment_id:     dataset.id,
+            comment:        comment_text,
         }),
         timeout: 5000,
         success: function(data) {
@@ -259,12 +291,10 @@ function updateComment(el, container) {
             if ($jqXHR.status == 401) {
                 location.reload();
             }
+
+            // TODO mark comment with red, as 'not sent'
         }
     });
-
-    parent.innerHTML = tmp_comment;
-
-    parent.getElementsByClassName('comment-events')[0].innerHTML = comment;
 }
 
 function resetComment() {
