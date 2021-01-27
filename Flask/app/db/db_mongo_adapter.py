@@ -1261,7 +1261,9 @@ class DBMongoAdapter:
             return self.delete_post_comment(request_data)
 
         # find project
-        projects = self._db.Projects
+        projects =  self._db.Projects
+        users =     self._db.Users.Roles
+
         project_query = {'project_name': request_data['project_name']}
         project_json = projects.find_one(project_query, {'_id': 0})
 
@@ -1272,11 +1274,17 @@ class DBMongoAdapter:
             ic_new = ic
             comments = ic_new.comments
 
+            user = users.find_one({'user_id': request_data['user_id']}, {'_id': 0})
+            for proj in user['projects']:
+                if proj['project_id'] == project_json['project_id']:
+                    role = proj['role']
+
             # delete comment
             for i, comment in enumerate(comments):
                 if comment.id == request_data['comment_id']:
                     # security check
-                    if comment.user['user_id'] != request_data['user_id']:
+                    if comment.user['user_id'] != request_data['user_id'] \
+                    and role != 0:
                         self._close_connection
                         return msg.USER_NO_RIGHTS
 
