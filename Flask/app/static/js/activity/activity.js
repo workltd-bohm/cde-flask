@@ -22,13 +22,7 @@ $(document).ready(function(){
 });
 
 function OpenActivity(html, head = null, open = true) {
-    if (html) 
-    {
-        var div = document.createElement("div");
-        div.innerHTML = html;
-        document.getElementById("activity-container").appendChild(div);
-    }
-    console.log(html);
+    if (html) ACTIVITY.html(html);
     if (head) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
@@ -46,8 +40,7 @@ function ExtractActivity(html = null, head = null, open = true) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
     if (open) {
-        $ACTIVITY.parent().addClass("opend");
-        $ACTIVITY.parent().removeClass("closed");
+        $ACTIVITY.parent().addClass("opened");
     }
 }
 
@@ -58,8 +51,7 @@ function CloseActivity() {
 function ClearActivity(close = true) {
     ACTIVITY.html("");
     if (close) {
-        $ACTIVITY.parent().removeClass("opend");
-        $ACTIVITY.parent().addClass("closed");
+        $ACTIVITY.parent().removeClass("opened");
     }
 }
 

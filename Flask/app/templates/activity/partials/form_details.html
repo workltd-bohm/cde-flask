@@ -14,7 +14,8 @@
                 </div>
 
                 <div class="tag-wrapper mb-3">
-                    {% for tag in tags %}
+                {% for tag in tags %}
+                    {% if ',' not in tag['tag'] %}
                     <div class="tag-container mb-1" id="{{ tag['tag'] }} {{ tag['color'] }}" 
                         title="Click to copy!"
                         style="background-color: {{ tag['color'] }}; color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">
@@ -24,15 +25,18 @@
                         <span class='tag-x' style="background-color: {{ tag['color'] }}" 
                             onclick="removeTag( '{{ tag['tag'] }}', '{{ tag['color'] }}', this )">✕</span>
                     </div>
-                    {% endfor %}
-                    <!-- <small>Click on a tag to copy!</small> -->
+                    {% endif %}
+                {% endfor %}
                 </div>
-                
             </form>
         </div>
 
+        {% if size is defined %}
+            {% include 'activity/partials/complex_tags.html' %}
+        {% endif %}
+        
         <!-- DETAILS collapsible box -->
-        <h6 class="activity-collapsible selected">details 
+        <h6 class="activity-collapsible">details 
             <span class="collapsible-closed">▸</span>
             <span class="collapsible-opened">▾</span>
         </h6>
@@ -40,24 +44,33 @@
             <p>
                 <b>Name: </b>{{ file_name }}
             </p>
+
+            {% if full_name is defined %}
+            <p>
+                <b>Full name: </b>{{ full_name }}
+            </p>
+            {% endif %}
+
             <p>
                 <b>Full Path: </b>{{ path }}
             </p>
 
-            {% if share_link is defined and share_link != '' %}
+            {% if size is defined %}
             <p>
-                <b>Share link: </b>
+                <b>Size: </b>{{ size }}
             </p>
-
+            {% endif %}
+            
+            {% if share_link is defined and share_link != '' %}
+            <label for="share-link" class="form-label fw-bold">Share link:</label>
             <div class="input-group mb-3">
-                <input type="text" name="share-link" value="{{ share_link }}" class="form-control">
-                <button class="btn rounded-0"
-                    onclick="copyToClipboard(this.parentElement.parentElement, 'input');">Copy</button>
+                <input type="text" class="form-control" name="share-link" value="{{ share_link }}">
+                <button class="material-icons btn rounded-0"
+                    onclick="copyToClipboard(this.parentElement.parentElement, 'input');">content_copy</button>
             </div>
             {% endif %}
         </div>
 
-        
         <!-- HISTORY collapsible box -->
         <h6 class="activity-collapsible">History 
             <span class="collapsible-closed">▸</span>
