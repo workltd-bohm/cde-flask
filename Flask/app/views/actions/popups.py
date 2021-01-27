@@ -10,14 +10,17 @@ def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         name = request_data['name']
         type = request_data['type']
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        ic_id = request_data['ic_id']
+        parent_id = request_data['parent_id']
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
             result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
+                project = db.get_project(db_adapter, project_name, session['user'])
                 access = [x.to_json() for x in result.access]
                 for a in access:
                     a['role'] = Role(a['role']).name
@@ -32,18 +35,29 @@ def get_open_file():
                     c['user']['username'] = user['username']
 
                 file_name =         result.name + result.type
-                file_iso_name =     helper.get_iso_filename(result)
+                file_iso_name =     helper.get_iso_filename(result, project, session['user'])
                 file_details =      [x.to_json() for x in result.history]
                 file_tags =         [x.to_json() for x in result.tags]
                 file_size =         db.get_file_size(db_adapter, result.stored_id, True)
                 file_path =         result.path
-                file_share_link =   'http://bohm.cloud/get_shared_file/' + file_name
+                file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
 
-                print(session.get('user'))
+                # print(session.get('user'))
+                if result.type == '.pdf':
+                    html = render_template("popup/open_file_pdf.html",
+                                            preview =      '/get_shared_file/' + result.stored_id,
+                                            file_name =    file_name,
+                                            project_name = project_name,
+                                            parent_id =    parent_id,
+                                            ic_id =        ic_id,
+                                            user =         session['user']
+                                            )
+                else:
+                    html = render_template("popup/open_file.html",
+                                            preview = '/get_shared_file/' + result.stored_id
+                                            )
                 response = {
-                    'html': render_template("popup/open_file.html",
-                                            preview = '/get_shared_file/' + name + type
-                                            ),
+                    'html': html,
                     'activity': render_template("activity/file.html",
                                                 user =              session.get('user'),
                                                 details =           file_details,
@@ -60,7 +74,8 @@ def get_open_file():
                                                 stored_id =         result.stored_id,
                                                 access =            access,
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
-                                                size =              file_size
+                                                size =              file_size,
+                                                project_code =      project['code']
                                                 ),
                     'data': []
                 }

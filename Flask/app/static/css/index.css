@@ -97,6 +97,7 @@ a:visited {
 /* The snackbar - position it at the bottom and in the middle of the screen */
 
 #snackbar {
+    z-index: 5000000000000000;
     display: none;
     min-width: 250px;
     /* Set a default minimum width */

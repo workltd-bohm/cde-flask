@@ -1,40 +1,40 @@
-$( document ).ready(function(){
-    $("div.preview > .cover.back").click(function(d){
+$(document).ready(function() {
+    $("div.preview > .cover.back").click(function(d) {
         $(this).parent().hide();
     });
 
-    $("div.preview > .content > .zatvori").click(function(d){
+    $("div.preview > .content > .zatvori").click(function(d) {
         $(this).parent().parent().hide();
     });
 });
 
-function LoadStartPreview(){
+function LoadStartPreview() {
     var load = $('div.preview > .cover.front');
     load.show();
 }
 
-function LoadStopPreview(){
+function LoadStopPreview() {
     var load = $('div.preview > .cover.front');
     load.hide();
 }
 
-function GetFormPreview(){
+function GetFormPreview() {
     return $("div.preview > .content > .preview-placeholder");
 }
 
-function PreviewOpen(run=null, data=null, file=null, open = false){
+function PreviewOpen(run = null, data = null, file = null, open = false) {
     var form = null;
-    if(open){
+    if (open) {
         form = GetFormPreview();
         LoadStopPreview();
         $(form).empty();
         $("div.preview").show();
-    //    $("div.content").height('auto');
+        //    $("div.content").height('auto');
     }
-    if(run) run(form, data, file, open);
+    if (run) run(form, data, file, open);
 }
 
-function PreviewClose(){
+function PreviewClose() {
     LoadStopPreview();
     $("div.preview").hide();
     CloseActivity();

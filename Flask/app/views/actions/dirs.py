@@ -29,9 +29,10 @@ def get_file_name():
                 if project.is_iso19650:
                     ic = project.find_ic_by_id(request_json, request_json['ic_id'], project.root_ic)
                     # for t in ic.tags:
-                    #     print(t.to_json())
-                    name = helper.get_iso_filename(ic) + request_json['type']
-                    print(name)
+                        # S1-M0-CP-H-3201.0-S0-P01_testtxt1.txt
+                        # print(t.to_json())
+                    name = helper.get_iso_filename(ic, result, session['user'])
+                    # print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}
                 logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
                 resp = Response()
@@ -66,14 +67,14 @@ def get_file(ic_id):
                         'ic_id': ic_id}
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, request_json['ic_id'])
+            result = db.get_file(db_adapter, request_json)
             if result:
-                project_name = session.get("project")["name"]
-                pr = db.get_project(db_adapter, project_name, session['user'])
-                if pr:
-                    project = Project.json_to_obj(pr)
-                    print('is ISO19650 comliant', project.is_iso19650)
-                    result.file_name = 'nesto'
+                # project_name = session.get("project")["name"]
+                # pr = db.get_project(db_adapter, project_name, session['user'])
+                # if pr:
+                #     project = Project.json_to_obj(pr)
+                #     print('is ISO19650 comliant', project.is_iso19650)
+                #     result.file_name = 'nesto'
                 # logger.log(LOG_LEVEL, result.file_name)
                 response = make_response(result.read())
                 response.mimetype = result.file_name
@@ -97,16 +98,16 @@ def get_file(ic_id):
     return resp
 
 
-@app.route('/get_shared_file/<path:file_name>', methods=['POST', 'GET'])
-def get_shared_file(file_name):
+@app.route('/get_shared_file/<path:file_id>', methods=['POST', 'GET'])
+def get_shared_file(file_id):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
                         # 'file_id':request.args.get('file_id'),
-                        'file_name':file_name}
+                        'file_id': file_id}
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, request_json['file_name'])
+            result = db.get_file(db_adapter, request_json)
             if result:
                 # logger.log(LOG_LEVEL, result.file_name)
                 resp = Response(result.file_name)
@@ -161,7 +162,7 @@ def get_folder(parent_id, folder_name):
             except OSError as err:
                 logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
             path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
-            json_to_temp_folder_struct(path, ic)
+            json_to_temp_folder_struct(path, ic, response)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
 
@@ -269,11 +270,58 @@ def upload_file():
             return resp
 
         file = request.files['file']
+        # print(file)
         logger.log(LOG_LEVEL, 'Request data: {}'.format(request.form['data']))
         request_json = json.loads(request.form['data'])  # test_json_request
         set_project_data(request_json, True)
         
         return upload_file_process(request_json, file)
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/update_file', methods=['POST'])
+def update_file():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    # print(session['project'])
+    if main.IsLogin():
+        # print(json.loads(request.form))
+        if 'file' not in request.files:
+            logger.log(LOG_LEVEL, 'No file part: '.format(str(msg.DEFAULT_ERROR['message'])))
+            resp = Response()
+            resp.status_code = msg.DEFAULT_ERROR['code']
+            resp.data = str(msg.DEFAULT_ERROR['message'])
+            return resp
+
+        file = request.files['file']
+        # print(file)
+        request_json = json.loads(request.form['data'])
+        logger.log(LOG_LEVEL, 'Request data: {}'.format(request_json))
+        # set_project_data(request_json, True)
+
+        if db.connect(db_adapter):
+            result = db.get_project(db_adapter, request_json["project_name"], session['user'])
+            if result:
+                project = Project.json_to_obj(result)
+
+                ic = project.find_ic_by_id(request_json, request_json['ic_id'], project.root_ic)
+
+                message = db.update_file(db_adapter, request_json["project_name"], ic, file.read())
+
+                resp = Response()
+                resp.status_code = message['code']
+                resp.data = str(message['message'])
+                return resp
+        
+        else:
+            logger.log(LOG_LEVEL, str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
 
     resp = Response()
     resp.status_code = msg.UNAUTHORIZED['code']
@@ -600,21 +648,21 @@ def path_to_dict(path):
     return d
 
 
-def json_to_temp_folder_struct(path, ic):
+def json_to_temp_folder_struct(path, ic, project):
     if ic.is_directory:
         try:
             os.mkdir(path + ic.name)
         except OSError:
             print("Creation of the directory %s failed" % path)
         for sub_folder in ic.sub_folders:
-            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder)
+            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder, project)
     else:
         if db.connect(db_adapter):
-            result = db.get_file(db_adapter, ic.ic_id)
+            result = db.get_file(db_adapter, {'ic_id': ic.ic_id})
             if result:
                 # print(result.file_name)
                 response = result.read()
-                f = open(path + ic.name + ic.type, "wb+")
+                f = open(path + helper.get_iso_filename(ic, project, session['user']), "wb+")
                 f.write(response)
                 f.close()
             else:

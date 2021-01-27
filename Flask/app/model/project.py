@@ -1,7 +1,7 @@
 from .details import Details
 from .comment import Comments
 from .role import Role
-from .tag import Tags
+from app.model.tag import Tags, SimpleTag, ISO19650
 from .access import Access
 from .directory import Directory
 from .site import Site
@@ -9,6 +9,7 @@ from .building import Building
 from .file import File
 import app.model.messages as msg
 from datetime import datetime
+import re
 
 
 class Project:
@@ -173,7 +174,7 @@ class Project:
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic
-        if not ic.is_directory:
+        if ic.is_directory:
             for x in ic.sub_folders:
                 self.update_file(file, x)
                 if self._added:
@@ -181,7 +182,7 @@ class Project:
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
-                # print(ic.to_json())
+                print("ovdeeeeeee", ic.to_json())
                 self._added = True
 
         return self, self._added
@@ -205,11 +206,14 @@ class Project:
     def rename_ic(self, request_data, user, ic=None):
         if request_data['parent_id'] == 'root':
             ic.name = request_data['new_name']
-            details = Details(user, 'Renamed',
+            details = Details(user, 'Renamed project',
                                 datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                 request_data['old_name'] + ' to ' + request_data['new_name'])
-            ic.history.append(details)                        
-            ic.path = '/' + request_data['new_name']
+            ic.history.append(details)
+            self.rename_children(ic, request_data['new_name'])                        
+            ic.path = request_data['new_name']
+            ic.parent = '.'
+            self._added = True
             return msg.IC_SUCCESSFULLY_RENAMED
         if ic.ic_id == request_data['parent_id']:
             for sub_folder in ic.sub_folders:
@@ -230,9 +234,10 @@ class Project:
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                       name + ' to ' + new_name_backup)
                     sub_folder.history.append(details)
-                    sub_folder.name = new_name                        
+                    sub_folder.name = new_name
+                    self.rename_children(sub_folder, parent + '/' + request_data['new_name'])                        
                     sub_folder.path = parent + '/' + request_data['new_name']
-                    # ic.parent = parent # no need?
+                    sub_folder.parent = parent # no need?
                     self._message = msg.IC_SUCCESSFULLY_RENAMED
                     self._added = True
                     break
@@ -245,6 +250,13 @@ class Project:
         if not self._added:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
+
+    def rename_children(self, parent, new_parent_path):
+        for child in parent.sub_folders:
+            old_parent_path = '/'.join(child.path.split('/')[:-1])
+            child.path = re.sub( old_parent_path, new_parent_path, child.path)
+            child.parent = new_parent_path
+            self.rename_children(child, child.path)
 
     def trash_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
@@ -408,7 +420,7 @@ class Project:
         if request['parent_id'] == 'root':
             for i in range(1, len(tags)):
                 if tags[i].startswith('#'):
-                    t = Tags(tags[i])
+                    t = SimpleTag(tags[i], request['iso'])
                     if i < len(tags)-1:
                         if not tags[i + 1].startswith('#'):
                             t.color = tags[i+1]
@@ -425,7 +437,7 @@ class Project:
                 if sub_f.ic_id == request['ic_id']:
                     for i in range(1, len(tags)):
                         if tags[i].startswith('#'):
-                            t = Tags(tags[i])
+                            t = SimpleTag(tags[i], request['iso'])
                             if i < len(tags)-1:
                                 if not tags[i + 1].startswith('#'):
                                     t.color = tags[i + 1]
@@ -587,6 +599,12 @@ class Project:
 
     @staticmethod
     def json_folders_to_obj(json_file):
+        tags = []
+        for tag in json_file['tags']:
+            if tag['iso'] == 'ISO19650':
+                tags.append(ISO19650.json_to_obj(tag))
+            else:
+                tags.append(Tags.json_to_obj(tag))
         if json_file['is_directory']:
             root = Directory(json_file['ic_id'],
                              json_file['name'],
@@ -596,7 +614,7 @@ class Project:
                              json_file['parent_id'],
                              json_file['color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
-                             [Tags.json_to_obj(x) for x in json_file['tags']],
+                             tags,
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                              [Access.json_to_obj(x) for x in json_file['access']])
         else:
@@ -610,7 +628,7 @@ class Project:
                         json_file['parent_id'],
                         json_file['color'],
                         [Comments.json_to_obj(x) for x in json_file['comments']],
-                        [Tags.json_to_obj(x) for x in json_file['tags']],
+                        tags,
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         [Access.json_to_obj(x) for x in json_file['access']],
                         json_file['stored_id'],

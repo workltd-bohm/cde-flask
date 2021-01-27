@@ -1,4 +1,5 @@
 from pymongo import *
+# from pymongo import DeleteMany
 import gridfs
 from pymongo.errors import ConnectionFailure
 import uuid
@@ -7,7 +8,7 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
-from app.model.tag import Tags
+from app.model.tag import SimpleTag, ISO19650
 import app.model.messages as msg
 from app.model.helper import get_iso_tags
 import json
@@ -98,6 +99,16 @@ class DBMongoAdapter:
 
         self._close_connection()
         return message, str(stored_id)
+
+    def delete_profile_image(self, image_id):
+        message = msg.IC_PATH_NOT_FOUND
+        image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
+        if(image_exists):
+            self._db.fs.files.delete_one({"_id":ObjectId(image_id)})
+            self._db.fs.chunks.delete_many({"files_id":ObjectId(image_id)})
+            message = msg.IC_SUCCESSFULLY_REMOVED
+        self._close_connection()
+        return message
 
     def confirm_account(self, user):
         col = self._db.Users
@@ -247,27 +258,26 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
+        col_chunks = self._db.fs.chunks
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
             if file:
-                # file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                #                                             "file_name": file_obj.name+file_obj.type,
-                #                                             "file": file,
-                #                                             "description": file_obj.description})
-                #                         .inserted_id)
+                r = col_chunks.delete_many({"files_id": ObjectId(file_obj.stored_id)})
+                r = col_file.remove({'file_id': file_obj.stored_id})
                 file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
                                                         file_name=file_obj.name+file_obj.type, 
+                                                        ic_id=file_obj.ic_id,
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
-                                                        description=file_obj.description,
+                                                        description='file_obj.description',
                                                         from_project=True
                                                         ))
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                project.update_file(file_obj) # TODO: NOT OK, also needs old chunk delete inside
+                project.update_file(file_obj)
             else:
                 file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} 
                 # print(file_query)
@@ -287,7 +297,7 @@ class DBMongoAdapter:
             col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
         self._close_connection()
-        return msg.DEFAULT_OK
+        return msg.FILE_SUCCESSFULLY_UPDATED
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
@@ -327,7 +337,7 @@ class DBMongoAdapter:
                         # # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
                         # file_obj.stored_id = str(col_file.insert_one(file_json)
                         #                 .inserted_id)
-                        file = self.get_file(file_json["file_name"])
+                        file = self.get_file({'file_name': file_json["file_name"]})
                         if file:
                             file_obj.stored_id = str(self._fs.put(file,
                                                             file_id='default',
@@ -749,9 +759,10 @@ class DBMongoAdapter:
             users_trash.find_one_and_delete(user_query)
         return
 
-    def get_file(self, ic_id):
+    def get_file(self, request):
         stored_file = None
-        for grid_out in self._fs.find({"ic_id": ic_id}, no_cursor_timeout=True):
+        print('get_file', request)
+        for grid_out in self._fs.find(request, no_cursor_timeout=True):
             stored_file = grid_out
         self._close_connection()
         return stored_file
@@ -1361,6 +1372,7 @@ class DBMongoAdapter:
                                 if not already_exists:
                                     tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
                                                                   'project_name': request_data['project_name'],
+                                                                  'project_id': project.project_id,
                                                                   'parent_id': request_data['parent_id']})
 
                                 col_tags.update_one({'id': tags['id']}, {'$set': tags})
@@ -1372,6 +1384,7 @@ class DBMongoAdapter:
                             if request_tags[i].startswith('#'):
                                 tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                               'project_name': request_data['project_name'],
+                                                              'project_id': project.project_id,
                                                               'parent_id': request_data['parent_id']}]
 
                                 col_tags.update({'id': tags['id']}, {'$set': tag_json})
@@ -1383,6 +1396,7 @@ class DBMongoAdapter:
                         if request_tags[i].startswith('#'):
                             tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                           'project_name': request_data['project_name'],
+                                                          'project_id': project.project_id,
                                                           'parent_id': request_data['parent_id']}]
                     tag_json['id'] = 'tags_collection'
                     col_tags.insert_one(tag_json)
@@ -1401,7 +1415,7 @@ class DBMongoAdapter:
 
         if post_json: 
             post = Post.json_to_obj(post_json)
-            message = post.add_tag(request_data['tags']) # <- check if post already has this tag, and add it
+            message = post.add_tag(request_data['tags'], request_data) # <- check if post already has this tag, and add it
             if message == msg.TAG_SUCCESSFULLY_ADDED:
                 # check if tag is not duplicate in db
                 col_posts.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
@@ -1469,6 +1483,7 @@ class DBMongoAdapter:
                         try:
                             tags[request_tag].remove({'ic_id': request_data['ic_id'],
                                                       'project_name': request_data['project_name'],
+                                                      'project_id': project.project_id,
                                                       'parent_id': request_data['parent_id']})
 
                             col_tags.update_one({'id': tags['id']}, {'$set': tags})
@@ -1553,6 +1568,7 @@ class DBMongoAdapter:
         obj = {
             'project_name': data['project_name'],
             'ic_id':        data['ic_id'],
+            'project_id':   project_json['project_id'],
             'parent_id':    data['parent_id']
         }
 
@@ -1582,7 +1598,7 @@ class DBMongoAdapter:
                     if not obj in tags_json[tag]:
                         # print('accepted.')
                         tags_json[tag].append(obj)
-                        ic.tags.append(Tags(tag, 'gray'))
+                        ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
                         break
 
         # update

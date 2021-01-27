@@ -50,7 +50,7 @@ function terminalListen(el) {
 
     $('#terminal-input').val('');
 
-    // console.log(terminal);
+    console.log(terminal);
     // console.log(SESSION);
 
     switch (terminal[0]) {
@@ -283,6 +283,9 @@ function addTag(terminal, buffer = false) {
         // todo when market has session, find another way to filter out
         // etc post_id = SESSION['position'].post_id
         project_name = SESSION['position'].project_name;
+        if (project_name == '') {
+            project_name = SESSION['name'];
+        }
     }
 
     $.ajax({
@@ -293,6 +296,7 @@ function addTag(terminal, buffer = false) {
             ic_id:          SESSION['position'].ic_id,
             parent_id:      SESSION['position'].parent_id,
             is_directory:   SESSION['position'].is_directory,
+            iso: 'simple',
             tags:           terminal
         } : {
             post_id:    post_id,
@@ -494,24 +498,29 @@ function addTagInArrayIfMissing(element, array) {
 
 let iso_number = "ISO 19650";
 
-function checkISOCompilant() {
+function checkISOCompliant() {
     let form = $("#complex_tags");
-    let elem = $("#iso_compilant");
+    let elem = $("#iso_compliant");
     let color = 'green';
-    let is_compilant = ' ';
+    let is_compliant = ' ';
     let response = true;
     form.serializeArray().map(function(x) {
         if (x.name !== "uniclass_2015") {
             if (x.value === "") {
                 color = 'red';
-                is_compilant = ' not ';
+                is_compliant = ' not ';
                 response = false;
             }
         }
     });
+    if ($("#project_code").val() === "" || $("#company_code").val() === "") {
+        color = 'red';
+        is_compliant = 'not ';
+        response = false;
+    }
 
     elem.css("color", color);
-    elem.text(iso_number + is_compilant + 'compilant');
+    elem.text(is_compliant + iso_number + 'compliant');
     return response
 }
 
@@ -527,16 +536,18 @@ function updateComplexTags(element) {
 
     let ic = SESSION.position;
 
+    console.log(SESSION);
+
     // TODO only pass filled parameters
 
     $.ajax({
         url: "/update_iso_tags",
         type: 'POST',
         data: JSON.stringify({
-            project_name: ic.project_name,
+            project_name: SESSION['name'],
             ic_id: ic.ic_id,
             parent_id: ic.parent_id,
-            is_complex: true,
+            iso: 'ISO19650',
             tags: args
         }),
         timeout: 5000,
@@ -545,7 +556,7 @@ function updateComplexTags(element) {
             LoadStop();
             refreshTags();
             // TODO update current tags (append complex tags to normal tags)
-            checkISOCompilant();
+            checkISOCompliant();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -611,14 +622,38 @@ function terminalAutocomplete(inp, arr) {
         if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 32) {
             if ($('#terminal-input').is(":focus")) {
-                currValArray = $('#terminal-input').val().split(' ');
-                if (currValArray[0].startsWith('#')) {
-                    console.log(currValArray);
-                    searchByTag(currValArray);
+                // console.log($('#terminal-input').val());
+                if ($('#terminal-input').val().startsWith('#')) {
+                    currValArray = $('#terminal-input').val().split('#');
+                    // console.log(currValArray);
+                    for (i = 0; i < currValArray.length; i++) {
+                        if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                            currValArray[i] = "#" + currValArray[i]
+                        }
+                    }
+
+                } else {
+                    currValArray = $('#terminal-input').val().split(' ');
                 }
-                if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
-                    console.log(currValArray);
-                    searchByName(currValArray);
+                for (i = 0; i < currValArray.length; i++) {
+                    if (currValArray[i] == '') {
+                        currValArray.indexOf(currValArray[i])
+                        if (i !== -1) {
+                            currValArray.splice(i, 1);
+                        }
+                    }
+                }
+                // console.log(currValArray);
+                if (currentArr.length > 0) {
+                    if (currValArray[0].startsWith('#')) {
+                        console.log(currValArray);
+                        searchByTag(currValArray);
+                    } else {
+                        if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                            console.log(currValArray);
+                            searchByName(currValArray);
+                        }
+                    }
                 }
             }
         }
@@ -641,17 +676,40 @@ function terminalAutocomplete(inp, arr) {
             if (currentFocus > -1) {
                 if (x) {
                     if ($('#terminal-input').is(":focus")) {
-                        currValArray = $('#terminal-input').val().split(' ');
+                        if ($('#terminal-input').val().startsWith('#')) {
+                            currValArray = $('#terminal-input').val().split('#');
+                            for (i = 0; i < currValArray.length; i++) {
+                                if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                                    currValArray[i] = "#" + currValArray[i]
+                                }
+                            }
+                        } else {
+                            currValArray = $('#terminal-input').val().split(' ');
+                        }
+                        // console.log(currValArray);
                         currValArray.splice(currValArray.length - 1);
+                        for (i = 0; i < currValArray.length; i++) {
+                            if (currValArray[i] == '') {
+                                currValArray.indexOf(currValArray[i])
+                                if (i !== -1) {
+                                    currValArray.splice(i, 1);
+                                }
+                            }
+                        }
+                        // console.log(currValArray);
                         currVal = x[currentFocus].getElementsByTagName('input')[0].value;
                         currValArray.push(currVal);
-                        if (currValArray[0].startsWith('#')) {
-                            console.log(currValArray);
-                            searchByTag(currValArray);
-                        }
-                        if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
-                            console.log(currValArray);
-                            searchByName(currValArray);
+                        // console.log(currValArray);
+                        if (currentArr.length > 0) {
+                            if (currValArray[0].startsWith('#')) {
+                                console.log(currValArray);
+                                searchByTag(currValArray);
+                            } else {
+                                if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                                    console.log(currValArray);
+                                    searchByName(currValArray);
+                                }
+                            }
                         }
                     }
                     x[currentFocus].click();
@@ -696,6 +754,50 @@ function terminalAutocomplete(inp, arr) {
     }
     document.addEventListener("click", function(e) {
         terminalCloseAllLists(e.target);
+        console.log(currField.id);
+        if (currField.id == 'terminal-input') {
+            currField = '';
+            $('#terminal-input').focus();
+            if ($('#terminal-input').val().startsWith('#')) {
+                currValArray = $('#terminal-input').val().split('#');
+                // console.log(currValArray);
+                for (i = 0; i < currValArray.length; i++) {
+                    if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
+                        currValArray[i] = "#" + currValArray[i]
+                    }
+                }
+
+            } else {
+                currValArray = $('#terminal-input').val().split(' ');
+            }
+            for (i = 0; i < currValArray.length; i++) {
+                if (currValArray[i] == '') {
+                    currValArray.indexOf(currValArray[i])
+                    if (i !== -1) {
+                        currValArray.splice(i, 1);
+                    }
+                }
+            }
+            console.log(currValArray.length);
+            if (currentArr.length > 0) {
+                if (currValArray[0].startsWith('#')) {
+                    console.log(currValArray);
+                    searchByTag(currValArray);
+                } else {
+                    if (!keyWordsArr.includes(currValArray[0]) && !tagsArr.includes(currValArray[0])) {
+                        console.log(currValArray);
+                        searchByName(currValArray);
+                    }
+                    if (keyWordsArr.includes(currValArray[0])) {
+                        terminalListen(document);
+                    }
+                }
+            }
+        }
+        if (currField.id == 'add-tag') {
+            $('#add-tag').focus();
+            currField = '';
+        }
     });
 }
 
@@ -703,8 +805,10 @@ var searchArr = [];
 
 function searchByTag(currValArray) {
     //    tempArr = currValArray;
+    // console.log('search arr', searchArr);
+    // console.log('curr val arr', currValArray);
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('search');
+        console.log('searchByTag');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -735,14 +839,14 @@ function searchByTag(currValArray) {
             }
         });
     } else {
-        console.log('skipping search');
+        console.log('skipping searchByTag');
     }
 }
 
 function searchByName(currValArray) {
     //    tempArr = currValArray;
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('search');
+        console.log('searchByName');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -773,7 +877,7 @@ function searchByName(currValArray) {
             }
         });
     } else {
-        console.log('skipping search');
+        console.log('skipping searchByName');
     }
 }
 

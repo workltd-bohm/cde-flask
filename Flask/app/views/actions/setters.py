@@ -183,6 +183,7 @@ def upload_existing_project():
 
                         project.added = False
                         encoded = file
+                        # print('+++++++++', encoded)
                         print('+++++++++', len(file))
                         # TODO: fix this mess
                         if len(file) == 0:
@@ -235,7 +236,7 @@ def upload_existing_project():
 
                                 project.added = False
                                 message, ic = project.update_ic(ic_new, parent_ic)
-                                print('ovde', ic_new.to_json())
+                                # print('ovde', ic_new.to_json())
                                 print(message)
                                 # message, ic = db.create_folder(db_adapter, project.name, ic_new)
                                 parent_ic = ic_new

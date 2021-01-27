@@ -23,6 +23,7 @@ ACCESS_TO_YOURSELF = {"message": "Can not grant access to yourself", "code": 400
 NO_ACCESS = {"message": "You don't have an access for this information container", "code": 400}
 
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}
+IC_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 IC_ALREADY_EXISTS = {"message": "IC with the given name already exists", "code": 409}
 IC_PATH_NOT_FOUND = {"message": "Path not found", "code": 404}
 
@@ -75,5 +76,6 @@ PROJECT_SUCCESSFULLY_DELETED = {"message": "Project successfully deleted", "code
 
 FILE_SUCCESSFULLY_DELETED = {"message": "File successfully deleted", "code": 200}
 FILE_SUCCESSFULLY_DELETED_FORM_POST = {"message": "File successfully deleted from post", "code": 200}
+FILE_SUCCESSFULLY_UPDATED = {"message": "File successfully updated", "code": 200}
 
 USER_NO_RIGHTS = {"message": "Permission denied. User has no rights.", "code": 401}
