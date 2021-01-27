@@ -44,7 +44,7 @@ def get_open_file():
                     'html': render_template("popup/open_file.html",
                                             preview = '/get_shared_file/' + name + type
                                             ),
-                    'activity': render_template("activity/filter_files.html",
+                    'activity': render_template("activity/file.html",
                                                 user =              session.get('user'),
                                                 details =           file_details,
                                                 tags =              file_tags,

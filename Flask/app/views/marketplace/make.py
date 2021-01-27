@@ -479,7 +479,7 @@ def get_filter_activity():
                 if result.parent_id == 'root':
                     project = db.get_project(db_adapter, session['project']['name'], session['user'])
                     response = {
-                        'html': render_template("activity/activity_menu_project.html",
+                        'html': render_template("activity/project.html",
                                                 project_name =      session.get("project")["name"],
                                                 profile_picture =   session['user']['picture'],
                                                 user_id =           session['user']['id'],
@@ -501,7 +501,7 @@ def get_filter_activity():
                 else:
 
                     response = {
-                        'html': render_template("activity/filter_folders.html",
+                        'html': render_template("activity/folder.html",
                                                 project_name =      session.get("project")["name"],
                                                 profile_picture =   session['user']['picture'],
                                                 user_id =           session['user']['id'],

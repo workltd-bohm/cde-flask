@@ -35,7 +35,7 @@ def index():
     # views
     menu =      render_template("menu/menu.html", username=username, picture=picture)
     dashboard = render_template("dashboard/dashboard.html")
-    activity =  render_template("activity/activity.html", activity_name="BLANK")
+    activity =  render_template("activity/index.html", activity_name="BLANK")
     popup =     render_template("popup/generic.html")
     preview =   render_template("popup/preview.html")
 
