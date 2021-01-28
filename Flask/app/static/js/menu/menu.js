@@ -10,9 +10,7 @@ $( document ).ready(function(){
 
     //d-none
     $(".activity-button").click(function(){
-        $(".activity-arrow").toggleClass("d-none");
         $(".activity-menu").toggleClass("opened");
-        $("#activity-container").toggleClass("d-none");
     });
     
     $(".menu-fixed > .close").click(function(d){
