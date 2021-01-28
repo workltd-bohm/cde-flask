@@ -164,6 +164,14 @@
     text-align: center;
 }
 
+.file_naming_field_role {
+    position: relative;
+    width: 3%;
+    height: auto;
+    margin: 0 5px 0 5px;
+    text-align: center;
+}
+
 .file_naming_field_name {
     width: 25%;
 }
