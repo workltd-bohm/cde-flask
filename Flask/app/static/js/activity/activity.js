@@ -543,7 +543,7 @@ function filterDirectoryComments(searchCommentboxText) {
         numComments = comments.length;
         whichComment = 0;
         while (whichComment < numComments) {
-            username = comments[whichComment].getElementsByClassName("details_event_user comments")[0].innerText;
+            username = comments[whichComment].getElementsByClassName("comment-info-user")[0].innerText;
             if (username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1)) //1 to skip @
             {
                 whichComment++;
@@ -558,7 +558,7 @@ function filterDirectoryComments(searchCommentboxText) {
         numComments = comments.length;
         whichComment = 0;
         while (whichComment < numComments) {
-            comment = comments[whichComment].getElementsByClassName("details_event comment-events")[0].innerText;
+            comment = comments[whichComment].getElementsByClassName("comment-info-text")[0].innerText;
             if (comment.toLowerCase().includes(searchCommentboxText.toLowerCase())) {
                 whichComment++;
             } else {

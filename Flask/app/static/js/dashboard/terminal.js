@@ -515,12 +515,12 @@ function checkISOCompliant() {
     });
     if ($("#project_code").val() === "" || $("#company_code").val() === "") {
         color = 'red';
-        is_compliant = 'not ';
+        is_compliant = 'Not ';
         response = false;
     }
 
     elem.css("color", color);
-    elem.text(is_compliant + iso_number + 'compliant');
+    elem.text(is_compliant + iso_number + ' compliant');
     return response
 }
 
