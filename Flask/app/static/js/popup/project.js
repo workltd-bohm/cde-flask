@@ -249,7 +249,9 @@ function sendFile(files, folders, current, fileData = {}) {
             $('#upload_files_button').hide();
             path = SESSION['position'].path + '/' + path;
             file.path = path;
-            formData.set('file_data', JSON.stringify(fileData['file_' + current]));
+            if (!jQuery.isEmptyObject(fileData)) {
+                formData.set('file_data', JSON.stringify(fileData['file_' + current]));
+            }
         }
         listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0] + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
