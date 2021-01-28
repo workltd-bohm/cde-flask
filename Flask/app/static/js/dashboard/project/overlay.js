@@ -276,11 +276,14 @@ function AddItem(obj, data, parent, position = 0) {
             data.values.back.text.selectAll("text").html("");
             //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
             //if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
-            if (data.name != "COLOR") {
-                parent.values.text.style("opacity", 100);
-                g_project.overlay.remove();
-                g_project.overlay = false;
-            }
+            // if (d3.mouse(this)[0] >= divRect.left && event.clientX <= divRect.right &&
+            //     event.clientY >= divRect.top && event.clientY <= divRect.bottom) {
+                if (data.name != "COLOR") {
+                    parent.values.text.style("opacity", 100);
+                    g_project.overlay.remove();
+                    g_project.overlay = false;
+                }
+            //}
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){

@@ -191,13 +191,13 @@ function isColor(strColor) {
 function isString(variable) {
     return typeof variable == 'string';
 }
-/* * * * helper fs * * * */
+/* * * *  helper fs  * * * */
 
 function createTempTag(name, color = 'white') {
     let t_container;
     let t_inner;
     let tag;
-    let all_tags = document.getElementsByClassName('activity-tab-container-inside')[0];
+    let all_tags = document.getElementsByClassName('tag-wrapper')[0];
     t_container = document.createElement("div");
     t_container.className = "tag-container";
     t_inner = document.createElement('div');
@@ -212,11 +212,11 @@ function createTempTag(name, color = 'white') {
     tag.style.color = (color == 'white') ? 'black' : 'white';
 
     let span_name = document.createElement("span");
-    span_name.className = 'remove-tag';
+    span_name.className = 'tag-x';
     span_name.onclick = function() {
         deleteTempTag(t_container);
     };
-    span_name.innerText = "x";
+    span_name.innerText = "✕";
     t_container.append(span_name);
 
     // apply changes to container
@@ -279,7 +279,9 @@ function addTag(terminal, buffer = false) {
 
     let post_id = $("#post_id").val();
     let project_name;
-    if (SESSION['position']) { // todo when market has session, find another way to filter out
+    if (SESSION['position']) { 
+        // todo when market has session, find another way to filter out
+        // etc post_id = SESSION['position'].post_id
         project_name = SESSION['position'].project_name;
         if (project_name == '') {
             project_name = SESSION['name'];
@@ -290,15 +292,15 @@ function addTag(terminal, buffer = false) {
         url: "/add_tag",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            project_name: SESSION['position'].project_name,
-            ic_id: SESSION['position'].ic_id,
-            parent_id: SESSION['position'].parent_id,
-            is_directory: SESSION['position'].is_directory,
+            project_name:   SESSION['position'].project_name,
+            ic_id:          SESSION['position'].ic_id,
+            parent_id:      SESSION['position'].parent_id,
+            is_directory:   SESSION['position'].is_directory,
             iso: 'simple',
-            tags: terminal
+            tags:           terminal
         } : {
-            post_id: post_id,
-            tags: terminal
+            post_id:    post_id,
+            tags:       terminal
         }),
         timeout: 5000,
         success: function(data) {
@@ -324,16 +326,21 @@ function addTagListen(el, buffer = false) {
         getTags(document.getElementById("add-tag"));
     }
 
-    var key = window.event.keyCode;
-    if (key != 13)
-        return true;
-    if (key === 13 && el.shiftKey) {
-        return true;
+    if (el.type !== "click")
+    {
+        var key = window.event.keyCode;
+        if (key != 13)
+            return true;
+        if (key === 13 && el.shiftKey) {
+            return true;
+        }
     }
 
+    if (!$("#add-tag").val()) return;
     tagsValue = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
+    
     if (tagsValue[0] != "tag") {
         tagsValue.unshift("tag");
     }
@@ -424,7 +431,7 @@ function removeTag(tagName, tagColor) {
 
 function LoadTag(terminal) {
     console.log(terminal);
-    activityTagContainer = document.getElementById('activity-tag-container');
+    activityTagContainer = document.getElementsByClassName('tag-wrapper')[0];
     for (i = 1; i < terminal.length; i++) {
         if (terminal[i].startsWith('#')) {
             var tag = terminal[i];
@@ -452,12 +459,12 @@ function LoadTag(terminal) {
                 activityTagContainer.style.cssText = "display: inline;";
 
                 tagContainer = document.createElement("div");
-                tagContainer.className = "tag-container";
+                tagContainer.className = "tag-container mb-1";
                 tagContainer.id = tag + ' ' + color;
+                tagContainer.style.backgroundColor = color;
 
                 tagDiv = document.createElement("div");
                 tagDiv.className = "tag";
-                tagDiv.style.cssText = "background-color: " + color + ";";
 
                 tagI = document.createElement("i");
                 var iColor = 'white;';
@@ -468,11 +475,12 @@ function LoadTag(terminal) {
                 tagI.innerHTML = tag;
 
                 tagSpan = document.createElement("span");
-                tagSpan.className = "remove-tag";
+                tagSpan.className = "tag-x";
+                tagSpan.style.backgroundColor = color;
                 tagSpan.onclick = function() {
                     removeTag(tag, color);
                 };
-                tagSpan.innerHTML = 'x';
+                tagSpan.innerHTML = '✕';
 
                 tagDiv.appendChild(tagI);
                 tagContainer.appendChild(tagDiv);
@@ -886,4 +894,14 @@ function arraysEqual(a, b) {
 
 function deleteTerminalInput() {
     location.reload();
+}
+
+function copyToClipboard(elem, selector){
+    var range = document.createRange();
+    range.selectNode(elem.querySelector(selector));
+    window.getSelection().removeAllRanges(); // clear current selection
+    window.getSelection().addRange(range); // to select text
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();// to deselect
+    MakeSnackbar("Copied!");
 }

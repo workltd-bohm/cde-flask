@@ -46,7 +46,7 @@ class DBMongoAdapter:
                 # user.confirmed = result['confirmed']
                 user = result
                 message = msg.LOGGED_IN
-        self._close_connection()
+        # self._close_connection()
         return message, user
 
     def get_all_users(self):
@@ -99,6 +99,16 @@ class DBMongoAdapter:
 
         self._close_connection()
         return message, str(stored_id)
+
+    def delete_profile_image(self, image_id):
+        message = msg.IC_PATH_NOT_FOUND
+        image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
+        if(image_exists):
+            self._db.fs.files.delete_one({"_id":ObjectId(image_id)})
+            self._db.fs.chunks.delete_many({"files_id":ObjectId(image_id)})
+            message = msg.IC_SUCCESSFULLY_REMOVED
+        self._close_connection()
+        return message
 
     def confirm_account(self, user):
         col = self._db.Users
@@ -1055,7 +1065,9 @@ class DBMongoAdapter:
         self._close_connection()
         return res
 
+    # TODO failsafe, case insensitive *to lower*
     def share_project(self, request_data, user):
+        print('\n\n\n', request_data)
         col_users = self._db.Users.Roles
         col = self._db.Users
         user_query = {'user_id': user['id']}
@@ -1262,7 +1274,9 @@ class DBMongoAdapter:
             return self.delete_post_comment(request_data)
 
         # find project
-        projects = self._db.Projects
+        projects =  self._db.Projects
+        users =     self._db.Users.Roles
+
         project_query = {'project_name': request_data['project_name']}
         project_json = projects.find_one(project_query, {'_id': 0})
 
@@ -1273,11 +1287,17 @@ class DBMongoAdapter:
             ic_new = ic
             comments = ic_new.comments
 
+            user = users.find_one({'user_id': request_data['user_id']}, {'_id': 0})
+            for proj in user['projects']:
+                if proj['project_id'] == project_json['project_id']:
+                    role = proj['role']
+
             # delete comment
             for i, comment in enumerate(comments):
                 if comment.id == request_data['comment_id']:
                     # security check
-                    if comment.user['user_id'] != request_data['user_id']:
+                    if comment.user['user_id'] != request_data['user_id'] \
+                    and role != 0:
                         self._close_connection
                         return msg.USER_NO_RIGHTS
 
@@ -1320,6 +1340,9 @@ class DBMongoAdapter:
     def add_tag(self, request_data, tags):
         if 'post_id' in request_data.keys():
             return self.add_tag_to_post(request_data)
+
+        if 'project_name' not in request_data.keys():
+            return msg.DEFAULT_ERROR
 
         col = self._db.Projects
         col_tags = self._db.Tags
@@ -1437,6 +1460,9 @@ class DBMongoAdapter:
     def remove_tag(self, request_data, tag):
         if 'post_id' in request_data.keys():
             return self.remove_tag_from_post(request_data, tag)
+
+        if 'project_name' not in request_data.keys():
+            return msg.DEFAULT_ERROR
 
         col = self._db.Projects
         col_tags = self._db.Tags
@@ -1635,6 +1661,7 @@ class DBMongoAdapter:
         col_users = self._db.Users.Roles
         col_shared = self._db.Projects.Shared
         col_u = self._db.Users
+
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
         no_rights = True
@@ -1658,7 +1685,8 @@ class DBMongoAdapter:
             if new_user:
                 project = Project.json_to_obj(project_json)
                 message = project.add_access(request_data, new_user, project.root_ic)
-                if message == msg.TAG_SUCCESSFULLY_ADDED:
+                print('\n\n\n\n', message)
+                if message == msg.ACCESS_SUCCESSFULLY_ADDED:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
                     # if the user does not have an access to the whole project update shared

@@ -1,0 +1,56 @@
+<div id="activity-access" class="activity-box">
+    <form id="filter-form-access">
+        <div class="activity-access-container">
+            <h6 class="activity-collapsible" >owner</h6>
+            <div class="activity-access-owner-profile mx-auto">
+                {% for a in access %}
+                    {% if 'OWNER' in a['role'] %}
+                <img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/>
+                <p class="details_event owner-username text-center mt-2" >{{ a['user']['username'] }}  </p>
+                    {% endif %}
+                {% endfor %}
+            </div> 
+
+            <h6 class="activity-collapsible selected">collaborators</h6>
+            <div class="activity-collapsible-body my-3" id="access-box">
+                <div class="activity-add-user-container row">
+                    <label for="user_name" class="form-label ms-1">Add people</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control me-2" id="access-add-username" 
+                            name="user_name" placeholder="Type a username" required />
+                        <!--<label for="user_name" class="form__label access"> Add User...</label>-->
+                        <select required class="form-select me-2" id="access-add-role">
+                            <option value="" selected>Choose a role</option>
+                            <option value="WATCHER">Watcher</option>
+                            <option value="DEVELOPER">Developer</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                        <button type="button" class="material-icons btn" onclick="AddAccess()">person_add</button>
+                    </div>
+                </div>
+
+                <div class="activity-access-container mt-3">
+                {% for a in access %}
+                    {% if not 'OWNER' in a['role'] %}
+                    <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
+                    <div class="activity-access-box p-2">
+                        <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
+                        <div class="access-info align-self-center align-middle ms-2">
+                            <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
+                            <div class="access-info-role">{{ a['role'] }}</div>
+                        </div>
+
+                        {% if is_owner %}
+                            <div class="material-icons btn btn-access-remove me-2 mt-2"
+                                onclick="removeAccess({{ a }});">
+                                person_remove
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

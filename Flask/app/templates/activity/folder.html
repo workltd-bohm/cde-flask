@@ -1,0 +1,25 @@
+<div class="row activity-tab-menu">
+    <div class="activity-tab col-lg-3 col-md-12" data-tab="details">
+        Info
+    </div>
+    <div class="activity-tab col-lg-3 col-md-12" data-tab="comments">
+        Comments
+    </div>
+    <div class="activity-tab col-lg-3 col-md-12" data-tab="filters">
+        Filters
+    </div>
+    <div class="activity-tab col-lg-3 col-md-12" data-tab="access">
+        Access
+    </div>
+</div>
+<div class="activity-body row">
+    <div class="col">
+        {% include 'activity/partials/info.html' %}
+
+        {% include 'activity/partials/comments.html' %}
+
+        {% include 'activity/partials/filters.html' %}
+    
+        {% include 'activity/partials/access.html' %}
+    </div>
+</div>

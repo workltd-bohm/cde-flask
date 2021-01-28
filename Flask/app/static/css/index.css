@@ -42,7 +42,7 @@ td {
 
 #index-activity {
     /* width: 15%; */
-    height: 100%;
+    height: 100vh;
     vertical-align: top;
     z-index: 5;
     /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
@@ -337,7 +337,7 @@ body {
     color: green;*/
     color: #fff;
     border-radius: 50%;
-    border: 2px dotted #00d5ff;
+    border: 2px dotted var(--neon-blue);
     /*font-family: monospace;*/
     text-align: center;
     font-size: 2.5vh;
@@ -345,7 +345,7 @@ body {
 
 .terminal-div {
     position: absolute;
-    top: 75px;
+    top: 8vh;
     left: 120px;
     border: none;
     width: 25%;
@@ -354,7 +354,7 @@ body {
   -webkit-animation-iteration-count: infinite;
   animation: pulse 3s;
   animation-iteration-count: infinite;*/
-    border-bottom: 2px solid #00d5ff;
+    border-bottom: 2px solid var(--neon-blue);
     background: transparent;
     color: #bbb;
     outline: 0;

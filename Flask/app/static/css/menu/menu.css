@@ -1,338 +1,54 @@
 @import url("../common/colors.css");
 
-
-
-/*This is the default Menu position (collapsed)*/
-.menu-fixed {
-  background-color: var(--cur-side-menu);
-  width: 5%; /*5%*/
-  z-index: 2;
-  height: 100%;
-  transition: all 0.3s;
-  /*-webkit-box-shadow: 10px 0px 10px rgba(255,255,255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
-  -moz-box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);
-  box-shadow: 10px 0px 10px rgba(255, 255, 255, 0.19), 8px 0px 10px rgba(255, 255, 255, 0.23);*/
-  text-align: center;
-  overflow: visible;
-}
-/* remove top bar of menu*/
-.remove-bar {
-  display: none;
-}
-/*This is the Menu on the right when it is collapsed
-Its color should be the same as the dashboard*/
-.menu-fixed.closed {
-  width: 5%; /*5%*/
-  background-color: var(--cur-dashboard-bg);
-  transition: all 0.3s;
-}
-.menu-fixed.closed > a .material-icons.back {
-  display: none;
-}
-.menu-fixed > .menu li {
-  text-align: center;
-  width: 40%;/*40%*/
-}
-.menu-fixed.closed > .menu li > p, .menu-fixed.closed > .menu li > a {
-  display: none;
+.sidebar
+{
+    width: 5%;
+    height: 100vh;
+    background: var(--cur-dashboard-bg);
+    transition: all .3s ease;
 }
 
-.menu-fixed .material-icons.back {
-  display: none;
-  color: gray;
-  float: left;
-  left: -5px;
-  top: 50vh;
-  font-size: 36px;
-  cursor: pointer;
-  transition: color 0.3s;
-  position: relative;
-  z-index: 999;
-}
-.menu-fixed .material-icons.back:hover {
-  color: #fff;
-  transition: color 0.3s;
+.sidebar:hover
+{
+    transition: all .3s ease;
 }
 
-/*This is the OPENED Menu*/
-.menu-fixed.opend {
-  width: 12%;
-  /*background: #000;*/
-  transition: all 0.3s ease-out;
-}
-.menu-fixed.opend > .notes {
-  transition: all 0.2s;
-  z-index: 0;
-  opacity: 0;
-}
-.menu-fixed.opend > a .material-icons.back {
-  display: block;
-}
-.menu-fixed.opend > a > .logo {
-  width: 60%;
-  /* height: 47px; */
-  margin: auto;
-}
-.menu-fixed.opend > a > .logo > span {
-  display: none;
-}
-.menu-fixed.opend > a > .logo > p {
-  display: block;
-}
-.menu-fixed.opend > .menu li {
-  text-align: left;
-  width: 70%;
-}
-
-/*When the Menu is opened what happens when you hover over the icons*/
-.menu-fixed.opend > .menu li:hover::after {
-  content: '';
-  display: block;
-  position: absolute;
-  /*background: rgba(0, 0, 0, 0.5); The background of the hovered icon*/
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  border-radius: 4px;
-}
-
-/*When the Menu is opened what color is the text next to the icons*/
-.menu-fixed.opend > .menu li:hover > p, .menu-fixed.opend > .menu li:hover > a {
-  color: white;
-}
-.menu-fixed.opend > .menu li > p, .menu-fixed.opend > .menu li > a {
-  display: inline-block;
-}
-
-.menu-activity.opend {
-  width: 20%;
-  background-color: var(--cur-activity-menu-bg); /*e1e1e1*/
-}
-
-.menu-fixed .logo {
-  width: 100%;
-  height: 70px;
-  position: relative;
-  cursor: pointer;
-}
-
-/*This is the "logo" at the moment the name "Supper Leggera"*/
-.menu-fixed .logo p {
-  display: none;
-  color: #bbb;
-  font-size: 26px;
-  padding-bottom: 0;
-  font-weight: 700;
-}
-
-/*This is the transition logo of the menu*/
-.menu-fixed .logo span {
-  display: block;
-  background: var(--cur-dashboard-bg);
-  position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
-  top: 50vh;
-  width: 0;
-  height: 0;
-  border-left: 15px solid var(--cur-activity-arrow);
-  border-right: 15px solid var(--cur-dashboard-bg);
-  border-top: 15px solid var(--cur-dashboard-bg);/*rgba(0, 0, 0, 0);*/
-  border-bottom: 15px solid var(--cur-dashboard-bg); /*rgba(0, 0, 0, 0);*/
-  transition: all 0.2s;
-  transform: rotateZ(-180deg) translateX(10px);
-  -webkit-transform: rotateZ(-180deg) translateX(10px);
-  background: var(--cur-dashboard-bg);
-}
-
-.menu-right .logo  span {
-    background: /*var(--side-menu)*/ --cur-dashboard-bg;
-  /*border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
-}
-
-.menu-fixed .logo:hover ~ p {
-  transition: all 0.3s;
-}
-/*.menu-fixed .logo:hover > span {
-  width: 0;
-  height: 0;
-  border-left: 15px solid rgba(51, 68, 69, 0.8);
-  border-right: 15px solid rgba(0, 0, 0, 0);
-  border-top: 15px solid rgba(0, 0, 0, 0);
-  border-bottom: 15px solid rgba(0, 0, 0, 0);
-  transition: all 0.2s;
-  transform: rotateZ(0deg) translateX(10px);
-  -webkit-transform: rotateZ(0deg) translateX(10px);
-}*/
-
-/*.menu-fixed .logo:hover > span.reverse {
-  transform: rotateZ(-180deg) translateX(10px);
-  -webkit-transform: rotateZ(-180deg) translateX(10px);
-  background: var(--side-menu-logo-bg-right);
-}*/
-.reverse::after {
-  content: '';
-  display: block;
-  width: 0;
-  height: 0;
-  border-left: 8px solid var(--cur-dashboard-bg);
-  /*border-right: 8px solid rgb(232, 232, 232);*/
-  border-top: 8px solid rgba(0, 0, 0, 0);
-  border-bottom: 8px solid rgba(0, 0, 0, 0);
-  left: -15px;
-  position: absolute;
-  top: -8px;
-}
-/*.menu-fixed .logo:hover > span::after {
-  content: '';
-  display: block;
-  width: 0;
-  height: 0;
-  border-left: 8px solid var(--side-menu); /*This is the little arrow of the logo when hovered
-  border-right: 8px solid rgba(255, 255, 255, 0); /*These 3 appear to have no effect at all
-  border-top: 8px solid rgba(0, 0, 0, 0);
-  border-bottom: 8px solid rgba(0, 0, 0, 0);
-  left: -15px;
-  position: absolute;
-  top: -8px;
-}*/
-
-.menu-left .logo:hover > span::after {
-  border-left: 8px solid var(--cur-dashboard-bg); /*This is the little arrow of the logo when hovered*/
-}
-
-/*This is the little text under the Logo text - not used at the moment*/
-.menu-fixed .pmenu {
-  text-align: center;
-  color: rgba(0, 0, 0, 1);
-  font-size: 14px;
-  font-weight: 300;
-}
-
-/*The horizontal line that separates the logo and the icons*/
-.menu-fixed hr {
-  width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-}
-.menu-fixed .menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  margin-top: 40px;
-}
-
-/*Side menu - padding between icons and the rest*/
-.menu-fixed .menu li {
-  padding: 2vh 0px 2vh 0px;
-  /*padding: 15px; adding around the icons*/
-  width: 40%;
-  margin: auto;
-  border-bottom: none; /*1px solid rgba(255, 0, 0, 0.1); /*a line between the icons*/
-  /*border-bottom-style: dotted;*/
-  cursor: pointer;
-  overflow: visible;
-  position: relative;
-  transition: all 0.3s;
-}
-.menu-fixed .menu li:last-child {
-  border: none;
-}
-.menu-fixed .menu li:hover {
-  /*background: #121212; This is the background of the side menu icons*/
-  transition: all 0.3s;
-}
-.menu-fixed .menu li:hover > .material-icons {
-  color: white; /*NOT USED AT THE MOMENT This is the color of the icon when you hover over it*/
-}
-.menu-fixed .menu li .material-icons {
-  color: rgba(51, 68, 69, 0.8); /*NOT USED AT THE MOMENT - This is the color of the actual icon*/
-}
-
-/*Text next to the icon in the expanded menu*/
-.menu-fixed .menu li p, .menu-fixed .menu li a {
-  display: none;
-  z-index: 1;
-  margin: auto;
-  color: var(--side-menu-text); /*This is the color of the text next to the icon (in an expnaded menu)*/
-  font-size: 18px;
-  font-weight: 500;
-  position: absolute;
-  padding-top: 10px;
-  padding-left: 30px;
-  line-height: 30px;
-  text-shadow: 1px 1px 8px #fff;
-}
-/*This is the tooltip when we hover over the left side Menu icon
-At the moment the colors follows the planet text color*/
-.menu-link.tooltip:hover .info-tooltip {
-  display: block !important;
-  z-index: 999;
-  position: relative;
-  color: var(--cur-dashboard-text);
-  left: 2vw;
-  top: 2vh;
-  overflow: visible;
-  position: absolute;
-  font-size: 2vh;
-}
-.material-icons.info {
-  color: #eb4034; /*I see no effext for this*/
-  position: absolute;
-  margin: 0;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-}
-
-#page {
-  width: 700px;
-  height: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  margin-bottom: 50px;
-  margin-top: 50px;
-  position: relative;
-}
-#page svg {
-  width: 100%;
-  height: 100%;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  background: linear-gradient(180deg, #1B2734 5.11%, #000000 100%);
-  z-index: 1;
-}
-
-.menu-left{
-    background-color: var(--cur-left-side-menu);
+.sidebar ul
+{
+    display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
-.icon-menu{
-    height: 100%;
-    vertical-align: bottom;
-    top: 34vh;
-    position: relative;
+.sidebar li
+{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
-.side-menu-icon{
-    height: 5vh;
-    width: 5vh;
-    opacity: 70%;
+.sidebar li img {
+    display: block;
+    max-height: 5vh;
+    width: auto;
+
+    margin-left: auto;
+    margin-right: auto;
+    
+    transition: .1s all ease;
 }
 
-.down{
-    bottom: 5%;
+.sidebar li img:hover{
+    -webkit-filter: drop-shadow(0px 0px 3px var(--neon-blue));
+    filter: drop-shadow(0px 0px 3px var(--neon-blue));
+
+    transition: .1s all ease;
 }
 
-.side-menu-icon:hover{
-    opacity: 100%;
+.sidebar:hover li img
+{
 }
 
-@media screen and (min-width: 1024px) and (max-width:1919px) {
- .icon-menu{
-  top: 27vh;
- }
-  }
+.sidebar li:nth-last-child(1)
+{
+    margin-top: auto;
+}
