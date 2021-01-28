@@ -279,7 +279,7 @@ function addTag(terminal, buffer = false) {
 
     let post_id = $("#post_id").val();
     let project_name;
-    if (SESSION['position']) { 
+    if (SESSION['position']) {
         // todo when market has session, find another way to filter out
         // etc post_id = SESSION['position'].post_id
         project_name = SESSION['position'].project_name;
@@ -292,15 +292,15 @@ function addTag(terminal, buffer = false) {
         url: "/add_tag",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            project_name:   SESSION['position'].project_name,
-            ic_id:          SESSION['position'].ic_id,
-            parent_id:      SESSION['position'].parent_id,
-            is_directory:   SESSION['position'].is_directory,
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
             iso: 'simple',
-            tags:           terminal
+            tags: terminal
         } : {
-            post_id:    post_id,
-            tags:       terminal
+            post_id: post_id,
+            tags: terminal
         }),
         timeout: 5000,
         success: function(data) {
@@ -326,8 +326,7 @@ function addTagListen(el, buffer = false) {
         getTags(document.getElementById("add-tag"));
     }
 
-    if (el.type !== "click")
-    {
+    if (el.type !== "click") {
         var key = window.event.keyCode;
         if (key != 13)
             return true;
@@ -340,7 +339,7 @@ function addTagListen(el, buffer = false) {
     tagsValue = $('#add-tag').val().split(' ');
 
     $('#add-tag').val('');
-    
+
     if (tagsValue[0] != "tag") {
         tagsValue.unshift("tag");
     }
@@ -513,7 +512,7 @@ function checkISOCompliant() {
             }
         }
     });
-    if ($("#project_code").val() === "" || $("#company_code").val() === "") {
+    if ($("#project_code").val() === "" || $("#company_code").val() === "" || $("#role_code").val() === "") {
         color = 'red';
         is_compliant = 'Not ';
         response = false;
@@ -896,12 +895,12 @@ function deleteTerminalInput() {
     location.reload();
 }
 
-function copyToClipboard(elem, selector){
+function copyToClipboard(elem, selector) {
     var range = document.createRange();
     range.selectNode(elem.querySelector(selector));
     window.getSelection().removeAllRanges(); // clear current selection
     window.getSelection().addRange(range); // to select text
     document.execCommand("copy");
-    window.getSelection().removeAllRanges();// to deselect
+    window.getSelection().removeAllRanges(); // to deselect
     MakeSnackbar("Copied!");
 }
