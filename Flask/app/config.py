@@ -13,6 +13,7 @@ class Basic:
 
     SECRET_KEY = "key"
     DEBUG = True
+    # SESSION_TYPE = 'filesystem'
 
     LOG_LEVEL = 20
     LOG_FILE = 'app/logs/bohm.log'
