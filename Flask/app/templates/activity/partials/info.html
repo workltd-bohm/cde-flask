@@ -15,7 +15,7 @@
 
                 <div class="tag-wrapper mb-3">
                 {% for tag in tags %}
-                    {% if ',' not in tag['tag'] %}
+                    {% if tag['iso'] == 'simple' %}
                     <div class="tag-container mb-1" id="{{ tag['tag'] }} {{ tag['color'] }}" 
                         title="Click to copy!"
                         style="background-color: {{ tag['color'] }}; color: white; {% if 'white' in tag['color'] %} color: black; {% endif %}">

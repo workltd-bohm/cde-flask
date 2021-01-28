@@ -433,7 +433,7 @@ function filesDroped(event) {
         //    var cname = path.split("/").filter(Boolean).join("-");
         //    console.log("dir path", path.substring(1))
         if (path.startsWith('/'))
-            path = file.path.substring(1);
+            path = path.substring(1);
         webkitResultDir.push({ 'path': path, 'isDir': true });
 
         return Promise.resolve(webkitResultDir);
