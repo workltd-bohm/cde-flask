@@ -189,11 +189,12 @@ def upload_existing_project():
                         tags = []
 
                         if 'file_data' in request.form:
-                            file_data = json.loads(request.form['file_data'])
-                            for key in file_data:
-                                # print("key: {} | value: {}".format(key, file_data[key]))
-                                if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
-                                    tags.append(ISO19650(key, file_data[key], 'ISO19650', 'grey'))
+                            if request.form['file_data'] != 'undefined':
+                                file_data = json.loads(request.form['file_data'])
+                                for key in file_data:
+                                    # print("key: {} | value: {}".format(key, file_data[key]))
+                                    if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                        tags.append(ISO19650(key, file_data[key], 'ISO19650', 'grey'))
 
 
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
@@ -217,18 +218,19 @@ def upload_existing_project():
                             return resp
                         else:
                             if 'file_data' in request.form:
-                                file_data = json.loads(request.form['file_data'])
-                                request_data = {}
-                                request_data['project_name'] = project.name
-                                request_data['ic_id'] = new_id
-                                request_data['parent_id'] = parent_id
-                                request_data['iso'] = 'ISO19650'
-                                request_data['tags'] = {}
-                                for key in file_data:
-                                    if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
-                                        request_data['tags'][key] = file_data[key]
-                                update_tags = db.update_iso_tags(db_adapter, request_data)
-                                logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
+                                if request.form['file_data'] != 'undefined':
+                                    file_data = json.loads(request.form['file_data'])
+                                    request_data = {}
+                                    request_data['project_name'] = project.name
+                                    request_data['ic_id'] = new_id
+                                    request_data['parent_id'] = parent_id
+                                    request_data['iso'] = 'ISO19650'
+                                    request_data['tags'] = {}
+                                    for key in file_data:
+                                        if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                            request_data['tags'][key] = file_data[key]
+                                    update_tags = db.update_iso_tags(db_adapter, request_data)
+                                    logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
                             return request.form['path']
                 else:
                     folders = json.loads(request.form['folders'])
