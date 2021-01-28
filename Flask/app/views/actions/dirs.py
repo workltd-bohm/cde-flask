@@ -31,10 +31,10 @@ def get_file_name():
                     # for t in ic.tags:
                         # S1-M0-CP-H-3201.0-S0-P01_testtxt1.txt
                         # print(t.to_json())
-                    name = helper.get_iso_filename(ic, result, session['user'])
-                    # print(name)
+                    message, user = db.get_user(db_adapter, {'id': session['user']['id']})
+                    name = helper.get_iso_filename(ic, result, user)
+                    print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}
-                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)

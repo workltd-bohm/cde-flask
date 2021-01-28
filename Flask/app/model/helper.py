@@ -60,19 +60,23 @@ def get_iso_filename(file_ic, project, user):
     file_name = file_ic.name + file_ic.type
     # iso_name = '-'.join(tag_code_list) + '_' + file_name
     if project['is_iso19650']:
+        print('kkkkkkkkkk', tag_code_list)
+        print('kkkkkkkkkk', user)
         try:
             iso_name = project['code'] + '-' \
                         + user['company_code'] + '-' \
                         + tag_code_list['project_volume_or_system'] + '-' \
                         + tag_code_list['project_level'] + '-' \
                         + tag_code_list['type_of_information'] + '-' \
-                        + tag_code_list['role_code'] + '-' \
+                        + user['role_code'].split(',')[0] + '-' \
                         + tag_code_list['file_number'] + '-' \
                         + tag_code_list['status'] + '-' \
                         + tag_code_list['revision'] \
                         + '_' + file_name
+            print('kkkkkkkkkk', iso_name)
         except:
             iso_name = file_name
+            print('except', iso_name)
     else:
         iso_name = file_name
     return iso_name
