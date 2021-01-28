@@ -9,11 +9,26 @@
     overflow-x: hidden;
 }
 
+/* $("#activity-container").toggleClass("d-none"); */ 
 
 .activity-menu.opened
 {
     width: 25vw;
     background-color: var(--activity-menu-bg-light);
+}
+
+.activity-menu:not(.opened) #activity-container,
+.activity-menu:not(.opened) .activity-arrow:last-of-type,
+.activity-menu.opened .activity-arrow:first-of-type
+{
+    display: none;
+}
+
+.activity-menu.opened #activity-container,
+.activity-menu:not(.opened) .activity-arrow:first-of-type,
+.activity-menu.opened .activity-arrow:last-of-type
+{
+    display: block;
 }
 
 .activity-button

@@ -27,8 +27,7 @@ function OpenActivity(html, head = null, open = true) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
     if (open) {
-        $ACTIVITY.parent().addClass("opend");
-        $ACTIVITY.parent().removeClass("closed");
+        $ACTIVITY.parent().addClass("opened");
     }
 }
 
