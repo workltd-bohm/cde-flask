@@ -420,44 +420,53 @@ class Project:
         if request['parent_id'] == 'root':
             for i in range(1, len(tags)):
                 if tags[i].startswith('#'):
-                    t = SimpleTag(tags[i], request['iso'])
-                    if i < len(tags)-1:
+                    this_tag = SimpleTag(tags[i], request['iso'])
+
+                    if i < (len(tags) - 1):
                         if not tags[i + 1].startswith('#'):
-                            t.color = tags[i+1]
+                            this_tag.color = tags[i+1]
                             i = i+1
-                    already_in = False
+
+                    tag_already_exists = False
                     for ic_tags in ic.tags:
-                        if ic_tags.tag == t.tag and ic_tags.color == t.color:
-                            already_in = True
-                    if not already_in:
-                        ic.tags.append(t)
-            return msg.TAG_SUCCESSFULLY_ADDED
+                        if ic_tags.tag == this_tag.tag:
+                            tag_already_exists = True
+                        
+                    if not tag_already_exists:
+                        ic.tags.append(this_tag)
+                        return msg.TAG_SUCCESSFULLY_ADDED                        
+
         if ic.ic_id == request['parent_id']:
             for sub_f in ic.sub_folders:
                 if sub_f.ic_id == request['ic_id']:
                     for i in range(1, len(tags)):
                         if tags[i].startswith('#'):
-                            t = SimpleTag(tags[i], request['iso'])
+                            this_tag = SimpleTag(tags[i], request['iso'])
+
                             if i < len(tags)-1:
                                 if not tags[i + 1].startswith('#'):
-                                    t.color = tags[i + 1]
+                                    this_tag.color = tags[i + 1]
                                     i = i + 1
-                            already_in = False
+
+                            tag_already_exists = False
                             for ic_tags in sub_f.tags:
-                                if ic_tags.tag == t.tag and ic_tags.color == t.color:
-                                    already_in = True
-                            if not already_in:
-                                sub_f.tags.append(t)
-                    self._message = msg.TAG_SUCCESSFULLY_ADDED
-                    self._added = True
+                                if ic_tags.tag == this_tag.tag:
+                                    tag_already_exists = True
+                                
+                            if not tag_already_exists:
+                                sub_f.tags.append(this_tag)
+                                self._message = msg.TAG_SUCCESSFULLY_ADDED
+                                self._added = True               
                     break
         else:
             for x in ic.sub_folders:
                 self.add_tag(request, tags, x)
                 if self._added:
                     break
+
         if not self._added:
-            self._message = msg.IC_PATH_NOT_FOUND
+            self._message = msg.TAG_ALREADY_EXISTS
+            
         return self._message
 
     def remove_tag(self, request, tag, ic=None):

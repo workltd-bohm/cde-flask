@@ -1346,8 +1346,10 @@ class DBMongoAdapter:
 
         col = self._db.Projects
         col_tags = self._db.Tags
+
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+
         if project_json:
             project = Project.json_to_obj(project_json)
             message = project.add_tag(request_data, tags, project.root_ic)
@@ -1376,9 +1378,6 @@ class DBMongoAdapter:
                                                                   'parent_id': request_data['parent_id']})
 
                                 col_tags.update_one({'id': tags['id']}, {'$set': tags})
-                                # ta = col_tags.find()
-                                # ta = list(ta)
-                                # print('>>>>>+++', ta)
                                 break
                         else:
                             if request_tags[i].startswith('#'):
@@ -1388,9 +1387,6 @@ class DBMongoAdapter:
                                                               'parent_id': request_data['parent_id']}]
 
                                 col_tags.update({'id': tags['id']}, {'$set': tag_json})
-                                # ta = col_tags.find({'id': tags['id']})
-                                # ta = list(ta)
-                                # print('>>>>>---', ta)
                 else:
                     for i in range(1, len(request_tags)):
                         if request_tags[i].startswith('#'):
