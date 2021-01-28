@@ -1,7 +1,5 @@
 <div id="activity-filters" class="activity-box mt-2">
     <form id="filter-form-search" class="p-2">
-        <!--  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />-->
-
         {% for key, value in search.items() %}
         <div class="form__group field">
             <label for="{{ key }}" class="form__label">{{ value.name }}</label>
