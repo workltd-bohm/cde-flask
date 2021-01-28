@@ -18,6 +18,7 @@ from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
 from app.model.access import Access
+from app.model.tag import Tags, SimpleTag, ISO19650
 
 from app.logs import logger
 
@@ -47,6 +48,8 @@ from app.views.marketplace import posts
 from app.views.marketplace import bids
 
 from app.views.viewer import create
+
+from app.views.mobile import login
 
 app.test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',

@@ -229,11 +229,12 @@ def get_new_file():
                 filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
+                                            is_iso19650 =   result['is_iso19650'],
                                             project_path =  request_data["project_path"],
                                             parent_id =     request_data["parent_id"],
                                             ic_id =         request_data["ic_id"],
                                             project_name =  project_name,
-                                            project_code =  user['project_code'],
+                                            project_code =  result['code'],
                                             company_code =  user['company_code'],
                                             is_file =       request_data["is_file"],
                                             inputs =        filter_file
@@ -261,6 +262,60 @@ def get_new_file():
     resp = Response()
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_iso_rename_popup', methods=['POST'])
+def get_iso_rename_popup():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            user = session.get('user')
+            result = db.get_project(db_adapter, project_name, user)
+            if result:
+                filter_file = gtr.get_input_file_fixed()
+                filter_file.pop('uniclass_2015', None)
+                response = {
+                    'html': render_template("popup/upload_file_popup.html",
+                                            project_path=request_data["project_path"],
+                                            parent_id=request_data["parent_id"],
+                                            ic_id=request_data["ic_id"],
+                                            project_name=project_name,
+                                            project_code=result['code'],
+                                            company_code=user['company_code'],
+                                            is_file=request_data["is_file"],
+                                            inputs=filter_file
+                                            ),
+                    'html-block': render_template("popup/upload_file_popup_block.html",
+                                            project_code=result['code'],
+                                            company_code=user['company_code'],
+                                            inputs=filter_file
+                                            )
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
 

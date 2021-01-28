@@ -1,4 +1,11 @@
 <h3>Upload New File/Folder</h3>
+<div>
+  <input type="checkbox" id="is_iso19650_checkbox" class="is_iso19650_checkbox" name="is_iso19650_checkbox"
+    {% if is_iso19650 %}
+      checked
+    {% endif %}>
+  <label id="is_iso19650_label" for="is_iso19650_checkbox">ISO 19650 RENAMING</label>
+</div>
 <div class="popup-tab-div">
   <div class="scroll">
     <div class="popup-view">

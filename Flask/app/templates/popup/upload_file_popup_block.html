@@ -1,0 +1,31 @@
+
+  <th class="file_naming_field">
+    <input type="text" class="form__field_popup" name="project_code" value="{{ project_code }}" oninput="changeColor(this)"/>
+  </th>
+
+  <th class="file_naming_field">
+    <input type="text" class="form__field_popup" name="company_code" value="{{ company_code }}" oninput="changeColor(this)"/>
+  </th>
+
+  {% for key, value in inputs.items() %}
+    <th class="file_naming_field">
+        <select class="form__field_popup" name="{{ key }}" onchange="changeColor(this)">
+            {% for v in value.elements %}
+              <option value="{{ v }}">{{ v}}</option>
+            {% endfor %}
+        </select>
+    </th>
+  {% endfor %}
+
+  <th class="file_naming_field">
+    <select class="form__field_popup" name="uniclass_2015" >
+      <option></option>
+    </select>
+  </th>
+
+  <th class="file_naming_field_name">
+    <input name="name" value="Default" oninput="changeColor(this)"/>
+  </th>
+  <th class="file_naming_field">
+    <input type="text" class="form__field_popup ext" name="file_extension" value="" readonly />
+  <th>

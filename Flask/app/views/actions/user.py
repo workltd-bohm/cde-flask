@@ -56,7 +56,7 @@ def update_user():
 
                     if message == msg.ACCOUNT_CHANGED:
                         json_user.pop('password', None)
-                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        # json_user['project_code'] = 'SV' # temp, until drawn from project
                         session['user'] = json_user
                         session.modified = True
 

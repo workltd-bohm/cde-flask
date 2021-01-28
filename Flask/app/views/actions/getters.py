@@ -3,6 +3,7 @@ import json
 import uuid
 import base64
 from datetime import datetime
+from app.model.helper import get_input_file
 
 from app import *
 
@@ -621,6 +622,24 @@ def get_shared_ic(ic_data):
                 return resp
 
     return redirect(url_for('login', data=ic_data), code=307)
+
+
+@app.route('/get_input_json', methods=['GET'])
+def get_input_json():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        input_file = get_input_file();
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(input_file)
+        return resp
+    else:
+        return redirect('/login')
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
 
 
 def get_input_file_fixed():

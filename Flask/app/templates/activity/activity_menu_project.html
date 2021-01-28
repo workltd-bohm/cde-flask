@@ -180,6 +180,10 @@
                   <label for="site-gross-area-activity" class="form__label">Site gross area</label>
                 </div>
                 <div class="form__group field">
+                  <input type="input" class="form__field" placeholder="Site coordinates" name="site-coordinates-activity" id="site-coordinates-activity" value="{{ project['site']['coordinates'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                  <label for="site-coordinates-activity" class="form__label">Site coordinates</label>
+                </div>
+                <div class="form__group field">
                   <input type="input" class="form__field" placeholder="Site custom" name="site-custom-activity" id="site-custom-activity" value="{{ project['site']['custom'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
                   <label for="site-custom-activity" class="form__label">Site custom</label>
                 </div>

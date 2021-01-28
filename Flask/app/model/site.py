@@ -1,11 +1,12 @@
 class Site:
 
-    def __init__(self, name, description, address, gross_perimeter, gross_area):
+    def __init__(self, name, description, address, gross_perimeter, gross_area, coordinates):
         self._name = name
         self._description = description
         self._address = address
         self._gross_perimeter = gross_perimeter
         self._gross_area = gross_area
+        self._coordinates = coordinates
         self._custom = ''
 
     @property
@@ -49,6 +50,14 @@ class Site:
         self._gross_area = value
 
     @property
+    def coordinates(self):
+        return self._coordinates
+
+    @coordinates.setter
+    def coordinates(self, value):
+        self._coordinates = value
+
+    @property
     def custom(self):
         return self._custom
 
@@ -63,6 +72,7 @@ class Site:
             'address': self._address,
             'gross_perimeter': self._gross_perimeter,
             'gross_area': self._gross_area,
+            'coordinates': self._coordinates,
             'custom': self._custom
         }
 
@@ -73,7 +83,8 @@ class Site:
             json_file['description'],
             json_file['address'],
             json_file['gross_perimeter'],
-            json_file['gross_area']
+            json_file['gross_area'],
+            json_file['coordinates']
         )
         site.custom = json_file['custom']
         return site

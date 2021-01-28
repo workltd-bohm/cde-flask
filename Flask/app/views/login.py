@@ -35,7 +35,7 @@ def login_data():
         if response is msg.LOGGED_IN:
             json_user = user # .to_json()
             json_user.pop('password', None)
-            json_user.update({'project_code': 'SV'}) # temp, until drawn from project
+            # json_user.update({'project_code': 'SV'}) # temp, until drawn from project
             request_json = {
                 'file_id': json_user['picture']
             }

@@ -69,7 +69,7 @@ function terminalListen(el) {
             }
             break;
         case 'create_file':
-            OpenFileDialog(SESSION['position']);
+            // OpenFileDialog(SESSION['position']);
             break;
         case 'open':
             if (SESSION['position'].is_directory) {
