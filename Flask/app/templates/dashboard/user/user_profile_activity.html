@@ -35,8 +35,23 @@
             <input type="text" class="form__field" name="company_role" id="company_role" value='{{ company_role }}'/>
             <label for="company_role" class="form__label">Company Role</label>
         </div>
+        {% for key, value in complex_tag_list.items() %}
+            {% if key == 'role_code' %}
+                <div class="form__group field">
+                    <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                    <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                        <option></option>
+                        {% for val in value.elements %}
+                            <option {{ 'selected' if role_code == val else '' }} value="{{ val }}">
+                                {{ val }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+        {% endfor %}
         <div class="form__group field">
-            <input type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), true);"/>
+            <input type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), false);"/>
         </div>
     </div>
 </div>

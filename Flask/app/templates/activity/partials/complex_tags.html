@@ -16,17 +16,19 @@
     </div>
 
     {% for key, value in complex_tag_list.items() %}
-    <div class="form__group field">
-        <label for="{{ key }}" class="form__label">{{ value.name }}</label>
-        <select class="form__field" name="{{ key }}" id='{{ key }}' required >
-            <option></option>
-            {% for val in value.elements %}
-            <option {% for tag in tags %}
-                        {{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}
-                    {% endfor %} 
-                value="{{ val }}">{{ val }}</option>
-            {% endfor %}
-        </select>
-    </div>
+        {% if key != 'role_code' %}
+            <div class="form__group field">
+                <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                    <option></option>
+                    {% for val in value.elements %}
+                    <option {% for tag in tags %}
+                                {{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}
+                            {% endfor %} 
+                        value="{{ val }}">{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
     {% endfor %}
 </form>

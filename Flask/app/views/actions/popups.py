@@ -274,10 +274,15 @@ def get_iso_rename_popup():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            message, us = db.get_user(db_adapter, {'id': user['id']});
+            role_code = ''
+            if 'role_code' in us:
+                role_code = us['role_code']
             result = db.get_project(db_adapter, project_name, user)
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 filter_file.pop('uniclass_2015', None)
+                
                 response = {
                     'html': render_template("popup/upload_file_popup.html",
                                             project_path=request_data["project_path"],
@@ -292,7 +297,8 @@ def get_iso_rename_popup():
                     'html-block': render_template("popup/upload_file_popup_block.html",
                                             project_code=result['code'],
                                             company_code=user['company_code'],
-                                            inputs=filter_file
+                                            inputs=filter_file,
+                                            role_code=role_code
                                             )
                 }
                 resp = Response()

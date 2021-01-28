@@ -32,13 +32,19 @@
           </th>
 
           {% for key, value in inputs.items() %}
-            <th class="file_naming_field">
-                <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)">
-                    {% for v in value.elements %}
-                      <option value="{{ v }}">{{ v}}</option>
-                    {% endfor %}
-                </select>
-            </th>
+            {% if key != 'role_code' %}
+              <th class="file_naming_field">
+                  <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)">
+                      {% for v in value.elements %}
+                        <option value="{{ v }}">{{ v}}</option>
+                      {% endfor %}
+                  </select>
+              </th>
+            {% elif key == 'role_code' %}
+              <th class="file_naming_field_name" style="border:none;">
+                <input type="text" style="border:none;" value="" readonly />
+              </th>
+            {% endif %}
           {% endfor %}
 
           <th class="file_naming_field">
@@ -48,7 +54,7 @@
           </th>
 
           <th class="file_naming_field_name" style="border:none;">
-            <input style="border:none;" value="" readonly />
+            <input type="text" style="border:none;" value="" readonly />
           </th>
           <th class="file_naming_field" style="border:none;">
             <input type="text" class="form__field_popup" style="border:none;" name="file_extension" id='file_extension' value="" readonly />

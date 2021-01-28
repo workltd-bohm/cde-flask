@@ -3,6 +3,8 @@ import io
 
 from app import *
 
+import app.views.actions.getters as gtr
+
 
 @app.route('/make_user_profile_activity', methods=['POST'])
 def make_user_profile_activity():
@@ -10,22 +12,33 @@ def make_user_profile_activity():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         user_data = session.get('user')
-        response = {
-            'html': render_template("dashboard/user/user_profile_activity.html",
-                                    id=user_data["id"],
-                                    picture=user_data["picture"],
-                                    username=user_data["username"],
-                                    email=user_data["email"],
-                                    company_code=user_data["company_code"],
-                                    company_name=user_data["company_name"],
-                                    company_role=user_data["company_role"],
-                                    ),
-            'head': "User Profile",
-            'data': []
-        }
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+        if db.connect(db_adapter):
+            message, user = db.get_user(db_adapter, {'id': user_data['id']})
+            role_code = ''
+            if 'role_code' in user:
+                role_code = user['role_code']
+            response = {
+                'html': render_template("dashboard/user/user_profile_activity.html",
+                                        id =                user_data["id"],
+                                        picture =           user_data["picture"],
+                                        username =          user_data["username"],
+                                        email =             user_data["email"],
+                                        company_code =      user_data["company_code"],
+                                        company_name =      user_data["company_name"],
+                                        company_role =      user_data["company_role"],
+                                        complex_tag_list =  gtr.get_input_file_fixed(),
+                                        role_code =         role_code
+                                        ),
+                'head': "User Profile",
+                'data': []
+            }
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = msg.DB_FAILURE['message']
+            return resp
 
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
@@ -38,6 +51,7 @@ def update_user():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         json_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
         user_data = session.get('user')
         # print(user_data)
         # print(json_data)
@@ -56,6 +70,8 @@ def update_user():
 
                     if message == msg.ACCOUNT_CHANGED:
                         json_user.pop('password', None)
+                        json_user.pop('role_code', None)
+                        json_user.pop('project_code', None)
                         # json_user['project_code'] = 'SV' # temp, until drawn from project
                         session['user'] = json_user
                         session.modified = True
