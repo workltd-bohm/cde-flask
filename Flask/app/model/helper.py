@@ -76,3 +76,11 @@ def get_iso_filename(file_ic, project, user):
     else:
         iso_name = file_name
     return iso_name
+
+
+def get_input_file():
+    doc = open('app/static/file/input.json', 'r')
+    file = json.loads(doc.read())
+    doc.close()
+    
+    return file

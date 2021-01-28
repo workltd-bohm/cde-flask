@@ -27,7 +27,7 @@ class Project:
         self._originator = ''
         self._disclaimer = ''
         self._custom = ''
-        self._site = Site('', '', '', '', '')
+        self._site = Site('', '', '', '', '', '')
         self._building = Building('', '')
         self._is_iso19650 = False
         self._added = False

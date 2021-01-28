@@ -177,14 +177,33 @@ def upload_existing_project():
                         parent_directory = ('/').join(current_file_path_backup[:-1])
                         details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
                                           ('').join(['.', file_name.split('.')[-1]]))
+
+
+                        # {
+                        #     "tag": "#XX, No volume/system",
+                        #     "color": "gray",
+                        #     "iso": "ISO19650",
+                        #     "key": "project_volume_or_system"
+                        # }
+
+                        tags = []
+
+                        if 'file_data' in request.form:
+                            file_data = json.loads(request.form['file_data'])
+                            for key in file_data:
+                                # print("key: {} | value: {}".format(key, file_data[key]))
+                                if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                    tags.append(ISO19650(key, file_data[key], 'ISO19650', 'grey'))
+
+
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], [], [], [access], '', '')
+                                           [], tags, [], [access], '', '')
 
                         project.added = False
                         encoded = file
                         # print('+++++++++', encoded)
-                        print('+++++++++', len(file))
+                        # print('+++++++++', len(file))
                         # TODO: fix this mess
                         if len(file) == 0:
                             return request.form['path']
@@ -197,6 +216,19 @@ def upload_existing_project():
                             resp.data = result['message']
                             return resp
                         else:
+                            if 'file_data' in request.form:
+                                file_data = json.loads(request.form['file_data'])
+                                request_data = {}
+                                request_data['project_name'] = project.name
+                                request_data['ic_id'] = new_id
+                                request_data['parent_id'] = parent_id
+                                request_data['iso'] = 'ISO19650'
+                                request_data['tags'] = {}
+                                for key in file_data:
+                                    if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                        request_data['tags'][key] = file_data[key]
+                                update_tags = db.update_iso_tags(db_adapter, request_data)
+                                logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
                             return request.form['path']
                 else:
                     folders = json.loads(request.form['folders'])
@@ -656,7 +688,8 @@ def set_project_config():
                             request_data['site-description-activity'], 
                             request_data['site-full-address-activity'],
                             request_data['site-gross-perimeter-activity'],
-                            request_data['site-gross-area-activity'])
+                            request_data['site-gross-area-activity'],
+                            request_data['site-coordinates-activity'])
                 site.custom = request_data['site-custom-activity']
 
                 building = Building(request_data['building-name-activity'],

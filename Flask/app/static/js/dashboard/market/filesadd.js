@@ -68,6 +68,98 @@ function handleFiles(files, fileType) {
     // }
 }
 
+function createISORenamingPopup(files, folders) {
+    LoadStart();
+    position = SESSION['position'];
+    form = GetForm();
+    $.ajax({
+        url: "/get_iso_rename_popup",
+        type: 'POST',
+        data: JSON.stringify({
+            parent_id: position.parent_id,
+            ic_id: position.ic_id,
+            project_path: position.path,
+            is_file: !position.is_directory,
+        }),
+        timeout: 5000,
+        success: function(data) {
+            input_json2 = JSON.parse(data);
+            html = input_json2['html'];
+            htmlBlock = input_json2['html-block'];
+            form.empty();
+
+            form.append(html);
+            for (var i = 0; i < files.length; i++) {
+                let tr = document.createElement('tr');
+                tr.id = 'row_' + i;
+                tr.innerHTML = htmlBlock;
+
+                $('#smart_naming').append(tr);
+
+                let file_name = files[i].file.name;
+                let extension = '';
+                try {
+                    splitted = file_name.split('.');
+                    file_name = splitted[0];
+                    extension = splitted[1];
+                } catch {}
+
+                $(tr).find("input[name='name']").val(file_name);
+                $(tr).find("input[name='file_extension']").val(extension);
+            }
+
+            // FileDataInit();
+            // console.log(files);
+            OnFileUpload(files, folders);
+
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+
+// Function to send a file, call PHP backend
+function UploadFiles() {
+    d = {};
+    for (var i = 0; i < fileList.length; i++) {
+        row = $('#row_' + i);
+        d1 = {};
+        d1['project_code'] = $('#row_' + i).find("input[name='project_code']").val();
+        d1['company_code'] = $('#row_' + i).find("input[name='company_code']").val();
+        d1['project_volume_or_system'] = $('#row_' + i).find("select[name='project_volume_or_system']").val();
+        d1['project_level'] = $('#row_' + i).find("select[name='project_level']").val();
+        d1['type_of_information'] = $('#row_' + i).find("select[name='type_of_information']").val();
+        d1['role_code'] = $('#row_' + i).find("select[name='role_code']").val();
+        d1['file_number'] = $('#row_' + i).find("select[name='file_number']").val();
+        d1['status'] = $('#row_' + i).find("select[name='status']").val();
+        d1['revision'] = $('#row_' + i).find("select[name='revision']").val();
+        d1['uniclass_2015'] = $('#row_' + i).find("select[name='uniclass_2015']").val();
+        d1['name'] = $('#row_' + i).find("input[name='name']").val();
+        d1['file_extension'] = $('#row_' + i).find("input[name='file_extension']").val();
+
+        d['file_' + i] = d1;
+    }
+
+    total = fileList.length;
+    counter = 1;
+    listing = document.getElementById('listing');
+    box = document.getElementById('box');
+
+    sendFile(fileList, foldereList, 0, d);
+
+    folders_only = true;
+
+}
+
+
 function uploadPostFile(file, fileType) {
     var url = 'upload_post_file';
     var formData = new FormData();

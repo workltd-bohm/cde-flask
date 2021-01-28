@@ -94,7 +94,7 @@ function ProjectConfigSubmit() {
     form.serializeArray().map(function(x) { d[x.name] = x.value; });
     // if (!args) args = d;
     //    console.log(args);
-    console.log(d);
+    // console.log(d);
 
     LoadStart();
     $.ajax({
@@ -156,9 +156,18 @@ function UploadProject(form) {
 }
 
 function sendFilesHelper(files, folders) {
-    total = files.length;
-    dropArea.style.display = "none";
-    createProject(files, folders);
+    if (!folders_only || (folders_only && !$("#is_iso19650_checkbox").is(':checked'))) {
+        if (folders_only) {
+            $("#is_iso19650_checkbox").hide();
+            $("#is_iso19650_label").hide();
+        }
+        total = files.length;
+        dropArea.style.display = "none";
+        createProject(files, folders);
+    } else {
+        createISORenamingPopup(files, folders);
+    }
+
 }
 
 function createProject(files, folders) {
@@ -202,7 +211,7 @@ function createProject(files, folders) {
 }
 
 // Function to send a file, call PHP backend
-function sendFile(files, folders, current) {
+function sendFile(files, folders, current, fileData = {}) {
     file = files[current];
     var formData = new FormData();
     var request = new XMLHttpRequest();
@@ -218,6 +227,8 @@ function sendFile(files, folders, current) {
         }
         path = folders[0].path;
         if (folders_only) {
+            $('#upload_files_div').hide();
+            $('#upload_files_button').hide();
             path = SESSION['position'].path + '/' + path;
             folders.forEach(folder => folder.path = SESSION['position'].path + '/' + folder.path)
         }
@@ -229,10 +240,16 @@ function sendFile(files, folders, current) {
         formData.set('path', path);
         formData.set('is_dir', true);
     } else {
-        path = file.path.substring(1);
+        if (file.path.startsWith('/'))
+            path = file.path.substring(1);
+        else
+            path = file.path;
         if (folders_only) {
+            $('#upload_files_div').hide();
+            $('#upload_files_button').hide();
             path = SESSION['position'].path + '/' + path;
             file.path = path;
+            formData.set('file_data', JSON.stringify(fileData['file_' + current]));
         }
         listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0] + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
@@ -274,14 +291,14 @@ function sendFile(files, folders, current) {
                 // Show percentage
                 box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
                 counter++;
-                sendFile(files, folders, current + 1);
+                sendFile(files, folders, current + 1, fileData);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
-            if ($jqXHR.status == 401) {
+            if ($jqXHR.status == 401 || $jqXHR.status == 409) {
                 location.reload();
             }
         }
@@ -415,7 +432,9 @@ function filesDroped(event) {
         var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
         //    var cname = path.split("/").filter(Boolean).join("-");
         //    console.log("dir path", path.substring(1))
-        webkitResultDir.push({ 'path': path.substring(1), 'isDir': true });
+        if (path.startsWith('/'))
+            path = path.substring(1);
+        webkitResultDir.push({ 'path': path, 'isDir': true });
 
         return Promise.resolve(webkitResultDir);
     }

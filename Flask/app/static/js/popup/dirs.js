@@ -96,6 +96,7 @@ var sel5;
 var sel6;
 var sel7;
 var fileList = null;
+var foldereList = null;
 
 var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'Default'];
 
@@ -135,19 +136,46 @@ function updateNewName() {
     $("#new_name").attr("value", updated_name.join("-"))
 }
 
-function OnFileUpload(file) {
+function changeValues(element) {
+    console.log(element);
+    console.log(element.name);
+    if ($(element).is("input")) {
+        console.log('element.name');
+        console.log($("input[name='" + element.name + "']"));
+        $("input[name='" + element.name + "']").val($(element).val());
+        elements_by_name = $("input[name='" + element.name + "']");
+    }
+    if ($(element).is("select")) {
+        console.log($("select[name='" + element.name + "']"));
+        console.log($(element).val());
+        $("select[name='" + element.name + "']").val($(element).val());
+        elements_by_name = $("select[name='" + element.name + "']");
+    }
+
+    for (var i = 0; i < elements_by_name.length; i++) {
+        changeColor(elements_by_name[i]);
+    }
+
+}
+
+function changeColor(element) {
+    $(element).css('border-color', '#3CB371');
+}
+
+function OnFileUpload(files, folders = []) {
     //    $("#file").change(function(e){
     //        var file = e.target.files[0];
     //        fill_options();
-    var fileName = file.name.split('.');
-    file_extension.value = '.' + fileName[fileName.length - 1];
-    name1.value = file.name;
-    fileList = file;
+    // var fileName = files.name.split('.');
+    // file_extension.value = '.' + fileName[fileName.length - 1];
+    // name1.value = files.name;
+    fileList = files;
+    foldereList = folders;
     //        console.log(file);
-    updated_name[9] = file.name;
+    // updated_name[9] = files.name;
     //updated_name[10] = '.' + fileName[1];
-    originalName = fileName[0] + '.' + fileName[1]
-    updateNewName();
+    // originalName = fileName[0] + '.' + fileName[1]
+    // updateNewName();
 
     // });
 }
@@ -155,11 +183,43 @@ function OnFileUpload(file) {
 function GetFile() {
     var fd = new FormData();
     var d = {};
-    var form = GetForm().serializeArray().map(function(x) { d[x.name] = x.value; });
+    console.log(GetForm().serializeArray());
+    var form = GetForm().serializeArray()
+    for (var i = 0; i < form.length; i++) {
+        if (form[i].name == 'parent_id')
+            d['parent_id'] = form[i].value;
+        if (form[i].name == 'ic_id')
+            d['ic_id'] = form[i].value;
+        if (form[i].name == 'project_name')
+            d['project_name'] = form[i].value;
+        if (form[i].name == 'parent_path')
+            d['parent_path'] = form[i].value;
+        if (form[i].name == 'is_file')
+            d['is_file'] = form[i].value;
+    }
+
 
     if (fileList) {
+        for (var i = 0; i < fileList.length; i++) {
+            row = $('#row_' + i);
+            d1 = {};
+            d1['project_code'] = $('#row_' + i).find("input[name='project_code']").val();
+            d1['company_code'] = $('#row_' + i).find("input[name='company_code']").val();
+            d1['project_volume_or_system'] = $('#row_' + i).find("select[name='project_volume_or_system']").val();
+            d1['project_level'] = $('#row_' + i).find("select[name='project_level']").val();
+            d1['type_of_information'] = $('#row_' + i).find("select[name='type_of_information']").val();
+            d1['role_code'] = $('#row_' + i).find("select[name='role_code']").val();
+            d1['file_number'] = $('#row_' + i).find("select[name='file_number']").val();
+            d1['status'] = $('#row_' + i).find("select[name='status']").val();
+            d1['revision'] = $('#row_' + i).find("select[name='revision']").val();
+            d1['uniclass_2015'] = $('#row_' + i).find("select[name='uniclass_2015']").val();
+            d1['name'] = $('#row_' + i).find("input[name='name']").val();
+            d1['file_extension'] = $('#row_' + i).find("input[name='file_extension']").val();
+
+            d['file_' + i] = d1;
+        }
         fd.append('data', JSON.stringify(d));
-        fd.append('file', fileList)
+        fd.append('file_' + i, fileList[i].file)
     } else {
         MakeSnackbar("File not selected");
         return null;
