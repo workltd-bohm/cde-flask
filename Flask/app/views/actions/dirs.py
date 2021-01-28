@@ -33,7 +33,7 @@ def get_file_name():
                         # print(t.to_json())
                     message, user = db.get_user(db_adapter, {'id': session['user']['id']})
                     name = helper.get_iso_filename(ic, result, user)
-                    print(name)
+                    # print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']

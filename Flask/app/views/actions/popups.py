@@ -43,6 +43,10 @@ def get_open_file():
                 file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
 
                 # print(session.get('user'))
+                message, user = db.get_user(db_adapter, {'id': session.get('user')['id']});
+                role_code = ''
+                if 'role_code' in user:
+                    role_code = user['role_code']
                 if result.type == '.pdf':
                     html = render_template("popup/open_file_pdf.html",
                                             preview =      '/get_shared_file/' + result.stored_id,
@@ -59,7 +63,8 @@ def get_open_file():
                 response = {
                     'html': html,
                     'activity': render_template("activity/file.html",
-                                                user =              session.get('user'),
+                                                user =              user,
+                                                role_code =         role_code,
                                                 details =           file_details,
                                                 tags =              file_tags,
                                                 file_name =         file_name,

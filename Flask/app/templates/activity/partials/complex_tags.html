@@ -29,6 +29,10 @@
                     {% endfor %}
                 </select>
             </div>
+        {% elif key == 'role_code' %}
+            <select class="form__field" name="role_code" id="role_code" required disabled>
+                <option>{{ role_code }}</option>
+            </select>
         {% endif %}
     {% endfor %}
 </form>
