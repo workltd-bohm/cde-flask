@@ -32,6 +32,7 @@ def get_file_name():
                         # S1-M0-CP-H-3201.0-S0-P01_testtxt1.txt
                         # print(t.to_json())
                     message, user = db.get_user(db_adapter, {'id': session['user']['id']})
+                    db.close_connection(db_adapter)
                     name = helper.get_iso_filename(ic, result, user)
                     # print(name)
                 response = {'name': name, 'is_iso19650': project.is_iso19650}

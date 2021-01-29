@@ -46,7 +46,7 @@ class DBMongoAdapter:
                 # user.confirmed = result['confirmed']
                 user = result
                 message = msg.LOGGED_IN
-        self._close_connection()
+        # self._close_connection()
         return message, user
 
     def get_all_users(self):

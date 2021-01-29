@@ -13,7 +13,10 @@ def make_user_profile_activity():
     if main.IsLogin():
         user_data = session.get('user')
         if db.connect(db_adapter):
+
             message, user = db.get_user(db_adapter, {'id': user_data['id']})
+            db.close_connection(db_adapter)
+
             role_code = ''
             if 'role_code' in user:
                 role_code = user['role_code']
@@ -58,7 +61,10 @@ def update_user():
         if "id" in json_data and user_data["id"] == json_data["id"]:
             if db.connect(db_adapter):
                 user_data = {'id': user_data["id"]}
+
                 message, json_user = db.get_user(db_adapter, user_data)
+                db.close_connection(db_adapter)
+
                 if message == msg.LOGGED_IN:
                     user = User()
                     user.create_user(json_user)
@@ -147,7 +153,10 @@ def updateProfilePicture():
         original_picture_id = user_data['picture']
         if db.connect(db_adapter):
             user_id_json = {'id': user_data["id"]}
+
             message, json_user = db.get_user(db_adapter, user_id_json)
+            db.close_connection(db_adapter)
+
             if message == msg.LOGGED_IN:
                 # put picture in the database and get the insertion id
                 message, file_id = db.upload_profile_image(db_adapter, picUpdate_request_json, newProfilePicture)
