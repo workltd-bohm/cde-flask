@@ -61,14 +61,12 @@
             </p>
             {% endif %}
             
-            {% if share_link is defined and share_link != '' %}
             <label for="share-link" class="form-label fw-bold">Share link:</label>
             <div class="input-group mb-3">
-                <input type="text" class="form-control" name="share-link" value="{{ share_link }}">
+                <input type="text" class="form-control" id="share-link" name="share-link" value="">
                 <button class="material-icons btn rounded-0"
                     onclick="copyToClipboard(this.parentElement.parentElement, 'input');">content_copy</button>
             </div>
-            {% endif %}
         </div>
 
         <!-- HISTORY collapsible box -->

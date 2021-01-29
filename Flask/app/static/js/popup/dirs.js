@@ -26,6 +26,8 @@ function OpenFile(form, json, file, open) {
             checkISOCompliant();
 
             LoadStopPreview();
+
+            GetShareLink();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -625,6 +627,28 @@ function GetNameAndDownloadIC(o) {
             } else {
                 DownloadIC("/get_file/" + o.ic_id, name);
             }
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+function GetShareLink() {
+    $.ajax({
+        url: "/get_encoded_data",
+        type: 'POST',
+        data: JSON.stringify({ project: SESSION }),
+        timeout: 5000,
+        success: function(data) {
+            // console.log(data);
+            $('#share-link').val(window.location.href + 'get_shared_ic/' + data);
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {

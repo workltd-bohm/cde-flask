@@ -13,12 +13,14 @@ function OpenFilterActivity(json, open = false) {
         timeout: 5000,
         success: function(data) {
             //console.log(data);
-            if (data == 'Success')
+            if (data == 'Success') {
                 return true;
+            }
             data = JSON.parse(data);
             if (data) {
                 OpenActivity(data.html, null, open);
                 SwitchTabs($(".activity-tab").first());
+                GetShareLink();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
