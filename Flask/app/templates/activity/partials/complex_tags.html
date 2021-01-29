@@ -30,9 +30,12 @@
                 </select>
             </div>
         {% elif key == 'role_code' %}
-            <select class="form__field" name="role_code" id="role_code" required disabled>
-                <option>{{ role_code }}</option>
-            </select>
+            <div class="form__group field">
+                <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                <select class="form__field" name="role_code" id='role_code' required disabled>
+                    <option>{{ role_code }}</option>
+                </select>
+            </div>
         {% endif %}
     {% endfor %}
 </form>
