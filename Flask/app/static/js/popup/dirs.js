@@ -312,42 +312,7 @@ function RenameFile(form, json) {
             form.empty();
             form.append(html);
 
-            if (json.is_directory) {
-                //                console.log(html);
-                document.getElementById('smart_naming').remove();
-                document.getElementById('name_div').style.bottom = "120px";
-            } else {
-                document.getElementById('project_code').value = json.project_code;
-                document.getElementById('company_code').value = json.company_code;
-                //                document.getElementById('name').value = json.original_name;
-                var file = {};
-                file.name = json.name + json.type;
-                //                console.log(json);
-
-                FileDataInit();
-                OnFileUpload(file);
-
-                updated_name[0] = json.project_code;
-                updated_name[1] = json.company_code;
-                updated_name[2] = json.project_volume_or_system.split(',')[0];
-                updated_name[3] = json.project_level.split(',')[0];
-                updated_name[4] = json.type_of_information.split(',')[0];
-                updated_name[5] = json.role_code.split(',')[0];
-                updated_name[6] = json.file_number.split(',')[0];
-                updated_name[7] = json.status.split(',')[0];
-                updated_name[8] = json.revision.split(',')[0];
-                //                updated_name[9] = json.uniclass_2015.split(',')[0];
-
-                updateNewName();
-
-                $('#project_volume_or_system').val(json.project_volume_or_system);
-                $('#project_level').val(json.project_level);
-                $('#type_of_information').val(json.type_of_information);
-                $('#role_code').val(json.role_code);
-                $('#file_number').val(json.file_number);
-                $('#status').val(json.status);
-                $('#revision').val(json.revision);
-            }
+            document.getElementById('name_div').style.bottom = "120px";
 
             LoadStop();
         },

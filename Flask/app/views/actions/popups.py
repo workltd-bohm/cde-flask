@@ -42,7 +42,7 @@ def get_open_file():
                 file_details =      [x.to_json() for x in result.history]
                 file_tags =         [x.to_json() for x in result.tags]
                 file_size =         db.get_file_size(db_adapter, result.stored_id, True)
-                file_path =         result.path
+                file_path =         result.path + result.type
                 file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
 
                 message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})

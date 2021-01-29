@@ -62,9 +62,10 @@
 
 .form__group_popup_new {
     position: relative;
-    padding: 15px 0 0;
-    top: 3vw;
-    width: 80%;
+    padding: 25px 0 20px 0;
+    border: none;
+    top: 1vw;
+    width: 90%;
 }
 
 .form__group_popup>label {
@@ -91,6 +92,24 @@
     background: transparent;
     transition: border-color 0.2s;
     margin-left: 2px;
+}
+
+.form__field_popup_remane {
+    width: 90%;
+    border: none;
+    border-bottom: 1px solid #666;
+    transition: border-color 0.2s;
+    margin-left: 2px;
+}
+
+.form__field_popup_remane:focus {
+    outline: none;
+    margin-left: 5px;
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image-slice: 1;
 }
 
 .ext {
