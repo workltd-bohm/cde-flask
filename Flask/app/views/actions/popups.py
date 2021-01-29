@@ -33,6 +33,9 @@ def get_open_file():
                     m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
+                
+                # close db connection
+                db.close_connection(db_adapter)
 
                 file_name =         result.name + result.type
                 file_iso_name =     helper.get_iso_filename(result, project, session['user'])
@@ -42,8 +45,9 @@ def get_open_file():
                 file_path =         result.path
                 file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
 
-                # print(session.get('user'))
-                message, user = db.get_user(db_adapter, {'id': session.get('user')['id']});
+                message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})
+                db.close_connection(db_adapter)
+
                 role_code = ''
                 if 'role_code' in user:
                     role_code = user['role_code']
@@ -279,7 +283,10 @@ def get_iso_rename_popup():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
-            message, us = db.get_user(db_adapter, {'id': user['id']});
+
+            message, us = db.get_user(db_adapter, {'id': user['id']})
+            db.close_connection(db_adapter)
+
             role_code = ''
             if 'role_code' in us:
                 role_code = us['role_code']

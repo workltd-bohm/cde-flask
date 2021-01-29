@@ -11,6 +11,8 @@ def login_app():
 
     if db.connect(db_adapter):
         response, user = db.get_user(db_adapter, json_data)
+        db.close_connection(db_adapter)
+
         if response is msg.LOGGED_IN:
             json_user = user # .to_json()
             json_user.pop('password', None)

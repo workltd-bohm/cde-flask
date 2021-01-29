@@ -475,6 +475,7 @@ def get_filter_activity():
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
+                # safely close db connection
                 db.close_connection(db_adapter)
                 if result.parent_id == 'root':
                     project = db.get_project(db_adapter, session['project']['name'], session['user'])
