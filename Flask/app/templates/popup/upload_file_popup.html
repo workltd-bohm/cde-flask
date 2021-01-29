@@ -11,38 +11,38 @@
     <table id="smart_naming" style="width:100%">
 
         <tr>
-          <th style="font-size:10px;">Project Code</th>
-          <th style="font-size:10px;">Company Code</th>
+          <th class="file_naming_titles">Project Code</th>
+          <th class="file_naming_titles">Company Code</th>
           {% for key, value in inputs.items() %}
-              <th style="font-size:10px;">{{ value.name }}</th>
+              <th class="file_naming_titles">{{ value.name }}</th>
             {% endfor %}
-          <th style="font-size:10px;">Uniclass 2015</th>
-          <th style="font-size:10px;">Name</th>
-          <th style="font-size:10px;">File Extension</th>
+          <th class="file_naming_titles">Uniclass 2015</th>
+          <th class="file_naming_titles">Name</th>
+          <th class="file_naming_titles">File Extension</th>
         </tr>
 
 
         <tr>
-          <th class="file_naming_field">
-            <input type="text" class="form__field_popup" name="project_code" value="{{ project_code }}" oninput="changeValues(this)"/>
+          <th class="file_naming_field" style="border:none;">
+            <input type="text" class="form__field_popup"  style="border:none;" name="project_code" value="" readonly/>
           </th>
 
-          <th class="file_naming_field">
-            <input type="text" class="form__field_popup" name="company_code" value="{{ company_code }}" oninput="changeValues(this)"/>
+          <th class="file_naming_field" style="border:none;">
+            <input type="text" class="form__field_popup" style="border:none;" name="company_code" value="" readonly/>
           </th>
 
           {% for key, value in inputs.items() %}
             {% if key != 'role_code' %}
               <th class="file_naming_field">
-                  <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)">
+                  <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
                       {% for v in value.elements %}
-                        <option value="{{ v }}">{{ v}}</option>
+                        <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
                       {% endfor %}
                   </select>
               </th>
             {% elif key == 'role_code' %}
-              <th class="file_naming_field_name" style="border:none;">
-                <input type="text" style="border:none;" value="" readonly />
+              <th class="file_naming_field" style="border:none;">
+                <input type="text" class="form__field_popup" style="border:none;" value="" readonly />
               </th>
             {% endif %}
           {% endfor %}

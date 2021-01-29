@@ -1,24 +1,27 @@
 
   <th class="file_naming_field">
-    <input type="text" class="form__field_popup" name="project_code" value="{{ project_code }}" oninput="changeColor(this)"/>
+    <input type="text" class="form__field_popup ext" name="project_code" value="{{ project_code }}" readonly /> <!-- oninput="changeColor(this)" -->
   </th>
 
   <th class="file_naming_field">
-    <input type="text" class="form__field_popup" name="company_code" value="{{ company_code }}" oninput="changeColor(this)"/>
+    <input type="text" class="form__field_popup ext" name="company_code" value="{{ company_code }}" readonly />  <!-- oninput="changeColor(this)" -->
   </th>
 
   {% for key, value in inputs.items() %}
     {% if key != 'role_code' %}
       <th class="file_naming_field">
-          <select class="form__field_popup" name="{{ key }}" onchange="changeColor(this)">
+          <select class="form__field_popup shortened-select" name="{{ key }}" onchange="changeColor(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
               {% for v in value.elements %}
-                <option value="{{ v }}">{{ v}}</option>
+                <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
               {% endfor %}
           </select>
       </th>
     {% elif key == 'role_code' %}
-      <th class="file_naming_field_role">
-        <input type="text" class="form__field_popup ext" name="role_code" value="{{ role_code }}" readonly/>
+      <th class="file_naming_field">
+        
+        <select class="form__field_popup ext shortened-select" name="{{ key }}">
+                <option value="{{ role_code }}">{{ role_code.split(',')[0] }}</option>
+        </select>
       </th>
     {% endif %}
   {% endfor %}
@@ -30,7 +33,7 @@
   </th>
 
   <th class="file_naming_field_name">
-    <input name="name" value="Default" oninput="changeColor(this)"/>
+    <input class="file_naming_field_name" name="name" value="Default" oninput="changeColor(this)"/>
   </th>
   <th class="file_naming_field">
     <input type="text" class="form__field_popup ext" name="file_extension" value="" readonly />

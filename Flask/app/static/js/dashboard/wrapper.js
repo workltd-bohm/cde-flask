@@ -79,8 +79,8 @@ function CheckSession() {
 }
 
 function SendProject(data) {
-    console.log(data);
-    console.log(SESSION);
+    // console.log(data);
+    // console.log(SESSION);
     SESSION["position"] = {
         project_name: data.path.split('/')[0],
         parent_id: data.parent_id,
@@ -241,7 +241,7 @@ function CreateProject(position = null) {
                 //                console.log(data);
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION);
+                    // console.log(SESSION);
                 }
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..

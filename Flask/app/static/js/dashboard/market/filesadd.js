@@ -68,6 +68,18 @@ function handleFiles(files, fileType) {
     // }
 }
 
+function SelectFocus(el) {
+    [].forEach.call(el.options, function(o) {
+        o.textContent = o.getAttribute('value').split(',')[0] + ', ' + o.getAttribute('data-descr');
+    });
+}
+
+function SelectBlur(el) {
+    [].forEach.call(el.options, function(o) {
+        o.textContent = o.getAttribute('value').split(',')[0];
+    });
+}
+
 function createISORenamingPopup(files, folders) {
     LoadStart();
     position = SESSION['position'];

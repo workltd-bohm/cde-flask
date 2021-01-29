@@ -137,17 +137,17 @@ function updateNewName() {
 }
 
 function changeValues(element) {
-    console.log(element);
-    console.log(element.name);
+    // console.log(element);
+    // console.log(element.name);
     if ($(element).is("input")) {
-        console.log('element.name');
-        console.log($("input[name='" + element.name + "']"));
+        // console.log('element.name');
+        // console.log($("input[name='" + element.name + "']"));
         $("input[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("input[name='" + element.name + "']");
     }
     if ($(element).is("select")) {
-        console.log($("select[name='" + element.name + "']"));
-        console.log($(element).val());
+        // console.log($("select[name='" + element.name + "']"));
+        // console.log($(element).val());
         $("select[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("select[name='" + element.name + "']");
     }

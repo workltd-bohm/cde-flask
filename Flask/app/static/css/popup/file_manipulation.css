@@ -81,7 +81,8 @@
 .form__field_popup {
     position: relative;
     font-family: inherit;
-    width: 85%;
+    width: 60px;
+    height: 60px;
     border: 2px solid #FA8072;
     outline: 0;
     font-size: 1.2rem;
@@ -158,24 +159,29 @@
 
 .file_naming_field {
     position: relative;
-    width: 6%;
-    height: auto;
+    /* width: 6%;
+    height: auto; */
     margin: 0 5px 0 5px;
     text-align: center;
 }
 
 .file_naming_field_role {
     position: relative;
-    width: 3%;
-    height: auto;
     margin: 0 5px 0 5px;
     text-align: center;
 }
 
 .file_naming_field_name {
-    width: 25%;
+    width: 300px;
+    height: 60px;
 }
 
 .file_naming_field_name>input {
     width: 95%;
+}
+
+.file_naming_titles {
+    font-size: 0.5vw;
+    width: 70px;
+    text-align: center;
 }
