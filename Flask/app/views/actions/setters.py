@@ -429,11 +429,8 @@ def update_comment():
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
-                resp.status_code = result["code"]
-                # resp.data = render_template("activity/single_comment.html",
-                #                             comment=comment.to_json(),
-                #                             picture=u['picture']
-                #                             )
+                resp.status_code =  result["code"]
+                resp.data =         result["message"]
                 return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
@@ -459,11 +456,8 @@ def delete_comment():
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
-                resp.status_code = result["code"]
-                # resp.data = render_template("activity/single_comment.html",
-                #                             comment=comment.to_json(),
-                #                             picture=u['picture']
-                #                             )
+                resp.status_code =  result["code"]
+                resp.data =         result["message"]
                 return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))

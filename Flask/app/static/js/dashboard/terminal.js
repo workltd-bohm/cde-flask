@@ -354,14 +354,14 @@ function refreshTags() {
         url: "/get_ic_tags",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            project_name: SESSION['position'].project_name,
-            ic_id: SESSION['position'].ic_id,
-            parent_id: SESSION['position'].parent_id,
-            is_directory: SESSION['position'].is_directory
+            project_name:   SESSION['position'].project_name,
+            ic_id:          SESSION['position'].ic_id,
+            parent_id:      SESSION['position'].parent_id,
+            is_directory:   SESSION['position'].is_directory
         } : {
-            post_id: post_id,
-            tag: tagName,
-            color: tagColor
+            post_id:        post_id,
+            tag:            tagName,
+            color:          tagColor
         }),
         timeout: 5000,
         success: function(data) {
@@ -454,8 +454,6 @@ function LoadTag(terminal) {
             if (!alreadyInside) {
 
                 addTagInArrayIfMissing(tag, tagsArr);
-
-                activityTagContainer.style.cssText = "display: inline;";
 
                 tagContainer = document.createElement("div");
                 tagContainer.className = "tag-container mb-1";

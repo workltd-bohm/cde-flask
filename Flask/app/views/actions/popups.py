@@ -22,7 +22,11 @@ def get_open_file():
             if result:
                 project = db.get_project(db_adapter, project_name, session['user'])
                 access = [x.to_json() for x in result.access]
+
+                is_owner = False
                 for a in access:
+                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                        is_owner = True
                     a['role'] = Role(a['role']).name
                     m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
                     a['user']['picture'] = user['picture']
@@ -69,6 +73,7 @@ def get_open_file():
                     'activity': render_template("activity/file.html",
                                                 user =              user,
                                                 role_code =         role_code,
+                                                is_owner =          str(is_owner),
                                                 details =           file_details,
                                                 tags =              file_tags,
                                                 file_name =         file_name,

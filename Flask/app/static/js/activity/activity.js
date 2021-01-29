@@ -284,11 +284,7 @@ function updateComment(el, elem) {
         }),
         timeout: 5000,
         success: function(data) {
-            //            input_json = JSON.parse(data);
-            //console.log(data);
-            // div.prepend(data);
-            // $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -337,6 +333,7 @@ function deleteComment(elem) {
         timeout: 5000,
         success: function(data) {
             elem.remove();
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
