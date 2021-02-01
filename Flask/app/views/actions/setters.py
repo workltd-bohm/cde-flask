@@ -225,7 +225,7 @@ def upload_existing_project():
                                 request_data['iso'] = 'ISO19650'
                                 request_data['tags'] = {}
                                 for key in file_data:
-                                    if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                    if key != 'name' and key != 'file_extension' and key != 'project_code':
                                         request_data['tags'][key] = file_data[key]
                                 update_tags = db.update_iso_tags(db_adapter, request_data)
                                 logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
