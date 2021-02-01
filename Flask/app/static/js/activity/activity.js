@@ -1,5 +1,25 @@
 $(document).ready(function(){
     // bind onclick events
+
+    // calculate height for the dynamic boxes
+    setInterval(function(){
+        if ($(".activity-comments-container").offset() !== undefined) {
+            let someHeight = $(window).height() 
+                - $(".activity-comments-container").offset().top 
+                - ($(".activity-menu").css('padding-left')).replace("px", "");
+            $(".activity-comments-container").height(someHeight);
+        } 
+
+        // project conf
+        if ($(".activity-project-conf-container").offset() !== undefined) {
+            console.log('firing');
+            let someHeight = $(window).height() 
+                - $(".activity-project-conf-container").offset().top 
+                - $(".btn-update").parent().outerHeight(true)
+            $(".activity-project-conf-container").height(someHeight);
+        }
+    }, 250);    
+
     $("body").on('click', '.activity-collapsible', function(){
         openToggle($(this));
     });

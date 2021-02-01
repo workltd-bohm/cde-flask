@@ -251,16 +251,23 @@
     vertical-align: middle;
 }
 
+.activity-project-conf-container
+{
+    height: 87.31vh;
+}
+
+.activity-comments-container
+{
+    height: 80.62vh;
+}
 
 .activity-comments-container,
 .activity-project-conf-container
 {
-    height: 75vh;
-    max-height: 75vh;
     overflow-y: auto;
     
     /* shadow for comments */
-    box-shadow: inset 0px .5em .5em grey;
+    box-shadow: inset 0px .25em .5em grey;
 }
 
 .activity-comment-box,
