@@ -526,6 +526,9 @@ function updateComplexTags(element) {
     args = {}
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
 
+    args['company_code'] = $("#company_code").val();
+    args['role_code'] = $("#role_code").val();
+
     if (!SESSION) {
         alert("Error. No active session found.")
         return;
