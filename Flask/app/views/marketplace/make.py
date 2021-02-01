@@ -482,8 +482,7 @@ def get_filter_activity():
                     response = {
                         'html': render_template("activity/project.html",
                                                 project_name =      session.get("project")["name"],
-                                                profile_picture =   session['user']['picture'],
-                                                user_id =           session['user']['id'],
+                                                user =              session['user'],
                                                 is_owner =          str(is_owner),
                                                 is_iso19650 =       project['is_iso19650'],
                                                 project =           project,
@@ -500,12 +499,11 @@ def get_filter_activity():
                         'data': []
                     }
                 else:
-
                     response = {
                         'html': render_template("activity/folder.html",
                                                 project_name =      session.get("project")["name"],
-                                                profile_picture =   session['user']['picture'],
-                                                user_id =           session['user']['id'],
+                                                user =              session['user'],
+                                                is_owner =          str(is_owner),
                                                 search =            filter_file,
                                                 details =           details,
                                                 tags =              tags,

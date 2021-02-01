@@ -1085,7 +1085,7 @@ class DBMongoAdapter:
         if no_rights:
             return msg.USER_NO_RIGHTS
         # TODO: check does user has the rights to share
-        user_query = {'username': request_data['user_name']}
+        user_query = {'username': request_data['user_name'].strip()}
         new_user = col.find_one(user_query, {'_id': 0})
         if new_user:
             user_id = new_user['id']
@@ -1676,7 +1676,7 @@ class DBMongoAdapter:
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
-            user_query = {'username': request_data['user_name']}
+            user_query = {'username': request_data['user_name'].strip()}
             new_user = col_u.find_one(user_query, {'_id': 0})
             if new_user:
                 project = Project.json_to_obj(project_json)

@@ -18,7 +18,7 @@ $(document).ready(function(){
 
     setInterval(function(){
         getComments();
-    }, 50000);
+    }, 5000);
 });
 
 function OpenActivity(html, head = null, open = true) {
@@ -67,6 +67,9 @@ function ClearActivityTab(parent) {
 }
 
 function getComments(){
+    // prevent from firing on user profile or when there is no comment section
+    if (!document.getElementById("activity-comments-container")) { return; }
+
     $.ajax({
         url: "/get_comments",
         type: "POST",
@@ -77,10 +80,22 @@ function getComments(){
         }),
         timeout: 5000,
         success: function(data){
-            $(".activity-comments-container").empty();
             data = JSON.parse(data);
-            for(var i = 0; i < data.length; i++)
-            {
+
+            let comments = $(".activity-comments-container").children();
+
+            // add only new comments
+            for(let i = 0; i < data.length; i++){
+                let id = $.parseHTML(data[i])[0].dataset.id;
+                for(let j = 0; j < comments.length; j++){
+                    if (comments[j].dataset.id === id)
+                    {
+                        delete data[i];
+                    }
+                }
+            }
+
+            for(let i = 0; i < data.length; i++){
                 $(".activity-comments-container").prepend(data[i]);
             }
         }
@@ -269,11 +284,7 @@ function updateComment(el, elem) {
         }),
         timeout: 5000,
         success: function(data) {
-            //            input_json = JSON.parse(data);
-            //console.log(data);
-            // div.prepend(data);
-            // $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -322,6 +333,7 @@ function deleteComment(elem) {
         timeout: 5000,
         success: function(data) {
             elem.remove();
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
