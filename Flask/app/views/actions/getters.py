@@ -256,6 +256,65 @@ def get_root_project():
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
+
+@app.route('/get_access', methods=["POST"])
+def get_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+
+    # user not logon
+    if not main.IsLogin():
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
+
+    data = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(data))
+
+    # db failsafe
+    if not db.connect(db_adapter):
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
+
+    # find project
+    project_json = db.get_project(db_adapter, data['project_name'], session['user'])
+    if not project_json:
+        resp.status_code = msg.PROJECT_NOT_FOUND['code']
+        resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+        return resp
+    
+    project = Project.json_to_obj(project_json)
+
+    # root ic
+    if data['parent_id'] == 'root':
+        access = [x.to_json() for x in project.root_ic.access]
+    else: # any other ic
+        ic = project.find_ic_by_id(data, data['ic_id'], project.root_ic)
+
+        # ic failsafe
+        if not ic:
+            resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+            resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+            return resp
+
+        access = [x.to_json for x in ic.access]
+
+    # set a render
+    is_owner = False
+    for a in access:
+        if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+            is_owner = True
+        a['role'] = Role(a['role']).name
+        m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+        a['user']['picture'] = user['picture']
+        a['user']['username'] = user['username']
+
+    return render_template("activity/partials/access.html",
+                            access =    access,
+                            is_owner =  is_owner)
+
+
 @app.route('/get_trash', methods=['POST'])
 def get_trash():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))

@@ -12,13 +12,12 @@ $(document).ready(function(){
 
         // project conf
         if ($(".activity-project-conf-container").offset() !== undefined) {
-            console.log('firing');
             let someHeight = $(window).height() 
                 - $(".activity-project-conf-container").offset().top 
                 - $(".btn-update").parent().outerHeight(true)
             $(".activity-project-conf-container").height(someHeight);
         }
-    }, 250);    
+    }, 250);
 
     $("body").on('click', '.activity-collapsible', function(){
         openToggle($(this));
@@ -412,6 +411,7 @@ function AddAccess() {
         }),
         timeout: 5000,
         success: function(data) {
+            getAccess();
             MakeSnackbar(data);
             LoadStop();
         },
@@ -434,9 +434,13 @@ function getAccess(){
     $.ajax({
         url: "/get_access",
         type: "POST",
-        data: JSON.stringify({}),
+        data: JSON.stringify({
+            project_name:   project_name,
+            ic_id:          ic_id,
+            parent_id:      parent_id
+        }),
         success: function(data){
-
+            document.getElementById("activity-access").outerHTML = data;  
         },
         timeout: 5000,
         error: function($jqXHR, textStatus, errorThrown)
@@ -464,10 +468,9 @@ function removeAccess(access) {
         }),
         timeout: 5000,
         success: function(data) {
+            getAccess();
             MakeSnackbar(data);
             LoadStop();
-            location.reload();
-            // TODO load access!
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
