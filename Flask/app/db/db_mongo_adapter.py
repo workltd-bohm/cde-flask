@@ -102,8 +102,11 @@ class DBMongoAdapter:
 
     def delete_profile_image(self, image_id):
         message = msg.IC_PATH_NOT_FOUND
-        image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
-        if(image_exists):
+        if image_id == '':
+            image_exists = False
+        else:
+            image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
+        if image_exists:
             self._db.fs.files.delete_one({"_id":ObjectId(image_id)})
             self._db.fs.chunks.delete_many({"files_id":ObjectId(image_id)})
             message = msg.IC_SUCCESSFULLY_REMOVED

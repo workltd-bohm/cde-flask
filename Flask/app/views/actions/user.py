@@ -70,6 +70,7 @@ def update_user():
                     user.create_user(json_user)
                     user.update_user(json_data)
                     user.id = json_data["id"]
+                    user.picture = json_user['picture']
                     user.confirmed = True
                     json_user = user.to_json()
                     message = db.edit_user(db_adapter, json_user)
@@ -135,6 +136,7 @@ def get_profile_image(image_id):
 
 @app.route('/upload_new_profile_picture', methods=['POST'])
 def updateProfilePicture():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if 'newProfilePicture' not in request.files:
         logger.log(LOG_LEVEL, "no image present in request")
         return redirect(request.url)
