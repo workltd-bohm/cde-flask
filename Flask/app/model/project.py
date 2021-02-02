@@ -313,6 +313,13 @@ class Project:
                     self._ic = sub_f
             if not already_exists:
                 # ic_new.parent_id = ic.ic_id
+                for o in ic.access:
+                    access_already_in = False
+                    for a in ic_new.access:
+                        if o.user['user_id'] == a.user['user_id']:
+                            access_already_in = True
+                    if not access_already_in:
+                        ic_new.access.append(o)
                 ic.sub_folders.append(ic_new)
                 self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True
@@ -338,6 +345,13 @@ class Project:
                     break
             if not already_exists:
                 # ic_new.parent_id = ic.ic_id
+                for o in ic.access:
+                    access_already_in = False
+                    for a in ic_new.access:
+                        if o.user['user_id'] == a.user['user_id']:
+                            access_already_in = True
+                    if not access_already_in:
+                        ic_new.access.append(o)
                 ic.sub_folders.append(ic_new)
                 self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True

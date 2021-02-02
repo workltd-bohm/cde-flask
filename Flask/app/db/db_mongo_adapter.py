@@ -1236,7 +1236,7 @@ class DBMongoAdapter:
 
             # update
             ic_new.comments = comments
-            project.update_ic(ic_new, ic)
+            # project.update_ic(ic_new, ic)
             projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
             message = msg.COMMENT_SUCCESSFULLY_UPDATED
@@ -1309,7 +1309,7 @@ class DBMongoAdapter:
                 
             # update comments, then project
             ic_new.comments = comments
-            project.update_ic(ic_new, ic)
+            # project.update_ic(ic_new, ic)
             projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
             message = msg.COMMENT_SUCCESSFULLY_DELETED
         else:
@@ -1601,7 +1601,7 @@ class DBMongoAdapter:
                         break
 
         # update
-        project.update_ic(ic, old_ic)
+        # project.update_ic(ic, old_ic)
         tags.update_one(tags_query, {"$set": tags_json})
         projects.update_one(project_query, {"$set": project.to_json()})
 

@@ -1,43 +1,43 @@
-$(document).ready(function(){
+$(document).ready(function() {
     // bind onclick events
 
     // calculate height for the dynamic boxes
-    setInterval(function(){
+    setInterval(function() {
         if ($(".activity-comments-container").offset() !== undefined) {
-            let someHeight = $(window).height() 
-                - $(".activity-comments-container").offset().top 
-                - ($(".activity-menu").css('padding-left')).replace("px", "");
+            let someHeight = $(window).height() -
+                $(".activity-comments-container").offset().top -
+                ($(".activity-menu").css('padding-left')).replace("px", "");
             $(".activity-comments-container").height(someHeight);
-        } 
+        }
 
         // project conf
         if ($(".activity-project-conf-container").offset() !== undefined) {
-            let someHeight = $(window).height() 
-                - $(".activity-project-conf-container").offset().top 
-                - $(".btn-update").parent().outerHeight(true)
+            let someHeight = $(window).height() -
+                $(".activity-project-conf-container").offset().top -
+                $(".btn-update").parent().outerHeight(true)
             $(".activity-project-conf-container").height(someHeight);
         }
     }, 250);
 
-    $("body").on('click', '.activity-collapsible', function(){
+    $("body").on('click', '.activity-collapsible', function() {
         openToggle($(this));
     });
 
-    $("body").on('click', '.activity-tab', function(){
+    $("body").on('click', '.activity-tab', function() {
         SwitchTabs($(this));
     });
 
-    $("body").on("change", "#filter-form-project-conf", function(){
+    $("body").on("change", "#filter-form-project-conf", function() {
         $(".btn-update").addClass("glow");
     });
 
-    $("body").on('click', '.btn-update', function(){
+    $("body").on('click', '.btn-update', function() {
         $(this).removeClass("glow");
     });
 
-    setInterval(function(){
+    setInterval(function() {
         getComments();
-    }, 5000);
+    }, 50000);
 });
 
 function OpenActivity(html, head = null, open = true) {
@@ -85,7 +85,7 @@ function ClearActivityTab(parent) {
     parent.html('');
 }
 
-function getComments(){
+function getComments() {
     // prevent from firing on user profile or when there is no comment section
     if (!document.getElementById("activity-comments-container")) { return; }
 
@@ -93,28 +93,27 @@ function getComments(){
         url: "/get_comments",
         type: "POST",
         data: JSON.stringify({
-            project_name:   SESSION['position'].project_name,
-            ic_id:          SESSION['position'].ic_id,
-            parent_id:      SESSION['position'].parent_id,
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
         }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             data = JSON.parse(data);
 
             let comments = $(".activity-comments-container").children();
 
             // add only new comments
-            for(let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 let id = $.parseHTML(data[i])[0].dataset.id;
-                for(let j = 0; j < comments.length; j++){
-                    if (comments[j].dataset.id === id)
-                    {
+                for (let j = 0; j < comments.length; j++) {
+                    if (comments[j].dataset.id === id) {
                         delete data[i];
                     }
                 }
             }
 
-            for(let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 $(".activity-comments-container").prepend(data[i]);
             }
         }
@@ -125,11 +124,11 @@ function sendCommentPress() {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    let project_name =  $('#project_name').val();
-    let parent_id =     $('#parent_id').val();
-    let ic_id =         $('#ic_id').val();
-    let div =           $('#activity-comments-container');
-    let post_id =       $('#post_id').val();
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let div = $('#activity-comments-container');
+    let post_id = $('#post_id').val();
     console.log(comment);
 
     $.ajax({
@@ -174,11 +173,11 @@ function sendComment(el) {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    let project_name =  $('#project_name').val();
-    let parent_id =     $('#parent_id').val();
-    let ic_id =         $('#ic_id').val();
-    let post_id =       $('#post_id').val();
-    let div =           $('#activity-comments-container');
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let post_id = $('#post_id').val();
+    let div = $('#activity-comments-container');
     console.log(comment);
 
     $.ajax({
@@ -214,6 +213,7 @@ function sendComment(el) {
 }
 
 var tmp_comment = "";
+
 function editComment(elem) {
     elem = elem.closest('.activity-comment-box');
 
@@ -223,15 +223,15 @@ function editComment(elem) {
         editmode.parentElement.innerHTML = tmp_comment;
     }
 
-    tmp_comment =       elem.getElementsByClassName('comment-info')[0].innerHTML;
-    let comment =       elem.getElementsByClassName('comment-info-text')[0];
-    let comment_text =  comment.textContent;
+    tmp_comment = elem.getElementsByClassName('comment-info')[0].innerHTML;
+    let comment = elem.getElementsByClassName('comment-info-text')[0];
+    let comment_text = comment.textContent;
     comment.classList.add("d-none");
 
     let edit_box = document.createElement("textarea");
-    edit_box.className =    "form-control w-100";
-    edit_box.id =           "comment-editmode";
-    edit_box.onkeypress =   function(event){
+    edit_box.className = "form-control w-100";
+    edit_box.id = "comment-editmode";
+    edit_box.onkeypress = function(event) {
         updateComment(event, this);
     }
     elem.getElementsByClassName('comment-info')[0].appendChild(edit_box);
@@ -252,23 +252,20 @@ function updateComment(el, elem) {
     }
 
     // get comment's dataset & comment text element
-    elem =              elem.closest('.activity-comment-box');
-    let dataset =       elem.dataset;
-    let comment =       elem.getElementsByClassName('comment-info-text')[0];
+    elem = elem.closest('.activity-comment-box');
+    let dataset = elem.dataset;
+    let comment = elem.getElementsByClassName('comment-info-text')[0];
 
     // get edited comment values and remove editable comment
-    let editmode =      document.getElementById('comment-editmode');
-    let comment_text =  editmode.value;
+    let editmode = document.getElementById('comment-editmode');
+    let comment_text = editmode.value;
     editmode.remove();
 
     // prompt to delete if comment submitted is empty
     if (comment_text.length < 1) {
-        if (confirm("Delete this comment?"))
-        {
+        if (confirm("Delete this comment?")) {
             deleteComment(comment);
-        }
-        else 
-        {
+        } else {
             // show non-updated comment
             comment.classList.remove("d-none");
         }
@@ -279,27 +276,27 @@ function updateComment(el, elem) {
     comment.textContent = comment_text;
     comment.classList.remove("d-none");
 
-    let project_name =  $('#project_name').val();
-    let parent_id =     $('#parent_id').val();
-    let ic_id =         $('#ic_id').val();
-    let div =           $('.activity-tab-div-comment');
-    let post_id =       $('#post_id').val();
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let div = $('.activity-tab-div-comment');
+    let post_id = $('#post_id').val();
 
     $.ajax({
         url: "/update_comment",
         type: 'POST',
         data: JSON.stringify(project_name ? {
             // project's ics' comment
-            project_name:   project_name,
-            parent_id:      parent_id,
-            ic_id:          ic_id,
-            comment_id:     dataset.id,
-            comment:        comment_text,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id,
+            comment_id: dataset.id,
+            comment: comment_text,
         } : {
             // marketplace posts' comment
-            post_id:        post_id,
-            comment_id:     dataset.id,
-            comment:        comment_text,
+            post_id: post_id,
+            comment_id: dataset.id,
+            comment: comment_text,
         }),
         timeout: 5000,
         success: function(data) {
@@ -340,13 +337,13 @@ function deleteComment(elem) {
         url: "/delete_comment",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            comment:        comment,
-            project_name:   project_name,
-            parent_id:      parent_id,
-            ic_id:          ic_id,
-            comment_id:     comment_id
+            comment: comment,
+            project_name: project_name,
+            parent_id: parent_id,
+            ic_id: ic_id,
+            comment_id: comment_id
         } : {
-            post_id:    post_id,
+            post_id: post_id,
             comment_id: comment_id
         }),
         timeout: 5000,
@@ -366,8 +363,8 @@ function deleteComment(elem) {
 }
 
 function SwitchTabs(elem) {
-    if (!elem) {return;}
-    if (elem.hasClass("selected")) {return;}
+    if (!elem) { return; }
+    if (elem.hasClass("selected")) { return; }
     $(".activity-tab").removeClass("selected");
     elem.addClass("selected");
     let tab = elem.data("tab");
@@ -389,11 +386,10 @@ function SwitchTabs(elem) {
 
 function AddAccess() {
     /*LoadStart();*/
-    let add_username =  document.getElementById("access-add-username").value;
-    let add_role =      document.getElementById("access-add-role").value;
+    let add_username = document.getElementById("access-add-username").value;
+    let add_role = document.getElementById("access-add-role").value;
 
-    if (!add_username || !add_role)
-    {
+    if (!add_username || !add_role) {
         MakeSnackbar("Please fill all required fields");
         return;
     }
@@ -402,12 +398,12 @@ function AddAccess() {
         url: "/add_access",
         type: 'POST',
         data: JSON.stringify({
-            project_name:   SESSION['position'].project_name,
-            ic_id:          SESSION['position'].ic_id,
-            parent_id:      SESSION['position'].parent_id,
-            is_directory:   SESSION['position'].is_directory,
-            user_name:      add_username,
-            role:           add_role
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            user_name: add_username,
+            role: add_role
         }),
         timeout: 5000,
         success: function(data) {
@@ -426,25 +422,24 @@ function AddAccess() {
     });
 }
 
-function getAccess(){
-    let project_name =  SESSION['position'].project_name;
-    let ic_id =         SESSION['position'].ic_id;
-    let parent_id =     SESSION['position'].parent_id;
+function getAccess() {
+    let project_name = SESSION['position'].project_name;
+    let ic_id = SESSION['position'].ic_id;
+    let parent_id = SESSION['position'].parent_id;
 
     $.ajax({
         url: "/get_access",
         type: "POST",
         data: JSON.stringify({
-            project_name:   project_name,
-            ic_id:          ic_id,
-            parent_id:      parent_id
+            project_name: project_name,
+            ic_id: ic_id,
+            parent_id: parent_id
         }),
-        success: function(data){
-            document.getElementById("activity-access").outerHTML = data;  
+        success: function(data) {
+            document.getElementById("activity-access").outerHTML = data;
         },
         timeout: 5000,
-        error: function($jqXHR, textStatus, errorThrown)
-        {
+        error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
@@ -667,7 +662,7 @@ function serviceCommentSearchQuery(event) {
     autocompleteDivExists = (document.getElementById(commentsearchAutocompleteDivId) != null);
     autocompleteDivHasOptions = autocompleteDivExists ? (document.getElementById(commentsearchAutocompleteDivId).innerHTML != "") : false;
 
-    switch(keyPressedByUser){
+    switch (keyPressedByUser) {
         case 13: // enter
             if (!autocompleteDivExists || !autocompleteDivHasOptions) {
                 filterDirectoryComments(searchCommentboxText);
@@ -696,7 +691,7 @@ function serviceCommentSearchQuery(event) {
             filterDirectoryComments(searchCommentboxText);
             break;
     }
-    
+
     // if (keyPressedByUser == 13) //enter
     // {
     //     if (!autocompleteDivExists || !autocompleteDivHasOptions) {
