@@ -54,6 +54,14 @@ function CreateSpace(data) {
         .delay(100) // must - old not deleted yet
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
+
+    g_root.universe.selectAll("#Touch")
+        .on("mouseover", function(){
+            if (g_project){
+                g_project.overlay.remove();
+                g_project.overlay = false;
+            }
+        });
 }
 
 function AddSun(obj, data) {

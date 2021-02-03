@@ -286,24 +286,33 @@ body {
     display: none;
 }
 
-.area>input[type="file"] {
-    position: relative;
-    width: 98%;
-    height: 180px;
-    top: -35px;
+.area > input[type="file"]:first-of-type {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 1em;
+    opacity: 0;
 }
 
-.area>div[for="file"] {
+.area > input[type="file"]:nth-of-type(2) {
+    position: absolute;
+    left: 0;
+    padding: 1em;
+}
+
+.area > div[for="file"] {
     width: 98%;
     height: 180px;
 }
 
 .area {
-    width: 98%;
     height: 180px;
     display: block;
     border: 5px dotted #ccc;
     text-align: center;
+    position: relative;
 }
 
 .drag {
