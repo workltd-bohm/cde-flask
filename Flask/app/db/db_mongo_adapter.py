@@ -1070,7 +1070,7 @@ class DBMongoAdapter:
 
     # TODO failsafe, case insensitive *to lower*
     def share_project(self, request_data, user):
-        print('\n\n\n', request_data)
+        # print('\n\n\n', request_data)
         col_users = self._db.Users.Roles
         col = self._db.Users
         user_query = {'user_id': user['id']}
@@ -1087,7 +1087,7 @@ class DBMongoAdapter:
                     break
         if no_rights:
             return msg.USER_NO_RIGHTS
-        # TODO: check does user has the rights to share
+
         user_query = {'username': request_data['user_name'].strip()}
         new_user = col.find_one(user_query, {'_id': 0})
         if new_user:
@@ -1105,6 +1105,48 @@ class DBMongoAdapter:
             p = self.get_my_project(request_data['project_id'])
             project = Project.json_to_obj(p)
             project.set_access_for_all_ics(new_user, role, project.root_ic)
+            self.update_project(project, new_user)
+            message = msg.SUCCESSFULLY_SHARED
+
+        else:
+            message = msg.USER_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def update_share_project(self, request_data, user):
+        # print('\n\n\n', request_data)
+        col_users = self._db.Users.Roles
+        col = self._db.Users
+        user_query = {'user_id': user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        if u:
+            if 'project_id' not in request_data:
+                project_json = self.get_project(request_data['project_name'], user)
+                request_data['project_id'] = project_json['project_id']
+            for pr in u['projects']:
+                if request_data['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+
+        user_query = {'id': request_data['user']['user_id']}
+        new_user = col.find_one(user_query, {'_id': 0})
+        if new_user:
+            user_id = new_user['id']
+            user_query = {'user_id': user_id}
+            u = col_users.find_one(user_query, {'_id': 0})
+            new_role = getattr(Role, request_data['new_role']).value
+            for proj in u['projects']:
+                if proj['project_id'] == request_data['project_id']:
+                    proj['role'] = new_role
+            col_users.update_one(user_query,
+                                 {'$set': u})
+            p = self.get_my_project(request_data['project_id'])
+            project = Project.json_to_obj(p)
+            project.update_access_for_all_ics(new_user, new_role, project.root_ic)
             self.update_project(project, new_user)
             message = msg.SUCCESSFULLY_SHARED
 
@@ -1708,6 +1750,72 @@ class DBMongoAdapter:
                                     break
                             if not already_exists:
                                 user_shared[new_user['id']].append(shared)
+                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                        else:
+                            user_shared[new_user['id']] = [shared]
+                            col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
+                    else:
+                        shared_json[new_user['id']] = [shared]
+                        col_shared.insert_one(shared_json)
+
+            else:
+                message = msg.USER_NOT_FOUND
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def update_access(self, request_data, session_user):
+        col = self._db.Projects
+        col_users = self._db.Users.Roles
+        col_shared = self._db.Projects.Shared
+        col_u = self._db.Users
+
+        user_query = {'user_id': session_user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        project_json = None
+        if u:
+            for x in u:
+                print('x', x)
+            project_json = self.get_project(request_data['project_name'], session_user)
+            for pr in u['projects']:
+                if project_json['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+        # project_query = {'project_name': request_data['project_name']}
+        # project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            user_query = {'id': request_data['user']['user_id']}
+            new_user = col_u.find_one(user_query, {'_id': 0})
+            if new_user:
+                project = Project.json_to_obj(project_json)
+                message = project.update_access(request_data, new_user, project.root_ic)
+                # print('\n\n\n\n', message)
+                if message == msg.ACCESS_SUCCESSFULLY_UPDATED:
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+                    # if the user does not have an access to the whole project update shared
+                    shared = {'project_id': project.project_id,
+                              'project_name': project.name,
+                              'parent_id': request_data['parent_id'],
+                              'role': getattr(Role, request_data['new_role']).value,
+                              'ic_id': request_data['ic_id']}
+                    user_shared = col_shared.find()
+                    results = list(user_shared)
+                    shared_json = {}
+                    if len(results) != 0:
+                        # results[0].pop('_id', None)
+                        user_shared = results[0]
+                        if new_user['id'] in user_shared:
+                            for ic in user_shared[new_user['id']]:
+                                if ic['ic_id'] == request_data['ic_id']:
+                                    ic['role'] = getattr(Role, request_data['new_role']).value
+                                    break
                             col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
                         else:
                             user_shared[new_user['id']] = [shared]

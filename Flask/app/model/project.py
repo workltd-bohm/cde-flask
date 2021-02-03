@@ -556,6 +556,34 @@ class Project:
                 sub_f.access.append(a)
             self.add_access_to_ic(request, user, sub_f)
 
+    def update_access(self, request, user, ic=None):
+        if ic.ic_id == request['ic_id']:
+            for access in ic.access:
+                if user['id'] in access.to_json()['user']['user_id']:
+                    role = getattr(Role, request['new_role']).value
+                    access.role = role
+                    break
+            self.update_access_to_ic(request, user, ic)
+            self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
+            self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.update_access(request, user, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
+    def update_access_to_ic(self, request, user, ic=None):
+        for sub_f in ic.sub_folders:
+            for access in sub_f.access:
+                if user['id'] in access.to_json()['user']['user_id']:
+                    role = getattr(Role, request['new_role']).value
+                    access.role = role
+                    break
+            self.update_access_to_ic(request, user, sub_f)
+
     def remove_access(self, request, ic=None):
         if ic.ic_id == request['ic_id']:
             for access in ic.access:
@@ -594,6 +622,15 @@ class Project:
             ic.access.append(a)
         for x in ic.sub_folders:
             self.set_access_for_all_ics(user, role, x)
+
+    
+    def update_access_for_all_ics(self, user, role, ic=None):
+        for access in ic.access:
+            if user['id'] == access.to_json()['user']['user_id']:
+                access.role = role
+                break
+        for x in ic.sub_folders:
+            self.update_access_for_all_ics(user, role, x)
 
 
     def remove_access_for_all_ics(self, user, role, ic=None):

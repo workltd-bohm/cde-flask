@@ -588,6 +588,45 @@ def add_access():
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/update_access', methods=['POST'])
+def update_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
+            # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+            if request_data['user']['username'] == session['user']['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message']
+                return resp
+            if request_data['parent_id'] == 'root':
+                result = db.update_share_project(db_adapter, request_data, session['user'])
+                # result = db.add_access(db_adapter, request_data, session['user'])
+            else:
+                result = db.update_access(db_adapter, request_data, session['user'])
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
     
 
 @app.route('/remove_access', methods=['POST'])
