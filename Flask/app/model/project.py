@@ -530,8 +530,10 @@ class Project:
                 role = getattr(Role, request['role']).value
                 a = Access(u, '', '', role)
                 ic.access.append(a)
-            self.add_access_to_ic(request, user, ic)
-            self._message = msg.ACCESS_SUCCESSFULLY_ADDED
+                self.add_access_to_ic(request, user, ic)
+                self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
+            else:
+                self._message = msg.ACCESS_NOT_SUCCESSFULLY_ADDED
             self._added = True
         else:
             for x in ic.sub_folders:
