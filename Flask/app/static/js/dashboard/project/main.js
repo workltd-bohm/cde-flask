@@ -57,7 +57,7 @@ function CreateSpace(data) {
 
     g_root.universe.selectAll("#Touch")
         .on("mouseover", function(){
-            if (g_project){
+            if (g_project.overlay){
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
