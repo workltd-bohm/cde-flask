@@ -10,6 +10,7 @@ from .file import File
 import app.model.messages as msg
 from datetime import datetime
 import re
+from app.model.helper import get_defined_colors
 
 
 class Project:
@@ -438,7 +439,11 @@ class Project:
 
                     if i < (len(tags) - 1):
                         if not tags[i + 1].startswith('#'):
-                            this_tag.color = tags[i+1]
+                            colors = get_defined_colors()
+                            if tags[i+1] in colors:
+                                this_tag.color = tags[i+1]
+                            else:
+                                this_tag.color = 'white'
                             i = i+1
 
                     tag_already_exists = False
@@ -459,7 +464,11 @@ class Project:
 
                             if i < len(tags)-1:
                                 if not tags[i + 1].startswith('#'):
-                                    this_tag.color = tags[i + 1]
+                                    colors = get_defined_colors()
+                                    if tags[i+1] in colors:
+                                        this_tag.color = tags[i+1]
+                                    else:
+                                        this_tag.color = 'white'
                                     i = i + 1
 
                             tag_already_exists = False
