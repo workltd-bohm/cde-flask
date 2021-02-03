@@ -1,28 +1,29 @@
-<h3>Upload New File/Folder</h3>
-<div>
-  <input type="checkbox" id="is_iso19650_checkbox" class="is_iso19650_checkbox" name="is_iso19650_checkbox"
-    {% if is_iso19650 %}
-      checked
-    {% endif %}>
-  <label id="is_iso19650_label" for="is_iso19650_checkbox">ISO 19650 RENAMING</label>
+<h3 class="d-inline-block">Upload New File/Folder</h3>
+<div class="form-check d-inline-block ms-3">
+    <input class="form-check-input glow" type="checkbox" value="" id="is_iso19650_checkbox" 
+        name="is_iso19650_checkbox" {{ 'checked' if is_iso19650 }} onchange="this.classList.remove('glow');">
+    <label class="form-check-label" for="is_iso19650_checkbox">
+        ISO 19650 RENAMING
+    </label>
 </div>
 <div class="popup-tab-div">
-  <div class="scroll">
-    <div class="popup-view">
-      <div id="popup-upload">
-
-        <div id="dropAreaFolders" class="area">
-
-          <p>Drop your folder/files here!</p>
-          <input id="file" type="file" title="If you want to select folder, empty folders inside will not be uploaded.
-          In order to enable that functionality, please use drag&drop" allowdirs webkitdirectory multiple/>
-
+    <div class="scroll">
+        <div class="popup-view">
+            <div id="popup-upload">
+                <div id="dropAreaFolders" class="area mt-2">
+                    <span class="position-absolute top-50 translate-middle">
+                        Drop your folder/files here or click to upload files
+                    </span>
+                    <input
+                        id="folders" name="folders" type="file" value="Select a folder" data-buttonText="Select a folder"
+                        title="If you want to select folder, empty folders inside will not be uploaded.
+                        In order to enable that functionality, please use drag&drop" allowdirs multiple/>
+                </div>
+                    
+                <span id="listing"></span>
+                <span id="box"></span>
+                <span id="wait"></span>
+            </div>
         </div>
-        <br>
-        <span id="listing"></span>
-        <span id="box"></span>
-        <span id="wait"></span>
-      </div>
     </div>
-  </div>
 </div>

@@ -492,8 +492,8 @@ function filesDroped(event) {
             })
     }
 
-    // do webkit stuff
-    if (event.type === "drop" && event.target.webkitdirectory) {
+    // do webkit stuff event.target.webkitdirectory
+    if (event.type === "drop") {
         files = event.dataTransfer.items || event.dataTransfer.files;
     } else if (event.type === "change") {
         files = event.target.files;

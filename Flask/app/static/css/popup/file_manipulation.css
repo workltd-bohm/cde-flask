@@ -166,11 +166,6 @@
     box-shadow: none;
 }
 
-.is_iso19650_checkbox {
-    position: relative;
-    display: inline;
-}
-
 .smart-naming-labels {
     position: relative;
     display: flex;

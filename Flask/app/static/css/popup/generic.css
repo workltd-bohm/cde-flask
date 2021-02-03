@@ -73,9 +73,7 @@ div.pero>div.content {
     transform: translate(-50%, -50%);
     background-color: #fefefe;
     margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    border-radius: 25px;
+    padding: 1em;
     width: 70%;
     /* height: 30%; */
     overflow: unset;
@@ -129,7 +127,6 @@ div.content>.zatvori:focus {
 
 div.content>.form {
     height: 100%;
-    overflow: hidden;
 }
 
 div.content>.form>.scroll {
