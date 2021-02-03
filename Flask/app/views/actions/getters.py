@@ -298,9 +298,9 @@ def get_access():
             resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
             return resp
 
-        access = [x.to_json for x in ic.access]
+        access = [x.to_json() for x in ic.access]
 
-    # set a render
+    # render html
     is_owner = False
     for a in access:
         if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
@@ -712,8 +712,21 @@ def get_comments():
 
 
             project = db.get_project(db_adapter, request_data['project_name'], session.get('user'))
+            
+            # failsafe project
+            if not project:
+                resp.status_code =  msg.PROJECT_NOT_FOUND['code']
+                resp.data =         msg.PROJECT_NOT_FOUND['message']
+                return resp
+
             project = Project.json_to_obj(project)
             ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+
+            # failsafe ic
+            if not ic:
+                resp.status_code =  msg.IC_PATH_NOT_FOUND['code']
+                resp.data =         msg.IC_PATH_NOT_FOUND['message']
+                return resp
 
             access = [x.to_json() for x in ic.access]
             is_owner = False
