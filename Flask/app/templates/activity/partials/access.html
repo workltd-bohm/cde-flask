@@ -35,7 +35,7 @@
                         <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
                         <div class="access-info align-self-center align-middle ms-2">
                             <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
-                            <select required class="form-select me-2" id="access-update-role" onchange="updateAccessRole({{ a }});">
+                            <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value);">
                                 <option value="WATCHER" {{ 'selected' if a['role']=='WATCHER' }}>Watcher</option>
                                 <option value="DEVELOPER" {{ 'selected' if a['role']=='DEVELOPER' }}>Developer</option>
                                 <option value="ADMIN" {{ 'selected' if a['role']=='ADMIN' }}>Admin</option>

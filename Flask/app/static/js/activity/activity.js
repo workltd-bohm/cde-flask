@@ -447,23 +447,23 @@ function getAccess() {
     });
 }
 
-function updateAccessRole(access) {
-    console.log($('#access-update-role').val());
-    console.log(access);
+function updateAccessRole(access, role) {
+    console.log(role);
     $.ajax({
         url: "/update_access",
         type: 'POST',
         data: JSON.stringify({
-            project_name: SESSION['position'].project_name,
-            ic_id: SESSION['position'].ic_id,
-            parent_id: SESSION['position'].parent_id,
-            is_directory: SESSION['position'].is_directory,
-            old_role: access.role,
-            new_role: $('#access-update-role').val(),
-            user: access.user
+            project_name:   SESSION['position'].project_name,
+            ic_id:          SESSION['position'].ic_id,
+            parent_id:      SESSION['position'].parent_id,
+            is_directory:   SESSION['position'].is_directory,
+            old_role:       access.role,
+            new_role:       role,
+            user:           access.user
         }),
         timeout: 5000,
         success: function(data) {
+            getAccess();
             MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
