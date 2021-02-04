@@ -678,8 +678,8 @@ class DBMongoAdapter:
             response = msg.PROJECT_NOT_FOUND
         else:
             delete_query = {
-                'project_id': delete_ic_data['project_id'], 
-                'ic_id': delete_ic_data['ic_id']
+                'project_id':   delete_ic_data['project_id'], 
+                'ic_id':        delete_ic_data['ic_id']
             }
             response = msg.STORED_FILE_NOT_FOUND
 
@@ -1698,15 +1698,17 @@ class DBMongoAdapter:
         return [search]
 
     def add_access(self, request_data, session_user):
-        col = self._db.Projects
-        col_users = self._db.Users.Roles
-        col_shared = self._db.Projects.Shared
-        col_u = self._db.Users
+        # grants user an access to an ic
+        col =           self._db.Projects
+        col_users =     self._db.Users.Roles
+        col_shared =    self._db.Projects.Shared
+        col_u =         self._db.Users
 
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
         no_rights = True
         project_json = None
+
         if u:
             for x in u:
                 print('x', x)
@@ -1723,19 +1725,20 @@ class DBMongoAdapter:
         if project_json:
             user_query = {'username': request_data['user_name'].strip()}
             new_user = col_u.find_one(user_query, {'_id': 0})
+
             if new_user:
                 project = Project.json_to_obj(project_json)
                 message = project.add_access(request_data, new_user, project.root_ic)
-                print('\n\n\n\n', message)
+                
                 if message == msg.ACCESS_SUCCESSFULLY_ADDED:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
                     # if the user does not have an access to the whole project update shared
-                    shared = {'project_id': project.project_id,
-                              'project_name': project.name,
-                              'parent_id': request_data['parent_id'],
-                              'role': getattr(Role, request_data['role']).value,
-                              'ic_id': request_data['ic_id']}
+                    shared = {'project_id':     project.project_id,
+                              'project_name':   project.name,
+                              'parent_id':      request_data['parent_id'],
+                              'role':           getattr(Role, request_data['role']).value,
+                              'ic_id':          request_data['ic_id']}
                     user_shared = col_shared.find()
                     results = list(user_shared)
                     shared_json = {}

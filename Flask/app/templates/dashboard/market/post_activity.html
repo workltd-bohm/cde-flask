@@ -1,16 +1,15 @@
-<div class="project-tab">
+<div class="row activity-tab-menu">
     {% block tabs %}{% endblock %}
 </div>
-<div class="activity-tab-div">
-    <div class="scroll">
-        <div class="project-view">
-            <input type="hidden" id="post_id" value="{{ post['post_id'] if post is defined }}" required/>
-            {% block details %}{% endblock %}
-            {% block comments %}{% endblock %}
-            {% block bids %}{% endblock %}
-            {% block access %}{% endblock %}
-        </div>
+<div class="activity-body row">
+    <div class="col">
+        <input type="hidden" id="post_id" value="{{ post['post_id'] if post is defined }}" required/>
+        {% block details %}{% endblock %}
+        {% block comments %}{% endblock %}
+        {% block bids %}{% endblock %}
+        {% block access %}{% endblock %}
+        
+        {% block createPostButton %}{% endblock %}
+        {% block editPostButton %}{% endblock %}
     </div>
-    {% block createPostButton %}{% endblock %}
-    {% block editPostButton %}{% endblock %}
 </div>

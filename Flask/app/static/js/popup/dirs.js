@@ -20,9 +20,6 @@ function OpenFile(form, json, file, open) {
 
             OpenActivity(activity, null, open);
 
-            // show details on load TODO change
-            SwitchTabs($(".activity-tab").first());
-
             checkISOCompliant();
 
             LoadStopPreview();

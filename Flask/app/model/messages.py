@@ -22,6 +22,7 @@ ACCESS_SUCCESSFULLY_UPDATED = {"message": "Updated successfully", "code": 200}
 ACCESS_NOT_SUCCESSFULLY_ADDED = {"message": "Not added successfully", "code": 400}
 ACCESS_SUCCESSFULLY_REMOVED = {"message": "Removed successfully", "code": 200}
 ACCESS_TO_YOURSELF = {"message": "Can not grant access to yourself", "code": 400}
+ACCESS_ALREADY_EXISTS = {"message": "User already exists", "code": 400}
 NO_ACCESS = {"message": "You don't have an access for this information container", "code": 400}
 
 IC_SUCCESSFULLY_ADDED = {"message": "Added successfully", "code": 200}

@@ -19,7 +19,6 @@ function OpenFilterActivity(json, open = false) {
             data = JSON.parse(data);
             if (data) {
                 OpenActivity(data.html, null, open);
-                SwitchTabs($(".activity-tab").first());
                 GetShareLink();
             }
         },

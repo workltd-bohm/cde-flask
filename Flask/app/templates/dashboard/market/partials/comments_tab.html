@@ -1,7 +1,4 @@
-<div id="filter-comments" style="display: none;">
-    <br>
-    TODO
-    <br>
+<div id="activity-comments" class="activity-box">
     <form id="filter-form-comments">
         {% if post is defined %}
         <div class="comments-div">
@@ -14,8 +11,7 @@
                     <br>
                 </div>
             </div>
-            <br>
-            <div class="activity-tab-div-comment">
+            <div class="activity-tab-div-comment mt-3">
                 {% for comment in post['comments']|reverse %}
                 {% include 'activity/single_comment.html' %}
                 {% endfor %}

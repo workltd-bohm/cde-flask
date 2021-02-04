@@ -519,6 +519,7 @@ class Project:
         return self._message
 
     def add_access(self, request, user, ic=None):
+        # grants access to an ic
         if ic.ic_id == request['ic_id']:
             already_in = False
             for access in ic.access:
@@ -545,6 +546,7 @@ class Project:
         return self._message
 
     def add_access_to_ic(self, request, user, ic=None):
+        # grants access to descendant folders/ics
         for sub_f in ic.sub_folders:
             already_in = False
             for access in sub_f.access:

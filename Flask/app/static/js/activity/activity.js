@@ -41,7 +41,10 @@ $(document).ready(function() {
 });
 
 function OpenActivity(html, head = null, open = true) {
-    if (html) ACTIVITY.html(html);
+    if (html) {
+        ACTIVITY.html(html);
+        SwitchTabs($(".activity-tab").first());
+    }
     if (head) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
