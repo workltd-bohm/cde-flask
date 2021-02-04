@@ -178,7 +178,7 @@ def make_ticket_post_new():
         description = request_json['data']['name']
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_form_1.html",
+            'html': render_template("dashboard/market/post_edit_1.html",
                                     ),
             'data': []
         }

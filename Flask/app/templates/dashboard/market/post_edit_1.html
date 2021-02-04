@@ -1,42 +1,34 @@
-<div class="edit-section lower">
+<div class="edit-section view">
     {% include 'dashboard/market/partials/post_nav.html' %}
-    
-    <div class="edit-section view">
-        <div id="3d-view" class="edit-view">
-            <div class="d3view-preview">
-                <div class="group edit-box hover view-link">
-                    <input type="text" id="3d-view-link" name="3d-view" value="{{ dview }}">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Add an iframe link</label>
-                </div>
-                <input type="button" class="d3-preview-button" value="Use" onclick="Set3DPreview();">
-            </div>
-            <div id="d3view-preview"></div>
-        </div>
-        <div id="docs" class="edit-view" style="display: none;">
-            <div id="file-preview"></div>
-            <br>
-            <input type="button" class="bohm-files-button" value="Attach BOHM Files" onclick="OpenFolderStructure('{{ post_id }}')" />
-            <div class="drop-area" id="drop-area-doc">
-                <form class="my-form">
-                <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
-                <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
-                <label class="button" for="doc">Select file(s)</label>
-                </form>
+    <div id="3d-view" class="edit-view">
+        <div class="d3view-preview">
+            <div class="input-group">
+                <input type="text" class="form-control p-2" id="3d-view-link" name="3d-view" value="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI">
+                <button type="button" class="btn" onclick="Set3DPreview();">Use</button>
             </div>
         </div>
-        <div id="images" class="edit-view" style="display: none;">
-            <div id="gallery"></div>
-            <br>
-            <input type="button" class="bohm-files-button" value="Attach BOHM Files" onclick="OpenFolderStructure('{{ post_id }}')" />
-            <div class="drop-area" id="drop-area-image">
-                <form class="my-form">
-                <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
-                <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
-                <label class="button" for="image">Select file(s)</label>
-                </form>
-            </div>
+        <div id="d3view-preview"></div>
+    </div>
+    <div id="docs" class="edit-view" style="display: none;">
+        <div id="file-preview"></div>
+        <input type="button" class="bohm-files-button" value="Attach BOHM Files" onclick="OpenFolderStructure('{{ post_id if post_id is defined else 'default'}}')" />
+        <div class="drop-area" id="drop-area-doc">
+            <form class="my-form">
+            <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+            <input type="file" id="doc" name="doc" multiple onchange="handleFiles(this.files, 'doc')">
+            <label class="button" for="doc">Select file(s)</label>
+            </form>
+        </div>
+    </div>
+    <div id="images" class="edit-view" style="display: none;">
+        <div id="gallery"></div>
+        <input type="button" class="bohm-files-button" value="Attach BOHM Files" onclick="OpenFolderStructure('{{ post_id if post_id is defined else 'default'}}')" />
+        <div class="drop-area" id="drop-area-image">
+            <form class="my-form">
+            <p>Upload multiple files with the file dialog or by dragging and dropping documents onto the dashed region</p>
+            <input type="file" id="image" name="image" multiple accept="image/*" onchange="handleFiles(this.files, 'image')">
+            <label class="button" for="image">Select file(s)</label>
+            </form>
         </div>
     </div>
 </div>

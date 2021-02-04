@@ -82,11 +82,6 @@
     height: 70%;
 }
 
-.edit-section.lower {
-    background: rgb(255, 255, 255, 0.11);
-    /* height: 50%; */
-}
-
 .edit-section.left {
     float: left;
     width: 50%;
@@ -100,24 +95,15 @@
 }
 
 .edit-section.tab {
-    /* float: left;
-    width: auto;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: auto;
-    background:rgb(41, 41, 41);
-    border: 2px solid black; */
     position: absolute;
-    top: 78px;
-    left: 640px;
+    right: 0;
     border: none;
-    width: 40%;
+    width: fit-content;
     background: transparent;
 }
 
 .edit-section.view {
-    position: absolute;
+    position: relative;
     top: 150px;
     width: 90%;
     left: 50px;
@@ -132,21 +118,7 @@
     float: left;
     cursor: pointer;
     background: transparent;
-    /* width: 20%; */
-    /* border: 2px solid black; */
-    /* padding: 5px 2px 5px 2px; */
-    margin-left: 35px;
-}
-
-.edit-box {
-    display: block;
-    float: left;
-    cursor: pointer;
-    background: transparent;
-    /* width: 20%; */
-    /* border: 2px solid black; */
-    /* padding: 5px 2px 5px 2px; */
-    margin-left: 35px;
+    margin: 0 1em;
 }
 
 .edit-box:hover {
@@ -205,7 +177,6 @@
 
 .edit-view {
     position: relative;
-    left: 5%;
     top: 5%;
     text-align: left;
 }

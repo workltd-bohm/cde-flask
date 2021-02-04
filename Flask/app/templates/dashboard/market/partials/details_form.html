@@ -54,11 +54,14 @@
         </div>
         {% endif %}
 
-        
-        {% block createPostButton %}
+        {% if post is not defined %}
             <button type="button" class="btn btn-update w-100 my-3" onclick="AddPost();">
                 Create post
             </button>
-        {% endblock %}
+        {% else %}
+            <button type="button" id="edit-post-button" class="btn btn-update w-100 my-3" onclick="UpdatePost(this, '{{ post_id }}');">
+                Edit post
+            </button>
+        {% endif %}
     </form>
 </div>
