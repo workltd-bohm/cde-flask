@@ -92,7 +92,7 @@ def get_project():
                 us = {'user_id': session['user']['id'],
                         'username': session['user']['username'],
                         'picture': session['user']['picture']}
-                access = Access(us, '', '', Role.ADMIN.value)
+                access = Access(us, '', '', Role.ADMIN.value, 'indefinitely')
                 
                 u = {'user_id': session['user']['id'], 'username': session['user']['username']}
                 details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), 'Shared')

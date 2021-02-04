@@ -55,7 +55,7 @@ def create_project():
         us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-        access = Access(us, '', '', Role.OWNER.value)
+        access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
         
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['project_name'])
@@ -120,7 +120,7 @@ def upload_existing_project():
                 us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-                access = Access(us, '', '', Role.OWNER.value)
+                access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
                 if is_dir == 'false':
                     file = request.files['file'].read()
                     counter = request.form['counter']

@@ -391,6 +391,7 @@ function AddAccess() {
     /*LoadStart();*/
     let add_username = document.getElementById("access-add-username").value;
     let add_role = document.getElementById("access-add-role").value;
+    let add_exp_date = document.getElementById("access-exp-date").value;
 
     if (!add_username || !add_role) {
         MakeSnackbar("Please fill all required fields");
@@ -406,7 +407,8 @@ function AddAccess() {
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             user_name: add_username,
-            role: add_role
+            role: add_role,
+            exp_date: add_exp_date
         }),
         timeout: 5000,
         success: function(data) {
@@ -450,19 +452,20 @@ function getAccess() {
     });
 }
 
-function updateAccessRole(access, role) {
+function updateAccessRole(access, role, date) {
     console.log(role);
     $.ajax({
         url: "/update_access",
         type: 'POST',
         data: JSON.stringify({
-            project_name:   SESSION['position'].project_name,
-            ic_id:          SESSION['position'].ic_id,
-            parent_id:      SESSION['position'].parent_id,
-            is_directory:   SESSION['position'].is_directory,
-            old_role:       access.role,
-            new_role:       role,
-            user:           access.user
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            old_role: access.role,
+            new_role: role,
+            exp_date: date,
+            user: access.user
         }),
         timeout: 5000,
         success: function(data) {

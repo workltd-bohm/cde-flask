@@ -18,6 +18,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control me-2" id="access-add-username" 
                             name="user_name" placeholder="Type a username" required />
+                        <input type="text" id="access-exp-date" class="form-control" name="access_date_expired" placeholder="indefinitely" onfocus="(this.type='datetime-local')" onblur="(this.type='text')">
                         <select required class="form-select me-2" id="access-add-role">
                             <option value="" selected>Choose a role</option>
                             <option value="WATCHER">Watcher</option>
@@ -35,7 +36,8 @@
                         <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
                         <div class="access-info align-self-center align-middle ms-2">
                             <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
-                            <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value);">
+                            <input type="text" class="form-control" name="date_expired" value="{{ a['exp_date'] }}" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" onchange="updateAccessRole({{ a }}, '', this.value);">
+                            <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value, '');">
                                 <option value="WATCHER" {{ 'selected' if a['role']=='WATCHER' }}>Watcher</option>
                                 <option value="DEVELOPER" {{ 'selected' if a['role']=='DEVELOPER' }}>Developer</option>
                                 <option value="ADMIN" {{ 'selected' if a['role']=='ADMIN' }}>Admin</option>

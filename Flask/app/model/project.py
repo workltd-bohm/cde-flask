@@ -529,7 +529,7 @@ class Project:
             if not already_in:
                 u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
                 role = getattr(Role, request['role']).value
-                a = Access(u, '', '', role)
+                a = Access(u, '', '', role, request['exp_date'])
                 ic.access.append(a)
                 self.add_access_to_ic(request, user, ic)
                 self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
@@ -556,7 +556,7 @@ class Project:
             if not already_in:
                 u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
                 role = getattr(Role, request['role']).value
-                a = Access(u, '', '', role)
+                a = Access(u, '', '', role, request['exp_date'])
                 sub_f.access.append(a)
             self.add_access_to_ic(request, user, sub_f)
 
@@ -564,8 +564,11 @@ class Project:
         if ic.ic_id == request['ic_id']:
             for access in ic.access:
                 if user['id'] in access.to_json()['user']['user_id']:
-                    role = getattr(Role, request['new_role']).value
-                    access.role = role
+                    if request['new_role'] != '':
+                        role = getattr(Role, request['new_role']).value
+                        access.role = role
+                    if request['exp_date'] != '':
+                        access.exp_date = request['exp_date']
                     break
             self.update_access_to_ic(request, user, ic)
             self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
@@ -583,8 +586,11 @@ class Project:
         for sub_f in ic.sub_folders:
             for access in sub_f.access:
                 if user['id'] in access.to_json()['user']['user_id']:
-                    role = getattr(Role, request['new_role']).value
-                    access.role = role
+                    if request['new_role'] != '':
+                        role = getattr(Role, request['new_role']).value
+                        access.role = role
+                    if request['exp_date'] != '':
+                        access.exp_date = request['exp_date']
                     break
             self.update_access_to_ic(request, user, sub_f)
 
@@ -615,26 +621,29 @@ class Project:
             self.remove_access_from_ic(request, sub_f)
 
 
-    def set_access_for_all_ics(self, user, role, ic=None):
+    def set_access_for_all_ics(self, request, user, role, ic=None):
         already_in = False
         for access in ic.access:
             if user['id'] in access.to_json():
                 already_in = True
         if not already_in:
             u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
-            a = Access(u, '', '', role)
+            a = Access(u, '', '', role, request['exp_date'])
             ic.access.append(a)
         for x in ic.sub_folders:
-            self.set_access_for_all_ics(user, role, x)
+            self.set_access_for_all_ics(request, user, role, x)
 
     
-    def update_access_for_all_ics(self, user, role, ic=None):
+    def update_access_for_all_ics(self, user, role, exp_date, ic=None):
         for access in ic.access:
             if user['id'] == access.to_json()['user']['user_id']:
-                access.role = role
+                if role != '':
+                    access.role = role
+                if exp_date != '':
+                    access.exp_date = exp_date
                 break
         for x in ic.sub_folders:
-            self.update_access_for_all_ics(user, role, x)
+            self.update_access_for_all_ics(user, role, exp_date, x)
 
 
     def remove_access_for_all_ics(self, user, role, ic=None):

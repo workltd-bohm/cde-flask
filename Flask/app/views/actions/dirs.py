@@ -203,7 +203,7 @@ def upload_file_process(request_json, file=None):
     us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-    access = Access(us, request_json['parent_id'], '', Role.OWNER.value)
+    access = Access(us, request_json['parent_id'], '', Role.OWNER.value, 'indefinitely')
     details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_json['new_name'])
     file_obj = File(str(uuid.uuid1()),
                     '.'.join(request_json['new_name'].split('.')[:-1]),
@@ -336,7 +336,7 @@ def create_dir_process(request_data):
     us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-    access = Access(us, request_data['parent_id'], '', Role.OWNER.value)
+    access = Access(us, request_data['parent_id'], '', Role.OWNER.value, 'indefinitely')
     details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
     folder = Directory(str(uuid.uuid1()),
                         request_data['new_name'],

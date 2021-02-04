@@ -2,11 +2,12 @@ from .role import Role
 
 class Access:
 
-    def __init__(self, user, parent_id, ic_id, role):
+    def __init__(self, user, parent_id, ic_id, role, exp_date):
         self._user = user
         self._parent_id = parent_id
         self._ic_id = ic_id
         self._role = role
+        self._exp_date = exp_date
 
     @property
     def user(self):
@@ -40,12 +41,21 @@ class Access:
     def role(self, value):
         self._role = value
 
+    @property
+    def exp_date(self):
+        return self._exp_date
+
+    @exp_date.setter
+    def exp_date(self, value):
+        self._exp_date = value
+
     def to_json(self):
         return {
             'user': self._user,
             'parent_id': self._parent_id,
             'ic_id': self._ic_id,
-            'role': self._role
+            'role': self._role,
+            'exp_date': self._exp_date
         }
 
     @staticmethod
@@ -53,5 +63,6 @@ class Access:
         return Access(json_file['user'],
                       json_file['parent_id'],
                       json_file['ic_id'],
-                      json_file['role']
+                      json_file['role'],
+                      json_file['exp_date']
                       )

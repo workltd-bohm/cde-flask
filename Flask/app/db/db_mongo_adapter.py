@@ -1098,13 +1098,14 @@ class DBMongoAdapter:
                 request_data['role'] = 'ADMIN'
             role = getattr(Role, request_data['role']).value
             u['projects'].append({'project_id': request_data['project_id'],
-                                  'role': role})
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             print('+-+-', u)
             col_users.update_one(user_query,
                                  {'$set': u})
             p = self.get_my_project(request_data['project_id'])
             project = Project.json_to_obj(p)
-            project.set_access_for_all_ics(new_user, role, project.root_ic)
+            project.set_access_for_all_ics(request_data, new_user, role, project.root_ic)
             self.update_project(project, new_user)
             message = msg.SUCCESSFULLY_SHARED
 
@@ -1138,7 +1139,12 @@ class DBMongoAdapter:
             user_id = new_user['id']
             user_query = {'user_id': user_id}
             u = col_users.find_one(user_query, {'_id': 0})
-            new_role = getattr(Role, request_data['new_role']).value
+            new_role = ''
+            exp_date = ''
+            if request_data['new_role'] != '':
+                new_role = getattr(Role, request_data['new_role']).value
+            if request_data['exp_date'] != '':
+                exp_date = request_data['exp_date']
             for proj in u['projects']:
                 if proj['project_id'] == request_data['project_id']:
                     proj['role'] = new_role
@@ -1146,9 +1152,9 @@ class DBMongoAdapter:
                                  {'$set': u})
             p = self.get_my_project(request_data['project_id'])
             project = Project.json_to_obj(p)
-            project.update_access_for_all_ics(new_user, new_role, project.root_ic)
+            project.update_access_for_all_ics(new_user, new_role, exp_date, project.root_ic)
             self.update_project(project, new_user)
-            message = msg.SUCCESSFULLY_SHARED
+            message = msg.SUCCESSFULLY_UPDATED
 
         else:
             message = msg.USER_NOT_FOUND
@@ -1738,6 +1744,7 @@ class DBMongoAdapter:
                               'project_name':   project.name,
                               'parent_id':      request_data['parent_id'],
                               'role':           getattr(Role, request_data['role']).value,
+                              'exp_date':       request_data['exp_date'],
                               'ic_id':          request_data['ic_id']}
                     user_shared = col_shared.find()
                     results = list(user_shared)
@@ -1803,11 +1810,16 @@ class DBMongoAdapter:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
                     # if the user does not have an access to the whole project update shared
+                    r = ''
+                    if request_data['new_role'] != '':
+                        r = getattr(Role, request_data['new_role']).value
                     shared = {'project_id': project.project_id,
                               'project_name': project.name,
                               'parent_id': request_data['parent_id'],
-                              'role': getattr(Role, request_data['new_role']).value,
+                              'role': r,
+                              'exp_date': request_data['exp_date'],
                               'ic_id': request_data['ic_id']}
+
                     user_shared = col_shared.find()
                     results = list(user_shared)
                     shared_json = {}
@@ -1817,7 +1829,7 @@ class DBMongoAdapter:
                         if new_user['id'] in user_shared:
                             for ic in user_shared[new_user['id']]:
                                 if ic['ic_id'] == request_data['ic_id']:
-                                    ic['role'] = getattr(Role, request_data['new_role']).value
+                                    ic['role'] = r
                                     break
                             col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
                         else:
