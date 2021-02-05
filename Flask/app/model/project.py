@@ -11,6 +11,7 @@ import app.model.messages as msg
 from datetime import datetime
 import re
 from app.model.helper import get_defined_colors
+import time
 
 
 class Project:
@@ -523,7 +524,7 @@ class Project:
         if ic.ic_id == request['ic_id']:
             already_in = False
             for access in ic.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     already_in = True
                     break
             if not already_in:
@@ -532,7 +533,7 @@ class Project:
                 a = Access(u, '', '', role, request['exp_date'])
                 ic.access.append(a)
                 self.add_access_to_ic(request, user, ic)
-                self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
+                self._message = msg.ACCESS_SUCCESSFULLY_ADDED
             else:
                 self._message = msg.ACCESS_NOT_SUCCESSFULLY_ADDED
             self._added = True
@@ -550,7 +551,7 @@ class Project:
         for sub_f in ic.sub_folders:
             already_in = False
             for access in sub_f.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     already_in = True
                     break
             if not already_in:
@@ -563,7 +564,7 @@ class Project:
     def update_access(self, request, user, ic=None):
         if ic.ic_id == request['ic_id']:
             for access in ic.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     if request['new_role'] != '':
                         role = getattr(Role, request['new_role']).value
                         access.role = role
@@ -585,7 +586,7 @@ class Project:
     def update_access_to_ic(self, request, user, ic=None):
         for sub_f in ic.sub_folders:
             for access in sub_f.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     if request['new_role'] != '':
                         role = getattr(Role, request['new_role']).value
                         access.role = role
@@ -597,7 +598,7 @@ class Project:
     def remove_access(self, request, ic=None):
         if ic.ic_id == request['ic_id']:
             for access in ic.access:
-                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                if request['user']['user_id'] == access.to_json()['user']['user_id']:
                     ic.access.remove(access)
                     break
             self.remove_access_from_ic(request, ic)
@@ -615,7 +616,7 @@ class Project:
     def remove_access_from_ic(self, request, ic=None):
         for sub_f in ic.sub_folders:
             for access in sub_f.access:
-                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                if request['user']['user_id'] == access.to_json()['user']['user_id']:
                     sub_f.access.remove(access)
                     break
             self.remove_access_from_ic(request, sub_f)
@@ -779,7 +780,13 @@ class Project:
             already_in = False
             for access in x.access:
                 if user['id'] in access.to_json()['user']['user_id']:
-                    already_in = True
+                    #"exp_date": "2021-04-10T12:10"
+                    date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+                    if access.exp_date != 'indefinitely':
+                        date_time_obj = datetime.strptime(access.exp_date, "%Y-%m-%dT%H:%M")
+                    if access.exp_date > datetime.now().strftime("%Y-%m-%dT%H:%M"):
+                        already_in = True
+
                     break
             self.filter_by_access(user, x)
             if not already_in:

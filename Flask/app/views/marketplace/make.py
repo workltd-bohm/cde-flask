@@ -475,6 +475,8 @@ def get_filter_activity():
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
+                print('**************************************************pr', access)
+
                 # safely close db connection
                 db.close_connection(db_adapter)
                 if result.parent_id == 'root':

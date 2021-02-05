@@ -1141,6 +1141,10 @@ class DBMongoAdapter:
             u = col_users.find_one(user_query, {'_id': 0})
             new_role = ''
             exp_date = ''
+            for pu in u['projects']:
+                if pu['project_id'] == project_json['project_id']:
+                    new_role = pu['role']
+                    exp_date = pu['exp_date']
             if request_data['new_role'] != '':
                 new_role = getattr(Role, request_data['new_role']).value
             if request_data['exp_date'] != '':
@@ -1148,6 +1152,12 @@ class DBMongoAdapter:
             for proj in u['projects']:
                 if proj['project_id'] == request_data['project_id']:
                     proj['role'] = new_role
+
+            for pu in u['projects']:
+                if pu['project_id'] == project_json['project_id']:
+                    pu.update({'project_id': project_json['project_id'],
+                                  'role': new_role,
+                                  'exp_date': exp_date})
             col_users.update_one(user_query,
                                  {'$set': u})
             p = self.get_my_project(request_data['project_id'])
@@ -1195,8 +1205,13 @@ class DBMongoAdapter:
             u = col_users.find_one(user_query, {'_id': 0})
             role = getattr(Role, request_data['role']).value
             print('******', u)
+            print('project_id', project_json['project_id'])
+            print('******', {'project_id': project_json['project_id'],
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             u['projects'].remove({'project_id': project_json['project_id'],
-                                  'role': role})
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             print('+-+-', u)
             col_users.update_one(user_query,
                                  {'$set': u})

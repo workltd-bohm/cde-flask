@@ -392,6 +392,8 @@ function AddAccess() {
     let add_username = document.getElementById("access-add-username").value;
     let add_role = document.getElementById("access-add-role").value;
     let add_exp_date = document.getElementById("access-exp-date").value;
+    if (add_exp_date == '')
+        add_exp_date = 'indefinitely'
 
     if (!add_username || !add_role) {
         MakeSnackbar("Please fill all required fields");
@@ -485,6 +487,8 @@ function updateAccessRole(access, role, date) {
 
 function removeAccess(access) {
     console.log(access);
+    if (access.exp_date == '')
+        access.exp_date = 'indefinitely'
     LoadStart();
     $.ajax({
         url: "/remove_access",
@@ -495,6 +499,7 @@ function removeAccess(access) {
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             role: access.role,
+            exp_date: access.exp_date,
             user: access.user
         }),
         timeout: 5000,
