@@ -784,7 +784,7 @@ class Project:
                     date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
                     if access.exp_date != 'indefinitely':
                         date_time_obj = datetime.strptime(access.exp_date, "%Y-%m-%dT%H:%M")
-                    if access.exp_date > datetime.now().strftime("%Y-%m-%dT%H:%M"):
+                    if date_time_obj > datetime.now():
                         already_in = True
 
                     break

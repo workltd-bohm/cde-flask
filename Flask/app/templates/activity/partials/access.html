@@ -36,7 +36,13 @@
                         <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
                         <div class="access-info align-self-center align-middle ms-2">
                             <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
-                            <input type="text" class="form-control" name="date_expired" value="{{ a['exp_date'] }}" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" onchange="updateAccessRole({{ a }}, '', this.value);">
+                            <input type="text" class="form-control" name="date_expired" value="{{ a['exp_date'] }}" 
+                                                placeholder="" onfocus="(this.type='datetime-local')" 
+                                                onblur="(this.type='text')" 
+                                                onchange="updateAccessRole({{ a }}, '', this.value);"
+                                                {% if not a['exp_date'] | access %}  
+                                                    style="border:2px solid red;"
+                                                {% endif %}>
                             <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value, '');">
                                 <option value="WATCHER" {{ 'selected' if a['role']=='WATCHER' }}>Watcher</option>
                                 <option value="DEVELOPER" {{ 'selected' if a['role']=='DEVELOPER' }}>Developer</option>

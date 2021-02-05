@@ -1,5 +1,6 @@
 from app import *
 from uuid import uuid1
+import datetime
 
 import app.views.actions.getters as gtr
 
@@ -475,8 +476,6 @@ def get_filter_activity():
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
-                print('**************************************************pr', access)
-
                 # safely close db connection
                 db.close_connection(db_adapter)
                 if result.parent_id == 'root':
@@ -531,3 +530,17 @@ def get_filter_activity():
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+    # @app.template_filter('access')
+    # def aceess_time_check(date):
+    #     date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+    #     if date != 'indefinitely':
+    #         date_time_obj = datetime.strptime(date, "%Y-%m-%dT%H:%M")
+    #     if date > datetime.now().strftime("%Y-%m-%dT%H:%M"):
+    #         return True
+    #     return False
+
+    
+    
+    

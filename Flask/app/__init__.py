@@ -51,6 +51,8 @@ from app.views.viewer import create
 
 from app.views.mobile import login
 
+from app.views.jinja2 import filters
+
 app.test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',
     'project_name': 'test-project',

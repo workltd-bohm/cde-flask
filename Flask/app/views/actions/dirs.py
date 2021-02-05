@@ -336,9 +336,10 @@ def create_dir_process(request_data):
     us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-    access = Access(us, request_data['parent_id'], '', Role.OWNER.value, 'indefinitely')
+    ic_id = str(uuid.uuid1())
+    access = Access(us, request_data['parent_id'], ic_id, Role.OWNER.value, 'indefinitely')
     details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
-    folder = Directory(str(uuid.uuid1()),
+    folder = Directory(ic_id,
                         request_data['new_name'],
                         request_data['parent_path'],
                         [details],
