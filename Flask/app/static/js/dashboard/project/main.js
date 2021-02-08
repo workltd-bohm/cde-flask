@@ -4,7 +4,7 @@ function CreateSpace(data) {
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
-    g_root.cy_min = g_root.cy = -g_project.height_h * PLANET_MIN_MAX_COEF / g_root.scale;
+    g_root.cy_min = g_root.cy = -g_project.height_h /2;
     g_root.cy_max = g_root.cy_min;
     g_root.deg = g_root.rad = g_root.rad_diff = 0;
     g_root.zoom = true;
@@ -80,35 +80,39 @@ function AddSun(obj, data) {
     //data.par_id = parent.ic_id.replace(/\//g,"-");
 
     if (data.sub_folders) {
-        g_PlanetRadius_old = g_PlanetRadius;
-        if (data.sub_folders.length >= PLANET_MAX_NUMBER_MIN && data.sub_folders.length < PLANET_MAX_NUMBER_MAX) {
-            g_PlanetRadius /= (data.sub_folders.length + 1) / PLANET_MAX_NUMBER_MIN;
-        } else if (data.sub_folders.length >= PLANET_MAX_NUMBER_MAX) {
+        // Scaling planets (middle option)
+        // g_PlanetRadius_old = g_PlanetRadius;
+        // if (data.sub_folders.length >= PLANET_MAX_NUMBER_MIN && data.sub_folders.length < PLANET_MAX_NUMBER_MAX) {
+        //     g_PlanetRadius /= (data.sub_folders.length + 1) / PLANET_MAX_NUMBER_MIN;
+        // } else 
+        if (data.sub_folders.length > PLANET_MAX_NUMBER_MAX) {
             g_root.slider = true;
             g_SunRadius /= SUN_SCROLL_ZOOM;
             g_PlanetRadius /= PLANET_SCROLL_ZOOM;
-            g_root.cy_max = -(data.sub_folders.length - 1) * g_SunRadius * PLANET_SCROLL_COEF + g_project.height_h * PLANET_MIN_MAX_COEF;
+            g_root.cy_max = -(data.sub_folders.length - 2) * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF;
         }
     }
 
     data.values.this.attr("id", "obj-" + data.id);
 
     if (g_root.slider) {
+        g_root.cx = (-g_SunRadius * SUN_SCROLL_X_COEF);
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_COEF) + ", 0)"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
+            .attr("transform", "translate(" + g_root.cx + ", 0)"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
 
     //Milos commented this out on 14.01.2021
-    data.values.effect = data.values.this.append("circle")
-        .attr("class", "star effect")
-        .attr("r", g_SunRadius * SUN_BG_RATIO);
+    // data.values.effect = data.values.this.append("circle")
+    //     .attr("class", "star effect")
+    //     .attr("r", g_SunRadius * SUN_BG_RATIO);
 
     data.values.children = data.values.this.append("g").attr("class", "star child");
 
     data.values.object = data.values.this.append("g").attr("class", "star object");
 
+    // Shaders start
     data.values.background = data.values.object.append("circle")
         .attr("class", "star background")
         .attr("r", g_SunRadius);
@@ -117,13 +121,14 @@ function AddSun(obj, data) {
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
 
-    data.values.shader = data.values.object.append("circle")
-        .attr("class", "star shader")
-        .attr("r", g_SunRadius)
+    // data.values.shader = data.values.object.append("circle")
+    //     .attr("class", "star shader")
+    //     .attr("r", g_SunRadius)
 
-    data.values.gloss = data.values.object.append("circle")
-        .attr("class", "star gloss")
-        .attr("r", g_SunRadius)
+    // data.values.gloss = data.values.object.append("circle")
+    //     .attr("class", "star gloss")
+    //     .attr("r", g_SunRadius)
+    // Shaders end
 
     data.values.select = data.values.this.append("circle")
         .attr("class", "star select")
@@ -194,20 +199,27 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
+    // Planet position
     if (g_root.slider) {
+        let distance = {
+            x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
+            y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
+        };
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + (g_SunRadius * PLANET_ORBIT_COEF) + ", " + (data.values.position * g_SunRadius * PLANET_SCROLL_COEF) + ")");
+            .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
     } else {
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2);  // distance from the center 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + (g_SunRadius * PLANET_ORBIT_COEF) + ", 0), rotate(" + (-data.values.rotation) + ")");
+            .attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (-data.values.rotation) + ")");
     }
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
+    // Shaders start
     data.values.background = data.values.object.append("circle")
         .attr("class", "planet background" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
         .attr("r", g_PlanetRadius);
@@ -217,16 +229,17 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("r", g_PlanetRadius);
     if (data.color) data.values.picture.style("fill", data.color)
 
-    data.values.shader = data.values.object.append("circle")
-        .attr("class", "planet shader")
-        .attr("r", g_PlanetRadius)
-        .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
+    // data.values.shader = data.values.object.append("circle")
+    //     .attr("class", "planet shader")
+    //     .attr("r", g_PlanetRadius)
+    //     .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
 
-    data.values.gloss = data.values.object.append("circle")
-        .attr("class", "planet gloss")
-        .attr("r", g_PlanetRadius)
-        .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
+    // data.values.gloss = data.values.object.append("circle")
+    //     .attr("class", "planet gloss")
+    //     .attr("r", g_PlanetRadius)
+    //     .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
 
+    // Text
     AddText(data, "planet");
     if (g_root.slider) {
         data.values.text.selectAll("text")
@@ -422,6 +435,7 @@ function DashboardCreate(data, project_position = null) {
 
     ProjectPosiotionSet(g_root.universe.data);
 
+    // 143 times per second
     d3.timer(function(elapsed) {
         if (g_root.universe) AnimateUniverse();
         else return;
