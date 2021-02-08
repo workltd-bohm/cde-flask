@@ -214,7 +214,8 @@ def get_root_project():
             result = db.get_my_projects(db_adapter, user)
             # if result:
             for project in result:
-                if project:
+                if project and Project.project_access(session['user'], project['root_ic']):
+                    
                     proj_obj = {
                         "ic_id": "",
                         "name": project["project_name"],
@@ -226,6 +227,7 @@ def get_root_project():
                     response['root_ic']["sub_folders"].append(proj_obj)
 
             result, ic_shares = db.get_my_shares(db_adapter, user)
+            # print('shares', result)
             if result:
             # for share in result:
             #     if share:
