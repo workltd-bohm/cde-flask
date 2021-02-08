@@ -776,7 +776,8 @@ class Project:
             self.search_by_name(name, x, new_ic_array)
 
     def filter_by_access(self, user, ic):
-        for x in ic.sub_folders:
+        sub_folders = ic.sub_folders[:]
+        for x in sub_folders:
             already_in = False
             for access in x.access:
                 if user['id'] in access.to_json()['user']['user_id']:
@@ -792,4 +793,16 @@ class Project:
             if not already_in:
                 ic.sub_folders.remove(x)
         return self
+
+    @staticmethod
+    def project_access(user, root_ic):
+        for access in root_ic['access']:
+            if user['id'] in access['user']['user_id']:
+                date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+                if access['exp_date'] != 'indefinitely':
+                    date_time_obj = datetime.strptime(access['exp_date'], "%Y-%m-%dT%H:%M")
+                if date_time_obj > datetime.now():
+                    return True
+        return False
+
 
