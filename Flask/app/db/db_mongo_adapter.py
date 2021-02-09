@@ -1754,35 +1754,42 @@ class DBMongoAdapter:
                 if message == msg.ACCESS_SUCCESSFULLY_ADDED:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
-                    # if the user does not have an access to the whole project update shared
-                    shared = {'project_id':     project.project_id,
-                              'project_name':   project.name,
-                              'parent_id':      request_data['parent_id'],
-                              'role':           getattr(Role, request_data['role']).value,
-                              'exp_date':       request_data['exp_date'],
-                              'ic_id':          request_data['ic_id']}
-                    user_shared = col_shared.find()
-                    results = list(user_shared)
-                    shared_json = {}
-                    if len(results) != 0:
-                        # results[0].pop('_id', None)
-                        user_shared = results[0]
-                        if new_user['id'] in user_shared:
-                            already_exists = False
-                            for ic in user_shared[new_user['id']]:
-                                if ic['ic_id'] == request_data['ic_id']:
-                                    already_exists = True
-                                    break
-                            if not already_exists:
-                                user_shared[new_user['id']].append(shared)
-                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
-                        else:
-                            user_shared[new_user['id']] = [shared]
-                            col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+                    is_in_project = False
+                    for ac in project.root_ic.access:
+                        if new_user['id'] == ac.user['user_id']:
+                            is_in_project = True
+                            break
 
-                    else:
-                        shared_json[new_user['id']] = [shared]
-                        col_shared.insert_one(shared_json)
+                    # if the user does not have an access to the whole project update shared
+                    if not is_in_project:
+                        shared = {'project_id':     project.project_id,
+                                'project_name':   project.name,
+                                'parent_id':      request_data['parent_id'],
+                                'role':           getattr(Role, request_data['role']).value,
+                                'exp_date':       request_data['exp_date'],
+                                'ic_id':          request_data['ic_id']}
+                        user_shared = col_shared.find()
+                        results = list(user_shared)
+                        shared_json = {}
+                        if len(results) != 0:
+                            # results[0].pop('_id', None)
+                            user_shared = results[0]
+                            if new_user['id'] in user_shared:
+                                already_exists = False
+                                for ic in user_shared[new_user['id']]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        already_exists = True
+                                        break
+                                if not already_exists:
+                                    user_shared[new_user['id']].append(shared)
+                                col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                            else:
+                                user_shared[new_user['id']] = [shared]
+                                col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
+                        else:
+                            shared_json[new_user['id']] = [shared]
+                            col_shared.insert_one(shared_json)
 
             else:
                 message = msg.USER_NOT_FOUND
@@ -1824,36 +1831,43 @@ class DBMongoAdapter:
                 if message == msg.ACCESS_SUCCESSFULLY_UPDATED:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
+                    is_in_project = False
+                    for ac in project.root_ic.access:
+                        if new_user['id'] == ac.user['user_id']:
+                            is_in_project = True
+                            break
+
                     # if the user does not have an access to the whole project update shared
-                    r = ''
-                    if request_data['new_role'] != '':
-                        r = getattr(Role, request_data['new_role']).value
-                    shared = {'project_id': project.project_id,
-                              'project_name': project.name,
-                              'parent_id': request_data['parent_id'],
-                              'role': r,
-                              'exp_date': request_data['exp_date'],
-                              'ic_id': request_data['ic_id']}
+                    if not is_in_project:
+                        r = ''
+                        if request_data['new_role'] != '':
+                            r = getattr(Role, request_data['new_role']).value
+                        shared = {'project_id': project.project_id,
+                                'project_name': project.name,
+                                'parent_id': request_data['parent_id'],
+                                'role': r,
+                                'exp_date': request_data['exp_date'],
+                                'ic_id': request_data['ic_id']}
 
-                    user_shared = col_shared.find()
-                    results = list(user_shared)
-                    shared_json = {}
-                    if len(results) != 0:
-                        # results[0].pop('_id', None)
-                        user_shared = results[0]
-                        if new_user['id'] in user_shared:
-                            for ic in user_shared[new_user['id']]:
-                                if ic['ic_id'] == request_data['ic_id']:
-                                    ic['role'] = r
-                                    break
-                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                        user_shared = col_shared.find()
+                        results = list(user_shared)
+                        shared_json = {}
+                        if len(results) != 0:
+                            # results[0].pop('_id', None)
+                            user_shared = results[0]
+                            if new_user['id'] in user_shared:
+                                for ic in user_shared[new_user['id']]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        ic['role'] = r
+                                        break
+                                col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                            else:
+                                user_shared[new_user['id']] = [shared]
+                                col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
                         else:
-                            user_shared[new_user['id']] = [shared]
-                            col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
-
-                    else:
-                        shared_json[new_user['id']] = [shared]
-                        col_shared.insert_one(shared_json)
+                            shared_json[new_user['id']] = [shared]
+                            col_shared.insert_one(shared_json)
 
             else:
                 message = msg.USER_NOT_FOUND
