@@ -79,6 +79,42 @@ function ShareProject(data) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+function ProjectConfigSubmit() {
+    var form = $("#filter-form-project-conf");
+
+    if (!CheckAval(form)) return;
+    var d = { project_name: SESSION['name'], 'iso19650': $('#iso19650-checkbox').prop('checked') };
+    form.serializeArray().map(function(x) { d[x.name] = x.value; });
+    // if (!args) args = d;
+    //    console.log(args);
+    // console.log(d);
+
+    LoadStart();
+    $.ajax({
+        url: '/set_project_config',
+        type: 'POST',
+        data: JSON.stringify(d),
+        //dataType: "json",
+        processData: false,
+        contentType: false,
+        timeout: 5000,
+        success: function(data) {
+            MakeSnackbar(data);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -120,24 +156,40 @@ function UploadProject(form) {
 }
 
 function sendFilesHelper(files, folders) {
-    total = files.length;
-    dropArea.style.display = "none";
-    createProject(files, folders);
+    if (!folders_only || (folders_only && !$("#is_iso19650_checkbox").is(':checked'))) {
+        if (folders_only) {
+            $("#is_iso19650_checkbox").hide();
+            $("#is_iso19650_label").hide();
+        }
+        total = files.length;
+        dropArea.style.display = "none";
+        createProject(files, folders);
+    } else {
+        createISORenamingPopup(files, folders);
+    }
+
 }
 
 function createProject(files, folders) {
     var current = 0;
     counter = 1;
+    console.log(folders_only);
     if (folders_only) {
         sendFile(files, folders, current);
     } else {
+        console.log(files[current].path);
+        console.log(folders[current].path);
         if (files.length > 0) {
-            project_name = files[current].path.substring(1).split('/')[0];
+            if (files[current].path.startsWith('/'))
+                files[current].path = files[current].path.substring(1);
+            project_name = files[current].path.split('/')[0];
         } else {
-            project_name = folders[current].path.substring(1).split('/')[0];
+            if (folders[current].path.startsWith('/'))
+                folders[current].path = folders[current].path.substring(1);
+            project_name = folders[current].path.split('/')[0];
         }
         let data = { project_name: project_name };
-        //        console.log(data);
+        console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
         $.ajax({
             url: 'create_project',
@@ -157,19 +209,23 @@ function createProject(files, folders) {
                 console.log(errorThrown + ": " + $jqXHR.responseText);
                 MakeSnackbar($jqXHR.responseText);
                 PopupClose();
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
             }
         });
     }
 }
 
 // Function to send a file, call PHP backend
-function sendFile(files, folders, current) {
+function sendFile(files, folders, current, fileData = {}) {
     file = files[current];
     var formData = new FormData();
     var request = new XMLHttpRequest();
     let path = ''
+        // console.log(files);
     if (counter > total) {
-        console.log(folders)
+        // console.log(folders);
         if (folders.length == 0) {
             CheckSession();
             //CreateProject();
@@ -178,6 +234,8 @@ function sendFile(files, folders, current) {
         }
         path = folders[0].path;
         if (folders_only) {
+            $('#upload_files_div').hide();
+            $('#upload_files_button').hide();
             path = SESSION['position'].path + '/' + path;
             folders.forEach(folder => folder.path = SESSION['position'].path + '/' + folder.path)
         }
@@ -189,10 +247,18 @@ function sendFile(files, folders, current) {
         formData.set('path', path);
         formData.set('is_dir', true);
     } else {
-        path = file.path.substring(1);
+        if (file.path.startsWith('/'))
+            path = file.path.substring(1);
+        else
+            path = file.path;
         if (folders_only) {
+            $('#upload_files_div').hide();
+            $('#upload_files_button').hide();
             path = SESSION['position'].path + '/' + path;
             file.path = path;
+            if (!jQuery.isEmptyObject(fileData)) {
+                formData.set('file_data', JSON.stringify(fileData['file_' + current]));
+            }
         }
         listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0] + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
@@ -222,7 +288,7 @@ function sendFile(files, folders, current) {
                 MakeSnackbar(data);
                 //                PopupClose();
                 //                console.log(data);
-                if (data == "Project successfully uploaded") {
+                if (data == "Successfully uploaded") {
                     //                    counter = 1;
                     CheckSession();
                     //CreateProject();
@@ -234,13 +300,16 @@ function sendFile(files, folders, current) {
                 // Show percentage
                 box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
                 counter++;
-                sendFile(files, folders, current + 1);
+                sendFile(files, folders, current + 1, fileData);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401 || $jqXHR.status == 409) {
+                location.reload();
+            }
         }
     });
 
@@ -372,7 +441,11 @@ function filesDroped(event) {
         var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
         //    var cname = path.split("/").filter(Boolean).join("-");
         //    console.log("dir path", path.substring(1))
-        webkitResultDir.push({ 'path': path.substring(1), 'isDir': true });
+        console.log(path);
+        if (path.startsWith('/'))
+            path = path.substring(1);
+        console.log(path);
+        webkitResultDir.push({ 'path': path, 'isDir': true });
 
         return Promise.resolve(webkitResultDir);
     }
@@ -428,8 +501,8 @@ function filesDroped(event) {
             })
     }
 
-    // do webkit stuff
-    if (event.type === "drop" && event.target.webkitdirectory) {
+    // do webkit stuff event.target.webkitdirectory
+    if (event.type === "drop") {
         files = event.dataTransfer.items || event.dataTransfer.files;
     } else if (event.type === "change") {
         files = event.target.files;

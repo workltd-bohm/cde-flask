@@ -25,6 +25,8 @@ def edit_user(db_adapter, user):
 def upload_profile_image(db_adapter, request_json, file):
     return db_adapter.upload_profile_image(request_json, file)
 
+def delete_profile_image(db_adapter, image_id):
+    return db_adapter.delete_profile_image(image_id)
 
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
@@ -100,6 +102,10 @@ def get_post_file(db_adapter, request_json):
     return db_adapter.get_post_file(request_json)
 
 
+def get_file_size(db_adapter, stored_id, asstr=False):
+    return db_adapter.get_file_size(stored_id, asstr)
+
+
 def change_color(db_adapter, file_obj):
     return db_adapter.change_color(file_obj)
 
@@ -160,6 +166,10 @@ def share_project(db_adapter, request_data, user):
     return db_adapter.share_project(request_data, user)
 
 
+def update_share_project(db_adapter, request_data, user):
+    return db_adapter.update_share_project(request_data, user)
+
+
 def remove_share_project(db_adapter, request_data, session_user):
     return db_adapter.remove_share_project(request_data, session_user)
 
@@ -167,11 +177,18 @@ def remove_share_project(db_adapter, request_data, session_user):
 def add_comment(db_adapter, request_data, comment):
     return db_adapter.add_comment(request_data, comment)
 
+
 def update_comment(db_adapter, request_data):
     return db_adapter.update_comment(request_data)
 
+
 def delete_comment(db_adapter, request_data):
     return db_adapter.delete_comment(request_data)
+
+
+def get_comments(db_adapter, request_data):
+    return db_adapter.get_comments(request_data)
+
 
 def add_tag(db_adapter, request_data, tags):
     return db_adapter.add_tag(request_data, tags)
@@ -181,8 +198,16 @@ def remove_tag(db_adapter, request_data, tag):
     return db_adapter.remove_tag(request_data, tag)
 
 
+def update_iso_tags(db_adapter, request_data):
+    return db_adapter.update_iso_tags(request_data)
+
+
 def get_all_tags(db_adapter):
     return db_adapter.get_all_tags()
+
+
+def get_ic_tags(db_adapter, request_data):
+    return db_adapter.get_ic_tags(request_data)
 
 
 def get_all_tags_with_ics(db_adapter):
@@ -193,9 +218,16 @@ def add_access(db_adapter, request_data, session_user):
     return db_adapter.add_access(request_data, session_user)
 
 
+def update_access(db_adapter, request_data, session_user):
+    return db_adapter.update_access(request_data, session_user)
+
+
 def remove_access(db_adapter, request_data, session_user):
     return db_adapter.remove_access(request_data, session_user)
 
 
 def clear_db(db_adapter, user):
     return db_adapter.clear_db(user)
+
+def close_connection(db_adapter):
+    db_adapter._close_connection()

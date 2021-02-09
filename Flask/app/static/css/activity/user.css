@@ -6,8 +6,11 @@
 .profile-icon{
     height: 6vh;
     width: 6vh;
+    min-height: 6vh;
+    min-width: 6vh;
     border: 2px dotted #ffffff;
     border-radius: 50%;
+    margin-top: 8vh;
 }
 
 .profile-pic {

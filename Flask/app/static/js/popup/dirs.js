@@ -20,14 +20,19 @@ function OpenFile(form, json, file, open) {
 
             OpenActivity(activity, null, open);
 
-            FilterSwap('details');
+            checkISOCompliant();
 
             LoadStopPreview();
+
+            GetShareLink();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -50,15 +55,15 @@ function NewFolder(form, json) {
             form.empty();
             form.append(html);
 
-            listing = document.getElementById('listing');
-            box = document.getElementById('box');
-            dropArea = document.getElementById("dropAreaFolders");
-            dropArea.addEventListener("dragover", dragHandler);
-            dropArea.addEventListener("dragleave", dragLeave);
-            dropArea.addEventListener("change", filesDroped);
-            dropArea.addEventListener("drop", filesDroped);
+            // listing = document.getElementById('listing');
+            // box = document.getElementById('box');
+            // dropArea = document.getElementById("dropAreaFolders");
+            // dropArea.addEventListener("dragover", dragHandler);
+            // dropArea.addEventListener("dragleave", dragLeave);
+            // dropArea.addEventListener("change", filesDroped);
+            // dropArea.addEventListener("drop", filesDroped);
 
-            folders_only = true;
+            // folders_only = true;
 
             LoadStop();
         },
@@ -66,6 +71,9 @@ function NewFolder(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -87,6 +95,7 @@ var sel5;
 var sel6;
 var sel7;
 var fileList = null;
+var foldereList = null;
 
 var updated_name = ['AAA', 'AAA', 'AA', '00', 'AA', 'A', '0000', 'A0', 'A0', 'Default'];
 
@@ -126,19 +135,46 @@ function updateNewName() {
     $("#new_name").attr("value", updated_name.join("-"))
 }
 
-function OnFileUpload(file) {
+function changeValues(element) {
+    // console.log(element);
+    // console.log(element.name);
+    if ($(element).is("input")) {
+        // console.log('element.name');
+        // console.log($("input[name='" + element.name + "']"));
+        $("input[name='" + element.name + "']").val($(element).val());
+        elements_by_name = $("input[name='" + element.name + "']");
+    }
+    if ($(element).is("select")) {
+        // console.log($("select[name='" + element.name + "']"));
+        // console.log($(element).val());
+        $("select[name='" + element.name + "']").val($(element).val());
+        elements_by_name = $("select[name='" + element.name + "']");
+    }
+
+    for (var i = 0; i < elements_by_name.length; i++) {
+        changeColor(elements_by_name[i]);
+    }
+
+}
+
+function changeColor(element) {
+    $(element).css('border-color', '#3CB371');
+}
+
+function OnFileUpload(files, folders = []) {
     //    $("#file").change(function(e){
     //        var file = e.target.files[0];
     //        fill_options();
-    var fileName = file.name.split('.');
-    file_extension.value = '.' + fileName[fileName.length - 1];
-    name1.value = file.name;
-    fileList = file;
+    // var fileName = files.name.split('.');
+    // file_extension.value = '.' + fileName[fileName.length - 1];
+    // name1.value = files.name;
+    fileList = files;
+    foldereList = folders;
     //        console.log(file);
-    updated_name[9] = file.name;
+    // updated_name[9] = files.name;
     //updated_name[10] = '.' + fileName[1];
-    originalName = fileName[0] + '.' + fileName[1]
-    updateNewName();
+    // originalName = fileName[0] + '.' + fileName[1]
+    // updateNewName();
 
     // });
 }
@@ -146,11 +182,43 @@ function OnFileUpload(file) {
 function GetFile() {
     var fd = new FormData();
     var d = {};
-    var form = GetForm().serializeArray().map(function(x) { d[x.name] = x.value; });
+    console.log(GetForm().serializeArray());
+    var form = GetForm().serializeArray()
+    for (var i = 0; i < form.length; i++) {
+        if (form[i].name == 'parent_id')
+            d['parent_id'] = form[i].value;
+        if (form[i].name == 'ic_id')
+            d['ic_id'] = form[i].value;
+        if (form[i].name == 'project_name')
+            d['project_name'] = form[i].value;
+        if (form[i].name == 'parent_path')
+            d['parent_path'] = form[i].value;
+        if (form[i].name == 'is_file')
+            d['is_file'] = form[i].value;
+    }
+
 
     if (fileList) {
+        for (var i = 0; i < fileList.length; i++) {
+            row = $('#row_' + i);
+            d1 = {};
+            d1['project_code'] = $('#row_' + i).find("input[name='project_code']").val();
+            d1['company_code'] = $('#row_' + i).find("input[name='company_code']").val();
+            d1['project_volume_or_system'] = $('#row_' + i).find("select[name='project_volume_or_system']").val();
+            d1['project_level'] = $('#row_' + i).find("select[name='project_level']").val();
+            d1['type_of_information'] = $('#row_' + i).find("select[name='type_of_information']").val();
+            d1['role_code'] = $('#row_' + i).find("select[name='role_code']").val();
+            d1['file_number'] = $('#row_' + i).find("select[name='file_number']").val();
+            d1['status'] = $('#row_' + i).find("select[name='status']").val();
+            d1['revision'] = $('#row_' + i).find("select[name='revision']").val();
+            d1['uniclass_2015'] = $('#row_' + i).find("select[name='uniclass_2015']").val();
+            d1['name'] = $('#row_' + i).find("input[name='name']").val();
+            d1['file_extension'] = $('#row_' + i).find("input[name='file_extension']").val();
+
+            d['file_' + i] = d1;
+        }
         fd.append('data', JSON.stringify(d));
-        fd.append('file', fileList)
+        fd.append('file_' + i, fileList[i].file)
     } else {
         MakeSnackbar("File not selected");
         return null;
@@ -190,8 +258,18 @@ function NewFile(form, json, file) {
             form.empty();
             form.append(html);
 
-            FileDataInit();
-            OnFileUpload(file);
+            listing = document.getElementById('listing');
+            box = document.getElementById('box');
+            dropArea = document.getElementById("dropAreaFolders");
+            dropArea.addEventListener("dragover", dragHandler);
+            dropArea.addEventListener("dragleave", dragLeave);
+            dropArea.addEventListener("change", filesDroped);
+            dropArea.addEventListener("drop", filesDroped);
+
+            folders_only = true;
+
+            // FileDataInit();
+            // OnFileUpload(file);
 
             LoadStop();
         },
@@ -199,6 +277,9 @@ function NewFile(form, json, file) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -230,42 +311,7 @@ function RenameFile(form, json) {
             form.empty();
             form.append(html);
 
-            if (json.is_directory) {
-                //                console.log(html);
-                document.getElementById('smart_naming').remove();
-                document.getElementById('name_div').style.bottom = "120px";
-            } else {
-                document.getElementById('project_code').value = json.project_code;
-                document.getElementById('company_code').value = json.company_code;
-                //                document.getElementById('name').value = json.original_name;
-                var file = {};
-                file.name = json.name + json.type;
-                //                console.log(json);
-
-                FileDataInit();
-                OnFileUpload(file);
-
-                updated_name[0] = json.project_code;
-                updated_name[1] = json.company_code;
-                updated_name[2] = json.project_volume_or_system.split(',')[0];
-                updated_name[3] = json.project_level.split(',')[0];
-                updated_name[4] = json.type_of_information.split(',')[0];
-                updated_name[5] = json.role_code.split(',')[0];
-                updated_name[6] = json.file_number.split(',')[0];
-                updated_name[7] = json.status.split(',')[0];
-                updated_name[8] = json.revision.split(',')[0];
-                //                updated_name[9] = json.uniclass_2015.split(',')[0];
-
-                updateNewName();
-
-                $('#project_volume_or_system').val(json.project_volume_or_system);
-                $('#project_level').val(json.project_level);
-                $('#type_of_information').val(json.type_of_information);
-                $('#role_code').val(json.role_code);
-                $('#file_number').val(json.file_number);
-                $('#status').val(json.status);
-                $('#revision').val(json.revision);
-            }
+            document.getElementById('name_div').style.bottom = "120px";
 
             LoadStop();
         },
@@ -273,6 +319,9 @@ function RenameFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -288,6 +337,7 @@ function TrashFile(form, json) {
         parent_path: o[i].parent,
         delete_name: o[i].name,
         is_directory: o[i].is_directory,
+        project_id: o[i].project_id
     });
 
     if (o.length > 0) {
@@ -313,6 +363,7 @@ function TrashFile(form, json) {
             delete_name: json.name,
             parent_id: json.parent_id,
             parent_path: json.parent,
+            project_id: json.project_id
         }),
         timeout: 5000,
         success: function(data) {
@@ -332,6 +383,9 @@ function TrashFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -392,6 +446,9 @@ function RestoreFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -447,6 +504,9 @@ function DeleteFile(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -473,6 +533,9 @@ function EmptyTrash(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -481,6 +544,7 @@ function DownloadMulti(path, multi) {
     LoadStart();
     var link = document.createElement('a');
     link.href = path + JSON.stringify(multi);
+    console.log(link.href);
     link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
@@ -503,18 +567,23 @@ function DownloadIC(path, name) {
 function DownloadICs(json) {
     var o = Object.values(CHECKED);
     var multi = [];
+
     for (var i = 0; i < o.length; i++) multi.push({
         parent_id: o[i].parent_id,
         ic_name: (!o[i].is_directory) ? o[i].name + o[i].type : o[i].name
     });
+
     console.log(multi);
+    console.log(o);
+    console.log(json);
+
     if (o.length > 0) {
         if (o.length == 1) {
             console.log(o[0]);
             if (o[0].is_directory) {
                 DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
             } else {
-                DownloadIC("/get_file/" + o[0].name + o[0].type, o[0].name + o[0].type);
+                GetNameAndDownloadIC(o[0])
             }
         } else {
             DownloadMulti("/get_ic_multi/", multi);
@@ -523,7 +592,69 @@ function DownloadICs(json) {
         if (json.is_directory) {
             DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
         } else {
-            DownloadIC("/get_file/" + json.name + json.type, json.name + json.type);
+            GetNameAndDownloadIC(json)
+                // DownloadIC("/get_file/" + json.ic_id, json.name + json.type);
         }
     }
+}
+
+function GetNameAndDownloadIC(o) {
+    $.ajax({
+        url: "/get_file_name",
+        type: 'POST',
+        data: JSON.stringify({
+            project_id: o.project_id,
+            parent_id: o.parent_id,
+            ic_id: o.ic_id,
+            file_name: o.name,
+            type: o.type
+        }),
+        timeout: 5000,
+        success: function(data) {
+            console.log(data);
+            input_json2 = JSON.parse(data);
+            name = input_json2['name'];
+            is_iso19650 = input_json2['is_iso19650']
+            if (is_iso19650) {
+                // if (checkISOCompliant()) {
+                DownloadIC("/get_file/" + o.ic_id, name);
+                // } else {
+                //     MakeSnackbar('Your file is not ISO 19650 compliant, although it has to be, Please tag it!');
+                // }
+            } else {
+                DownloadIC("/get_file/" + o.ic_id, name);
+            }
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+function GetShareLink() {
+    $.ajax({
+        url: "/get_encoded_data",
+        type: 'POST',
+        data: JSON.stringify({ project: SESSION }),
+        timeout: 5000,
+        success: function(data) {
+            // console.log(data);
+            $('#share-link').val(window.location.href + 'get_shared_ic/' + data);
+            LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
 }

@@ -1,0 +1,15 @@
+<div id="activity-filters" class="activity-box mt-2">
+    <form id="filter-form-search" class="p-2">
+        {% for key, value in search.items() %}
+        <div class="form__group field">
+            <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+            <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                <option value=""></option>
+                {% for v in value.elements %}
+                <option value="{{ v }}">{{ v }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endfor %}
+    </form>
+</div>

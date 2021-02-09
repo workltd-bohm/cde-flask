@@ -1,0 +1,16 @@
+<div id="activity-post" class="activity-box">
+    <form id="filter-form-post">
+        <div class="mt-3">            
+            <input type="hidden" id="project_name_post" value="{{ project_name }}" required />
+            <button type="button" class="btn w-100" 
+                onclick="MarketOpen('Posts', '', NewPost, [this, {'ic_id': 
+                    '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 
+                    'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 
+                    'name': '{{ name }}' }])">Create New Post</button>
+            <button type="button" class="btn w-100 my-3" 
+                onclick="OpenPostListPopup({'ic_id': '{{ ic_id }}', 'stored_id': '{{ stored_id }}', 
+                    'parent_id': '{{ parent_id }}', 'project_name': '{{ project_name }}', 
+                    'name': '{{ name }}' });">Add to existing Post</button>
+        </div>
+    </form>
+</div>

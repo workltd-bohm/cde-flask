@@ -1,7 +1,9 @@
 import os
 import json
 import uuid
+import base64
 from datetime import datetime
+from app.model.helper import get_input_file
 
 from app import *
 
@@ -19,8 +21,8 @@ def input():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -28,13 +30,19 @@ def input():
 def get_session():
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    if main.IsLogin() and session.get("project"):
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(session.get("project"))
-        return resp
+    if main.IsLogin():
+        if session.get("project"):
+            logger.log(LOG_LEVEL, 'RESPONSE data: {}'.format(session.get("project")))
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(session.get("project"))
+            return resp
+        else:
+            resp.status_code = msg.DEFAULT_ERROR['code']
+            resp.data = str(msg.DEFAULT_ERROR['message'])
+            return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -44,14 +52,15 @@ def set_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         dirs.set_project_data(request_data)
 
         resp.status_code = msg.DEFAULT_OK['code']
         resp.data = str(msg.DEFAULT_OK['message'])
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -70,9 +79,7 @@ def get_project():
             return resp
 
         if 'project' in request_data:
-            print(request_data['project'])
             if request_data['project'] == {'position': None, 'section': 'project'}:
-                print('here333')
                 return redirect(url_for('get_root_project', data={}))
 
         position = session.get("project")["position"]
@@ -85,7 +92,7 @@ def get_project():
                 us = {'user_id': session['user']['id'],
                         'username': session['user']['username'],
                         'picture': session['user']['picture']}
-                access = Access(us, '', '', Role.ADMIN.value)
+                access = Access(us, '', '', Role.ADMIN.value, 'indefinitely')
                 
                 u = {'user_id': session['user']['id'], 'username': session['user']['username']}
                 details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), 'Shared')
@@ -106,15 +113,22 @@ def get_project():
                 result = project.to_json()
             else:
                 result = db.get_project(db_adapter, project_name, user)
+
             if result:
                 project = Project.json_to_obj(result)
                 # p = Project(project.project_id, project.project_name, None)
                 project = project.filter_by_access(session['user'], project.root_ic)
                 # project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(result['root_ic']))
 
+                project = project.to_json()
+                
+                if project_name == 'Shared':
+                    for i, ic in enumerate(project['root_ic']['sub_folders']):
+                        project['root_ic']['sub_folders'][i]['project_id'] = ic_shares[i]['project_id']
+
                 resp.status_code = msg.DEFAULT_OK['code']
                 # print(project.to_json())
-                resp.data = json.dumps({"json": project.to_json(), "project" : position, "session": session.get("project")})
+                resp.data = json.dumps({"json": project, "project" : position, "session": session.get("project")})
                 return resp
             else:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))
@@ -127,10 +141,9 @@ def get_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
-
 
 @app.route('/get_my_projects', methods=['POST'])
 def get_my_projects():
@@ -163,10 +176,9 @@ def get_my_projects():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
-
 
 @app.route('/get_root_project', methods=['GET', 'POST'])
 def get_root_project():
@@ -178,6 +190,8 @@ def get_root_project():
             request_data = json.loads(request.get_data())
         else:
             request_data = {'project': {'name': None, 'position': None}}
+
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None
@@ -200,7 +214,8 @@ def get_root_project():
             result = db.get_my_projects(db_adapter, user)
             # if result:
             for project in result:
-                if project:
+                if project and Project.project_access(session['user'], project['root_ic']):
+                    
                     proj_obj = {
                         "ic_id": "",
                         "name": project["project_name"],
@@ -212,6 +227,7 @@ def get_root_project():
                     response['root_ic']["sub_folders"].append(proj_obj)
 
             result, ic_shares = db.get_my_shares(db_adapter, user)
+            # print('shares', result)
             if result:
             # for share in result:
             #     if share:
@@ -238,9 +254,68 @@ def get_root_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/get_access', methods=["POST"])
+def get_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+
+    # user not logon
+    if not main.IsLogin():
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
+
+    data = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(data))
+
+    # db failsafe
+    if not db.connect(db_adapter):
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message'])
+        return resp
+
+    # find project
+    project_json = db.get_project(db_adapter, data['project_name'], session['user'])
+    if not project_json:
+        resp.status_code = msg.PROJECT_NOT_FOUND['code']
+        resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+        return resp
+    
+    project = Project.json_to_obj(project_json)
+
+    # root ic
+    if data['parent_id'] == 'root':
+        access = [x.to_json() for x in project.root_ic.access]
+    else: # any other ic
+        ic = project.find_ic_by_id(data, data['ic_id'], project.root_ic)
+
+        # ic failsafe
+        if not ic:
+            resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+            resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+            return resp
+
+        access = [x.to_json() for x in ic.access]
+
+    # render html
+    is_owner = False
+    for a in access:
+        if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+            is_owner = True
+        a['role'] = Role(a['role']).name
+        m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+        a['user']['picture'] = user['picture']
+        a['user']['username'] = user['username']
+
+    return render_template("activity/partials/access.html",
+                            access =    access,
+                            is_owner =  is_owner)
+
 
 @app.route('/get_trash', methods=['POST'])
 def get_trash():
@@ -249,6 +324,7 @@ def get_trash():
 
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         request_data["project"]["name"] = None
         request_data["project"]["position"] = None  # reset position
         dirs.set_project_data(request_data)
@@ -313,10 +389,9 @@ def get_trash():
             return resp
 
     # user not logged
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
-
 
 @app.route('/get_user_profile', methods=['POST'])
 def get_user_profile():
@@ -324,6 +399,7 @@ def get_user_profile():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         dirs.set_project_data(request_data)
         user = session.get('user')
         # print(request_data)
@@ -360,8 +436,8 @@ def get_user_profile():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -371,6 +447,7 @@ def get_root_market():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         request_data["project"]["market"] = None
         dirs.set_project_data(request_data)
         user = session.get('user')
@@ -432,8 +509,8 @@ def get_root_market():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -443,6 +520,7 @@ def get_viewer():
     resp = Response()
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         response = {
             'html': render_template("dashboard/viewer/activity.html",
                                     # TODO
@@ -454,8 +532,39 @@ def get_viewer():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_ic_tags', methods=['POST'])
+def get_ic_tags():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        print('\n\n', request_data)
+        if db.connect(db_adapter):
+            result = db.get_ic_tags(db_adapter, request_data)
+            if result:
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(result)
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps({'data': []})
+                return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -486,9 +595,10 @@ def get_all_tags():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
 
 @app.route('/get_all_users', methods=['GET'])
 def get_all_users():
@@ -511,10 +621,148 @@ def get_all_users():
             return resp
 
     resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_encoded_data', methods=['POST', 'GET'])
+def get_encoded_data():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = request.get_data()
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    if main.IsLogin():
+        base64_bytes = base64.b64encode(request_data)
+        return base64_bytes
+    else:
+        return redirect('/login')
+
+    resp = Response()
     resp.status_code = msg.DEFAULT_ERROR['code']
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+
+@app.route('/get_shared_ic/<path:ic_data>', methods=['POST', 'GET'])
+def get_shared_ic(ic_data):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = base64.b64decode(ic_data).decode('utf-8')
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            request_json = json.loads(request_data)
+
+            project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
+
+            if project_json:
+                project = Project.json_to_obj(project_json)
+
+                ic = project.find_ic_by_id(request_json['project']['position'],
+                                           request_json['project']['position']['ic_id'],
+                                           project.root_ic)
+
+                success = False
+                for access in ic.access:
+                    if session['user']['id'] == access.user['user_id']:
+                        success = True
+                        break
+
+                if success:
+                    dirs.set_project_data(request_json)
+                    return redirect('/')
+                else:
+                    resp = Response()
+                    resp.status_code = msg.NO_ACCESS['code']
+                    resp.data = str(msg.NO_ACCESS['message'])
+                    return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+    return redirect(url_for('login', data=ic_data), code=307)
+
+
+@app.route('/get_input_json', methods=['GET'])
+def get_input_json():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        input_file = get_input_file();
+        resp = Response()
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(input_file)
+        return resp
+    else:
+        return redirect('/login')
+
+    resp = Response()
+    resp.status_code = msg.DEFAULT_ERROR['code']
+    resp.data = str(msg.DEFAULT_ERROR['message'])
+    return resp
+
+@app.route('/get_comments', methods=['POST'])
+def get_comments():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
+            # TODO for marketplace
+            request_data = json.loads(request.get_data())
+            logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
+
+            project = db.get_project(db_adapter, request_data['project_name'], session.get('user'))
+            
+            # failsafe project
+            if not project:
+                resp.status_code =  msg.PROJECT_NOT_FOUND['code']
+                resp.data =         msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            project = Project.json_to_obj(project)
+            ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+
+            # failsafe ic
+            if not ic:
+                resp.status_code =  msg.IC_PATH_NOT_FOUND['code']
+                resp.data =         msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            access = [x.to_json() for x in ic.access]
+            is_owner = False
+            for a in access:
+                if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                    is_owner = True
+
+            these_comments = []
+            for comment in ic.comments:
+                this_comment = comment.to_json()
+                this_comment_rendered = render_template("activity/single_comment.html",
+                                                comment =   this_comment,
+                                                picture =   this_comment['user']['picture'],
+                                                is_owner =  str(is_owner)
+                                                )
+
+                these_comments.append(this_comment_rendered)
+            
+            resp.data = json.dumps(these_comments)
+            return resp
+        else:
+            resp.status_code =  msg.DB_FAILURE['code']
+            resp.data =         msg.DB_FAILURE['message']
+            return resp
+
+    else:
+        resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+        resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+        return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+    
 
 def get_input_file_fixed():
     doc = open('app/static/file/input.json', 'r')
@@ -564,5 +812,3 @@ def get_input_file_fixed():
             order = 9
         filter_file[key] = {'elements': elements, 'name': name, 'order': order}
     return filter_file
-
-

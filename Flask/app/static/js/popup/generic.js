@@ -107,6 +107,9 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

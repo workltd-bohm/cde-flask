@@ -150,10 +150,10 @@ class Post:
     def tags(self, value):
         self._tags = value
 
-    def add_tag(self, new_tags):
+    def add_tag(self, new_tags, request_data):
         for i in range(1, len(new_tags)):
             if new_tags[i].startswith('#'):
-                t = Tags(new_tags[i])
+                t = Tags(new_tags[i], request_data['iso'])
                 
                 if i < len(new_tags)-1:
                     if not new_tags[i + 1].startswith('#'):

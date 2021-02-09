@@ -3,6 +3,8 @@ import io
 
 from app import *
 
+import app.views.actions.getters as gtr
+
 
 @app.route('/make_user_profile_activity', methods=['POST'])
 def make_user_profile_activity():
@@ -10,25 +12,39 @@ def make_user_profile_activity():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         user_data = session.get('user')
-        response = {
-            'html': render_template("dashboard/user/user_profile_activity.html",
-                                    id=user_data["id"],
-                                    picture=user_data["picture"],
-                                    username=user_data["username"],
-                                    email=user_data["email"],
-                                    company_code=user_data["company_code"],
-                                    company_name=user_data["company_name"],
-                                    company_role=user_data["company_role"],
-                                    ),
-            'head': "User Profile",
-            'data': []
-        }
-        resp.status_code = msg.DEFAULT_OK['code']
-        resp.data = json.dumps(response)
-        return resp
+        if db.connect(db_adapter):
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+            message, user = db.get_user(db_adapter, {'id': user_data['id']})
+            db.close_connection(db_adapter)
+
+            role_code = ''
+            if 'role_code' in user:
+                role_code = user['role_code']
+            response = {
+                'html': render_template("dashboard/user/user_profile_activity.html",
+                                        id =                user_data["id"],
+                                        picture =           user_data["picture"],
+                                        username =          user_data["username"],
+                                        email =             user_data["email"],
+                                        company_code =      user_data["company_code"],
+                                        company_name =      user_data["company_name"],
+                                        company_role =      user_data["company_role"],
+                                        complex_tag_list =  gtr.get_input_file_fixed(),
+                                        role_code =         role_code
+                                        ),
+                'head': "User Profile",
+                'data': []
+            }
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = msg.DB_FAILURE['message']
+            return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -38,25 +54,32 @@ def update_user():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         json_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
         user_data = session.get('user')
         # print(user_data)
         # print(json_data)
         if "id" in json_data and user_data["id"] == json_data["id"]:
             if db.connect(db_adapter):
                 user_data = {'id': user_data["id"]}
+
                 message, json_user = db.get_user(db_adapter, user_data)
+                db.close_connection(db_adapter)
+
                 if message == msg.LOGGED_IN:
                     user = User()
                     user.create_user(json_user)
                     user.update_user(json_data)
                     user.id = json_data["id"]
+                    user.picture = json_user['picture']
                     user.confirmed = True
                     json_user = user.to_json()
                     message = db.edit_user(db_adapter, json_user)
 
                     if message == msg.ACCOUNT_CHANGED:
                         json_user.pop('password', None)
-                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        json_user.pop('role_code', None)
+                        json_user.pop('project_code', None)
+                        # json_user['project_code'] = 'SV' # temp, until drawn from project
                         session['user'] = json_user
                         session.modified = True
 
@@ -68,9 +91,8 @@ def update_user():
             resp.data = str(msg.USER_NOT_FOUND['message'])
             return resp
 
-    logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
-    resp.status_code = msg.DB_FAILURE['code']
-    resp.data = str(msg.DB_FAILURE['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -108,6 +130,68 @@ def get_profile_image(image_id):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+@app.route('/upload_new_profile_picture', methods=['POST'])
+def updateProfilePicture():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if 'newProfilePicture' not in request.files:
+        logger.log(LOG_LEVEL, "no image present in request")
+        return redirect(request.url)
+    newProfilePicture = request.files['newProfilePicture']
+    
+    picturesOriginalName = newProfilePicture.filename
+    picturesOriginalExtension = picturesOriginalName.split('.')[-1]
+    logger.log(LOG_LEVEL, 'Original name of uploaded image = :: {}'.format(picturesOriginalName))
+
+
+    resp = Response()
+    if main.IsLogin():
+        user_data = session.get('user')
+        username = user_data['username']
+        picUpdate_request_json = {'file_name': picturesOriginalName, 'type': picturesOriginalName.split('.')[:-1], 'user': username}
+        original_picture_id = user_data['picture']
+        if db.connect(db_adapter):
+            user_id_json = {'id': user_data["id"]}
+
+            message, json_user = db.get_user(db_adapter, user_id_json)
+            db.close_connection(db_adapter)
+
+            if message == msg.LOGGED_IN:
+                # put picture in the database and get the insertion id
+                message, file_id = db.upload_profile_image(db_adapter, picUpdate_request_json, newProfilePicture)
+                if message == msg.IC_SUCCESSFULLY_ADDED:
+                    logger.log(LOG_LEVEL, 'Added new picture to db with id :: {}'.format(file_id))
+                    # update user account with this new id
+                    json_user['picture'] = file_id
+                    message = db.edit_user(db_adapter, json_user)
+
+                    if message == msg.ACCOUNT_CHANGED:
+                        json_user.pop('password', None)
+                        json_user['project_code'] = 'SV' # temp, until drawn from project
+                        session['user'] = json_user
+                        session.modified = True
+                        # remove picture with the old id from the database
+                        delMsg = db.delete_profile_image(db_adapter, original_picture_id)
+                        if delMsg != msg.IC_SUCCESSFULLY_REMOVED :
+                            logger.log(LOG_LEVEL, 'Could not remove original profile picture with id {}'.format(original_picture_id))
+                        else:
+                            logger.log(LOG_LEVEL, 'Removed original profile picture with id {}'.format(original_picture_id))
+                    else:
+                        logger.log(LOG_LEVEL, 'Could not update picture id of user in db')
+
+                else:
+                    logger.log(LOG_LEVEL, 'Could not insert image into db')
+
+            resp.status_code = message['code']
+            resp.data = json.dumps({
+                "message" : str(message['message']),
+                "new_profilePicture_id" : str(file_id)
+            })
+            return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

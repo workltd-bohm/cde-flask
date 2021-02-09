@@ -83,7 +83,7 @@ function SelectionCreate(obj, data) {
 
     g_project.selection = data.selection.object;
     g_OverlayRadius = g_SunRadius;
-    g_OverlayItem = g_OverlayRadius/OVERLAY_SUN_RATIO;
+    g_OverlayItemSize = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
     data.selection.object.append("circle")
         .attr("class","selection pattern "+(
@@ -169,13 +169,13 @@ function AddSelection(obj, data, parent, position=0) {
 
     data.values.rotation = position*360/data.values.back.items.length-90;
 
-    data.values.this.attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_OverlayRadius-g_OverlayItem-OVERLAY_MARG)+", 0), rotate("+(-data.values.rotation)+")");
+    data.values.this.attr("transform","rotate("+(data.values.rotation)+"), translate("+(g_OverlayRadius-g_OverlayItemSize-OVERLAY_SUN_MARGIN)+", 0), rotate("+(-data.values.rotation)+")");
 
     data.values.picture = data.values.this.append("foreignObject")
-        .attr("x", -g_OverlayItem/2)
-        .attr("y", -g_OverlayItem/2)
-        .attr("width", g_OverlayItem)
-        .attr("height", g_OverlayItem)
+        .attr("x", -g_OverlayItemSize/2)
+        .attr("y", -g_OverlayItemSize/2)
+        .attr("width", g_OverlayItemSize)
+        .attr("height", g_OverlayItemSize)
         .append("xhtml:div")
         .attr("class", "item foregin")
 
@@ -185,13 +185,13 @@ function AddSelection(obj, data, parent, position=0) {
     data.values.picture.append("i")
         .attr("class", "item material-icons")
         .style("color", defaultColor)
-        .style("font-size", g_OverlayItem+"px")
+        .style("font-size", g_OverlayItemSize+"px")
         .html(data.icon)
 
     data.values.select = data.values.this.append("circle")
         .attr("class","item select")
         // .attr("id", data.link)
-        .attr("r", g_OverlayItem/2)
+        .attr("r", g_OverlayItemSize/2)
         .on("mouseover",function(d){
             //data.values.back.text.remove();
             AddSelectText(data.values.data, false, [data.name], true);

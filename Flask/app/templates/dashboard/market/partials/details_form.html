@@ -1,42 +1,44 @@
-<div id="filter-details" style="display: block;">
+<div id="activity-details" class="activity-box">
     <form id="filter-form-details">
-        <h6 class="tab-title">Create a new post</h6>
-        <div class="activity-tab-container">
-            <p><b>Title:</b><input type="text" name="title" value="{{ post['title'] if post is defined }}" required></p>
+        <h6 class="activity-collapsible selected">Create a new post</h6>
+        <div class="activity-collapsible-body">
+            <p>
+                <b>Title:</b>
+                <input type="text" class="form-control" name="title" value="{{ post['title'] if post is defined }}" required>
+            </p>
             <p>
                 <b>Description: </b><br>
-                <textarea rows="8" name="description" required>{{ post['description'] if post is defined}}</textarea>
+                <textarea rows="8" class="form-control" name="description" required>{{ post['description'] if post is defined}}</textarea>
             </p>
             <p>
                 <b>Status:</b> 
-                <select id="visibility" name="visibility">
+                <select id="visibility" class="form-select" name="visibility">
                     <option value="visible">Visible</option>
                     <option value="private">Private</option>
                 </select>
             </p>
-            <p><b>Quantity:</b> <input type="text" name="product" value="{{ post['product']['quantity'] if post is defined}}" required></p>
+            <p><b>Quantity:</b> <input type="text" class="form-control" name="product" value="{{ post['product']['quantity'] if post is defined}}" required></p>
             <p><b>Project:</b> TODO</p>
-            <p><b>Location:</b> <input type="text" name="location" value="{{ post['location'] if post is defined }}" required></p>
-            <p><b>Expiration:</b> <input type="text" name="date_expired" value="{{ post['date_expired'] if post is defined }}" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required></p>
+            <p><b>Location:</b> <input type="text" class="form-control" name="location" value="{{ post['location'] if post is defined }}" required></p>
+            <p><b>Expiration:</b> <input type="text" class="form-control" name="date_expired" value="{{ post['date_expired'] if post is defined }}" placeholder="" onfocus="(this.type='datetime-local')" onblur="(this.type='text')" required></p>
             <br>
         </div>
 
         {% if post is not defined %}
         <!-- create post tags -->
-        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
-        <div class="activity-tab-container" id="tags">
+        <h6 class="activity-collapsible">Tags</h6>
+        <div class="activity-collapsible-body" id="tags">
             <div class="activity-tab-container-inside" id="activity-tag-container">
-                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event, true);" placeholder="Add tags here..">
+                <input type="text" class="form-control" id="add-tag" onkeypress="addTagListen(event, true);" placeholder="Add tags here..">
                 <br>
             </div>
         </div>
         {% else %}
         <!-- edit post tags -->
-        <h6 class="tab-title" id="open-toggle" onclick="openToggleInfoTags()">Tags</h6>
-        <div class="activity-tab-container" id="tags">
+        <h6 class="activity-collapsible">Tags</h6>
+        <div class="activity-collapsible-body">
             <div class="activity-tab-container-inside" id="activity-tag-container">
-                <input type="text" class="add-tag" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tags here..">
-                <br>
+                <input type="text" class="form-control" id="add-tag" onkeypress="addTagListen(event)" placeholder="Add tags here..">
                 {% for tag in post['tags'] %}
                 <div class="tag-container" id="{{ tag['tag'] }} {{ tag['color'] }}">
                     <div class="tag" style="background-color: {{ tag['color'] }}">
@@ -50,6 +52,16 @@
                 <br>
             </div>
         </div>
+        {% endif %}
+
+        {% if post is not defined %}
+            <button type="button" class="btn btn-update w-100 my-3" onclick="AddPost();">
+                Create post
+            </button>
+        {% else %}
+            <button type="button" id="edit-post-button" class="btn btn-update w-100 my-3" onclick="UpdatePost(this, '{{ post_id }}');">
+                Edit post
+            </button>
         {% endif %}
     </form>
 </div>

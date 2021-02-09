@@ -1,0 +1,73 @@
+<h3>Upload New File</h3>
+<div id="upload_files_div" class="scroll" style="height: 300px">
+  <input type="hidden" name="parent_id" value="{{ parent_id }}" required />
+  <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
+  <input type="hidden" id="project_name" name="project_name" value="{{ project_name }}" required />
+    <!--  <input type="hidden" id="project_code" name="project_code" value="{{ project_code }}" required />-->
+    <!--  <input type="hidden" id="company_code" name="company_code" value="{{ company_code }}" required />-->
+  <input type="hidden" id="parent_path" name="parent_path" value="{{ project_path }}" required />
+  <input type="hidden" id="is_file" name="is_file" value="{{ is_file }}" required />
+
+    <table id="smart_naming" style="width:100%">
+
+        <tr>
+          <th class="file_naming_titles">Project Code</th>
+          <th class="file_naming_titles">Company Code</th>
+          {% for key, value in inputs.items() %}
+              <th class="file_naming_titles">{{ value.name }}</th>
+            {% endfor %}
+          <th class="file_naming_titles">Uniclass 2015</th>
+          <th class="file_naming_titles">Name</th>
+          <th class="file_naming_titles">File Extension</th>
+        </tr>
+
+
+        <tr>
+          <th class="file_naming_field" style="border:none;">
+            <input type="text" class="form__field_popup"  style="border:none;" name="project_code" value="" readonly/>
+          </th>
+
+          <th class="file_naming_field" style="border:none;">
+            <input type="text" class="form__field_popup" style="border:none;" name="company_code" value="" readonly/>
+          </th>
+
+          {% for key, value in inputs.items() %}
+            {% if key != 'role_code' %}
+              <th class="file_naming_field">
+                  <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
+                      {% for v in value.elements %}
+                        <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
+                      {% endfor %}
+                  </select>
+              </th>
+            {% elif key == 'role_code' %}
+              <th class="file_naming_field" style="border:none;">
+                <input type="text" class="form__field_popup" style="border:none;" value="" readonly />
+              </th>
+            {% endif %}
+          {% endfor %}
+
+          <th class="file_naming_field">
+            <select class="form__field_popup" name="uniclass_2015" >
+              <option></option>
+            </select>
+          </th>
+
+          <th class="file_naming_field_name" style="border:none;">
+            <input type="text" style="border:none;" value="" readonly />
+          </th>
+          <th class="file_naming_field" style="border:none;">
+            <input type="text" class="form__field_popup" style="border:none;" name="file_extension" id='file_extension' value="" readonly />
+          <th>
+        </tr>
+
+
+    </table>
+
+  <br>
+</div>
+<input id="upload_files_button" type="button" class="popup_button keypress" value="Upload" onclick="UploadFiles()"/>
+
+<span id="listing"></span>
+<span id="box"></span>
+<span id="wait"></span>

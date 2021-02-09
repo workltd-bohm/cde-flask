@@ -4,13 +4,10 @@
     <div class="edit-section view">
         <div id="3d-view" class="edit-view">
             <div class="d3view-preview">
-                <div class="group edit-box hover view-link">
-                    <input type="text" id="3d-view-link" name="3d-view" value="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI">
-                    <span class="highlight"></span>
-                    <span class="bar"></span>
-                    <label>Add an iframe link</label>
+                <div class="input-group">
+                    <input type="text" class="form-control p-2" id="3d-view-link" name="3d-view" value="https://bimx-webviewer.graphisoft.com/viewer?accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0c191cmwiOiJ0cnNpdGU6Ly8vRG9jdW1lbnRzLzE1NmRiNzkyLTA2NTEtNGVmMy1iMjRhLTMyNTlkNzkzYWZjNyIsInRzX3R5cCI6Ikh5cGVyTW9kZWwiLCJ4X2lldiI6IjAiLCJuYmYiOjE1NjA2OTUxOTIsImV4cCI6MjEzMTc5OTE5MiwiaWF0IjoxNTk1MzQxNTkyLCJpc3MiOiJodHRwczovL2JpbXguZ3JhcGhpc29mdC5jb20iLCJhdWQiOiJodHRwczovL2JpbXgtd2Vidmlld2VyLmdyYXBoaXNvZnQuY29tIn0.4RR_laaXlWMA4k1oWkIOD-O-E0mA93y8tQE6a75hiaI">
+                    <button type="button" class="btn" onclick="Set3DPreview();">Use</button>
                 </div>
-                <input type="button" class="d3-preview-button" value="Use" onclick="Set3DPreview();">
             </div>
             <div id="d3view-preview"></div>
         </div>
@@ -38,8 +35,5 @@
                 </form>
             </div>
         </div>
-    </div>
-    <div class="edit-box hover right button" onclick="AddPost();">
-        <h4>Create a POST</h4>
     </div>
 </div>

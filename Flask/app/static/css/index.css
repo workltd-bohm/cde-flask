@@ -1,288 +1,342 @@
 @import url("common/colors.css");
-
-
-html, body, table {
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  border-spacing: 0;
+html,
+body,
+table {
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    border-spacing: 0;
 }
 
 td {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #index {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: var(--cur-dashboard-bg);
-  font-family: 'Roboto', sans-serif;
-  /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
-  overflow: hidden;
-  border-spacing: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--cur-dashboard-bg);
+    font-family: 'Roboto', sans-serif;
+    /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
+    overflow: hidden;
+    border-spacing: 0;
 }
 
 #index-menu {
-  /* width: 15%; */
-  height: 100%;
-  vertical-align: top;
-  z-index: 5;
+    /* width: 15%; */
+    height: 100%;
+    vertical-align: top;
+    z-index: 5;
 }
 
 #index-dashboard {
-  width: 70%;
-  height: 100%;
-  vertical-align: top;
-  z-index: 0;
+    width: 70%;
+    vertical-align: top;
+    z-index: 0;
 }
 
 #index-activity {
-  /* width: 15%; */
-  height: 100%;
-  vertical-align: top;
-  z-index: 5;
- /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
+    /* width: 15%; */
+    height: 100vh;
+    vertical-align: top;
+    z-index: 5;
+    /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
   -moz-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
   box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);*/
-  /*width: 28vw !important;*/
+    /*width: 28vw !important;*/
 }
 
-a:link, a:visited {
-  text-decoration: none;
+a:link,
+a:visited {
+    text-decoration: none;
 }
 
 .notes {
-  position: fixed;
-  width: 100px;
-  height: 70px;
-  top: 20px;
-  left: 130px;
-  z-index: 5;
-  background: #009688;
-  border-radius: 10px;
-  transition: all 0.6s;
+    position: fixed;
+    width: 100px;
+    height: 70px;
+    top: 20px;
+    left: 130px;
+    z-index: 5;
+    background: #009688;
+    border-radius: 10px;
+    transition: all 0.6s;
 }
+
 .notes::after {
-  content: '';
-  display: block;
-  position: fixed;
-  width: 0px;
-  height: 0px;
-  top: 50px;
-  left: 115px;
-  border-top: 8px solid rgba(0, 0, 0, 0);
-  border-bottom: 8px solid rgba(0, 0, 0, 0);
-  border-left: 8px solid rgba(0, 0, 0, 0);
-  border-right: 8px solid  #009688;
+    content: '';
+    display: block;
+    position: fixed;
+    width: 0px;
+    height: 0px;
+    top: 50px;
+    left: 115px;
+    border-top: 8px solid rgba(0, 0, 0, 0);
+    border-bottom: 8px solid rgba(0, 0, 0, 0);
+    border-left: 8px solid rgba(0, 0, 0, 0);
+    border-right: 8px solid #009688;
 }
+
 .notes p {
-  color: #222;
-  padding: 12px;
-  margin: 0;
+    color: #222;
+    padding: 12px;
+    margin: 0;
 }
 
 .fixed-action-btn {
-    right:250px;
-    bottom:50px;
+    right: 250px;
+    bottom: 50px;
 }
+
 
 /* The snackbar - position it at the bottom and in the middle of the screen */
+
 #snackbar {
-  display: none;
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: #333; /* Black background color */
-  color: #fff; /* White text color */
-  text-align: center; /* Centered text */
-  border-radius: 2px; /* Rounded borders */
-  padding: 16px; /* Padding */
-  position: fixed; /* Sit on top of the screen */
-  z-index: 1; /* Add a z-index if needed */
-  left: 50%; /* Center the snackbar */
-  bottom: 30px; /* 30px from the bottom */
+    z-index: 5000000000000000;
+    display: none;
+    min-width: 250px;
+    /* Set a default minimum width */
+    margin-left: -125px;
+    /* Divide value of min-width by 2 */
+    background-color: #333;
+    /* Black background color */
+    color: #fff;
+    /* White text color */
+    text-align: center;
+    /* Centered text */
+    border-radius: 2px;
+    /* Rounded borders */
+    padding: 16px;
+    /* Padding */
+    position: fixed;
+    /* Sit on top of the screen */
+    z-index: 1;
+    /* Add a z-index if needed */
+    left: 50%;
+    /* Center the snackbar */
+    bottom: 30px;
+    /* 30px from the bottom */
 }
+
 
 /* Show the snackbar when clicking on a button (class added with JavaScript) */
+
 #snackbar.show {
-  visibility: visible; /* Show the snackbar */
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    visibility: visible;
+    /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
   However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+
 /* Animations to fade the snackbar in and out */
+
 @-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
 }
 
 @keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
 }
 
 @-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
 }
 
 @keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
 }
 
 body {
-  background-color: #ededed;
+    background-color: #ededed;
 }
 
 .fab {
-  background-color: transparent;
-  height: 64px;
-  width: 64px;
-  border-radius: 32px;
-  transition: height 300ms;
-  transition-timing-function: ease;
-  position: absolute;
-  right: 30px;
-  bottom: 50px;
-  text-align: center;
-  overflow: hidden;
+    background-color: transparent;
+    height: 64px;
+    width: 64px;
+    border-radius: 32px;
+    transition: height 300ms;
+    transition-timing-function: ease;
+    position: absolute;
+    right: 30px;
+    bottom: 50px;
+    text-align: center;
+    overflow: hidden;
 }
 
 .fab:hover {
-  height: 344px;
+    height: 344px;
 }
 
 .fab:hover .mainop {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .mainop {
-  margin: auto;
-  width: 64px;
-  height: 64px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  transition: transform 300ms;
-  background-color: #f44336;
-  border-radius: 32px;
-  z-index: 6;
+    margin: auto;
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transition: transform 300ms;
+    background-color: #f44336;
+    border-radius: 32px;
+    z-index: 6;
 }
 
 .mainopShadow {
-  width: 64px;
-  height: 64px;
-  border-radius: 32px;
-  position: absolute;
-  right: 30px;
-  bottom: 50px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    width: 64px;
+    height: 64px;
+    border-radius: 32px;
+    position: absolute;
+    right: 30px;
+    bottom: 50px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .mainop i {
-  margin-top: 16px;
-  font-size: 32px;
-  color: #fff;
+    margin-top: 16px;
+    font-size: 32px;
+    color: #fff;
 }
 
 .minifab {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  border-radius: 24px;
-  z-index: 5;
-  float: left;
-  margin-bottom: 8px;
-  margin-left: 8px;
-  margin-right: 8px;
-  background-color: blue;
-  transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    z-index: 5;
+    float: left;
+    margin-bottom: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    background-color: blue;
+    transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .minifab:hover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .minifabIcon {
-  height: 24px;
-  width: 24px;
-  margin-top: 12px;
+    height: 24px;
+    width: 24px;
+    margin-top: 12px;
 }
 
 .op1 {
-  background-color: #2f82fc;
+    background-color: #2f82fc;
 }
 
 .op2 {
-  background-color: #0f9d58;
+    background-color: #0f9d58;
 }
 
 .op3 {
-  background-color: #fb0;
+    background-color: #fb0;
 }
 
 .op4 {
-  background-color: #dd5145;
+    background-color: #dd5145;
 }
 
 .op5 {
-  background-color: #673ab7;
+    background-color: #673ab7;
 }
 
 #upload_project {
-  display: none;
+    display: none;
 }
 
-.area > input[type="file"] {
-  position: relative;
-  width: 98%;
-  height: 180px;
-  top: -35px;
+.area > input[type="file"]:first-of-type {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 1em;
+    opacity: 0;
+}
+
+.area > input[type="file"]:nth-of-type(2) {
+    position: absolute;
+    left: 0;
+    padding: 1em;
 }
 
 .area > div[for="file"] {
-  width: 98%;
-  height: 180px;
+    width: 98%;
+    height: 180px;
 }
 
 .area {
- width: 98%;
-  height: 180px;
-  display: block;
-  border: 5px dotted #ccc;
-  text-align: center;
+    height: 180px;
+    display: block;
+    border: 5px dotted #ccc;
+    text-align: center;
+    position: relative;
 }
 
 .drag {
-  border: 5px dotted black;
-  background-color: gray;
+    border: 5px dotted black;
+    background-color: gray;
 }
 
 #result ul {
-  list-style: none;
-  margin-top: 20px;
+    list-style: none;
+    margin-top: 20px;
 }
 
 #result ul li {
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
 }
 
 #result li span {
-  font-weight: bold;
-  color: navy;
+    font-weight: bold;
+    color: navy;
 }
 
-.terminal-sign{
-    width:3vh;
-	height:3vh;
+.terminal-sign {
+    width: 3vh;
+    height: 3vh;
     position: absolute;
     top: 7vh;
     left: 140px;
@@ -291,15 +345,15 @@ body {
     color: green;*/
     color: #fff;
     border-radius: 50%;
-    border: 2px dotted #00d5ff;
+    border: 2px dotted var(--neon-blue);
     /*font-family: monospace;*/
     text-align: center;
     font-size: 2.5vh;
 }
 
-.terminal-div{
+.terminal-div {
     position: absolute;
-    top: 75px;
+    top: 8vh;
     left: 120px;
     border: none;
     width: 25%;
@@ -308,74 +362,96 @@ body {
   -webkit-animation-iteration-count: infinite;
   animation: pulse 3s;
   animation-iteration-count: infinite;*/
-  border-bottom: 2px solid #00d5ff;
-  background: transparent;
-  color: green;
-  outline: 0;
-  font-family: monospace;
-  caret-color: green;
+    border-bottom: 2px solid var(--neon-blue);
+    background: transparent;
+    color: #bbb;
+    outline: 0;
+    font-family: monospace;
+    caret-color: green;
+    display: flex;
 }
 
-.terminal{
-  /*-webkit-animation: pulse 3s;
+.terminal {
+    /*-webkit-animation: pulse 3s;
   -webkit-animation-iteration-count: infinite;
   animation: pulse 3s;
   animation-iteration-count: infinite;*/
-  width: 100%;
-  border: none;
-
-  background: transparent;
-  /*color: green;*/
-  color: #bbb;
-  font-size: 17px;
-  outline: 0;
-  /*font-family: monospace;*/
-  /*caret-color: green;*/
-  caret-color: #bbb;
-  margin-left: 5px;
-  margin-bottom: 5px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    /*color: green;*/
+    color: #bbb;
+    font-size: 17px;
+    outline: 0;
+    /*font-family: monospace;*/
+    /*caret-color: green;*/
+    caret-color: #bbb;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
 
-.terminal-div	i {
-	position: absolute;
-	background-color: transparent;
-	left: 5px;
-	top: 10%;
-	animation-name: blink;
-	animation-duration: 1200ms;
-	animation-iteration-count: infinite;
-	opacity: 1;
+.terminal-span {
+    cursor: pointer;
 }
 
-.terminal-div input:focus + i {
-	display: none;
+.terminal-div i {
+    position: absolute;
+    background-color: transparent;
+    left: 5px;
+    top: 10%;
+    animation-name: blink;
+    animation-duration: 1200ms;
+    animation-iteration-count: infinite;
+    opacity: 1;
 }
+
+.terminal-div input:focus+i {
+    display: none;
+}
+
 g#Path {
-  /*transform: translateY(93.5vh);
+    /*transform: translateY(93.5vh);
   transform: translateX(10.5vh);*/
-  transform: translate3d(5vw, 93.5vh, 0);
+    transform: translate3d(5vw, 93.5vh, 0);
 }
 
 @keyframes blink {
-	from { opacity: 1; }
-	to { opacity: 0; }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 @-webkit-keyframes pulse {
-  from { border-color: transparent; }
-  50% { border-color: red; }
-  to { border-color: transparent; }
-}
-@keyframes pulse {
-  from { border-color: transparent; }
-  50% { border-color: red; }
-  to { border-color: transparent; }
+    from {
+        border-color: transparent;
+    }
+    50% {
+        border-color: red;
+    }
+    to {
+        border-color: transparent;
+    }
 }
 
-.terminal-table{
+@keyframes pulse {
+    from {
+        border-color: transparent;
+    }
+    50% {
+        border-color: red;
+    }
+    to {
+        border-color: transparent;
+    }
+}
+
+.terminal-table {
     border: 1px solid black;
     border-collapse: collapse;
     padding: 15px;
-    white-space:pre-wrap;
-    word-wrap:break-word;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }

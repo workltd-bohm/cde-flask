@@ -1,67 +1,57 @@
-<div id="filter-access" style="display: none;">
+<div id="activity-access" class="activity-box">
     <form id="filter-form-access">
-        <div class="access-div">
-            <div class="activity-tab-div-access">
-                <div class="image-toggle-container " id="open-toggle" onclick="openToggleAccess()">
-                <p class="open-access" id="plus-rotate">+</p><span><p class="access-tooltip" id="renametooltip">Add Access</p></span>
-                </div>
-                <div id="newpost" class="toggle-access">
-                    <div class="create-user-container">
-                        <div class="form__group field">
-                            <input type="text" class="form__field" id="user_name" name="user_name" placeholder="username" required />
-                            <label for="user_name" class="form__label">User</label>
-                        </div>
-                        <div class="form__group field">
-                            <select class="form__field" name="role" id='role' required >
-                                <option>WATCHER</option>
-                                <option>DEVELOPER</option>
-                                <option>ADMIN</option>
-                            </select>
-                            <label for="role" class="form__label">Role</label>
-                        </div>
-                        <br>
-                        <input type="button" value="Share" onclick="AddAccess()" />
-                    </div>
-                </div>
-                <hr class="access-break-line">
-
-                <h3 class="title-access">Users</h3>
+        <div class="activity-access-container">
+            <h6 class="activity-collapsible" >owner</h6>
+            <div class="activity-access-owner-profile mx-auto">
                 {% for a in access %}
-                <br>
-                <div class="access-container">
-                    <!--<p><img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/><b class="details_event_user">{{ a['user']['username'] }}</b> </p>-->
-                    <div class="access_field">
-                        <div class="access-column-one">
-                            <p class="details_event icon-column" ><img class="profile-icon access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/></p>
-                        </div><!--{{ url_for('static', filename='img/user.png') }}-->
-                        <div class="access-column-two">
-                            <p class="details_event user-column" >{{ a['user']['username'] }}  </p>
-                        </div>
-                        <div class="access-column-three">
-                            <p class="details_event role-columne" >  
-                            {% if 'OWNER' is in a['role'] %}
-                                <img class="profile-icon access-img" src="{{ url_for('static', filename='img/add-user.png') }}"/>    
-                            {% endif %}
+                    {% if 'OWNER' in a['role'] %}
+                <img class="profile-icon" src="/get_profile_image/{{ a['user']['picture'] }}"/>
+                <p class="details_event owner-username text-center mt-2" >{{ a['user']['username'] }}  </p>
+                    {% endif %}
+                {% endfor %}
+            </div> 
 
-                            {% if 'WATCHER' is in a['role'] %}
-                                <img class="profile-icon access-img" src="{{ url_for('static', filename='img/view.png') }}"/>    
-                            {% endif %}
-
-                            {% if 'DEVELOPER' is in a['role'] %}
-                                <img class="profile-icon access-img" src="{{ url_for('static', filename='img/pencil.png') }}"/>    
-                            {% endif %}
-                            </p>
-                        </div>
-                        <div class="access-column-four">
-                            <img class="profile-icon access-img" src="{{ url_for('static', filename='img/clock.png') }}"/> 
-                            <p class="details_event date-columne" >Accessebility date</p>
-                            {% if 'OWNER' not in a['role'] %}
-                            <span class='remove-access' onclick="removeAccess( {{ a }} );">x</span>
-                            {% endif %}
-                        </div>
+            <h6 class="activity-collapsible selected">collaborators</h6>
+            <div class="activity-collapsible-body my-3" id="access-box">
+                <div class="activity-add-user-container row">
+                    <label for="user_name" class="form-label ms-1">Add people</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control me-2" id="access-add-username" 
+                            name="user_name" placeholder="Type a username" required />
+                        <select required class="form-select me-2" id="access-add-role">
+                            <option value="" selected>Choose a role</option>
+                            <option value="WATCHER">Watcher</option>
+                            <option value="DEVELOPER">Developer</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
+                        <button type="button" class="material-icons btn" onclick="AddAccess()">person_add</button>
                     </div>
                 </div>
+
+                <div class="activity-access-container mt-3">
+                {% for a in access %}
+                    {% if not 'OWNER' in a['role'] %}
+                    <div class="activity-access-box p-2">
+                        <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
+                        <div class="access-info align-self-center align-middle ms-2">
+                            <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
+                            <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value);">
+                                <option value="WATCHER" {{ 'selected' if a['role']=='WATCHER' }}>Watcher</option>
+                                <option value="DEVELOPER" {{ 'selected' if a['role']=='DEVELOPER' }}>Developer</option>
+                                <option value="ADMIN" {{ 'selected' if a['role']=='ADMIN' }}>Admin</option>
+                            </select>
+                        </div>
+
+                        {% if is_owner %}
+                            <div class="material-icons btn btn-access-remove me-2 mt-2"
+                                onclick="removeAccess({{ a }});">
+                                person_remove
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 {% endfor %}
+                </div>
             </div>
         </div>
     </form>

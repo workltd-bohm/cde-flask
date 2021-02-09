@@ -15,20 +15,20 @@ const ORBIT_ROT_SCALE = 0.001;
 const ORBIT_SPEED_SCALE = 10;
 
 const SUN_MIN_SIZE = 100;
-const SUN_SIZE_COEF = 4;
+const SUN_SIZE_COEF = 4; //g_SunRadius = frame/SUN_SIZE_COEF;
 const SUN_SCROLL_X_COEF = 2;
 const SUN_SCROLL_SIZE_COEF = 0.3;
 const SUN_SCROLL_ZOOM = 1.2;
 
-const SUN_BG_RATIO = 1.5;
+const SUN_BG_RATIO = 1; //How much around the sun can be seen (used for effects) - 1.5 if you want to see the shadow
 
-const PLANET_MAX_NUMBER_MIN = 9;
-const PLANET_MAX_NUMBER_MAX = 12;
+// const PLANET_MAX_NUMBER_MIN = 9;
+const PLANET_MAX_NUMBER_MAX = 10;
 
-const PLANET_SUN_RATIO = 1.75;
+const PLANET_SUN_RATIO = 1.5; // g_PlanetRadius = g_SunRadius/PLANET_SUN_RATIO;
 const PLANET_MIN_MAX_COEF = 0.5;
 const PLANET_SHADOW_RAD = 0.7;
-const PLANET_ORBIT_COEF = 1.7;
+const PLANET_ORBIT_COEF = 1.8;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
 const PLANET_SCROLL_ZOOM = 1.2;
@@ -43,13 +43,16 @@ const HISTORY_ORBIT_COEF = 1.1;
 const HISTORY_TEXT_PADDING = 3;
 
 const OVERLAY_SUN_RATIO = 5;
-const OVERLAY_MARG = 2;
+const OVERLAY_SUN_MARGIN = 2;
+const OVERLAY_PLANET_RATIO = 5;
+const OVERLAY_PLANET_MARGIN = 10;
+
 const OVERLAY_SELECT_RATIO = 1.1;
 const OVARLAY_DESELECT_RATIO = 0.8;
 const OVERLAY_SELECT_PLANET_RATIO = 1;
 
 const CHECKED_SELECT_RATIO = 1.2;
-const CHECKED_ALLGROUP_OFFSET = 2.5;
+const CHECKED_ALLGROUP_OFFSET = 2.5; //offset of Select All/Clear All in the Y direction -g_OverlayRadius * CHECKED_ALLGROUP_OFFSET
 
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
@@ -105,7 +108,7 @@ var g_PlanetRadius_old = 0;
 var g_PathRadius = 0;
 var g_HistRadius = 0;
 var g_OverlayRadius = 0;
-var g_OverlayItem = 0;
+var g_OverlayItemSize = 0;
 
 var g_box = {
         position : {x : 0,y : 0,z : 0},

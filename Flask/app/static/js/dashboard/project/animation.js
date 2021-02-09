@@ -15,10 +15,11 @@ function SunFadeout(data) {
         g_root.y -= (vec_y + g_root.cy) * g_root.scale;
     }
 
-    data.values.back.values.effect.transition()
-        .ease("linear")
-        .duration(ORBIT_ANIM_MOVE)
-        .style("opacity", 0)
+    // Animate shaders
+    // data.values.back.values.effect.transition()
+    //     .ease("linear")
+    //     .duration(ORBIT_ANIM_MOVE)
+    //     .style("opacity", 0)
     data.values.back.values.background.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -27,26 +28,26 @@ function SunFadeout(data) {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
-    data.values.back.values.shader.transition()
-        .ease("linear")
-        .duration(ORBIT_ANIM_MOVE)
-        .style("opacity", 0)
-    data.values.back.values.gloss.transition()
-        .ease("linear")
-        .duration(ORBIT_ANIM_MOVE)
-        .style("opacity", 0)
+    // data.values.back.values.shader.transition()
+    //     .ease("linear")
+    //     .duration(ORBIT_ANIM_MOVE)
+    //     .style("opacity", 0)
+    // data.values.back.values.gloss.transition()
+    //     .ease("linear")
+    //     .duration(ORBIT_ANIM_MOVE)
+    //     .style("opacity", 0)
     if (ORBIT_PATTERN) data.values.picture.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("transform", "rotate(" + (-g_root.deg) + ")")
-    // data.values.shader.transition()
-    //     .ease("linear")
-    //     .duration(ORBIT_ANIM_MOVE)
-    //     .style("opacity", 0)
-    // data.values.gloss.transition()
-    //     .ease("linear")
-    //     .duration(ORBIT_ANIM_MOVE)
-    //     .style("opacity", 0)
+        // data.values.shader.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .style("opacity", 0)
+        // data.values.gloss.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .style("opacity", 0)
     data.values.back.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -130,6 +131,7 @@ function GetWarp(data) {
                 CreateSpace(g_project.skip);
                 break;
             case "project":
+                backButtonFlag = false;
                 WrapGetProject(g_project.skip);
                 break;
             case "market":
@@ -223,7 +225,7 @@ function AnimatePlanet(data) {
                 data.values.checked.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-g_PlanetRadius) + ")")
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
         });
     }
 }

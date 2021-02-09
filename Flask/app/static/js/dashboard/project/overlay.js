@@ -44,6 +44,12 @@ g_OverPlanet = [
     { name: "SELECT", icon: "check_circle", link: SelectPlanet },
     { name: "OPEN", icon: "preview", link: WrapOpenFile },
     { name: "TRASH", icon: "delete", link: WrapTrash },
+    { name: "RENAME", icon: "create", link: WrapRename },
+    { name: "COPY", icon: "content_copy", link: WrapCopy },
+    { name: "MOVE", icon: "open_with", link: WrapMove },
+    { name: "SHARE", icon: "share", link: WrapShare },
+    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
+    { name: "COLOR", icon: "color_lens", link: ColorPicker },
 ]
 
 g_OverTrash = [
@@ -112,7 +118,10 @@ function OverlayCreate(obj, data, parent, planet = false) {
 
     if (planet) {
         if (data.overlay_type != "trash_planet") {
-            type = [{...g_OverPlanet[0] }, {...g_OverPlanet[1] }, {...g_OverPlanet[2] }];
+            type = [];
+            for (let i = 0; i < g_OverPlanet.length; i++) {
+                type.push({...g_OverPlanet[i] });
+            }
         }
         if (data.checked) type[0].icon = "check_circle_outline";
     }
@@ -121,13 +130,13 @@ function OverlayCreate(obj, data, parent, planet = false) {
     data.overlay.items = type.slice();
 
     data.overlay.object = data.values.this.append("g")
-        .attr("class", "star overlay")
+        .attr("class", "star overlay");
 
     if (!data.values.sun) data.overlay.object.attr("transform", "rotate(" + (-g_root.deg) + ")");
     if (!data.values.sun) g_OverlayRadius = g_PlanetRadius * OVERLAY_SELECT_PLANET_RATIO;
     else g_OverlayRadius = g_SunRadius;
 
-    g_OverlayItem = g_OverlayRadius / OVERLAY_SUN_RATIO;
+    g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
     g_project.overlay = data.overlay.object;
 
     // var pie = d3.layout.pie().sort(null);
@@ -215,21 +224,33 @@ function AddItem(obj, data, parent, position = 0) {
 
     data.values.rotation = position * 360 / data.values.back.items.length - 90;
 
-    if (data.name == "SELECT") {
-        g_OverlayItem = g_SunRadius / OVERLAY_SUN_RATIO;
-        g_OverlayRadius = g_PlanetRadius + g_OverlayItem + OVERLAY_MARG;
+    if (!data.values.data.values.sun) {
+        g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO * .8;
+        g_OverlayRadius = g_PlanetRadius + .5 * (g_OverlayItemSize + OVERLAY_PLANET_MARGIN);
     }
-    data.values.this.attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + (g_OverlayRadius - g_OverlayItem - OVERLAY_MARG) + ", 0), rotate(" + (-data.values.rotation) + ")");
+
+    // if (data.values.sun)
+    // {
+    //     g_OverlayItemSize = g_SunRadius / OVERLAY_SUN_RATIO;
+    //     g_OverlayRadius = g_PlanetRadius + g_OverlayItemSize + OVERLAY_SUN_MARGIN;
+    // } else {
+    //     g_OverlayItemSize = g_SunRadius / OVERLAY_PLANET_RATIO;
+    //     g_OverlayRadius = g_PlanetRadius + g_OverlayItemSize + OVERLAY_PLANET_MARGIN;
+    // }
+
+    let margin = data.values.data.values.sun ? OVERLAY_SUN_MARGIN : OVERLAY_PLANET_MARGIN;
+
+    data.values.this.attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + (g_OverlayRadius - g_OverlayItemSize - margin) + ", 0), rotate(" + (-data.values.rotation) + ")");
 
     // data.item.picture = data.values.this.append("circle")
     //     .attr("class", "pattern overlay")
-    //     .attr("r", g_OverlayItem)
+    //     .attr("r", g_OverlayItemSize)
 
     data.values.picture = data.values.this.append("foreignObject")
-        .attr("x", -g_OverlayItem / 2)
-        .attr("y", -g_OverlayItem / 2)
-        .attr("width", g_OverlayItem)
-        .attr("height", g_OverlayItem)
+        .attr("x", -g_OverlayItemSize / 2)
+        .attr("y", -g_OverlayItemSize / 2)
+        .attr("width", g_OverlayItemSize)
+        .attr("height", g_OverlayItemSize)
         .append("xhtml:div")
         .attr("class", "item foregin")
 
@@ -239,7 +260,7 @@ function AddItem(obj, data, parent, position = 0) {
 
     var tmp = data.values.picture.append("i")
         .attr("class", "item material-icons" + ((data.values.data.values.sun) ? " sun" : " planet"))
-        .style("font-size", g_OverlayItem + "px")
+        .style("font-size", g_OverlayItemSize + "px")
         .html(data.icon)
 
     if (defaultColor) tmp.style("color", defaultColor)
@@ -247,7 +268,7 @@ function AddItem(obj, data, parent, position = 0) {
     data.values.select = data.values.this.append("circle")
         .attr("class", "item select")
         // .attr("id", data.link)
-        .attr("r", g_OverlayItem / 2)
+        .attr("r", g_OverlayItemSize / 2)
         .on("mouseover", function(d) {
             data.values.back.text.selectAll("text").html(data.name);
         })
@@ -255,11 +276,14 @@ function AddItem(obj, data, parent, position = 0) {
             data.values.back.text.selectAll("text").html("");
             //console.log(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1])+" "+g_OverlayRadius)
             //if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
-            if (data.name != "COLOR") {
-                parent.values.text.style("opacity", 100);
-                g_project.overlay.remove();
-                g_project.overlay = false;
-            }
+            // if (d3.mouse(this)[0] >= divRect.left && event.clientX <= divRect.right &&
+            //     event.clientY >= divRect.top && event.clientY <= divRect.bottom) {
+                if (data.name != "COLOR") {
+                    parent.values.text.style("opacity", 100);
+                    g_project.overlay.remove();
+                    g_project.overlay = false;
+                }
+            //}
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){

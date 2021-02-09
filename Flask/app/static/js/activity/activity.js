@@ -1,11 +1,55 @@
+$(document).ready(function() {
+    // bind onclick events
+
+    // calculate height for the dynamic boxes
+    setInterval(function() {
+        if ($(".activity-comments-container").offset() !== undefined) {
+            let someHeight = $(window).height() -
+                $(".activity-comments-container").offset().top -
+                ($(".activity-menu").css('padding-left')).replace("px", "");
+            $(".activity-comments-container").height(someHeight);
+        }
+
+        // project conf
+        if ($(".activity-project-conf-container").offset() !== undefined) {
+            let someHeight = $(window).height() -
+                $(".activity-project-conf-container").offset().top -
+                $(".btn-update").parent().outerHeight(true)
+            $(".activity-project-conf-container").height(someHeight);
+        }
+    }, 250);
+
+    $("body").on('click', '.activity-collapsible', function() {
+        openToggle($(this));
+    });
+
+    $("body").on('click', '.activity-tab', function() {
+        SwitchTabs($(this));
+    });
+
+    $("body").on("change", "#filter-form-project-conf", function() {
+        $(".btn-update").addClass("glow");
+    });
+
+    $("body").on('click', '.btn-update', function() {
+        $(this).removeClass("glow");
+    });
+
+    setInterval(function() {
+        getComments();
+    }, 50000);
+});
+
 function OpenActivity(html, head = null, open = true) {
-    if (html) ACTIVITY.html(html);
+    if (html) {
+        ACTIVITY.html(html);
+        SwitchTabs($(".activity-tab").first());
+    }
     if (head) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
     if (open) {
-        $ACTIVITY.parent().addClass("opend");
-        $ACTIVITY.parent().removeClass("closed");
+        $ACTIVITY.parent().addClass("opened");
     }
 }
 
@@ -17,21 +61,18 @@ function ExtractActivity(html = null, head = null, open = true) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
     if (open) {
-        $ACTIVITY.parent().addClass("opend");
-        $ACTIVITY.parent().removeClass("closed");
+        $ACTIVITY.parent().addClass("opened");
     }
 }
 
 function CloseActivity() {
-    $ACTIVITY.parent().removeClass("opend");
-    $ACTIVITY.parent().addClass("closed");
+    $ACTIVITY.parent().removeClass("opened");
 }
 
 function ClearActivity(close = true) {
     ACTIVITY.html("");
     if (close) {
-        $ACTIVITY.parent().removeClass("opend");
-        $ACTIVITY.parent().addClass("closed");
+        $ACTIVITY.parent().removeClass("opened");
     }
 }
 
@@ -46,15 +87,51 @@ function AppendActivityTab(parent, child) {
 function ClearActivityTab(parent) {
     parent.html('');
 }
-function sendCommentPress(){
+
+function getComments() {
+    // prevent from firing on user profile or when there is no comment section
+    if (!document.getElementById("activity-comments-container")) { return; }
+
+    $.ajax({
+        url: "/get_comments",
+        type: "POST",
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+        }),
+        timeout: 5000,
+        success: function(data) {
+            data = JSON.parse(data);
+
+            let comments = $(".activity-comments-container").children();
+
+            // add only new comments
+            for (let i = 0; i < data.length; i++) {
+                let id = $.parseHTML(data[i])[0].dataset.id;
+                for (let j = 0; j < comments.length; j++) {
+                    if (comments[j].dataset.id === id) {
+                        delete data[i];
+                    }
+                }
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                $(".activity-comments-container").prepend(data[i]);
+            }
+        }
+    });
+}
+
+function sendCommentPress() {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let div = $('#activity-comments-container');
+    let post_id = $('#post_id').val();
     console.log(comment);
 
     $.ajax({
@@ -75,15 +152,19 @@ function sendCommentPress(){
             //console.log(data);
             div.prepend(data);
             $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            div.animate({ scrollTop: "0" });
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
+
 function sendComment(el) {
     console.log("sending comment");
     var key = window.event.keyCode;
@@ -95,11 +176,11 @@ function sendComment(el) {
     comment = $('#comment').val();
     if (comment.length < 1) { return; } // prevent sending empty comments
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let post_id = $('#post_id').val();
+    let div = $('#activity-comments-container');
     console.log(comment);
 
     $.ajax({
@@ -120,12 +201,15 @@ function sendComment(el) {
             //console.log(data);
             div.prepend(data);
             $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            div.animate({ scrollTop: "0" });
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
@@ -134,24 +218,35 @@ function sendComment(el) {
 var tmp_comment = "";
 
 function editComment(elem) {
-    elem = elem.closest('.comments_field');
+    elem = elem.closest('.activity-comment-box');
+
+    // find editable comment and change it back to last saved tmp comment
     let editmode = document.getElementById('comment-editmode');
     if (editmode) {
         editmode.parentElement.innerHTML = tmp_comment;
     }
 
-    tmp_comment = elem.getElementsByClassName('comment-inline')[0].innerHTML;
-    let comment_text = elem.getElementsByClassName('comment-events')[0].innerHTML;
+    tmp_comment = elem.getElementsByClassName('comment-info')[0].innerHTML;
+    let comment = elem.getElementsByClassName('comment-info-text')[0];
+    let comment_text = comment.textContent;
+    comment.classList.add("d-none");
 
-    elem.getElementsByClassName('comment-inline')[0].innerHTML =
-        '<textarea id="comment-editmode" ' +
-        'onkeypress="updateComment(event, this)"></textarea>';
+    let edit_box = document.createElement("textarea");
+    edit_box.className = "form-control w-100";
+    edit_box.id = "comment-editmode";
+    edit_box.onkeypress = function(event) {
+        updateComment(event, this);
+    }
+    elem.getElementsByClassName('comment-info')[0].appendChild(edit_box);
+    // elem.getElementsByClassName('comment-info-text')[0].innerHTML =
+    //     '<textarea id="comment-editmode" ' +
+    //     'onkeypress="updateComment(event, this)"></textarea>';
 
+    // set focus and cursor at the end of the text
     $('#comment-editmode').focus().val(comment_text.trim());
 }
 
-function updateComment(el, container) {
-    let dataset = container.closest('.comment-container').dataset;
+function updateComment(el, elem) {
     var key = window.event.keyCode;
     if (key != 13)
         return true;
@@ -159,53 +254,68 @@ function updateComment(el, container) {
         return true;
     }
 
-    let editmode = document.getElementById('comment-editmode');
-    let parent = editmode.parentElement;
-    let comment = editmode.value;
+    // get comment's dataset & comment text element
+    elem = elem.closest('.activity-comment-box');
+    let dataset = elem.dataset;
+    let comment = elem.getElementsByClassName('comment-info-text')[0];
 
-    if (comment.length < 1) {
-        // prompt to delete
+    // get edited comment values and remove editable comment
+    let editmode = document.getElementById('comment-editmode');
+    let comment_text = editmode.value;
+    editmode.remove();
+
+    // prompt to delete if comment submitted is empty
+    if (comment_text.length < 1) {
+        if (confirm("Delete this comment?")) {
+            deleteComment(comment);
+        } else {
+            // show non-updated comment
+            comment.classList.remove("d-none");
+        }
+        return;
     }
 
-    project_name = $('#project_name').val();
-    parent_id = $('#parent_id').val();
-    ic_id = $('#ic_id').val();
-    div = $('.activity-tab-div-comment');
-    post_id = $('#post_id').val();
+    // update and show the comment
+    comment.textContent = comment_text;
+    comment.classList.remove("d-none");
+
+    let project_name = $('#project_name').val();
+    let parent_id = $('#parent_id').val();
+    let ic_id = $('#ic_id').val();
+    let div = $('.activity-tab-div-comment');
+    let post_id = $('#post_id').val();
 
     $.ajax({
         url: "/update_comment",
         type: 'POST',
         data: JSON.stringify(project_name ? {
-            comment: comment,
+            // project's ics' comment
             project_name: project_name,
             parent_id: parent_id,
             ic_id: ic_id,
             comment_id: dataset.id,
-            comment: comment,
+            comment: comment_text,
         } : {
+            // marketplace posts' comment
             post_id: post_id,
             comment_id: dataset.id,
-            comment: comment,
+            comment: comment_text,
         }),
         timeout: 5000,
         success: function(data) {
-            //            input_json = JSON.parse(data);
-            //console.log(data);
-            // div.prepend(data);
-            // $('#comment').val('');
-            //div.scrollTop(div[0].scrollHeight);
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+
+            // TODO mark comment with red, as 'not sent'
         }
     });
-
-    parent.innerHTML = tmp_comment;
-
-    parent.getElementsByClassName('comment-events')[0].innerHTML = comment;
 }
 
 function resetComment() {
@@ -216,7 +326,7 @@ function resetComment() {
 }
 
 function deleteComment(elem) {
-    elem = elem.closest('.comment-container');
+    elem = elem.closest('.activity-comment-box');
 
     // data
     project_name = $('#project_name').val();
@@ -242,17 +352,54 @@ function deleteComment(elem) {
         timeout: 5000,
         success: function(data) {
             elem.remove();
+            MakeSnackbar(data);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
 
+function SwitchTabs(elem) {
+    if (!elem) { return; }
+    if (elem.hasClass("selected")) { return; }
+    $(".activity-tab").removeClass("selected");
+    elem.addClass("selected");
+    let tab = elem.data("tab");
+    $(".activity-box").hide();
+    $("#activity-" + tab).fadeIn();
+
+
+    // TODO
+    // show edit-post button only on details tab
+    // editPostButton = document.getElementById("edit-post-button");
+    // if (target != "details") {
+    //     if (editPostButton != null)
+    //         editPostButton.style.display = 'none';
+    // } else {
+    //     if (editPostButton != null)
+    //         editPostButton.style.display = 'block';
+    // }
+}
+
 function AddAccess() {
     /*LoadStart();*/
+    let add_username = document.getElementById("access-add-username").value;
+    let add_role = document.getElementById("access-add-role").value;
+    let add_exp_date = document.getElementById("access-exp-date").value;
+    if (add_exp_date == '')
+        add_exp_date = 'indefinitely'
+
+    if (!add_username || !add_role) {
+        MakeSnackbar("Please fill all required fields");
+        return;
+    }
+
     $.ajax({
         url: "/add_access",
         type: 'POST',
@@ -261,15 +408,44 @@ function AddAccess() {
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
-            user_name: document.getElementById('user_name').value,
-            role: $("#role option:selected").text()
+            user_name: add_username,
+            role: add_role,
+            exp_date: add_exp_date
         }),
         timeout: 5000,
         success: function(data) {
+            getAccess();
             MakeSnackbar(data);
             LoadStop();
-            location.reload();
         },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+            // if ($jqXHR.status == 401) {
+            //     location.reload();
+            // }
+        }
+    });
+}
+
+function getAccess() {
+    let project_name = SESSION['position'].project_name;
+    let ic_id = SESSION['position'].ic_id;
+    let parent_id = SESSION['position'].parent_id;
+
+    $.ajax({
+        url: "/get_access",
+        type: "POST",
+        data: JSON.stringify({
+            project_name: project_name,
+            ic_id: ic_id,
+            parent_id: parent_id
+        }),
+        success: function(data) {
+            document.getElementById("activity-access").outerHTML = data;
+        },
+        timeout: 5000,
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
@@ -278,8 +454,41 @@ function AddAccess() {
     });
 }
 
+function updateAccessRole(access, role, date) {
+    console.log(role);
+    $.ajax({
+        url: "/update_access",
+        type: 'POST',
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: SESSION['position'].ic_id,
+            parent_id: SESSION['position'].parent_id,
+            is_directory: SESSION['position'].is_directory,
+            old_role: access.role,
+            new_role: role,
+            exp_date: date,
+            user: access.user
+        }),
+        timeout: 5000,
+        success: function(data) {
+            getAccess();
+            MakeSnackbar(data);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
 function removeAccess(access) {
     console.log(access);
+    if (access.exp_date == '')
+        access.exp_date = 'indefinitely'
     LoadStart();
     $.ajax({
         url: "/remove_access",
@@ -290,18 +499,22 @@ function removeAccess(access) {
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
             role: access.role,
+            exp_date: access.exp_date,
             user: access.user
         }),
         timeout: 5000,
         success: function(data) {
+            getAccess();
             MakeSnackbar(data);
             LoadStop();
-            location.reload();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -332,6 +545,9 @@ function addLink(el) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 
@@ -359,6 +575,9 @@ function PostList(form, json) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -369,97 +588,50 @@ function PostListPopupResults(obj, json) {
     MarketOpen('Posts', '', ViewPost, [obj, sel.value, json])
 }
 
-function openToggleAccess() {
-    var box = document.getElementById('access-box');
-    if (box.style.display != 'none' && box.style.display != "") {
-        box.style.display = 'none';
-    } else {
-        box.style.display = 'block';
-    }
+function openToggle(elem) {
+    elem.toggleClass("selected");
 }
 
-function openToggleInfoTags() {
-    var tags = document.getElementById('tags');
-    console.log(tags);
-    if (tags.style.display != 'none' && tags.style.display != "") {
-        tags.style.display = 'none';
+var allProjectComments = null;
 
-    } else {
-        tags.style.display = 'block';
-    }
-}
+function filterDirectoryComments(searchCommentboxText) {
+    isClearSearchButtonVisible(true);
+    divWithAllComments = document.getElementById("activity-comments-container");
 
-function openToggleInfoIC() {
-    var ic = document.getElementById('ic');
-    console.log(tags);
-    if (ic.style.display != 'none' && ic.style.display != "") {
-        ic.style.display = 'none';
-
-    } else {
-        ic.style.display = 'block';
-    }
-}
-
-function openToggleInfoHistory() {
-    var history = document.getElementById('history');
-    console.log(tags);
-    if (history.style.display != 'none' && history.style.display != "") {
-        history.style.display = 'none';
-
-    } else {
-        history.style.display = 'block';
-    }
-}
-
-var allProjectComments=null;
-function filterDirectoryComments(searchCommentboxText)
-{
-    divWithAllComments = document.getElementById("activity-tab-div-comments");
-    
-    if(allProjectComments == null)
-    allProjectComments = divWithAllComments.innerHTML;
+    if (allProjectComments == null)
+        allProjectComments = divWithAllComments.innerHTML;
     else
-    divWithAllComments.innerHTML = allProjectComments;
-    
-    
+        divWithAllComments.innerHTML = allProjectComments;
+
+
     comments = divWithAllComments.children;
     numOfAtSymbols = searchCommentboxText.split("@").length - 1;
     noSpacesInSearchText = (searchCommentboxText.lastIndexOf(" ") == -1);
-    if (numOfAtSymbols == 1 && noSpacesInSearchText)
-    {
+    if (numOfAtSymbols == 1 && noSpacesInSearchText) {
         //filter comments from this user
         console.log("showing all comments from " + searchCommentboxText);
         numComments = comments.length;
-        whichComment=0;
-        while(whichComment < numComments)
-        {
-            username = comments[whichComment].getElementsByClassName("details_event_user comments")[0].innerText;
-            if(username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1))//1 to skip @
+        whichComment = 0;
+        while (whichComment < numComments) {
+            username = comments[whichComment].getElementsByClassName("comment-info-user")[0].innerText;
+            if (username.toLowerCase() == searchCommentboxText.toLowerCase().substring(1)) //1 to skip @
             {
                 whichComment++;
-            }
-            else
-            {
+            } else {
                 divWithAllComments.removeChild(comments[whichComment]);
                 numComments--;
             }
         }
-    }
-    else
-    {
+    } else {
         // filter comments for occurrence of search-text substring
         console.log("searching through " + divWithAllComments.childElementCount + " comments");
         numComments = comments.length;
-        whichComment=0;
-        while(whichComment < numComments)
-        {
-            comment = comments[whichComment].getElementsByClassName("details_event comment-events")[0].innerText;
-            if(comment.toLowerCase().includes(searchCommentboxText.toLowerCase()))
-            {
+        whichComment = 0;
+        while (whichComment < numComments) {
+            comment = comments[whichComment].getElementsByClassName("comment-info-text")[0].innerText;
+            if (comment.toLowerCase().includes(searchCommentboxText.toLowerCase())) {
                 whichComment++;
-            }
-            else
-            {
+            } else {
                 divWithAllComments.removeChild(comments[whichComment]);
                 numComments--;
             }
@@ -467,125 +639,157 @@ function filterDirectoryComments(searchCommentboxText)
     }
 }
 
-function resetCommentSearch(event)
-{
-    console.log("reset search");
-    if(allProjectComments != null)
-    {
-        document.getElementById("activity-tab-div-comments").innerHTML = allProjectComments;
-        document.getElementById("searchcomments").value = "";
-    }
+function isClearSearchButtonVisible(isVisible) {
+    if (isVisible)
+        document.getElementById("resetCommentSearchButton").style.visibility = "visible";
+    else
+        document.getElementById("resetCommentSearchButton").style.visibility = "hidden";
 }
 
-function isUsernameSuggestionWanted(searchText)
-{
+function resetCommentSearch(event) {
+    console.log("reset search");
+    if (allProjectComments != null) {
+        document.getElementById("activity-comments-container").innerHTML = allProjectComments;
+        document.getElementById("searchcomments").value = "";
+    }
+    isClearSearchButtonVisible(false);
+}
+
+function isUsernameSuggestionWanted(searchText) {
     // check if user wants username suggestions
     posOfLastAt = searchText.lastIndexOf("@");
-    userWantsUsernameSuggestions = (posOfLastAt==0);
-    if (posOfLastAt > 0)
-    {
-        userWantsUsernameSuggestions = (searchText.charAt(posOfLastAt-1)==' ') &&
-                                        (searchText.substring(posOfLastAt).lastIndexOf(" ") == -1);
-    }    
+    userWantsUsernameSuggestions = (posOfLastAt == 0);
+    if (posOfLastAt > 0) {
+        userWantsUsernameSuggestions = (searchText.charAt(posOfLastAt - 1) == ' ') &&
+            (searchText.substring(posOfLastAt).lastIndexOf(" ") == -1);
+    }
     return userWantsUsernameSuggestions;
 }
 
-function autocompleteUsername(searchText, idOfInputHtml)
-{
-    if (isUsernameSuggestionWanted(searchText))
-    {
-        $.get( "/get_all_users")
-        .done(function(data) {
-            response_json = JSON.parse(data);
-            allUsers = response_json.users;
-            console.log("all users in db = " + allUsers);
-            autocomplete(document.getElementById(idOfInputHtml), allUsers);
-        });
-    } 
+function autocompleteUsername(searchText, idOfInputHtml) {
+    if (isUsernameSuggestionWanted(searchText)) {
+        $.get("/get_all_users")
+            .done(function(data) {
+                response_json = JSON.parse(data);
+                allUsers = response_json.users;
+                console.log("all users in db = " + allUsers);
+                autocomplete(document.getElementById(idOfInputHtml), allUsers);
+            });
+    }
 }
 
-function serviceCommentSearchQuery(event)
-{
+var focusIsOnSearch = false;
+
+function searchIfSearchIsActive() {
+    if (focusIsOnSearch) {
+        searchCommentboxText = $("#searchcomments").val();
+        filterDirectoryComments(searchCommentboxText);
+    }
+}
+
+function serviceCommentSearchQuery(event) {
     // monitor text in the search-comments box after every key-press event
     // if there's an @ symbol with whitespace or nothing before it, db-query all users and display suggestions
     // if user presses enter, filter directory comments using text in the searchbox, and show results
-    let keyPressedByUser = window.event.keyCode;
-    let searchCommentBoxId = "searchcomments";
-    let searchCommentboxText = $('#'+ searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
+    focusIsOnSearch = true; //global
+    keyPressedByUser = window.event.keyCode;
+    searchCommentBoxId = "searchcomments";
+    searchCommentboxText = $('#' + searchCommentBoxId).val(); //id of search-comments box = "searchcomments"
 
-    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+    if (keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
-    let commentsearchAutocompleteDivId = "searchcomments" + "autocomplete-list";
-    if (keyPressedByUser == 13) //enter
-    {
-        if(document.getElementById(commentsearchAutocompleteDivId)== null || 
-        document.getElementById(commentsearchAutocompleteDivId).getElementsByTagName("div").length == 0)
-        {
-            filterDirectoryComments(searchCommentboxText);
-        }
-    }
-    else if(keyPressedByUser == 27) //esc
-    {
-        if(document.getElementById(commentsearchAutocompleteDivId) != null)
-        {
-            if(document.getElementById(commentsearchAutocompleteDivId).innerHTML != "")
-                document.getElementById(commentsearchAutocompleteDivId).innerHTML = "";
-            else
+    commentsearchAutocompleteDivId = searchCommentBoxId + "autocomplete-list";
+    autocompleteDivExists = (document.getElementById(commentsearchAutocompleteDivId) != null);
+    autocompleteDivHasOptions = autocompleteDivExists ? (document.getElementById(commentsearchAutocompleteDivId).innerHTML != "") : false;
+
+    switch (keyPressedByUser) {
+        case 13: // enter
+            if (!autocompleteDivExists || !autocompleteDivHasOptions) {
+                filterDirectoryComments(searchCommentboxText);
+            }
+            break;
+        case 27: // escape
+            if (autocompleteDivExists) {
+                if (autocompleteDivHasOptions) {
+                    autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
+                    autocompleteDiv.innerHTML = "";
+                } else
+                    resetCommentSearch();
+            } else {
                 resetCommentSearch();
-        }
-        else
-        {
-            resetCommentSearch();
-        }
+            }
+            break;
+        default:
+            controlCharacterUpper = 31;
+            deleteAscii = 127;
+            if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
+                searchCommentboxText += String.fromCharCode(keyPressedByUser);
+                autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+            } else
+                autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+
+            filterDirectoryComments(searchCommentboxText);
+            break;
     }
-    else
-    {
-        controlCharacterUpper = 31;
-        deleteAscii = 127;
-        if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii))
-        {
-            searchCommentboxText += String.fromCharCode(keyPressedByUser);
-            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
-        }
-        else
-            autocompleteUsername(searchCommentboxText, searchCommentBoxId);
-    }
+
+    // if (keyPressedByUser == 13) //enter
+    // {
+    //     if (!autocompleteDivExists || !autocompleteDivHasOptions) {
+    //         filterDirectoryComments(searchCommentboxText);
+    //     }
+    // } else if (keyPressedByUser == 27) //esc
+    // {
+    //     if (autocompleteDivExists) {
+    //         if (autocompleteDivHasOptions) {
+    //             autocompleteDiv = document.getElementById(commentsearchAutocompleteDivId);
+    //             autocompleteDiv.innerHTML = "";
+    //         } else
+    //             resetCommentSearch();
+    //     } else {
+    //         resetCommentSearch();
+    //     }
+    // } else {
+    //     controlCharacterUpper = 31;
+    //     deleteAscii = 127;
+    //     if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
+    //         searchCommentboxText += String.fromCharCode(keyPressedByUser);
+    //         autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+    //     } else
+    //         autocompleteUsername(searchCommentboxText, searchCommentBoxId);
+
+    //     filterDirectoryComments(searchCommentboxText);
+    // }
 }
 
-function commentOnProject(event)
-{
+function commentOnProject(event) {
+    focusIsOnSearch = false; //global
     let keyPressedByUser = window.event.keyCode;
-    if(keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
+    if (keyPressedByUser == 38 || keyPressedByUser == 40) // up-down arrow keys
         return true;
 
     let commentAutocompleteDivId = "comment" + "autocomplete-list";
-    if(keyPressedByUser == 27) //esc key
+    if (keyPressedByUser == 27) //esc key
     {
-        if(document.getElementById(commentAutocompleteDivId) != null)
+        if (document.getElementById(commentAutocompleteDivId) != null)
             document.getElementById(commentAutocompleteDivId).innerHTML = "";
     }
 
-    if (keyPressedByUser != 13)
-    {
+    if (keyPressedByUser != 13) {
         commentboxText = $('#comment').val() + String.fromCharCode(keyPressedByUser);
         commentBoxId = "comment";
         autocompleteUsername(commentboxText, commentBoxId);
         return true;
     }
 
-    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId)== null);
-    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true:(document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
-    if(autocompleteDivNotPresent || noOptionsInAutocompleteDiv)
-    {
+    autocompleteDivNotPresent = (document.getElementById(commentAutocompleteDivId) == null);
+    noOptionsInAutocompleteDiv = autocompleteDivNotPresent ? true : (document.getElementById(commentAutocompleteDivId).getElementsByTagName("div").length == 0);
+    if (autocompleteDivNotPresent || noOptionsInAutocompleteDiv) {
         event.preventDefault();
-        if(!event.shiftKey)
-        {
+        if (!event.shiftKey) {
             sendComment(event);
             document.getElementById("comment").value = ""; //clear after sending
-        }
-        else
-        {
+        } else {
             document.getElementById("comment").value += "\n";
         }
     }
@@ -595,87 +799,93 @@ function autocomplete(inp, arr) {
     var currentFocusHere = -1;
     inp.addEventListener("input", function(e) {
         var a, b, i, searchText = this.value;
-        if(!isUsernameSuggestionWanted(searchText)) { return;}
+        if (!isUsernameSuggestionWanted(searchText)) { return; }
         posOfLastAt = searchText.lastIndexOf("@");
-        lookingFor = searchText.substring(posOfLastAt+1);
+        lookingFor = searchText.substring(posOfLastAt + 1);
         var val = lookingFor;
         closeAllLists();
-        if (!val) { return false;}
+        if (!val) { return false; }
         currentFocusHere = -1;
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
         a.setAttribute("class", "autocomplete-items");
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
-          if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-            b = document.createElement("DIV");
-            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-            b.innerHTML += arr[i].substr(val.length);
-            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-            b.addEventListener("click", function(e) {
-                newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
-                inp.value = newText;
-                closeAllLists();
-            });
-            a.appendChild(b);
-          }
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function(e) {
+                    newText = searchText.substring(0, posOfLastAt) + "@" + this.getElementsByTagName("input")[0].value;
+                    inp.value = newText;
+                    closeAllLists();
+
+                    searchIfSearchIsActive();
+                });
+                a.appendChild(b);
+            }
         }
     });
     inp.addEventListener("keydown", function(e) {
-      var x = document.getElementById(this.id + "autocomplete-list");
-      if (x) x = x.getElementsByTagName("div");
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
         if (e.keyCode == 40) {
-          currentFocusHere++;
-          addActive(x);
+            currentFocusHere++;
+            addActive(x);
         } else if (e.keyCode == 38) {
-          currentFocusHere--;
-          addActive(x);
+            currentFocusHere--;
+            addActive(x);
         } else if (e.keyCode == 13) {
-          e.preventDefault();
-          if (currentFocusHere > -1) {
-            if (x) x[currentFocusHere].click();
-          }
+            e.preventDefault();
+            if (currentFocusHere > -1) {
+                if (x) x[currentFocusHere].click();
+            }
         }
     });
+
     function addActive(x) {
-      if (!x) return false;
-      removeActive(x);
-      if (currentFocusHere >= x.length) currentFocusHere = 0;
-      if (currentFocusHere < 0) currentFocusHere = (x.length - 1);
-      x[currentFocusHere].classList.add("autocomplete-active");
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocusHere >= x.length) currentFocusHere = 0;
+        if (currentFocusHere < 0) currentFocusHere = (x.length - 1);
+        x[currentFocusHere].classList.add("autocomplete-active");
     }
+
     function removeActive(x) {
-      for (var i = 0; i < x.length; i++) {
-        x[i].classList.remove("autocomplete-active");
-      }
-    }
-    function closeAllLists(elmnt) {
-      var x = document.getElementsByClassName("autocomplete-items");
-      for (var i = 0; i < x.length; i++) {
-        if (elmnt != x[i] && elmnt != inp) {
-          x[i].parentNode.removeChild(x[i]);
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
         }
-      }
     }
-    document.addEventListener("click", function (e) {
+
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    document.addEventListener("click", function(e) {
         closeAllLists(e.target);
     });
-  }
-  function openDate() {
+}
+
+function openDate() {
     var x = document.getElementById("experation-date");
     var y = document.getElementById("permanet");
     var z = document.getElementById("role");
-    var i=  document.getElementById("button-for-date");
+    var i = document.getElementById("button-for-date");
     console.log("t");
-      if (x.style.display  === "none") {
-      x.style.display = "block";
-      y.style.display = "none";
-      z.style.width ="103%";
-      i.style.left= "35px";
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+        z.style.width = "103%";
+        i.style.left = "35px";
     } else {
-      x.style.display = "none";
-      y.style.display = "block";
-      z.style.width ="49%";
-      i.style.left= "";
+        x.style.display = "none";
+        y.style.display = "block";
+        z.style.width = "49%";
+        i.style.left = "";
     }
-  } 
+}

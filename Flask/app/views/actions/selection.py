@@ -39,8 +39,8 @@ def set_color_multi():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -54,8 +54,8 @@ def copy_multi():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -188,8 +188,8 @@ def move_multi():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_trash_ic_multi', methods=['POST'])
@@ -225,8 +225,8 @@ def get_trash_ic_multi():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_restore_ic_multi', methods=['POST'])
@@ -262,8 +262,8 @@ def get_restore_ic_multi():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_delete_ic_multi', methods=['POST'])
@@ -299,8 +299,8 @@ def get_delete_ic_multi():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -313,8 +313,8 @@ def share_multi():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -325,12 +325,14 @@ def get_ic_multi(json_obj):
         request_data = json.loads(json_obj)
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
         if db.connect(db_adapter):
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
             project = Project.json_to_obj(response)
             path = os.getcwd() + '\\'
             millis = int(round(time.time() * 1000))
+
             try:
                 if not os.path.exists(path + 'tmp\\'):
                     os.mkdir(path + 'tmp\\')
@@ -341,13 +343,14 @@ def get_ic_multi(json_obj):
             except OSError as err:
                 print("Creation of the directory %s failed" % path + '\n' + err)
                 logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
+
             for req in request_data:
                 project.current_ic = None
                 project.added = False
                 ic = project.find_ic(req, req['ic_name'], project.root_ic)
                 if ic:
                     path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\BOHM_download\\'
-                    dirs.json_to_temp_folder_struct(path, ic)
+                    dirs.json_to_temp_folder_struct(path, ic, response)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/BOHM_download.zip', 'w', zipfile.ZIP_DEFLATED)
             # zip_buffer.seek(0)
@@ -366,6 +369,6 @@ def get_ic_multi(json_obj):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

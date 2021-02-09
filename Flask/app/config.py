@@ -12,7 +12,9 @@ class Basic:
     DB = DBMongoAdapter()
 
     SECRET_KEY = "key"
+
     DEBUG = False
+    # SESSION_TYPE = 'filesystem'
 
     LOG_LEVEL = 10
     LOG_FILE = 'app/logs/bohm.log'

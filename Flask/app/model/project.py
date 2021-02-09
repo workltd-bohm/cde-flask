@@ -1,7 +1,7 @@
 from .details import Details
 from .comment import Comments
 from .role import Role
-from .tag import Tags
+from app.model.tag import Tags, SimpleTag, ISO19650
 from .access import Access
 from .directory import Directory
 from .site import Site
@@ -9,6 +9,9 @@ from .building import Building
 from .file import File
 import app.model.messages as msg
 from datetime import datetime
+import re
+from app.model.helper import get_defined_colors
+import time
 
 
 class Project:
@@ -21,8 +24,14 @@ class Project:
         self._code = ''
         self._number = ''
         self._status = ''
-        self._site = Site('', '', '', '', '')
+        self._notes = ''
+        self._ref = ''
+        self._originator = ''
+        self._disclaimer = ''
+        self._custom = ''
+        self._site = Site('', '', '', '', '', '')
         self._building = Building('', '')
+        self._is_iso19650 = False
         self._added = False
         self._deleted = False
         self._message = ""
@@ -101,6 +110,46 @@ class Project:
         self._status = value
 
     @property
+    def notes(self):
+        return self._notes
+
+    @notes.setter
+    def notes(self, value):
+        self._notes = value
+
+    @property
+    def ref(self):
+        return self._ref
+
+    @ref.setter
+    def ref(self, value):
+        self._ref = value
+
+    @property
+    def originator(self):
+        return self._originator
+
+    @originator.setter
+    def originator(self, value):
+        self._originator = value
+
+    @property
+    def disclaimer(self):
+        return self._disclaimer
+
+    @disclaimer.setter
+    def disclaimer(self, value):
+        self._disclaimer = value
+
+    @property
+    def custom(self):
+        return self._custom
+
+    @custom.setter
+    def custom(self, value):
+        self._custom = value
+
+    @property
     def site(self):
         return self._site
 
@@ -116,10 +165,18 @@ class Project:
     def building(self, value):
         self._building = value
 
+    @property
+    def is_iso19650(self):
+        return self._is_iso19650
+
+    @is_iso19650.setter
+    def is_iso19650(self, value):
+        self._is_iso19650 = value
+
     def update_file(self, file, ic=None):
         if not ic:
             ic = self._root_ic
-        if not ic.is_directory:
+        if ic.is_directory:
             for x in ic.sub_folders:
                 self.update_file(file, x)
                 if self._added:
@@ -127,7 +184,7 @@ class Project:
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
-                # print(ic.to_json())
+                print("ovdeeeeeee", ic.to_json())
                 self._added = True
 
         return self, self._added
@@ -151,11 +208,14 @@ class Project:
     def rename_ic(self, request_data, user, ic=None):
         if request_data['parent_id'] == 'root':
             ic.name = request_data['new_name']
-            details = Details(user, 'Renamed',
+            details = Details(user, 'Renamed project',
                                 datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                 request_data['old_name'] + ' to ' + request_data['new_name'])
-            ic.history.append(details)                        
-            ic.path = '/' + request_data['new_name']
+            ic.history.append(details)
+            self.rename_children(ic, request_data['new_name'])                        
+            ic.path = request_data['new_name']
+            ic.parent = '.'
+            self._added = True
             return msg.IC_SUCCESSFULLY_RENAMED
         if ic.ic_id == request_data['parent_id']:
             for sub_folder in ic.sub_folders:
@@ -176,9 +236,10 @@ class Project:
                                       datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                       name + ' to ' + new_name_backup)
                     sub_folder.history.append(details)
-                    sub_folder.name = new_name                        
+                    sub_folder.name = new_name
+                    self.rename_children(sub_folder, parent + '/' + request_data['new_name'])                        
                     sub_folder.path = parent + '/' + request_data['new_name']
-                    # ic.parent = parent # no need?
+                    sub_folder.parent = parent # no need?
                     self._message = msg.IC_SUCCESSFULLY_RENAMED
                     self._added = True
                     break
@@ -191,6 +252,13 @@ class Project:
         if not self._added:
             self._message = msg.IC_PATH_NOT_FOUND
         return self._message
+
+    def rename_children(self, parent, new_parent_path):
+        for child in parent.sub_folders:
+            old_parent_path = '/'.join(child.path.split('/')[:-1])
+            child.path = re.sub( old_parent_path, new_parent_path, child.path)
+            child.parent = new_parent_path
+            self.rename_children(child, child.path)
 
     def trash_ic(self, request_data, ic=None):
         if ic.ic_id == request_data['parent_id']:
@@ -247,6 +315,13 @@ class Project:
                     self._ic = sub_f
             if not already_exists:
                 # ic_new.parent_id = ic.ic_id
+                for o in ic.access:
+                    access_already_in = False
+                    for a in ic_new.access:
+                        if o.user['user_id'] == a.user['user_id']:
+                            access_already_in = True
+                    if not access_already_in:
+                        ic_new.access.append(o)
                 ic.sub_folders.append(ic_new)
                 self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True
@@ -272,6 +347,13 @@ class Project:
                     break
             if not already_exists:
                 # ic_new.parent_id = ic.ic_id
+                for o in ic.access:
+                    access_already_in = False
+                    for a in ic_new.access:
+                        if o.user['user_id'] == a.user['user_id']:
+                            access_already_in = True
+                    if not access_already_in:
+                        ic_new.access.append(o)
                 ic.sub_folders.append(ic_new)
                 self._message = msg.IC_SUCCESSFULLY_ADDED
                 self._added = True
@@ -354,44 +436,61 @@ class Project:
         if request['parent_id'] == 'root':
             for i in range(1, len(tags)):
                 if tags[i].startswith('#'):
-                    t = Tags(tags[i])
-                    if i < len(tags)-1:
+                    this_tag = SimpleTag(tags[i], request['iso'])
+
+                    if i < (len(tags) - 1):
                         if not tags[i + 1].startswith('#'):
-                            t.color = tags[i+1]
+                            colors = get_defined_colors()
+                            if tags[i+1] in colors:
+                                this_tag.color = tags[i+1]
+                            else:
+                                this_tag.color = 'white'
                             i = i+1
-                    already_in = False
+
+                    tag_already_exists = False
                     for ic_tags in ic.tags:
-                        if ic_tags.tag == t.tag and ic_tags.color == t.color:
-                            already_in = True
-                    if not already_in:
-                        ic.tags.append(t)
-            return msg.TAG_SUCCESSFULLY_ADDED
+                        if ic_tags.tag == this_tag.tag:
+                            tag_already_exists = True
+                        
+                    if not tag_already_exists:
+                        ic.tags.append(this_tag)
+                        return msg.TAG_SUCCESSFULLY_ADDED                        
+
         if ic.ic_id == request['parent_id']:
             for sub_f in ic.sub_folders:
                 if sub_f.ic_id == request['ic_id']:
                     for i in range(1, len(tags)):
                         if tags[i].startswith('#'):
-                            t = Tags(tags[i])
+                            this_tag = SimpleTag(tags[i], request['iso'])
+
                             if i < len(tags)-1:
                                 if not tags[i + 1].startswith('#'):
-                                    t.color = tags[i + 1]
+                                    colors = get_defined_colors()
+                                    if tags[i+1] in colors:
+                                        this_tag.color = tags[i+1]
+                                    else:
+                                        this_tag.color = 'white'
                                     i = i + 1
-                            already_in = False
+
+                            tag_already_exists = False
                             for ic_tags in sub_f.tags:
-                                if ic_tags.tag == t.tag and ic_tags.color == t.color:
-                                    already_in = True
-                            if not already_in:
-                                sub_f.tags.append(t)
-                    self._message = msg.TAG_SUCCESSFULLY_ADDED
-                    self._added = True
+                                if ic_tags.tag == this_tag.tag:
+                                    tag_already_exists = True
+                                
+                            if not tag_already_exists:
+                                sub_f.tags.append(this_tag)
+                                self._message = msg.TAG_SUCCESSFULLY_ADDED
+                                self._added = True               
                     break
         else:
             for x in ic.sub_folders:
                 self.add_tag(request, tags, x)
                 if self._added:
                     break
+
         if not self._added:
-            self._message = msg.IC_PATH_NOT_FOUND
+            self._message = msg.TAG_ALREADY_EXISTS
+            
         return self._message
 
     def remove_tag(self, request, tag, ic=None):
@@ -421,19 +520,22 @@ class Project:
         return self._message
 
     def add_access(self, request, user, ic=None):
+        # grants access to an ic
         if ic.ic_id == request['ic_id']:
             already_in = False
             for access in ic.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     already_in = True
                     break
             if not already_in:
                 u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
                 role = getattr(Role, request['role']).value
-                a = Access(u, '', '', role)
+                a = Access(u, '', '', role, request['exp_date'])
                 ic.access.append(a)
-            self.add_access_to_ic(request, user, ic)
-            self._message = msg.ACCESS_SUCCESSFULLY_ADDED
+                self.add_access_to_ic(request, user, ic)
+                self._message = msg.ACCESS_SUCCESSFULLY_ADDED
+            else:
+                self._message = msg.ACCESS_NOT_SUCCESSFULLY_ADDED
             self._added = True
         else:
             for x in ic.sub_folders:
@@ -445,23 +547,58 @@ class Project:
         return self._message
 
     def add_access_to_ic(self, request, user, ic=None):
+        # grants access to descendant folders/ics
         for sub_f in ic.sub_folders:
             already_in = False
             for access in sub_f.access:
-                if user['id'] in access.to_json()['user']['user_id']:
+                if user['id'] == access.to_json()['user']['user_id']:
                     already_in = True
                     break
             if not already_in:
                 u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
                 role = getattr(Role, request['role']).value
-                a = Access(u, '', '', role)
+                a = Access(u, '', '', role, request['exp_date'])
                 sub_f.access.append(a)
             self.add_access_to_ic(request, user, sub_f)
+
+    def update_access(self, request, user, ic=None):
+        if ic.ic_id == request['ic_id']:
+            for access in ic.access:
+                if user['id'] == access.to_json()['user']['user_id']:
+                    if request['new_role'] != '':
+                        role = getattr(Role, request['new_role']).value
+                        access.role = role
+                    if request['exp_date'] != '':
+                        access.exp_date = request['exp_date']
+                    break
+            self.update_access_to_ic(request, user, ic)
+            self._message = msg.ACCESS_SUCCESSFULLY_UPDATED
+            self._added = True
+        else:
+            for x in ic.sub_folders:
+                self.update_access(request, user, x)
+                if self._added:
+                    break
+        if not self._added:
+            self._message = msg.IC_PATH_NOT_FOUND
+        return self._message
+
+    def update_access_to_ic(self, request, user, ic=None):
+        for sub_f in ic.sub_folders:
+            for access in sub_f.access:
+                if user['id'] == access.to_json()['user']['user_id']:
+                    if request['new_role'] != '':
+                        role = getattr(Role, request['new_role']).value
+                        access.role = role
+                    if request['exp_date'] != '':
+                        access.exp_date = request['exp_date']
+                    break
+            self.update_access_to_ic(request, user, sub_f)
 
     def remove_access(self, request, ic=None):
         if ic.ic_id == request['ic_id']:
             for access in ic.access:
-                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                if request['user']['user_id'] == access.to_json()['user']['user_id']:
                     ic.access.remove(access)
                     break
             self.remove_access_from_ic(request, ic)
@@ -479,23 +616,35 @@ class Project:
     def remove_access_from_ic(self, request, ic=None):
         for sub_f in ic.sub_folders:
             for access in sub_f.access:
-                if request['user']['user_id'] in access.to_json()['user']['user_id']:
+                if request['user']['user_id'] == access.to_json()['user']['user_id']:
                     sub_f.access.remove(access)
                     break
             self.remove_access_from_ic(request, sub_f)
 
 
-    def set_access_for_all_ics(self, user, role, ic=None):
+    def set_access_for_all_ics(self, request, user, role, ic=None):
         already_in = False
         for access in ic.access:
             if user['id'] in access.to_json():
                 already_in = True
         if not already_in:
             u = {'user_id': user['id'], 'username': user['username'], 'picture': user['picture']}
-            a = Access(u, '', '', role)
+            a = Access(u, '', '', role, request['exp_date'])
             ic.access.append(a)
         for x in ic.sub_folders:
-            self.set_access_for_all_ics(user, role, x)
+            self.set_access_for_all_ics(request, user, role, x)
+
+    
+    def update_access_for_all_ics(self, user, role, exp_date, ic=None):
+        for access in ic.access:
+            if user['id'] == access.to_json()['user']['user_id']:
+                if role != '':
+                    access.role = role
+                if exp_date != '':
+                    access.exp_date = exp_date
+                break
+        for x in ic.sub_folders:
+            self.update_access_for_all_ics(user, role, exp_date, x)
 
 
     def remove_access_for_all_ics(self, user, role, ic=None):
@@ -522,11 +671,23 @@ class Project:
             'number': self._number,
             'status': self._status,
             'site': self._site.to_json(),
-            'building': self._building.to_json()
+            'building': self._building.to_json(),
+            'is_iso19650': self._is_iso19650,
+            'notes': self._notes,
+            'ref': self._ref,
+            'originator': self._originator,
+            'disclaimer': self._disclaimer,
+            'custom': self._custom
         }
 
     @staticmethod
     def json_folders_to_obj(json_file):
+        tags = []
+        for tag in json_file['tags']:
+            if tag['iso'] == 'ISO19650':
+                tags.append(ISO19650.json_to_obj(tag))
+            else:
+                tags.append(Tags.json_to_obj(tag))
         if json_file['is_directory']:
             root = Directory(json_file['ic_id'],
                              json_file['name'],
@@ -536,7 +697,7 @@ class Project:
                              json_file['parent_id'],
                              json_file['color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
-                             [Tags.json_to_obj(x) for x in json_file['tags']],
+                             tags,
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                              [Access.json_to_obj(x) for x in json_file['access']])
         else:
@@ -550,7 +711,7 @@ class Project:
                         json_file['parent_id'],
                         json_file['color'],
                         [Comments.json_to_obj(x) for x in json_file['comments']],
-                        [Tags.json_to_obj(x) for x in json_file['tags']],
+                        tags,
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
                         [Access.json_to_obj(x) for x in json_file['access']],
                         json_file['stored_id'],
@@ -576,6 +737,12 @@ class Project:
         project.status = json_file['status']
         project.site = Site.json_to_obj(json_file['site'])
         project.building = Building.json_to_obj(json_file['building'])
+        project.is_iso19650 = json_file['is_iso19650']
+        project.notes = json_file['notes']
+        project.ref = json_file['ref']
+        project.originator = json_file['originator']
+        project.disclaimer = json_file['disclaimer']
+        project.custom = json_file['custom']
         return project
 
     def extract_files(self, ic, files):
@@ -609,14 +776,33 @@ class Project:
             self.search_by_name(name, x, new_ic_array)
 
     def filter_by_access(self, user, ic):
-        for x in ic.sub_folders:
+        sub_folders = ic.sub_folders[:]
+        for x in sub_folders:
             already_in = False
             for access in x.access:
                 if user['id'] in access.to_json()['user']['user_id']:
-                    already_in = True
+                    #"exp_date": "2021-04-10T12:10"
+                    date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+                    if access.exp_date != 'indefinitely':
+                        date_time_obj = datetime.strptime(access.exp_date, "%Y-%m-%dT%H:%M")
+                    if date_time_obj > datetime.now():
+                        already_in = True
+
                     break
             self.filter_by_access(user, x)
             if not already_in:
                 ic.sub_folders.remove(x)
         return self
+
+    @staticmethod
+    def project_access(user, root_ic):
+        for access in root_ic['access']:
+            if user['id'] in access['user']['user_id']:
+                date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+                if access['exp_date'] != 'indefinitely':
+                    date_time_obj = datetime.strptime(access['exp_date'], "%Y-%m-%dT%H:%M")
+                if date_time_obj > datetime.now():
+                    return True
+        return False
+
 

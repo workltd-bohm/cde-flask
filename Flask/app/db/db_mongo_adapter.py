@@ -1,4 +1,5 @@
 from pymongo import *
+# from pymongo import DeleteMany
 import gridfs
 from pymongo.errors import ConnectionFailure
 import uuid
@@ -7,8 +8,9 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
-from app.model.tag import Tags
+from app.model.tag import SimpleTag, ISO19650
 import app.model.messages as msg
+from app.model.helper import get_iso_tags
 import json
 from datetime import datetime
 
@@ -44,7 +46,7 @@ class DBMongoAdapter:
                 # user.confirmed = result['confirmed']
                 user = result
                 message = msg.LOGGED_IN
-        self._close_connection()
+        # self._close_connection()
         return message, user
 
     def get_all_users(self):
@@ -97,6 +99,19 @@ class DBMongoAdapter:
 
         self._close_connection()
         return message, str(stored_id)
+
+    def delete_profile_image(self, image_id):
+        message = msg.IC_PATH_NOT_FOUND
+        if image_id == '':
+            image_exists = False
+        else:
+            image_exists = (self._db.fs.files.find_one({"_id":ObjectId(image_id)}) != None)
+        if image_exists:
+            self._db.fs.files.delete_one({"_id":ObjectId(image_id)})
+            self._db.fs.chunks.delete_many({"files_id":ObjectId(image_id)})
+            message = msg.IC_SUCCESSFULLY_REMOVED
+        self._close_connection()
+        return message
 
     def confirm_account(self, user):
         col = self._db.Users
@@ -246,27 +261,26 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
+        col_chunks = self._db.fs.chunks
         project_query = {'project_name': project_name}
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
             if file:
-                # file_obj.stored_id = str(col_file.insert_one({"file_id": "default",
-                #                                             "file_name": file_obj.name+file_obj.type,
-                #                                             "file": file,
-                #                                             "description": file_obj.description})
-                #                         .inserted_id)
+                r = col_chunks.delete_many({"files_id": ObjectId(file_obj.stored_id)})
+                r = col_file.remove({'file_id': file_obj.stored_id})
                 file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
                                                         file_name=file_obj.name+file_obj.type, 
+                                                        ic_id=file_obj.ic_id,
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
-                                                        description=file_obj.description,
+                                                        description='file_obj.description',
                                                         from_project=True
                                                         ))
                 col_file.update_one({'file_id': 'default'},
                                     {'$set': {'file_id': str(file_obj.stored_id)}})
-                project.update_file(file_obj) # TODO: NOT OK, also needs old chunk delete inside
+                project.update_file(file_obj)
             else:
                 file_query = {'_id': ObjectId(file_obj.stored_id), 'file_name': file_obj.name+file_obj.type} 
                 # print(file_query)
@@ -286,7 +300,7 @@ class DBMongoAdapter:
             col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
         self._close_connection()
-        return msg.DEFAULT_OK
+        return msg.FILE_SUCCESSFULLY_UPDATED
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
@@ -302,7 +316,8 @@ class DBMongoAdapter:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
                                                         file_id='default',
-                                                        file_name=file_obj.name+file_obj.type, 
+                                                        file_name=file_obj.name+file_obj.type,
+                                                        ic_id=file_obj.ic_id, 
                                                         parent=file_obj.parent,
                                                         parent_id=file_obj.parent_id,
                                                         description=file_obj.description,
@@ -325,11 +340,12 @@ class DBMongoAdapter:
                         # # print("STORED", file_obj.parent, file_obj.parent_id, file_json)
                         # file_obj.stored_id = str(col_file.insert_one(file_json)
                         #                 .inserted_id)
-                        file = self.get_file(file_json["file_name"])
+                        file = self.get_file({'file_name': file_json["file_name"]})
                         if file:
                             file_obj.stored_id = str(self._fs.put(file,
                                                             file_id='default',
-                                                            file_name=file_obj.name+file_obj.type, 
+                                                            file_name=file_obj.name+file_obj.type,
+                                                            ic_id=file_obj.ic_id, 
                                                             parent=file_obj.parent,
                                                             parent_id=file_obj.parent_id,
                                                             description=file_obj.description,
@@ -420,97 +436,133 @@ class DBMongoAdapter:
         # database tables
         users =         self._db.Users.Roles
         projects =      self._db.Projects
-        trash =         self._db.Trash          # trashed items
-        users_trash =   self._db.Users.Trash    # user trash info
-        files =         self._db.fs.files
-        file_chunks =   self._db.fs.chunks
+        trash =         self._db.Trash              # trashed items
+        users_trash =   self._db.Users.Trash        # user's trash info
+        shared =        self._db.Projects.Shared
 
-        project_query = {'project_name': ic_data['project_name']}
-        project_json = projects.find_one(project_query, {'_id': 0}) # get project from DB
+        if ic_data['project_name'] != 'Shared':
+            project_query = {'project_name': ic_data['project_name']}
+        else:
+            project_query = {'project_id': ic_data['project_id']}
 
-        # check if user has privileges TODO 
+        project_json = projects.find_one(project_query, {'_id': 0})
 
         if project_json:
             # Trashing projects
             if ic_data['parent_id'] == 'root':
+                # Check user rights => if you want jsut owner, you can put != Role.OWNER.value, etc.
+                this_user = users.find_one({'user_id': ic_data['user_id']}, {'_id': 0})
+                if this_user:
+                    for obj in this_user['projects']:
+                        if obj['project_id'] == project_json['project_id']:
+                            if obj['role'] > Role.ADMIN.value:
+                                return msg.USER_NO_RIGHTS                        
+                else:
+                    return msg.USER_NOT_FOUND
+
                 # 'move' project to Trash
                 trash.insert_one(project_json)
                 projects.delete_one(project_query)
+
+                # update user's info (projects & trash)
                 all_users = users.find()
                 if all_users:
-                    # iterate thru users in Users.Roles
                     for user in all_users:
-                        # iterate through their projects
                         for count, user_project in enumerate(user['projects']):
-                            # if its the one deleting
-                            if user_project['project_id'] == project_json['project_id']:
-                                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
-                                # if this user has any trash
+                            # skip irrelevant projects
+                            if user_project['project_id'] != project_json['project_id']:
+                                continue
+                            
+                            # update owners's trash
+                            if user_project['role'] == Role.OWNER.value:
                                 new_trash = {
                                     'type': 'project',
-                                    'project_id': user['projects'][count]['project_id'],
+                                    'project_id': user_project['project_id'],
                                     'project_name': ic_data['project_name']
                                 }
 
+                                my_trash = users_trash.find_one({'user_id': user['user_id']}, {'_id':0})
+
                                 if my_trash:
                                     my_trash['trash'].append(new_trash)
-                                    users_trash.update_one({'user_id': ic_data['user_id']},
-                                                            {'$set': 
-                                                                {'trash': my_trash['trash']}
-                                                            }
-                                                        )
+                                    users_trash.update_one({'user_id': user['user_id']}, 
+                                        {'$set': {'trash': my_trash['trash']}})
                                 else:
                                     trash_tmp = []
                                     trash_tmp.append(new_trash)
-                                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
+                                    users_trash.insert_one({'user_id': user['user_id'], 'trash': trash_tmp})
                                     del trash_tmp
-                                # update user's projects
-                                del user['projects'][count]
-                                users.update_one({'user_id': ic_data['user_id']},
-                                                {'$set': 
-                                                    {'projects': user['projects']}
-                                                }
-                                            )
-                                            
+
                                 delete = msg.PROJECT_SUCCESSFULLY_TRASHED
+
+                            # update user's projects
+                            del user['projects'][count]
+                            users.update_one({'user_id': user['user_id']}, 
+                                {'$set': {'projects': user['projects']}})                                        
                 
             # Trashing ic/sub folders or files
             else:
-                project = Project.json_to_obj(project_json)
                 # find the ic in project ...
-                this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
                 # ... add project_id to it
-                this_ic['project_id'] = project.project_id
                 # put this IC to Trash collection
+
+                # check trash privileges
+                all_shared = shared.find()
+                for shared_ic in all_shared:
+                    if ic_data['user_id'] in shared_ic.keys():
+                        for obj in shared_ic[ic_data['user_id']]:
+                            if obj['ic_id'] == ic_data['ic_id']:
+                                if obj['role'] > Role.ADMIN.value:
+                                    return msg.USER_NO_RIGHTS
+
+                project = Project.json_to_obj(project_json)
+                this_ic = project.find_ic_by_id(ic_data, ic_data['ic_id'], project.root_ic).to_json()
+                this_ic['project_id'] = project.project_id
                 trash.insert_one(this_ic)
                 
-                # update user's trash
-                new_trash = {
-                        'type': 'ic',
-                        'project_id': this_ic['project_id'],
-                        'ic_id': ic_data['ic_id']
-                    }
-                
-                # if this user has trash already or to make new entry
-                my_trash = users_trash.find_one({'user_id': ic_data['user_id']}, {'_id':0})
-                if my_trash:
-                    my_trash['trash'].append(new_trash)
-                    users_trash.update_one({'user_id': ic_data['user_id']},
-                                            {'$set': 
-                                                {'trash': my_trash['trash']}
-                                            }
-                                        )
-                else:
-                    trash_tmp = []
-                    trash_tmp.append(new_trash)
-                    users_trash.insert_one({'user_id': ic_data['user_id'], 'trash': trash_tmp})
-                    del trash_tmp
-
                 # delete ic/update from the project
                 delete = project.trash_ic(ic_data, project.root_ic)
 
                 # update project
                 projects.update_one({'project_id': this_ic['project_id']}, {'$set': project.to_json()})
+
+                roles = self._db.Roles
+                owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
+                
+                print('\n\n\n\n owner id: \n\n\n', owner_id)
+                
+                # update user's shared projects
+                if len(list(shared.find())):
+                    this_user_shared = shared.find()[0]
+                    for key in this_user_shared.keys():
+                        if key == '_id':
+                            continue
+
+                        for i, obj in enumerate(this_user_shared[key]):
+                            if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                                del this_user_shared[key][i]
+
+                    shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
+
+                # update owner's trash
+                if owner_id:
+                    new_trash = {
+                        'type': 'ic',
+                        'project_id': this_ic['project_id'],
+                        'ic_id': ic_data['ic_id']
+                    }
+                    
+                    my_trash = users_trash.find_one({'user_id': owner_id}, {'_id':0})
+                    if my_trash:
+                        my_trash['trash'].append(new_trash)
+                        users_trash.update_one({'user_id': owner_id}, {'$set': {'trash': my_trash['trash']}})
+                    else:
+                        trash_tmp = []
+                        trash_tmp.append(new_trash)
+                        users_trash.insert_one({'user_id': owner_id, 'trash': trash_tmp})
+                        del trash_tmp                    
+                    
+                    delete = msg.IC_SUCCESSFULLY_TRASHED
         else:
             print("trash_ic", msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
@@ -626,8 +678,8 @@ class DBMongoAdapter:
             response = msg.PROJECT_NOT_FOUND
         else:
             delete_query = {
-                'project_id': delete_ic_data['project_id'], 
-                'ic_id': delete_ic_data['ic_id']
+                'project_id':   delete_ic_data['project_id'], 
+                'ic_id':        delete_ic_data['ic_id']
             }
             response = msg.STORED_FILE_NOT_FOUND
 
@@ -710,9 +762,10 @@ class DBMongoAdapter:
             users_trash.find_one_and_delete(user_query)
         return
 
-    def get_file(self, file_name):
+    def get_file(self, request):
         stored_file = None
-        for grid_out in self._fs.find({"file_name": file_name}, no_cursor_timeout=True):
+        print('get_file', request)
+        for grid_out in self._fs.find(request, no_cursor_timeout=True):
             stored_file = grid_out
         self._close_connection()
         return stored_file
@@ -752,6 +805,33 @@ class DBMongoAdapter:
             stored_file = grid_out
         self._close_connection()
         return stored_file
+
+    def get_file_size(self, stored_id, asstr):
+        Files = self._db.fs.files
+        file_query = {"file_id": stored_id}
+        file_json = Files.find_one(file_query, {"_id": 0})
+        if not file_json: return msg.STORED_FILE_NOT_FOUND
+        size = int(file_json['length'])
+        unit = 0
+        while len(str(size).split('.')[0]) > 3:
+            size = round(size / 1024, 2)
+            unit += 1
+
+        if unit == 0:
+            unit = 'B'
+        elif unit == 1:
+            unit = 'KB'
+        elif unit == 2:
+            unit = 'MB'
+        elif unit == 3:
+            unit = 'GB'
+            
+        if asstr:
+            try:
+                size = str(size) + ' ' + unit
+            except:
+                size = str(size) + ' ' + str(unit)
+        return size
 
     def change_color(self, file_obj):
         col = self._db.Projects
@@ -988,7 +1068,9 @@ class DBMongoAdapter:
         self._close_connection()
         return res
 
+    # TODO failsafe, case insensitive *to lower*
     def share_project(self, request_data, user):
+        # print('\n\n\n', request_data)
         col_users = self._db.Users.Roles
         col = self._db.Users
         user_query = {'user_id': user['id']}
@@ -1005,8 +1087,8 @@ class DBMongoAdapter:
                     break
         if no_rights:
             return msg.USER_NO_RIGHTS
-        # TODO: check does user has the rights to share
-        user_query = {'username': request_data['user_name']}
+
+        user_query = {'username': request_data['user_name'].strip()}
         new_user = col.find_one(user_query, {'_id': 0})
         if new_user:
             user_id = new_user['id']
@@ -1016,15 +1098,73 @@ class DBMongoAdapter:
                 request_data['role'] = 'ADMIN'
             role = getattr(Role, request_data['role']).value
             u['projects'].append({'project_id': request_data['project_id'],
-                                  'role': role})
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             print('+-+-', u)
             col_users.update_one(user_query,
                                  {'$set': u})
             p = self.get_my_project(request_data['project_id'])
             project = Project.json_to_obj(p)
-            project.set_access_for_all_ics(new_user, role, project.root_ic)
+            project.set_access_for_all_ics(request_data, new_user, role, project.root_ic)
             self.update_project(project, new_user)
             message = msg.SUCCESSFULLY_SHARED
+
+        else:
+            message = msg.USER_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def update_share_project(self, request_data, user):
+        # print('\n\n\n', request_data)
+        col_users = self._db.Users.Roles
+        col = self._db.Users
+        user_query = {'user_id': user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        if u:
+            if 'project_id' not in request_data:
+                project_json = self.get_project(request_data['project_name'], user)
+                request_data['project_id'] = project_json['project_id']
+            for pr in u['projects']:
+                if request_data['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+
+        user_query = {'id': request_data['user']['user_id']}
+        new_user = col.find_one(user_query, {'_id': 0})
+        if new_user:
+            user_id = new_user['id']
+            user_query = {'user_id': user_id}
+            u = col_users.find_one(user_query, {'_id': 0})
+            new_role = ''
+            exp_date = ''
+            for pu in u['projects']:
+                if pu['project_id'] == project_json['project_id']:
+                    new_role = pu['role']
+                    exp_date = pu['exp_date']
+            if request_data['new_role'] != '':
+                new_role = getattr(Role, request_data['new_role']).value
+            if request_data['exp_date'] != '':
+                exp_date = request_data['exp_date']
+            for proj in u['projects']:
+                if proj['project_id'] == request_data['project_id']:
+                    proj['role'] = new_role
+
+            for pu in u['projects']:
+                if pu['project_id'] == project_json['project_id']:
+                    pu.update({'project_id': project_json['project_id'],
+                                  'role': new_role,
+                                  'exp_date': exp_date})
+            col_users.update_one(user_query,
+                                 {'$set': u})
+            p = self.get_my_project(request_data['project_id'])
+            project = Project.json_to_obj(p)
+            project.update_access_for_all_ics(new_user, new_role, exp_date, project.root_ic)
+            self.update_project(project, new_user)
+            message = msg.SUCCESSFULLY_UPDATED
 
         else:
             message = msg.USER_NOT_FOUND
@@ -1065,8 +1205,13 @@ class DBMongoAdapter:
             u = col_users.find_one(user_query, {'_id': 0})
             role = getattr(Role, request_data['role']).value
             print('******', u)
+            print('project_id', project_json['project_id'])
+            print('******', {'project_id': project_json['project_id'],
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             u['projects'].remove({'project_id': project_json['project_id'],
-                                  'role': role})
+                                  'role': role,
+                                  'exp_date': request_data['exp_date']})
             print('+-+-', u)
             col_users.update_one(user_query,
                                  {'$set': u})
@@ -1154,7 +1299,7 @@ class DBMongoAdapter:
 
             # update
             ic_new.comments = comments
-            project.update_ic(ic_new, ic)
+            # project.update_ic(ic_new, ic)
             projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
             message = msg.COMMENT_SUCCESSFULLY_UPDATED
@@ -1195,7 +1340,9 @@ class DBMongoAdapter:
             return self.delete_post_comment(request_data)
 
         # find project
-        projects = self._db.Projects
+        projects =  self._db.Projects
+        users =     self._db.Users.Roles
+
         project_query = {'project_name': request_data['project_name']}
         project_json = projects.find_one(project_query, {'_id': 0})
 
@@ -1206,11 +1353,17 @@ class DBMongoAdapter:
             ic_new = ic
             comments = ic_new.comments
 
+            user = users.find_one({'user_id': request_data['user_id']}, {'_id': 0})
+            for proj in user['projects']:
+                if proj['project_id'] == project_json['project_id']:
+                    role = proj['role']
+
             # delete comment
             for i, comment in enumerate(comments):
                 if comment.id == request_data['comment_id']:
                     # security check
-                    if comment.user['user_id'] != request_data['user_id']:
+                    if comment.user['user_id'] != request_data['user_id'] \
+                    and role != 0:
                         self._close_connection
                         return msg.USER_NO_RIGHTS
 
@@ -1219,7 +1372,7 @@ class DBMongoAdapter:
                 
             # update comments, then project
             ic_new.comments = comments
-            project.update_ic(ic_new, ic)
+            # project.update_ic(ic_new, ic)
             projects.update_one({'project_name': project.name}, {'$set': project.to_json()})
             message = msg.COMMENT_SUCCESSFULLY_DELETED
         else:
@@ -1254,10 +1407,15 @@ class DBMongoAdapter:
         if 'post_id' in request_data.keys():
             return self.add_tag_to_post(request_data)
 
+        if 'project_name' not in request_data.keys():
+            return msg.DEFAULT_ERROR
+
         col = self._db.Projects
         col_tags = self._db.Tags
+
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+
         if project_json:
             project = Project.json_to_obj(project_json)
             message = project.add_tag(request_data, tags, project.root_ic)
@@ -1282,28 +1440,25 @@ class DBMongoAdapter:
                                 if not already_exists:
                                     tags[request_tags[i]].append({'ic_id': request_data['ic_id'],
                                                                   'project_name': request_data['project_name'],
+                                                                  'project_id': project.project_id,
                                                                   'parent_id': request_data['parent_id']})
 
                                 col_tags.update_one({'id': tags['id']}, {'$set': tags})
-                                # ta = col_tags.find()
-                                # ta = list(ta)
-                                # print('>>>>>+++', ta)
                                 break
                         else:
                             if request_tags[i].startswith('#'):
                                 tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                               'project_name': request_data['project_name'],
+                                                              'project_id': project.project_id,
                                                               'parent_id': request_data['parent_id']}]
 
                                 col_tags.update({'id': tags['id']}, {'$set': tag_json})
-                                # ta = col_tags.find({'id': tags['id']})
-                                # ta = list(ta)
-                                # print('>>>>>---', ta)
                 else:
                     for i in range(1, len(request_tags)):
                         if request_tags[i].startswith('#'):
                             tag_json[request_tags[i]] = [{'ic_id': request_data['ic_id'],
                                                           'project_name': request_data['project_name'],
+                                                          'project_id': project.project_id,
                                                           'parent_id': request_data['parent_id']}]
                     tag_json['id'] = 'tags_collection'
                     col_tags.insert_one(tag_json)
@@ -1322,7 +1477,7 @@ class DBMongoAdapter:
 
         if post_json: 
             post = Post.json_to_obj(post_json)
-            message = post.add_tag(request_data['tags']) # <- check if post already has this tag, and add it
+            message = post.add_tag(request_data['tags'], request_data) # <- check if post already has this tag, and add it
             if message == msg.TAG_SUCCESSFULLY_ADDED:
                 # check if tag is not duplicate in db
                 col_posts.update_one({'post_id': post.post_id}, {'$set': post.to_json()})
@@ -1368,6 +1523,9 @@ class DBMongoAdapter:
         if 'post_id' in request_data.keys():
             return self.remove_tag_from_post(request_data, tag)
 
+        if 'project_name' not in request_data.keys():
+            return msg.DEFAULT_ERROR
+
         col = self._db.Projects
         col_tags = self._db.Tags
         project_query = {'project_name': request_data['project_name']}
@@ -1387,6 +1545,7 @@ class DBMongoAdapter:
                         try:
                             tags[request_tag].remove({'ic_id': request_data['ic_id'],
                                                       'project_name': request_data['project_name'],
+                                                      'project_id': project.project_id,
                                                       'parent_id': request_data['parent_id']})
 
                             col_tags.update_one({'id': tags['id']}, {'$set': tags})
@@ -1430,6 +1589,106 @@ class DBMongoAdapter:
         self._close_connection()
         return message
 
+    def update_iso_tags(self, data):
+        print('\nupdate_iso_tags():\n')
+        # tables
+        projects = self._db.Projects
+        tags = self._db.Tags
+        
+        # queries
+        tags_query = {'id': 'tags_collection'}
+        project_query = {'project_name': data['project_name']}
+
+        project_json = projects.find_one(project_query, {'_id': 0})
+        if not project_json: return msg.PROJECT_NOT_FOUND # failsafe no project
+
+        # convert iso tripplets to tags
+        iso_tags = get_iso_tags()
+        for key, value in iso_tags.items():
+            for i, val in enumerate(value['elements']):
+                iso_tags[key]['elements'][i] = '#' + val.replace(".", "_")
+            del iso_tags[key]['name']
+            del iso_tags[key]['order']
+
+        tags_json = tags.find_one(tags_query, {'_id': 0})
+        # create tags if dont exist
+        if not tags_json: 
+            tags.insert_one(tags_query)
+            tags_json = tags.find_one(tags_query, {'_id': 0})
+            # put empty keys in json
+        for key, value in iso_tags.items():
+            for val in value['elements']:
+                if not val in tags_json.keys():
+                    tags_json[val] = []
+        tags.update_one(tags_query, {"$set": tags_json})
+
+        # convert request tags
+        for key, value in data['tags'].items():
+            data['tags'][key] = "#" + value.replace(".", "_")        
+
+        # this ic obj
+        obj = {
+            'project_name': data['project_name'],
+            'ic_id':        data['ic_id'],
+            'project_id':   project_json['project_id'],
+            'parent_id':    data['parent_id']
+        }
+
+        # find ic 
+        project = Project.json_to_obj(project_json)
+        old_ic = project.find_ic_by_id(data, data['ic_id'], project.root_ic)
+        ic = old_ic
+        
+        # delete
+        for key, value in iso_tags.items():
+            for tag in value['elements']:
+                for itag in tags_json.keys():
+                    if itag == tag:    # failsafe check (maybe not necessary)
+                        for i, val in enumerate(tags_json[tag]):
+                            if obj in tags_json[tag]:
+                                tags_json[tag].remove(obj)
+                                # break
+                            for tag_obj in ic.tags:
+                                if tag == tag_obj.tag:
+                                    ic.tags.remove(tag_obj)
+
+        # write
+        for key, tag in data['tags'].items():
+            for itag in tags_json.keys():
+                # print(itag)
+                if itag == tag:
+                    if not obj in tags_json[tag]:
+                        # print('accepted.')
+                        tags_json[tag].append(obj)
+                        ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
+                        break
+
+        # update
+        # project.update_ic(ic, old_ic)
+        tags.update_one(tags_query, {"$set": tags_json})
+        projects.update_one(project_query, {"$set": project.to_json()})
+
+        message = msg.TAG_SUCCESSFULLY_UPDATED
+
+        self._close_connection()
+        return message
+
+    def get_ic_tags(self, request_data):
+        Projects = self._db.Projects
+        project_query = {'project_name': request_data['project_name']}
+        project_json = Projects.find_one(project_query, {"_id": 0})
+
+        if not project_json: return msg.PROJECT_NOT_FOUND
+
+        project = Project.json_to_obj(project_json)
+        ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+
+        if not ic: return msg.IC_PATH_NOT_FOUND
+
+        ic = ic.to_json()
+        
+        return ic['tags']
+
     def get_all_tags(self):
         col = self._db.Tags
         result = col.find()
@@ -1447,7 +1706,9 @@ class DBMongoAdapter:
         result = col.find()
         tags = list(result)
 
-        search = tags[0]
+        search = None
+        if len(tags) > 0:
+            search = tags[0]
         for key in tags[0]:
             if isinstance(search[key], list): # check if it's not _id or id
                 for obj in search[key]: # iterate through objects in this array
@@ -1458,10 +1719,91 @@ class DBMongoAdapter:
         return [search]
 
     def add_access(self, request_data, session_user):
+        # grants user an access to an ic
+        col =           self._db.Projects
+        col_users =     self._db.Users.Roles
+        col_shared =    self._db.Projects.Shared
+        col_u =         self._db.Users
+
+        user_query = {'user_id': session_user['id']}
+        u = col_users.find_one(user_query, {'_id': 0})
+        no_rights = True
+        project_json = None
+
+        if u:
+            for x in u:
+                print('x', x)
+            project_json = self.get_project(request_data['project_name'], session_user)
+            for pr in u['projects']:
+                if project_json['project_id'] == pr['project_id']:
+                    if pr['role'] != Role.WATCHER.value:
+                        no_rights = False
+                    break
+        if no_rights:
+            return msg.USER_NO_RIGHTS
+        # project_query = {'project_name': request_data['project_name']}
+        # project_json = col.find_one(project_query, {'_id': 0})
+        if project_json:
+            user_query = {'username': request_data['user_name'].strip()}
+            new_user = col_u.find_one(user_query, {'_id': 0})
+
+            if new_user:
+                project = Project.json_to_obj(project_json)
+                message = project.add_access(request_data, new_user, project.root_ic)
+                
+                if message == msg.ACCESS_SUCCESSFULLY_ADDED:
+                    col.update_one({'project_name': project.name}, {'$set': project.to_json()})
+
+                    is_in_project = False
+                    for ac in project.root_ic.access:
+                        if new_user['id'] == ac.user['user_id']:
+                            is_in_project = True
+                            break
+
+                    # if the user does not have an access to the whole project update shared
+                    if not is_in_project:
+                        shared = {'project_id':     project.project_id,
+                                'project_name':   project.name,
+                                'parent_id':      request_data['parent_id'],
+                                'role':           getattr(Role, request_data['role']).value,
+                                'exp_date':       request_data['exp_date'],
+                                'ic_id':          request_data['ic_id']}
+                        user_shared = col_shared.find()
+                        results = list(user_shared)
+                        shared_json = {}
+                        if len(results) != 0:
+                            # results[0].pop('_id', None)
+                            user_shared = results[0]
+                            if new_user['id'] in user_shared:
+                                already_exists = False
+                                for ic in user_shared[new_user['id']]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        already_exists = True
+                                        break
+                                if not already_exists:
+                                    user_shared[new_user['id']].append(shared)
+                                col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                            else:
+                                user_shared[new_user['id']] = [shared]
+                                col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
+                        else:
+                            shared_json[new_user['id']] = [shared]
+                            col_shared.insert_one(shared_json)
+
+            else:
+                message = msg.USER_NOT_FOUND
+        else:
+            message = msg.PROJECT_NOT_FOUND
+        self._close_connection()
+        return message
+
+    def update_access(self, request_data, session_user):
         col = self._db.Projects
         col_users = self._db.Users.Roles
         col_shared = self._db.Projects.Shared
         col_u = self._db.Users
+
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
         no_rights = True
@@ -1480,42 +1822,52 @@ class DBMongoAdapter:
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
-            user_query = {'username': request_data['user_name']}
+            user_query = {'id': request_data['user']['user_id']}
             new_user = col_u.find_one(user_query, {'_id': 0})
             if new_user:
                 project = Project.json_to_obj(project_json)
-                message = project.add_access(request_data, new_user, project.root_ic)
-                if message == msg.TAG_SUCCESSFULLY_ADDED:
+                message = project.update_access(request_data, new_user, project.root_ic)
+                # print('\n\n\n\n', message)
+                if message == msg.ACCESS_SUCCESSFULLY_UPDATED:
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
 
-                    # if the user does not have an access to the whole project update shared
-                    shared = {'project_id': project.project_id,
-                              'project_name': project.name,
-                              'parent_id': request_data['parent_id'],
-                              'role': getattr(Role, request_data['role']).value,
-                              'ic_id': request_data['ic_id']}
-                    user_shared = col_shared.find()
-                    results = list(user_shared)
-                    shared_json = {}
-                    if len(results) != 0:
-                        # results[0].pop('_id', None)
-                        user_shared = results[0]
-                        if new_user['id'] in user_shared:
-                            already_exists = False
-                            for ic in user_shared[new_user['id']]:
-                                if ic['ic_id'] == request_data['ic_id']:
-                                    already_exists = True
-                                    break
-                            if not already_exists:
-                                user_shared[new_user['id']].append(shared)
-                            col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
-                        else:
-                            user_shared[new_user['id']] = [shared]
-                            col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+                    is_in_project = False
+                    for ac in project.root_ic.access:
+                        if new_user['id'] == ac.user['user_id']:
+                            is_in_project = True
+                            break
 
-                    else:
-                        shared_json[new_user['id']] = [shared]
-                        col_shared.insert_one(shared_json)
+                    # if the user does not have an access to the whole project update shared
+                    if not is_in_project:
+                        r = ''
+                        if request_data['new_role'] != '':
+                            r = getattr(Role, request_data['new_role']).value
+                        shared = {'project_id': project.project_id,
+                                'project_name': project.name,
+                                'parent_id': request_data['parent_id'],
+                                'role': r,
+                                'exp_date': request_data['exp_date'],
+                                'ic_id': request_data['ic_id']}
+
+                        user_shared = col_shared.find()
+                        results = list(user_shared)
+                        shared_json = {}
+                        if len(results) != 0:
+                            # results[0].pop('_id', None)
+                            user_shared = results[0]
+                            if new_user['id'] in user_shared:
+                                for ic in user_shared[new_user['id']]:
+                                    if ic['ic_id'] == request_data['ic_id']:
+                                        ic['role'] = r
+                                        break
+                                col_shared.update_one({'_id': user_shared['_id']}, {'$set': user_shared})
+                            else:
+                                user_shared[new_user['id']] = [shared]
+                                col_shared.update({'_id': user_shared['_id']}, {'$set': user_shared})
+
+                        else:
+                            shared_json[new_user['id']] = [shared]
+                            col_shared.insert_one(shared_json)
 
             else:
                 message = msg.USER_NOT_FOUND

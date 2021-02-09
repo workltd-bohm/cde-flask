@@ -6,7 +6,7 @@
     --login-signup-btn-front-box-bg-color: #5e9bd1;
 
     --dashboard-bg: #121212;
-    --dashboard-bg-light: #ffffff;
+    --dashboard-bg-light: #e8e8e8;
 
     --side-menu: #e8e8e8; /*I think this is not used anywhere*/
     --side-menu-light: #e8e8e8; /*I think this is not used anywhere*/
@@ -14,13 +14,24 @@
     --sun-default-bg: #ffffff;
     --sun-default-bg-light: #ababab;
 
-    --planet-default-bg: #ffffff;
-    --planet-default-bg-light: #ffffff;
+    --planet-default-bg: #e8e8e8;
+    --planet-default-bg-light: #e8e8e8;
 
     --activity-menu-bg: #ebebeb; /*e1e1e1*/
-    --activity-menu-bg-light: #e8e8e8;
+    --activity-menu-bg-light: #d7d7d7;
+
+    --activity-tab-title-bg: #cccccc; /*e1e1e1*/
+    --activity-tab-title-bg-light: #cccccc;
+
+    --activity-arrow: #e8e8e8; /*e1e1e1*/
+    --activity-arrow-light: #121212;
 
     --left-side-menu: #121212;
+    --left-side-menu-light: #545454;
+
+    --dashboard-text: #fafafa;
+    --dashboard-text-light: #121212;
+
     --side-menu-text: #b8b8b8; /*NOT USED ANY MORE - color of the text next to the icon (in an expanded menu)*/
     --side-menu-logo-bg: #121212;
     --side-menu-logo-bg-right: #e8e8e8;
@@ -28,13 +39,16 @@
     /* marketplace post */
     --file-preview-text: #ffffff;
 
-
-
+    --neon-blue: #00d5ff;
 
     /*Currently used (when we have dark/light themes JS will simply change the --cur-bg value*/
-    --cur-dashboard-bg: var(--dashboard-bg);
-    --cur-side-menu: var(--side-menu);
-    --cur-sun-default-bg: var(--sun-default-bg);
-    --cur-planet-default-bg: var(--planet-default-bg);
-    --cur-activity-menu-bg:var(--activity-menu-bg);
+    --cur-dashboard-bg:             var(--dashboard-bg);
+    --cur-side-menu:                var(--side-menu-light);/*not used anywhere at the moment I think*/
+    --cur-left-side-menu:           var(--left-side-menu);
+    --cur-sun-default-bg:           var(--sun-default-bg);
+    --cur-planet-default-bg:        var(--planet-default-bg);
+    --cur-activity-menu-bg:         var(--activity-menu-bg);
+    --cur-activity-tab-title-bg:    var(--activity-tab-title-bg);
+    --cur-dashboard-text:           var(--dashboard-text);
+    --cur-activity-arrow:           var(--activity-arrow);
 }

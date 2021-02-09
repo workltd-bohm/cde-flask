@@ -10,21 +10,26 @@ const colorScale = [
     "#afc556",
     "#448449",
     "#56c5af",
-    "#ffffff"];
+    "#e8e8e8"
+];
 
 function ColorPicker(data) {
     var defaultColor = $(".foregin .material-icons").css("color");
 
+    let _radius = g_OverlayRadius;
+    if (!data.values.data.values.sun) {
+        _radius = g_PlanetRadius;
+    }
+
     var pie = d3.layout.pie().sort(null);
-    var arc = d3.svg.arc().innerRadius(g_OverlayRadius).outerRadius(g_OverlayRadius*1.5);
-    
+    var arc = d3.svg.arc().innerRadius(_radius*.5).outerRadius(_radius);
     var wheel = data.values.back.object.append("g")
         .attr("class", "color_wheel")
-        .attr("x",0)
-        .attr("y",0)
+        .attr("x", 0)
+        .attr("y", 0)
 
     var circle = wheel.append("circle")
-        .attr("r", g_OverlayRadius)
+        .attr("r", _radius)
         .attr("fill", defaultColor)
 
     wheel.datum(Array(colorScale.length).fill(1))
@@ -32,11 +37,11 @@ function ColorPicker(data) {
         .data(pie)
         .enter()
         .append("path")
-        .attr("fill", function (d, i) {
+        .attr("fill", function(d, i) {
             return colorScale[i];
         })
         .attr("d", arc)
-        .on("mouseover", function () {
+        .on("mouseover", function() {
             var fill = d3.select(this).attr("fill");
             circle.attr("fill", fill);
         })
@@ -48,30 +53,33 @@ function ColorPicker(data) {
             wheel.remove();
         });
 
-    wheel.on("mouseleave", function () {
-            wheel.remove();
-        });
-  };
+    wheel.on("mouseleave", function() {
+        wheel.remove();
+    });
+};
 
-function SetColor(data, fill){
+function SetColor(data, fill) {
     var o = Object.values(CHECKED);
     var multi = [];
-    for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, color: data.color});
+    for (var i = 0; i < o.length; i++) multi.push({ ic_id: o[i].ic_id, color: data.color });
     LoadStart();
     $.ajax({
-        url: (o.length > 0)? "/set_color_multi" : "/set_color",
+        url: (o.length > 0) ? "/set_color_multi" : "/set_color",
         type: 'POST',
-        data: JSON.stringify((o.length > 0)? multi : {ic_id: data.ic_id, color: data.color}),
+        data: JSON.stringify((o.length > 0) ? multi : { ic_id: data.ic_id, color: data.color }),
         timeout: 5000,
-        success: function(data){
+        success: function(data) {
             MakeSnackbar(data);
             SESSION["undo"] = true;
             CreateProject();
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
-            console.log( errorThrown + ": " + $jqXHR.responseText );
+            console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

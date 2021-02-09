@@ -1,0 +1,37 @@
+<div id="activity-comments" class="activity-box">
+    <form class="mt-3">
+        <input type="hidden" id="project_name" value="{{ project_name }}" required />
+        <input type="hidden" id="parent_id" value="{{ parent_id }}" required />
+        <input type="hidden" id="ic_id" value="{{ ic_id }}" required />
+
+        <!-- Write comment box -->
+        <div class="input-group mb-3">
+            <img class="history-img d-none d-lg-block mx-2" src="/get_profile_image/{{ user['picture'] }}"/>
+            <textarea class="form-control" id="comment" rows="2" onkeypress="commentOnProject(event)" 
+            onkeydown="commentOnProject(event)" placeholder="Comment..."></textarea>
+            <button type="button" class="btn material-icons" 
+                src="{{ url_for('static', filename='img/send.png') }}" 
+                onclick="sendCommentPress()">send</button>
+        </div>
+
+        <!-- Filter collab box -->
+        <div class="input-group mb-3" id="searchFoldercommentsDiv">
+            <input type="text" class="form-control" id="searchcomments" name="searchcomments" 
+                onkeypress="serviceCommentSearchQuery(event)" onkeydown="serviceCommentSearchQuery(event)" 
+                placeholder="Filter collab by @Users or #hashtag..." autocomplete="off">
+            <button type="button" class="btn" id="resetCommentSearchButton" 
+                onclick="resetCommentSearch(event)">Reset</button>
+        </div>
+        
+        <!-- All comments box -->
+        <div class="activity-comments-container" id="activity-comments-container">
+        {% for comment in comments|reverse %}
+            {% include 'activity/single_comment.html' %}
+        {% endfor %}
+        </div>
+    </form>
+</div>
+
+<script>
+    // vh - $(".activity-comments-container").position().top - padding;
+</script>

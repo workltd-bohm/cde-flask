@@ -3,49 +3,93 @@ import json
 from app import *
 
 import app.views.actions.getters as gtr
-
+import app.model.helper as helper
 
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         name = request_data['name']
         type = request_data['type']
-        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        ic_id = request_data['ic_id']
+        parent_id = request_data['parent_id']
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
             result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
             if result:
-                details = [x.to_json() for x in result.history]
-                tags = [x.to_json() for x in result.tags]
-                file_name = result.name + result.type
-                path = result.path
-                share_link = 'http://bohm.cloud/get_shared_file/' + file_name
-                comments = [x.to_json() for x in result.comments]
+                project = db.get_project(db_adapter, project_name, session['user'])
                 access = [x.to_json() for x in result.access]
-                for a in access:
-                    a['role'] = Role(a['role']).name
 
+                is_owner = False
+                for a in access:
+                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                        is_owner = True
+                    a['role'] = Role(a['role']).name
+                    m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+                    a['user']['picture'] = user['picture']
+                    a['user']['username'] = user['username']
+
+                comments = [x.to_json() for x in result.comments]
+                for c in comments:
+                    m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
+                    c['user']['picture'] = user['picture']
+                    c['user']['username'] = user['username']
+                
+                # close db connection
+                db.close_connection(db_adapter)
+
+                file_name =         result.name + result.type
+                file_iso_name =     helper.get_iso_filename(result, project, session['user'])
+                file_details =      [x.to_json() for x in result.history]
+                file_tags =         [x.to_json() for x in result.tags]
+                file_size =         db.get_file_size(db_adapter, result.stored_id, True)
+                file_path =         result.path + result.type
+                file_share_link =   'http://bohm.cloud/get_shared_file/' + result.stored_id
+
+                message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})
+                db.close_connection(db_adapter)
+
+                role_code = ''
+                if 'role_code' in user:
+                    role_code = user['role_code']
+                if result.type == '.pdf':
+                    html = render_template("popup/open_file_pdf.html",
+                                            preview =      '/get_shared_file/' + result.stored_id,
+                                            file_name =    file_name,
+                                            project_name = project_name,
+                                            parent_id =    parent_id,
+                                            ic_id =        ic_id,
+                                            user =         session['user']
+                                            )
+                else:
+                    html = render_template("popup/open_file.html",
+                                            preview = '/get_shared_file/' + result.stored_id
+                                            )
                 response = {
-                    'html': render_template("popup/open_file.html",
-                                            preview='/get_shared_file/' + name + type
-                                            ),
-                    'activity': render_template("activity/filter_files.html",
-                                                profile_picture=session['user']['picture'],
-                                                details=details,
-                                                tags=tags,
-                                                file_name=file_name,
-                                                path=path,
-                                                share_link=share_link,
-                                                comments=comments,
-                                                project_name=project_name,
-                                                parent_id=result.parent_id,
-                                                ic_id=result.ic_id,
-                                                stored_id=result.stored_id,
-                                                name=name+type,
-                                                access=access
+                    'html': html,
+                    'activity': render_template("activity/file.html",
+                                                user =              user,
+                                                role_code =         role_code,
+                                                is_owner =          str(is_owner),
+                                                details =           file_details,
+                                                tags =              file_tags,
+                                                file_name =         file_name,
+                                                name =              name+type,
+                                                full_name =         file_iso_name,
+                                                path =              file_path,
+                                                share_link =        file_share_link,
+                                                comments =          comments,
+                                                project_name =      project_name,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                stored_id =         result.stored_id,
+                                                access =            access,
+                                                complex_tag_list =  gtr.get_input_file_fixed(),
+                                                size =              file_size,
+                                                project_code =      project['code']
                                                 ),
                     'data': []
                 }
@@ -61,7 +105,10 @@ def get_open_file():
         return resp
 
     else:
-        return redirect('/')
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
 
 
 @app.route('/get_all_projects')
@@ -94,8 +141,8 @@ def get_all_projects():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -113,8 +160,8 @@ def get_new_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -132,8 +179,8 @@ def get_upload_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -175,13 +222,14 @@ def get_new_folder():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
+    print('\n\n\n\n we are trying to upload a file \n\n')
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
@@ -195,16 +243,80 @@ def get_new_file():
                 filter_file.pop('uniclass_2015', None)
                 response = {
                     'html': render_template("popup/file_input_popup.html",
+                                            is_iso19650 =   result['is_iso19650'],
+                                            project_path =  request_data["project_path"],
+                                            parent_id =     request_data["parent_id"],
+                                            ic_id =         request_data["ic_id"],
+                                            project_name =  project_name,
+                                            project_code =  result['code'],
+                                            company_code =  user['company_code'],
+                                            is_file =       request_data["is_file"],
+                                            inputs =        filter_file
+                                            ),
+                    'data': []
+                }
+                resp = Response()
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_iso_rename_popup', methods=['POST'])
+def get_iso_rename_popup():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        project_name = session.get("project")["name"]
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            user = session.get('user')
+
+            message, us = db.get_user(db_adapter, {'id': user['id']})
+            db.close_connection(db_adapter)
+
+            role_code = ''
+            if 'role_code' in us:
+                role_code = us['role_code']
+            result = db.get_project(db_adapter, project_name, user)
+            if result:
+                filter_file = gtr.get_input_file_fixed()
+                filter_file.pop('uniclass_2015', None)
+                
+                response = {
+                    'html': render_template("popup/upload_file_popup.html",
                                             project_path=request_data["project_path"],
                                             parent_id=request_data["parent_id"],
                                             ic_id=request_data["ic_id"],
                                             project_name=project_name,
-                                            project_code=user['project_code'],
+                                            project_code=result['code'],
                                             company_code=user['company_code'],
                                             is_file=request_data["is_file"],
                                             inputs=filter_file
                                             ),
-                    'data': []
+                    'html-block': render_template("popup/upload_file_popup_block.html",
+                                            project_code=result['code'],
+                                            company_code=user['company_code'],
+                                            inputs=filter_file,
+                                            role_code=role_code
+                                            )
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -272,8 +384,8 @@ def get_rename_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_trash_ic', methods=['POST'])
@@ -292,6 +404,7 @@ def get_trash_ic():
                     'html': render_template("popup/trash_ic_popup.html",
                                             parent_path=request_data["parent_path"],
                                             parent_id=request_data["parent_id"],
+                                            project_id=request_data["project_id"] if "project_id" in request_data else None,
                                             ic_id=request_data["ic_id"],
                                             project_name=project_name,
                                             delete_name=request_data["delete_name"],
@@ -324,8 +437,8 @@ def get_trash_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
             
 @app.route('/get_restore_ic', methods=['POST'])
@@ -377,8 +490,8 @@ def get_restore_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
             
 @app.route('/get_delete_ic', methods=['POST'])
@@ -429,8 +542,8 @@ def get_delete_ic():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_empty_trash', methods=['POST'])
@@ -465,8 +578,8 @@ def get_empty_trash():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 @app.route('/get_share', methods=['GET'])
@@ -506,8 +619,8 @@ def get_share():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -542,8 +655,8 @@ def get_help():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -566,6 +679,6 @@ def get_help_suggest():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp

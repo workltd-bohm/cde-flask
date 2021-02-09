@@ -3,13 +3,13 @@
     <input type="hidden" name="id" value='{{ id }}' required/>
     <div class="user-block">
         <div class="profile-image">
-            <label for="fileToUpload">
-                <div class="profile-pic" style="background-image: url(/get_profile_image/{{ picture }})">
+            <label for="newProfilePictureToUpload">
+                <div class="profile-pic" id="currentProfilePictureDisplay" style="background-image: url(/get_profile_image/{{ picture }})">
                   <span class="glyphicon glyphicon-camera"></span>
                   <span>Change Image</span>
                 </div>
             </label>
-            <input type="File" name="fileToUpload" id="fileToUpload">
+            <input type="File" name="newProfilePictureToUpload" id="newProfilePictureToUpload" onchange="uploadNewProfilePicture(event)" accept=".jpg, .jpeg, .png">
         </div>
         <div class="form__group field">
             <input type="username" class="form__field" name="username" id="username" value='{{ username }}'/>
@@ -35,8 +35,23 @@
             <input type="text" class="form__field" name="company_role" id="company_role" value='{{ company_role }}'/>
             <label for="company_role" class="form__label">Company Role</label>
         </div>
+        {% for key, value in complex_tag_list.items() %}
+            {% if key == 'role_code' %}
+                <div class="form__group field">
+                    <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                    <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                        <option></option>
+                        {% for val in value.elements %}
+                            <option {{ 'selected' if role_code == val else '' }} value="{{ val }}">
+                                {{ val }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+        {% endfor %}
         <div class="form__group field">
-            <input type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), true);"/>
+            <input type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), false);"/>
         </div>
     </div>
 </div>

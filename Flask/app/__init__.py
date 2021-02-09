@@ -12,10 +12,13 @@ from app.model.file import File
 from app.model.details import Details
 from app.model.comment import Comments
 from app.model.project import Project
+from app.model.site import Site
+from app.model.building import Building
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
 from app.model.access import Access
+from app.model.tag import Tags, SimpleTag, ISO19650
 
 from app.logs import logger
 
@@ -28,8 +31,8 @@ db_adapter = cfg.config['basic'].DB
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.secret_key = cfg.config['basic'].SECRET_KEY
 
-from app.views import login
 from app.views import main
+from app.views import login
 from app.views import dashboard
 
 from app.views.actions import dirs
@@ -45,6 +48,10 @@ from app.views.marketplace import posts
 from app.views.marketplace import bids
 
 from app.views.viewer import create
+
+from app.views.mobile import login
+
+from app.views.jinja2 import filters
 
 app.test_json_request = {
     'project_id': '5f25580d49e1b44fef634b56',

@@ -39,8 +39,8 @@ def select_project():
         return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -55,7 +55,7 @@ def create_project():
         us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-        access = Access(us, '', '', Role.OWNER.value)
+        access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
         
         u = {'user_id': session['user']['id'], 'username': session['user']['username']}
         details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['project_name'])
@@ -88,8 +88,8 @@ def create_project():
             return resp
     
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -120,7 +120,7 @@ def upload_existing_project():
                 us = {'user_id': session['user']['id'],
                  'username': session['user']['username'],
                  'picture': session['user']['picture']}
-                access = Access(us, '', '', Role.OWNER.value)
+                access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
                 if is_dir == 'false':
                     file = request.files['file'].read()
                     counter = request.form['counter']
@@ -177,13 +177,33 @@ def upload_existing_project():
                         parent_directory = ('/').join(current_file_path_backup[:-1])
                         details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
                                           ('').join(['.', file_name.split('.')[-1]]))
+
+
+                        # {
+                        #     "tag": "#XX, No volume/system",
+                        #     "color": "gray",
+                        #     "iso": "ISO19650",
+                        #     "key": "project_volume_or_system"
+                        # }
+
+                        tags = []
+
+                        if 'file_data' in request.form:
+                            file_data = json.loads(request.form['file_data'])
+                            for key in file_data:
+                                # print("key: {} | value: {}".format(key, file_data[key]))
+                                if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
+                                    tags.append(ISO19650(key, file_data[key], 'ISO19650', 'grey'))
+
+
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], [], [], [access], '', '')
+                                           [], tags, [], [access], '', '')
 
                         project.added = False
                         encoded = file
-                        print('+++++++++', len(file))
+                        # print('+++++++++', encoded)
+                        # print('+++++++++', len(file))
                         # TODO: fix this mess
                         if len(file) == 0:
                             return request.form['path']
@@ -196,6 +216,19 @@ def upload_existing_project():
                             resp.data = result['message']
                             return resp
                         else:
+                            if 'file_data' in request.form:
+                                file_data = json.loads(request.form['file_data'])
+                                request_data = {}
+                                request_data['project_name'] = project.name
+                                request_data['ic_id'] = new_id
+                                request_data['parent_id'] = parent_id
+                                request_data['iso'] = 'ISO19650'
+                                request_data['tags'] = {}
+                                for key in file_data:
+                                    if key != 'name' and key != 'file_extension' and key != 'project_code':
+                                        request_data['tags'][key] = file_data[key]
+                                update_tags = db.update_iso_tags(db_adapter, request_data)
+                                logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
                             return request.form['path']
                 else:
                     folders = json.loads(request.form['folders'])
@@ -207,39 +240,42 @@ def upload_existing_project():
                         parent_ic = project.root_ic
                         for i in range(0, len(current_dir_path)):
                             name = current_dir_path[i]
-                            new_id = str(uuid.uuid1())
-                            if i < 1:
-                                parent_directory = ('/').join(current_full_path[0:1])
-                                path = ('/').join(current_full_path[0:1])
-                            else:
-                                parent_directory = ('/').join(current_full_path[0:i + 1])
-                                path = ('/').join(current_full_path[0:i + 1])
-                            path = path + '/' + name
+                            if name != '':
+                                new_id = str(uuid.uuid1())
+                                if i < 1:
+                                    parent_directory = ('/').join(current_full_path[0:1])
+                                    path = ('/').join(current_full_path[0:1])
+                                else:
+                                    parent_directory = ('/').join(current_full_path[0:i + 1])
+                                    path = ('/').join(current_full_path[0:i + 1])
+                                path = path + '/' + name
 
-                            details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
-                            ic_new = Directory(new_id,
-                                               name,
-                                               parent_directory,
-                                               [details],
-                                               path,
-                                               parent_id,
-                                               '',
-                                               [],
-                                               [],
-                                               [],
-                                               [access]
-                                               )
+                                details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                                ic_new = Directory(new_id,
+                                                name,
+                                                parent_directory,
+                                                [details],
+                                                path,
+                                                parent_id,
+                                                '',
+                                                [],
+                                                [],
+                                                [],
+                                                [access]
+                                                )
 
-                            parent_id = new_id
+                                parent_id = new_id
 
-                            project.added = False
-                            message, ic = project.update_ic(ic_new, parent_ic)
-                            # message, ic = db.create_folder(db_adapter, project.name, ic_new)
-                            parent_ic = ic_new
-                            logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
-                            if message == msg.IC_ALREADY_EXISTS:
-                                parent_id = ic.ic_id
-                                parent_ic = ic
+                                project.added = False
+                                message, ic = project.update_ic(ic_new, parent_ic)
+                                # print('ovde', ic_new.to_json())
+                                print(message)
+                                # message, ic = db.create_folder(db_adapter, project.name, ic_new)
+                                parent_ic = ic_new
+                                logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
+                                if message == msg.IC_ALREADY_EXISTS:
+                                    parent_id = ic.ic_id
+                                    parent_ic = ic
                         message = db.update_project(db_adapter, project, user)
                         logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
 
@@ -253,7 +289,11 @@ def upload_existing_project():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
-    return redirect('/login')
+    
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/upload_project')
@@ -275,7 +315,10 @@ def upload_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/set_color', methods=['POST'])
@@ -306,8 +349,8 @@ def set_color():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -335,7 +378,10 @@ def share_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/send_comment', methods=['POST'])
@@ -366,7 +412,10 @@ def send_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/update_comment', methods=['POST'])
 def update_comment():
@@ -380,11 +429,8 @@ def update_comment():
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
-                resp.status_code = result["code"]
-                # resp.data = render_template("activity/single_comment.html",
-                #                             comment=comment.to_json(),
-                #                             picture=u['picture']
-                #                             )
+                resp.status_code =  result["code"]
+                resp.data =         result["message"]
                 return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
@@ -393,7 +439,10 @@ def update_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/delete_comment', methods=['POST'])
 def delete_comment():
@@ -407,11 +456,8 @@ def delete_comment():
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
-                resp.status_code = result["code"]
-                # resp.data = render_template("activity/single_comment.html",
-                #                             comment=comment.to_json(),
-                #                             picture=u['picture']
-                #                             )
+                resp.status_code =  result["code"]
+                resp.data =         result["message"]
                 return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
@@ -420,7 +466,10 @@ def delete_comment():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/add_tag', methods=['POST'])
 def add_tag():
@@ -446,7 +495,10 @@ def add_tag():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/remove_tag', methods=['POST'])
@@ -472,6 +524,32 @@ def remove_tag():
 
     return redirect('/')
 
+@app.route('/update_iso_tags', methods=['POST'])
+def update_iso_tags():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
+        if db.connect(db_adapter):
+            result = db.update_iso_tags(db_adapter, request_data)
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 @app.route('/add_access', methods=['POST'])
 def add_access():
@@ -482,6 +560,12 @@ def add_access():
         if db.connect(db_adapter):
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+            if request_data['user_name'] == session['user']['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message']
+                return resp
             if request_data['parent_id'] == 'root':
                 result = db.share_project(db_adapter, request_data, session['user'])
                 # result = db.add_access(db_adapter, request_data, session['user'])
@@ -500,7 +584,49 @@ def add_access():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/update_access', methods=['POST'])
+def update_access():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
+            # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
+            if request_data['user']['username'] == session['user']['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message']
+                return resp
+            if request_data['parent_id'] == 'root':
+                result = db.update_share_project(db_adapter, request_data, session['user'])
+                # result = db.add_access(db_adapter, request_data, session['user'])
+            else:
+                result = db.update_access(db_adapter, request_data, session['user'])
+            if result:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                resp = Response()
+                resp.status_code = result["code"]
+                resp.data = result['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
     
 
 @app.route('/remove_access', methods=['POST'])
@@ -528,7 +654,10 @@ def remove_access():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    return redirect('/')
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/activate_undo', methods=['POST'])
@@ -560,6 +689,72 @@ def activate_undo():
                     resp.data = str(msg.DEFAULT_OK['message']) #json.dumps({"json": project.to_json(), "project" : position})
                     return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/set_project_config', methods=['POST'])
+def set_project_config():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        if db.connect(db_adapter):
+            result = db.get_project(db_adapter, request_data['project_name'], session['user'])
+            
+            if result:
+                project = Project.json_to_obj(result)
+
+                project.name = request_data['project-name-activity']
+                project.description = request_data['project-description-activity']
+                project.code = request_data['project-code-activity']
+                project.number = request_data['project-number-activity']
+                project.status = request_data['project-status-activity']
+                project.notes = request_data['project-notes-activity']
+                project.ref = request_data['project-ref-activity']
+                project.originator = request_data['originator-activity']
+                project.disclaimer = request_data['disclaimer-activity']
+                project.custom = request_data['project-custom-activity']
+
+                site = Site(request_data['site-name-activity'], 
+                            request_data['site-description-activity'], 
+                            request_data['site-full-address-activity'],
+                            request_data['site-gross-perimeter-activity'],
+                            request_data['site-gross-area-activity'],
+                            request_data['site-coordinates-activity'])
+                site.custom = request_data['site-custom-activity']
+
+                building = Building(request_data['building-name-activity'],
+                                    request_data['building-description-activity'])
+                building.custom = request_data['building-custom-activity']
+
+                
+                project.site = site
+                project.building = building
+
+                project.is_iso19650 = request_data['iso19650']
+
+                message = db.update_project(db_adapter, project, session['user'])
+
+                resp = Response()
+                resp.status_code = message["code"]
+                resp.data = message['message']
+                return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND["code"]
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+

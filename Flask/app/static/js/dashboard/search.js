@@ -13,12 +13,13 @@ function OpenFilterActivity(json, open = false) {
         timeout: 5000,
         success: function(data) {
             //console.log(data);
-            if (data == 'Success')
+            if (data == 'Success') {
                 return true;
+            }
             data = JSON.parse(data);
             if (data) {
                 OpenActivity(data.html, null, open);
-                FilterSwap('details');
+                GetShareLink();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -51,21 +52,11 @@ function FilterOut(obj) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
-}
-
-function FilterSwap(target) {
-    $(".project-view").children().hide();
-    $(".project-box").removeClass("selected");
-    
-    if ($("#filter-" + target).length){
-        $("#filter-" + target).show();
-        $("#filter-" + target + "-tab").addClass("selected");
-    } else if ($(".filter-" + target)) {
-        $(".filter-" + target).show();
-        $(".filter-" + target + "-tab").addClass("selected");
-    }
 }
 
 function SearchOpen(data) {

@@ -10,6 +10,7 @@ class User:
         self._company_code = ""
         self._company_name = ""
         self._company_role = ""
+        self._role_code = ""
 
     def create_user(self, json_data):
         self._username = json_data['username']
@@ -24,6 +25,7 @@ class User:
         if "company_code" in json_data and len(json_data['company_code']) > 0: self._company_code = json_data['company_code']
         if "company_name" in json_data and len(json_data['company_name']) > 0: self._company_name = json_data['company_name']
         if "company_role" in json_data and len(json_data['company_role']) > 0: self._company_role = json_data['company_role']
+        if "role_code" in json_data and len(json_data['role_code']) > 0: self._role_code = json_data['role_code']
 
     @property
     def id(self):
@@ -97,6 +99,14 @@ class User:
     def company_role(self, value):
         self._company_role = value
 
+    @property
+    def role_code(self):
+        return self._role_code
+
+    @role_code.setter
+    def role_code(self, value):
+        self._role_code = value
+
     def to_json(self):
         return {
                     'id': self._id,
@@ -107,5 +117,6 @@ class User:
                     'company_code': self._company_code,
                     'company_name': self._company_name,
                     'company_role': self._company_role,
-                    'confirmed': self._confirmed
+                    'confirmed': self._confirmed,
+                    'role_code': self._role_code
                 }

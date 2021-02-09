@@ -15,8 +15,8 @@ const ANIM_FADE_ANIM = 500;
 // -------------------------------------------------------
 
 $(document).ready(function() {
-    $ACTIVITY = $("#activity-body");
-    ACTIVITY = d3.select("#activity-body");
+    $ACTIVITY = $("#activity-container");
+    ACTIVITY = d3.select("#activity-container");
     $ACTIVITY_HEAD = $("#activity-head");
     ACTIVITY_HEAD = d3.select("#activity-head");
 
@@ -71,6 +71,9 @@ function CheckSession() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             //MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -98,9 +101,12 @@ function SendProject(data) {
         revision: data.revision
     };
     SEARCH_HISTORY = data;
-    console.log('************1111111**************');
-    // history.pushState(SESSION, null, '');
-    console.log('************END 1111111**************');
+
+    if (!backButtonFlag) {
+        history.pushState(SESSION, null, '');
+    }
+    backButtonFlag = false;
+
     $.ajax({
         url: "/set_project",
         type: 'POST',
@@ -108,10 +114,14 @@ function SendProject(data) {
         timeout: 5000,
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
             //MakeSnackbar($jqXHR.responseText);
         }
     });
 }
+var backButtonFlag = false;
 
 function SendProjectBackButton() {
     $.ajax({
@@ -120,11 +130,15 @@ function SendProjectBackButton() {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
+            backButtonFlag = true;
             CreateProject(history.state);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             //MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -152,6 +166,9 @@ function UserProfile() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -169,17 +186,21 @@ function SelectProject() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION)
+                    console.log(SESSION);
                 }
-                console.log('************22222222**************');
-                // history.pushState(SESSION, null, '');
-                console.log('************END 2222222**************');
+                if (!backButtonFlag) {
+                    history.pushState(SESSION, null, '');
+                }
+                backButtonFlag = false;
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -196,13 +217,19 @@ function CreateProject(position = null) {
 
     ClearProject();
     SwitchDash(0);
-    console.log(SESSION['position'])
+    pos = null;
+    if (SESSION != null) {
+        if (SESSION.hasOwnProperty('position')) {
+            pos = SESSION['position'];
+        }
+    }
+    // console.log(SESSION['position'])
     $.ajax({
         url: "/get_project",
         type: 'POST',
         data: JSON.stringify({
             project: {
-                position: SESSION["position"] ? SESSION["position"] : null,
+                position: pos,
                 section: "project",
             }
         }),
@@ -214,7 +241,7 @@ function CreateProject(position = null) {
                 //                console.log(data);
                 if (data.session) {
                     SESSION = data.session;
-                    // console.log(SESSION)
+                    // console.log(SESSION);
                 }
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
@@ -223,6 +250,9 @@ function CreateProject(position = null) {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -243,12 +273,16 @@ function SelectMarket() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
+                history.pushState(SESSION, null, '');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -270,6 +304,9 @@ function Select3D() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }
@@ -289,7 +326,7 @@ function SelectTrash() {
                 if (data.session) {
                     SESSION = data.session;
                 }
-
+                history.pushState(SESSION, null, '');
                 DashboardCreate([data.json.root_ic], data.project);
             }
         },
@@ -297,6 +334,9 @@ function SelectTrash() {
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
         }
     });
 }

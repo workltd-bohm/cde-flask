@@ -1,25 +1,21 @@
-<div class="comment-container" data-id="{{ comment['id'] }}" data-user="{{ comment['user']['user_id'] }}">
-    <div class="comment-img container">
-        <img class="profile-icon" src="/get_profile_image/{{ comment['user']['picture'] }}"/>
+<div class="activity-comment-box p-2" data-id="{{ comment['id'] }}" data-user="{{ comment['user']['user_id'] }}">
+    <img class="comment-img me-2" src="/get_profile_image/{{ comment['user']['picture'] }}"/>
+    <div class="comment-info">
+        <div class="comment-info-user fw-bold d-inline me-1">{{ comment['user']['username'] }}</div>
+        <div class="comment-info-date d-inline">{{ comment['date'].replace('-', ' @ ') }}</div>
+        <div class="comment-info-text">{{ comment['comment'] }}</div>
     </div>
-    <div class="comment-container-all">
-        <p class="details_date comment-date">{{ comment['date'] }}</p>
-        <div class="comments_field">
-            <div class="comment-inline">
-                <div class="comment-edit-options">
-                    <p class="details_event_user comments">{{ comment['user']['username'] }}</p>
-                    <div class="edit-delete">
-                        {% if comment['user']['user_id'] == session['user']['id'] %}
-                        <i class="material-icons border_color comment-options" onclick="editComment(this)">edit</i>
-                        {% endif %}
+    <div class="comment-options-box pt-2">
+        {% if comment['user']['user_id'] == session['user']['id'] %}
+        <i class="material-icons comment-option" title="Click to edit"
+            onclick="editComment(this)">edit</i>
+        {% endif %}
 
-                        {% if comment['user']['user_id'] == session['user']['id'] or (post is defined and post['user_owner']['id'] == session['user']['id']) %}
-                        <i class="material-icons clear comment-options" onclick="deleteComment(this)">delete</i>
-                        {% endif %}
-                    </div>
-                </div>
-                <p class="details_event comment-events" style="margin-left:20px; margin-right:10px;">{{ comment['comment'] }}</p>
-            </div>
-        </div>
+        {% if comment['user']['user_id'] == session['user']['id'] 
+            or (post is defined and post['user_owner']['id'] == session['user']['id']) 
+            or (is_owner is defined and is_owner == 'True') %}
+        <i class="material-icons comment-option" title="Click to delete"
+            onclick="deleteComment(this)">delete</i>
+        {% endif %}
     </div>
 </div>

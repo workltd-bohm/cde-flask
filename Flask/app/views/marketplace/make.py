@@ -1,5 +1,8 @@
 from app import *
 from uuid import uuid1
+import datetime
+
+import app.views.actions.getters as gtr
 
 @app.route('/make_ticket_bid', methods=['POST'])
 def make_ticket_bid():
@@ -18,8 +21,8 @@ def make_ticket_bid():
         # return resp
         return render_template("dashboard/market/bid_old.html")
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -39,8 +42,8 @@ def make_ticket_bid_all():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -71,8 +74,8 @@ def make_activity_bid():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -106,8 +109,8 @@ def make_edit_bid():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -139,8 +142,8 @@ def make_post_view_activity():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -176,7 +179,7 @@ def make_ticket_post_new():
         description = request_json['data']['name']
     if main.IsLogin():
         response = {
-            'html': render_template("dashboard/market/post_new_form_1.html",
+            'html': render_template("dashboard/market/post_edit_1.html",
                                     ),
             'data': []
         }
@@ -185,8 +188,8 @@ def make_ticket_post_new():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -206,8 +209,8 @@ def make_activity_post():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -275,8 +278,8 @@ def make_view_post():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -320,8 +323,8 @@ def make_edit_post():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -342,8 +345,8 @@ def make_activity_post_new():
         resp.data = json.dumps(response)
         return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -363,14 +366,12 @@ def make_activity_post_edit():
                 req_bids = json.loads(post['bids'])
             for bid_id in req_bids:
                 bids.append(db.get_single_bid(db_adapter, {'bid_id': bid_id})[0])
-            div = []
-            for bid in bids:
-                div.append(bid['offer'])
+
             response = {
                 'html': render_template("dashboard/market/post_edit_activity_1.html",
                                         post=post,
                                         comments=[],
-                                        bids=div,
+                                        bids=bids,
                                         profile_picture=session['user']['picture']
                                         ),
                 'data': []
@@ -386,8 +387,8 @@ def make_activity_post_edit():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -421,6 +422,125 @@ def get_my_posts_popup():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
+
+
+@app.route('/get_filter_activity', methods=['POST'])
+def get_filter_activity():
+    resp = Response()
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_data = json.loads(request.get_data())
+        name = request_data['name']
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
+        if name == 'Projects':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        if name == 'Shared':
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = str(msg.DEFAULT_OK['message'])
+            return resp
+
+        if db.connect(db_adapter):
+            result = None
+            if request_data['project_name'] == 'Shared':
+                result = db.get_ic_object_from_shared(db_adapter, request_data, session['user'])
+            else:
+                project_name = session['project']['name']
+                result = db.get_ic_object(db_adapter, project_name, request_data, name)
+            if result:
+                filter_file = gtr.get_input_file_fixed()
+                details = [x.to_json() for x in result.history]
+                tags = [x.to_json() for x in result.tags]
+                file_name = result.name
+                path = result.path
+                share_link = ''
+                comments = [x.to_json() for x in result.comments]
+                access = [x.to_json() for x in result.access]
+                is_owner = False
+                for a in access:
+                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                        is_owner = True
+                    a['role'] = Role(a['role']).name
+                    m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
+                    a['user']['picture'] = user['picture']
+                    a['user']['username'] = user['username']
+
+                for c in comments:
+                    m, user = db.get_user(db_adapter, {'id': c['user']['user_id']})
+                    c['user']['picture'] = user['picture']
+                    c['user']['username'] = user['username']
+
+                # safely close db connection
+                db.close_connection(db_adapter)
+                if result.parent_id == 'root':
+                    project = db.get_project(db_adapter, session['project']['name'], session['user'])
+                    response = {
+                        'html': render_template("activity/project.html",
+                                                project_name =      session.get("project")["name"],
+                                                user =              session['user'],
+                                                is_owner =          str(is_owner),
+                                                is_iso19650 =       project['is_iso19650'],
+                                                project =           project,
+                                                details =           details,
+                                                tags =              tags,
+                                                comments =          comments,
+                                                file_name =         file_name,
+                                                path =              path,
+                                                share_link =        share_link,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                access =            access
+                                                ),
+                        'data': []
+                    }
+                else:
+                    response = {
+                        'html': render_template("activity/folder.html",
+                                                project_name =      session.get("project")["name"],
+                                                user =              session['user'],
+                                                is_owner =          str(is_owner),
+                                                search =            filter_file,
+                                                details =           details,
+                                                tags =              tags,
+                                                comments =          comments,
+                                                file_name =         file_name,
+                                                path =              path,
+                                                share_link =        share_link,
+                                                parent_id =         result.parent_id,
+                                                ic_id =             result.ic_id,
+                                                access =            access
+                                                ),
+                        'data': []
+                    }
+                # print(response)
+                resp.status_code = msg.DEFAULT_OK['code']
+                resp.data = json.dumps(response)
+                return resp
+            else:
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+                return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+    # @app.template_filter('access')
+    # def aceess_time_check(date):
+    #     date_time_obj = datetime.strptime("2070-04-10T12:10", "%Y-%m-%dT%H:%M")
+    #     if date != 'indefinitely':
+    #         date_time_obj = datetime.strptime(date, "%Y-%m-%dT%H:%M")
+    #     if date > datetime.now().strftime("%Y-%m-%dT%H:%M"):
+    #         return True
+    #     return False
+
+    
+    
+    

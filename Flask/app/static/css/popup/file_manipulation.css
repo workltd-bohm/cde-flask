@@ -1,42 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-
-.circle{
-	position:relative;
+.circle {
+    position: relative;
 }
-.circle select, .circle input{
-	width:4vw;
-	height:4vw;
-	background-color:#666;
-	color:#fff;
-	transition: background 0.6s;
+
+.circle select,
+.circle input {
+    width: 4vw;
+    height: 4vw;
+    background-color: #666;
+    color: #fff;
+    transition: background 0.6s;
     -o-transition: background 0.6s;
     -webkit-transition: background 0.6s;
     -moz-transition: background 0.6s;
     border-radius: 50%;
-	box-shadow:0px 0px 10px rgba(0,0,0,.2);
-	border:none;
-	outline:none;
-	padding-left:5px;
-	margin-top: 20px;
-	font-size:17px;
-	cursor:pointer;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    border: none;
+    outline: none;
+    padding-left: 5px;
+    margin-top: 20px;
+    font-size: 17px;
+    cursor: pointer;
     outline: 0;
     text-align: center;
 }
-.circle .chevron{
-	position:absolute;
-	top:0px;
-	right:0px;
-	text-align:center;
-	line-height:35px;
-	width:30px;
-	height:100%;
-	background-color:#888;
-	pointer-events:none;
-	color:#fff;
+
+.circle .chevron {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    text-align: center;
+    line-height: 35px;
+    width: 30px;
+    height: 100%;
+    background-color: #888;
+    pointer-events: none;
+    color: #fff;
 }
-.circle select option{
-	background-color:#888;
+
+.circle select option {
+    background-color: #888;
 }
 
 .form__group_popup {
@@ -47,9 +50,9 @@
     display: inline;
 }
 
-.rectangle > input{
-    width:180px;
-    height:80px;
+.rectangle>input {
+    width: 180px;
+    height: 80px;
     border: 2px solid #666;
     background: #888;
     -moz-border-radius: 5px;
@@ -59,12 +62,13 @@
 
 .form__group_popup_new {
     position: relative;
-    padding: 15px 0 0;
-    top: 3vw;
-    width: 80%;
+    padding: 25px 0 20px 0;
+    border: none;
+    top: 1vw;
+    width: 90%;
 }
 
-.form__group_popup > label {
+.form__group_popup>label {
     position: absolute;
     top: -80px;
     left: 0px;
@@ -76,22 +80,48 @@
 }
 
 .form__field_popup {
+    position: relative;
     font-family: inherit;
-    width: 80%;
-    border: 0;
-    border-bottom: 2px solid #9b9b9b;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #FA8072;
     outline: 0;
     font-size: 1.2rem;
     color: #777;
     padding: 7px 0;
     background: transparent;
     transition: border-color 0.2s;
-    margin-left: 5px;
+    margin-left: 2px;
 }
+
+.form__field_popup_remane {
+    width: 90%;
+    border: none;
+    border-bottom: 1px solid #666;
+    transition: border-color 0.2s;
+    margin-left: 2px;
+}
+
+.form__field_popup_remane:focus {
+    outline: none;
+    margin-left: 5px;
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image-slice: 1;
+}
+
+.ext {
+    border: 2px solid grey;
+}
+
 .form__field_popup::placeholder {
     color: transparent;
 }
-.form__field_popup:placeholder-shown ~ .form__label_popup {
+
+
+/* .form__field_popup:placeholder-shown~.form__label_popup {
     margin-left: 5px;
     font-size: 1.3rem;
     cursor: text;
@@ -106,7 +136,7 @@
     transition: 0.2s;
     font-size: 1rem;
     color: #9b9b9b;
-}
+} */
 
 .form__field_popup:focus {
     margin-left: 5px;
@@ -116,7 +146,9 @@
     border-image: linear-gradient(to right, #11998e, #38ef7d);
     border-image-slice: 1;
 }
-.form__field_popup:focus ~ .form__label_popup {
+
+
+/* .form__field_popup:focus~.form__label_popup {
     position: absolute;
     top: -80px;
     display: block;
@@ -124,9 +156,46 @@
     font-size: 1rem;
     color: #11998e;
     font-weight: 700;
-}
+} */
+
 
 /* reset input */
-.form__field_popup:required, .form__field_popup:invalid {
+
+.form__field_popup:required,
+.form__field_popup:invalid {
     box-shadow: none;
+}
+
+.smart-naming-labels {
+    position: relative;
+    display: flex;
+}
+
+.file_naming_field {
+    position: relative;
+    /* width: 6%;
+    height: auto; */
+    margin: 0 5px 0 5px;
+    text-align: center;
+}
+
+.file_naming_field_role {
+    position: relative;
+    margin: 0 5px 0 5px;
+    text-align: center;
+}
+
+.file_naming_field_name {
+    width: 300px;
+    height: 60px;
+}
+
+.file_naming_field_name>input {
+    width: 95%;
+}
+
+.file_naming_titles {
+    font-size: 0.5vw;
+    width: 70px;
+    text-align: center;
 }

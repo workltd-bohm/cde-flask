@@ -59,8 +59,8 @@ def create_post():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -72,7 +72,7 @@ def edit_post():
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
     if request.get_data():
         request_json['user_owner'] = session['user']
-        request_json['product'] = {"quantity": request_json['quantity'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
+        request_json['product'] = {"quantity": request_json['product'], 'product_id': str(uuid.uuid1()), 'name': 'default name'}
         request_json['date_edited'] = datetime.now().strftime("%d.%m.%Y-%H:%M:%S")
         request_json['documents'] = {'3d-view': request_json['3d-view'], 'doc': request_json['doc'],
                                      'image': request_json['image']}
@@ -97,8 +97,8 @@ def edit_post():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
     
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -132,8 +132,8 @@ def get_all_posts():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -188,6 +188,10 @@ def get_all_posts_planetary():
             resp.status_code = msg.DB_FAILURE['code']
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
+
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
 
 
 @app.route('/get_my_posts_planetary', methods=['POST'])
@@ -251,6 +255,10 @@ def get_my_posts_planetary():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
 
 @app.route('/get_my_posts', methods=['POST', 'GET'])
 def get_my_posts():
@@ -286,8 +294,8 @@ def get_my_posts():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -312,6 +320,11 @@ def get_single_post():
             resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
             return resp
 
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
 
 @app.route('/get_bids_for_post', methods=['POST', 'GET'])
 def get_bids_for_post():
@@ -335,8 +348,8 @@ def get_bids_for_post():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -383,8 +396,8 @@ def upload_post_file():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -418,8 +431,8 @@ def remove_post_file():
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
 
@@ -458,6 +471,6 @@ def get_post_image(file_id):
             return resp
 
     resp = Response()
-    resp.status_code = msg.DEFAULT_ERROR['code']
-    resp.data = str(msg.DEFAULT_ERROR['message'])
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
