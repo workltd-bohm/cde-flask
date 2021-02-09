@@ -2,8 +2,10 @@
 
 .sidebar
 {
-    width: 5%;
+    width: 4vw;
+    min-width: 64px;
     height: 100vh;
+    
     background: var(--cur-dashboard-bg);
     transition: all .3s ease;
 }
@@ -28,8 +30,10 @@
 
 .sidebar li img {
     display: block;
-    max-height: 5vh;
-    width: auto;
+    width: 100%;
+    height: auto;
+
+    object-fit: contain;
 
     margin-left: auto;
     margin-right: auto;
