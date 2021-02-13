@@ -202,6 +202,7 @@ function sendComment(el) {
             div.prepend(data);
             $('#comment').val('');
             div.animate({ scrollTop: "0" });
+            allProjectComments = divWithAllComments.innerHTML;
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -304,6 +305,7 @@ function updateComment(el, elem) {
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
+            allProjectComments = divWithAllComments.innerHTML;
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -353,6 +355,7 @@ function deleteComment(elem) {
         success: function(data) {
             elem.remove();
             MakeSnackbar(data);
+            allProjectComments = divWithAllComments.innerHTML;
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
