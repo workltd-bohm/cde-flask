@@ -55,13 +55,13 @@ function CreateSpace(data) {
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
 
-    g_root.universe.selectAll("#Touch")
-        .on("mouseover", function(){
-            if (g_project.overlay){
-                g_project.overlay.remove();
-                g_project.overlay = false;
-            }
-        });
+    // g_root.universe.selectAll("#Touch")
+    //     .on("mouseover", function(){
+    //         if (g_project.overlay){
+    //             g_project.overlay.remove();
+    //             g_project.overlay = false;
+    //         }
+    //     });
 }
 
 function AddSun(obj, data) {
