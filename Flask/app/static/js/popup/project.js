@@ -175,6 +175,7 @@ function createProject(files, folders) {
     counter = 1;
     console.log(folders_only);
     if (folders_only) {
+        uploadInProgress = true;
         sendFile(files, folders, current);
     } else {
         console.log(files[current].path);
@@ -201,7 +202,7 @@ function createProject(files, folders) {
             success: function(data) {
                 //            console.log(data);
                 listing.innerHTML = "Project " + project_name + ' ' + data;
-
+                uploadInProgress = true;
                 sendFile(files, folders, current);
 
             },
@@ -216,6 +217,8 @@ function createProject(files, folders) {
         });
     }
 }
+
+var uploadInProgress = false;
 
 // Function to send a file, call PHP backend
 function sendFile(files, folders, current, fileData = {}) {
@@ -289,6 +292,7 @@ function sendFile(files, folders, current, fileData = {}) {
                 //                PopupClose();
                 //                console.log(data);
                 if (data == "Successfully uploaded") {
+                    uploadInProgress = false;
                     //                    counter = 1;
                     CheckSession();
                     //CreateProject();
@@ -300,7 +304,10 @@ function sendFile(files, folders, current, fileData = {}) {
                 // Show percentage
                 box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
                 counter++;
-                sendFile(files, folders, current + 1, fileData);
+                if (uploadInProgress)
+                    sendFile(files, folders, current + 1, fileData);
+                // else
+                //     stopUploading();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -313,6 +320,29 @@ function sendFile(files, folders, current, fileData = {}) {
         }
     });
 
+}
+
+function stopUploading() {
+    $.ajax({
+        url: 'stop_uploading',
+        type: 'POST',
+        // data: JSON.stringify(data),
+        processData: false,
+        contentType: false,
+        //        timeout: 20000,
+        success: function(data) {
+            MakeSnackbar(data);
+
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
 }
 
 function adjustBox() {

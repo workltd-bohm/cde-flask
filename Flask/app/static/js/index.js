@@ -24,7 +24,7 @@ window.onload = function() {
     // console.log('a')
     if (typeof history.pushState === "function") {
         // console.log('here0.0');
-        console.log(SESSION);
+        // console.log(SESSION);
         //        SESSION['project'] = null;
         // history.pushState(SESSION, null, null);
         window.onpopstate = function() {
@@ -42,7 +42,7 @@ window.onload = function() {
             // Will NOT handle refresh, use onbeforeunload for this.
         };
     } else {
-        console.log('here2');
+        // console.log('here2');
         var ignoreHashChange = true;
         window.onhashchange = function() {
             if (!ignoreHashChange) {

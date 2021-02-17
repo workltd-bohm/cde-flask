@@ -6,6 +6,10 @@ from datetime import datetime
 from app import *
 
 
+# if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+# temp_upload_list = {}
+
+
 @app.route('/clear_projects')
 def clear_projects():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -74,6 +78,12 @@ def create_project():
         # print('******', project.to_json())
         if db.connect(db_adapter):
             result, id = db.upload_project(db_adapter, project, user)
+
+            # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+            # if result == msg.PROJECT_SUCCESSFULLY_ADDED:
+            #     if session['user']['id'] not in temp_upload_list:
+            #         temp_upload_list[session['user']['id']] = {}
+            #     temp_upload_list[session['user']['id']]['project'] = {'project_id': id, 'time': datetime.now()}
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
@@ -165,6 +175,16 @@ def upload_existing_project():
                         project.added = False
                         message, ic = project.update_ic(ic_new, parent_ic)
                         # message, ic = db.create_folder(db_adapter, project.name, ic_new)
+
+                        # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                        # if message == msg.IC_SUCCESSFULLY_ADDED:
+                        #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                        #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                        #     else:
+                        #         if session['user']['id'] not in temp_upload_list:
+                        #             temp_upload_list[session['user']['id']] = {}
+                        #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
+
                         parent_ic = ic_new
                         if message == msg.IC_ALREADY_EXISTS:
                             parent_id = ic.ic_id
@@ -177,14 +197,6 @@ def upload_existing_project():
                         parent_directory = ('/').join(current_file_path_backup[:-1])
                         details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
                                           ('').join(['.', file_name.split('.')[-1]]))
-
-
-                        # {
-                        #     "tag": "#XX, No volume/system",
-                        #     "color": "gray",
-                        #     "iso": "ISO19650",
-                        #     "key": "project_volume_or_system"
-                        # }
 
                         tags = []
 
@@ -208,6 +220,15 @@ def upload_existing_project():
                         if len(file) == 0:
                             return request.form['path']
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
+
+                        # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                        # if result == msg.IC_SUCCESSFULLY_ADDED:
+                        #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                        #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                        #     else:
+                        #         if session['user']['id'] not in temp_upload_list:
+                        #             temp_upload_list[session['user']['id']] = {}
+                        #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
 
                         if result != msg.IC_SUCCESSFULLY_ADDED:
                             logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -268,6 +289,15 @@ def upload_existing_project():
 
                                 project.added = False
                                 message, ic = project.update_ic(ic_new, parent_ic)
+
+                                # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                                # if message == msg.IC_SUCCESSFULLY_ADDED:
+                                #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                                #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                                #     else:
+                                #         if session['user']['id'] not in temp_upload_list:
+                                #             temp_upload_list[session['user']['id']] = {}
+                                #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
                                 # print('ovde', ic_new.to_json())
                                 print(message)
                                 # message, ic = db.create_folder(db_adapter, project.name, ic_new)
@@ -315,6 +345,36 @@ def upload_project():
             resp.data = str(msg.DB_FAILURE['message'])
             return resp
 
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/stop_uploading', methods=['POST'])
+def stop_uploading():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        # request_data = json.loads(request.get_data())
+        # logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        user = session.get('user')
+        
+        # DELETE UPLOADED ICs
+        if db.connect(db_adapter):
+            # print(temp_upload_list)
+            # if result:
+            #     logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = msg.DEFAULT_OK['message']
+            return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+    
     resp = Response()
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
