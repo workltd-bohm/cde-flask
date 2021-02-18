@@ -1,8 +1,36 @@
-var SWGDefs = SVG.append("defs");
+let SWGDefs = SVG.append("defs");
 
 // -------------------------------------------------------
+let g_SmallGrid = SWGDefs.append("pattern")
+    .attr("id", "smallGrid")
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", "10")
+    .attr("height", "10");
 
-var g_GradientShadow = SWGDefs.append("radialGradient")
+g_SmallGrid.append("path")
+    .attr("d", "M10,0 L0,0 0,10")
+    .attr("fill", "none")
+    .attr("stroke", "gray")
+    .attr("stroke-width", "0.5");
+
+let g_Grid = SWGDefs.append("pattern")
+    .attr("id", "grid")
+    .attr("width", "100")
+    .attr("height", "100")
+    .attr("patternUnits", "userSpaceOnUse");
+
+g_Grid.append("path")
+    .attr("d", "M 100 0 L 0 0 0 100")
+    .attr("fill", "none")
+    .attr("stroke", "gray")
+    .attr("stroke-width", "1");
+
+g_Grid.append("rect")
+    .attr("width", "100")
+    .attr("height", "100")
+    .attr("fill", "url(#smallGrid)");
+
+let g_GradientShadow = SWGDefs.append("radialGradient")
     .attr("id", "gradient_shadow")
     .attr("r", PLANET_SHADOW_RAD)
     .attr("cx", "15%")
@@ -13,7 +41,7 @@ g_GradientShadow.append("stop").attr("offset", "0%").style("stop-color", "rgba(0
 g_GradientShadow.append("stop").attr("offset", "50%").style("stop-color", "rgba(0,0,0,0.35)");
 g_GradientShadow.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.65)");
 
-var g_GradientShadowSun = SWGDefs.append("radialGradient")
+let g_GradientShadowSun = SWGDefs.append("radialGradient")
     .attr("id", "gradient_shadow_sun")
     .attr("r", PLANET_SHADOW_RAD)
     .attr("cx", "50%")
@@ -25,7 +53,7 @@ g_GradientShadowSun.append("stop").attr("offset", "10%").style("stop-color", "rg
 g_GradientShadowSun.append("stop").attr("offset", "50%").style("stop-color", "rgba(0,0,0,0.45)");
 g_GradientShadowSun.append("stop").attr("offset", "100%").style("stop-color", "rgba(0,0,0,0.75)");
 
-var g_FilterShadow = SWGDefs.append("filter")
+let g_FilterShadow = SWGDefs.append("filter")
     .attr("id", "filter_shadow")
     .attr("x", "0%")
     .attr("y", "0%")
@@ -38,7 +66,7 @@ g_FilterShadow.append("feOffset")
     .attr("dx", "1")
     .attr("dy", "1");
 
-var g_FilterBlur = SWGDefs.append("filter")
+let g_FilterBlur = SWGDefs.append("filter")
     .attr("id", "filter_blur")
     .attr("x", "-20%")
     .attr("y", "-20%")
@@ -48,7 +76,7 @@ g_FilterBlur.append("feGaussianBlur")
     .attr("stdDeviation", "10 10")
     .attr("result", "blur");
     
-var g_PatternSunFixated = SWGDefs.append("pattern")
+let g_PatternSunFixated = SWGDefs.append("pattern")
     .attr("id", "patern_sun_fix")
     .attr("x", "0%")
     .attr("y", "-0%")
@@ -62,7 +90,7 @@ var g_PatternSunFixated = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_SUN);
 
-var g_PatternSunBg = SWGDefs.append("pattern")
+let g_PatternSunBg = SWGDefs.append("pattern")
     .attr("id", "patern_sun_bg")
     .attr("x", "0%")
     .attr("y", "-0%")
@@ -76,7 +104,7 @@ var g_PatternSunBg = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_SUN_BG);
 
-var g_GradientEclipse = SWGDefs.append("radialGradient")
+let g_GradientEclipse = SWGDefs.append("radialGradient")
     .attr("id", "gradient_eclipse")
     .attr("r", PLANET_SHADOW_RAD)
     .attr("cx", "50%")
@@ -89,7 +117,7 @@ g_GradientEclipse.append("stop").attr("offset", "50%").style("stop-color", "rgba
 g_GradientEclipse.append("stop").attr("offset", "40%").style("stop-color", "rgba(255, 255, 255, 0.1)");
 g_GradientEclipse.append("stop").attr("offset", "60%").style("stop-color", "rgba(255, 255, 255, 0.0)");*/
 
-var g_FilterEclipsePlanet = SWGDefs.append("filter")
+let g_FilterEclipsePlanet = SWGDefs.append("filter")
     .attr("id", "filter_eclipse_planet")
     .attr("x", "-100%")
     .attr("y", "-100%")
@@ -99,7 +127,7 @@ g_FilterEclipsePlanet.append("feGaussianBlur")
     .attr("stdDeviation", "1 1")
     .attr("result", "blur");
 
-var g_FilterEclipse = SWGDefs.append("filter")
+let g_FilterEclipse = SWGDefs.append("filter")
     .attr("id", "filter_eclipse_sun")
     .attr("x", "-100%")
     .attr("y", "-100%")
@@ -109,7 +137,7 @@ g_FilterEclipse.append("feGaussianBlur")
     .attr("stdDeviation", "2 2")
     .attr("result", "blur");
 
-var g_PatternSunRotate = SWGDefs.append("pattern")
+let g_PatternSunRotate = SWGDefs.append("pattern")
     .attr("id", "patern_sun_rot")
     .attr("x", "0%")
     .attr("y", "-150%")
@@ -123,7 +151,7 @@ var g_PatternSunRotate = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_SUN);
 
-var g_PatternPlanetFixated = SWGDefs.append("pattern")
+let g_PatternPlanetFixated = SWGDefs.append("pattern")
     .attr("id", "patern_planet_fix")
     .attr("x", "0%")
     .attr("y", "-0%")
@@ -137,7 +165,7 @@ var g_PatternPlanetFixated = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_PLANET);
 
-var g_PatternPlanetRotate = SWGDefs.append("pattern")
+let g_PatternPlanetRotate = SWGDefs.append("pattern")
     .attr("id", "patern_planet_rot")
     .attr("x", "0%")
     .attr("y", "-150%")
@@ -151,7 +179,7 @@ var g_PatternPlanetRotate = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_PLANET);
 
-var g_PatternPlanetFile = SWGDefs.append("pattern")
+let g_PatternPlanetFile = SWGDefs.append("pattern")
     .attr("id", "patern_planet_file")
     .attr("x", "0%")
     .attr("y", "-0%")
@@ -165,7 +193,7 @@ var g_PatternPlanetFile = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_PLANET_FILE);
 
-var g_PatternPlanetFolder = SWGDefs.append("pattern")
+let g_PatternPlanetFolder = SWGDefs.append("pattern")
     .attr("id", "patern_planet_folder")
     .attr("x", "0%")
     .attr("y", "-0%")
@@ -179,7 +207,7 @@ var g_PatternPlanetFolder = SWGDefs.append("pattern")
     .attr("height", "1")
     .attr("xlink:href", IMG_PATH_PLANET_FOLDER);
 
-var g_PatternPlanetEmpty = SWGDefs.append("pattern")
+let g_PatternPlanetEmpty = SWGDefs.append("pattern")
     .attr("id", "patern_planet_empty")
     .attr("x", "0%")
     .attr("y", "-0%")

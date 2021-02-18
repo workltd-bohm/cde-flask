@@ -368,7 +368,7 @@ function CreateSortMenu(){
     menu_item.appendChild(text);
     
     menu_item.onclick = function(){
-        SortByName(g_root.universe.data);
+        SortByName(g_project.current_ic);
     }
 
     dropdown.appendChild(menu_item);
@@ -389,7 +389,7 @@ function CreateSortMenu(){
     menu_item.appendChild(text);
 
     menu_item.onclick = function(){
-        SortByDate(g_root.universe.data);
+        SortByDate(g_project.current_ic);
     }
 
     dropdown.appendChild(menu_item);

@@ -88,6 +88,7 @@ var g_project = {
         history_num : 0,
         clck_start : 0,
         clck_stop : 0,
+        current_ic : null,
         hist_path : null,
         hist_path_len : 0,
         paths_path : null,

@@ -39,7 +39,7 @@
 }
 
 #Touch {
-    fill : rgba(0, 0, 0, 0.0);
+    fill : url("#grid");
     stroke-width: 0;
 }
 

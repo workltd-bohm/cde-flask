@@ -1,7 +1,6 @@
 // -------------------------------------------------------
 
 function CreateSpace(data) {
-    g_root.universe.data = data;
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
@@ -23,6 +22,7 @@ function CreateSpace(data) {
         g_project.selection = false;
     }
 
+    g_project.current_ic = data;
     g_project.display_name.text("");
 
     // console.log(g_root.universe.data.overlay_type);
@@ -474,13 +474,15 @@ function DashboardCreate(data, project_position = null) {
 
     //g_project.project_position = project_position;
 
+    g_root.universe.data = data[0];
+
     CreateDisplayName();
 
     PathCreation();
 
     HistoryCreation();
 
-    ProjectPosiotionSet(data[0]);
+    ProjectPosiotionSet(g_root.universe.data);
 
     // 143 times per second
     d3.timer(function(elapsed) {
