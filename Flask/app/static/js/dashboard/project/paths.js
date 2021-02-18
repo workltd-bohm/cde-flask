@@ -78,7 +78,7 @@ function AddPath(data){
     DrawPath(g_project.paths, d);
 }
 
-function PathCreation(data){
+function PathCreation(){
     g_project.hist_path_len = 0;
     g_project.paths_path = SVG.append("g")
         .attr("id","Path")

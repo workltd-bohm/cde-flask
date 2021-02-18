@@ -48,3 +48,49 @@
     font-size: 1.5em;
     text-anchor: middle;
 }
+
+.workspace
+{
+    position: relative;
+}
+
+.hover-menu
+{
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    z-index: 5;
+}
+
+.hover-menu-item
+{
+    margin-right: 1em;
+    box-shadow: .1em .1em 1em gray;
+}
+
+.hover-menu > *
+{
+    display: inline-block;
+    background-color: var(--dashboard-bg-light);
+    cursor: pointer;
+}
+
+.hover-menu span
+{
+    vertical-align: middle;
+}
+
+.hover-menu a
+{
+    text-decoration: none;
+}
+
+.hover-menu a:hover
+{
+    color: var(--neon-blue);
+}
+
+.sort-dropdown > *
+{
+    display: block;
+}

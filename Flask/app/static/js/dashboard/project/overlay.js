@@ -322,4 +322,117 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
+function CreateSortMenu(){
+    $(".hover-menu").empty();
+
+    let sort_menu = document.createElement("div");
+    sort_menu.className = "hover-menu-item px-3 py-2";
+
+    let button = document.createElement("a");
+    button.className = "btn-sort";
+
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort";
+
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Sort";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    button.onclick = function(){
+        $(".sort-dropdown").toggleClass("d-none");
+    }
+
+    // add button to sort-menu
+    sort_menu.appendChild(button);
+
+    let dropdown = document.createElement("div");
+    dropdown.className = "sort-dropdown d-none";
+
+    // by alphabet option
+    let menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort_by_alpha";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By name";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+    
+    menu_item.onclick = function(){
+        SortByName(g_root.universe.data);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // by date option
+    menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "schedule";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By date";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function(){
+        SortByDate(g_root.universe.data);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // add dropdown to sort-menu
+    sort_menu.appendChild(dropdown);
+
+    $(".hover-menu").append(sort_menu);
+}
+
+function SortByName(data){
+    if (data.sub_folders.length <= 1) 
+    {
+        MakeSnackbar("Nothing to sort");
+        return;
+    }
+
+    let items = data.sub_folders;
+    let item_tmp;
+    for(let i = 0; i < items.length - 1; i++)
+    {
+        for(let j = i+1; j < items.length; j++) 
+        {
+            let sorted = items[j].name.localeCompare(items[i].name);
+            
+            if (sorted === -1){ // -1 = str1 is sorted before str2
+                item_tmp = items[j];
+                items.splice(j, 1);
+                items.splice(i, 0, item_tmp);
+                i = 0;  // reset loop
+            }
+        }
+    }
+
+    d3.selectAll("g.star").remove();
+    CreateSpace(data);
+    
+    MakeSnackbar("Items sorted alphabetically.");
+}
+
+function SortByDate(data){
+    if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
+
+    alert('To be implemented');
+}
 // -------------------------------------------------------

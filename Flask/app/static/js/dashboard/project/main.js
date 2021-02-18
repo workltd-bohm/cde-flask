@@ -1,6 +1,7 @@
 // -------------------------------------------------------
 
 function CreateSpace(data) {
+    g_root.universe.data = data;
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
@@ -46,6 +47,7 @@ function CreateSpace(data) {
     // g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
+    // create sun
     g_root.universe.selectAll("g")
         .data([data])
         .enter()
@@ -187,6 +189,7 @@ function AddSun(obj, data) {
 
     AddText(data, "star");
 
+    // create children
     if (data.sub_folders) {
         data.values.children.selectAll("g")
             .data(data.sub_folders)
@@ -194,6 +197,11 @@ function AddSun(obj, data) {
             .append("g")
             .attr("class", "planet dom")
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
+
+        CreateSortMenu();
+
+        /*<a class="identification">
+        <span class="material-icons">sort</span><span class="ms-1">Sort</span></a>*/
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -464,16 +472,15 @@ function DashboardCreate(data, project_position = null) {
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
-    g_root.universe.data = data[0];
     //g_project.project_position = project_position;
 
     CreateDisplayName();
 
-    PathCreation(data);
+    PathCreation();
 
-    HistoryCreation(data);
+    HistoryCreation();
 
-    ProjectPosiotionSet(g_root.universe.data);
+    ProjectPosiotionSet(data[0]);
 
     // 143 times per second
     d3.timer(function(elapsed) {

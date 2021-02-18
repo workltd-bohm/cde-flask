@@ -185,8 +185,9 @@ function AnimateUniverse() {
         .attr("transform", "translate(" + (g_project.width) + "," + (g_PathRadius * HISTORY_ORBIT_COEF) + ")")
 
     // position display name
-    g_project.display_name
-        .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
+    if (g_project.display_name)
+        g_project.display_name
+            .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
 }
 
 function AnimateStar(data) {
