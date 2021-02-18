@@ -39,17 +39,6 @@ td {
     z-index: 0;
 }
 
-#index-activity {
-    /* width: 15%; */
-    height: 100vh;
-    vertical-align: top;
-    z-index: 5;
-    /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
-  -moz-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
-  box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);*/
-    /*width: 28vw !important;*/
-}
-
 a:link,
 a:visited {
     text-decoration: none;
@@ -351,46 +340,36 @@ body {
     font-size: 2.5vh;
 }
 
-.terminal-div {
-    position: absolute;
+.terminal {
+    /* position: absolute;
     top: 8vh;
-    left: 120px;
-    border: none;
-    width: 25%;
+    left: 120px; */
     /*border: 2px solid transparent;
-  -webkit-animation: pulse 3s;
-  -webkit-animation-iteration-count: infinite;
-  animation: pulse 3s;
-  animation-iteration-count: infinite;*/
-    border-bottom: 2px solid var(--neon-blue);
-    background: transparent;
-    color: #bbb;
-    outline: 0;
-    font-family: monospace;
-    caret-color: green;
-    display: flex;
+    -webkit-animation: pulse 3s;
+    -webkit-animation-iteration-count: infinite;
+    animation: pulse 3s;
+    animation-iteration-count: infinite;*/
+    /* border-bottom: 2px solid var(--neon-blue); */
+    position: relative;
+    width: max(25vw, 400px);
 }
 
-.terminal {
-    /*-webkit-animation: pulse 3s;
-  -webkit-animation-iteration-count: infinite;
-  animation: pulse 3s;
-  animation-iteration-count: infinite;*/
+.terminal-input {
     width: 100%;
     border: none;
-    background: transparent;
-    /*color: green;*/
-    color: #bbb;
-    font-size: 17px;
-    outline: 0;
-    /*font-family: monospace;*/
-    /*caret-color: green;*/
-    caret-color: #bbb;
-    margin-left: 5px;
-    margin-bottom: 5px;
+    outline: none;
+    font-family: monospace;
+
+    color: var(--dashboard-text-light);
+    background-color: transparent;
+    backdrop-filter: contrast(.8);
+    caret-color: var(--neon-blue);
 }
 
-.terminal-span {
+.terminal-x {
+    position: absolute;
+    right: 0;
+    padding: 2px 6px;
     cursor: pointer;
 }
 
@@ -405,7 +384,7 @@ body {
     opacity: 1;
 }
 
-.terminal-div input:focus+i {
+.terminal-input:focus + i {
     display: none;
 }
 

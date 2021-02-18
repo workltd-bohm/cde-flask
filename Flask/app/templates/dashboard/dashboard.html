@@ -16,6 +16,8 @@
         const IMG_PATH_PLANET_EMPTY =   "{{ url_for('static', filename='img/brush23.png') }}";
         const PROJECT_PATH =            "{{ url_for('static', filename='js/dashboard/data.json') }}";
     </script>
+    
+    {% include 'dashboard/topbar.html' %}
     <svg id="PROJECT"></svg>
     <div id="MARKET"></div>
     <div id="EDITOR"></div>

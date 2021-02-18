@@ -3,9 +3,13 @@
 
 function WindowResize(){
     var dash = $DASHBOARD;
+    let offX = $SVG.offset().left;
+    let offY = $SVG.offset().top;
 
     var dash_w = dash.width();
-    var dash_h = dash.height();
+    var dash_h = dash.height()-offY;
+    
+    $SVG.height(dash_h);
 
     g_project.width = dash_w;
     g_project.height = dash_h;

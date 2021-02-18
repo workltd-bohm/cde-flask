@@ -22,6 +22,8 @@ function CreateSpace(data) {
         g_project.selection = false;
     }
 
+    g_project.display_name.text("");
+
     // console.log(g_root.universe.data.overlay_type);
     // console.log(g_root.universe.data);
     // console.log(data);
@@ -62,6 +64,39 @@ function CreateSpace(data) {
     //             g_project.overlay = false;
     //         }
     //     });
+
+    // add path to a top bar
+    if (SESSION.position) {
+        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        if (found) {
+            $(".info-path-text").empty();
+            var path = found[0].reverse();
+            
+            for (let add of path) {
+                add.box = {...g_box };
+                add.values = {...add.values };
+                
+                let span = document.createElement("span");
+                span.className = "path-link";
+                span.textContent = add.name;
+
+                span.onclick = function() {
+                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    d3.selectAll("g.star").remove();
+                    g_project.paths = add.paths_path.back;
+                    g_project.hist_path_len = add.paths_path.start;
+                    CreateSpace(add);
+                }
+
+                $(".info-path-text").append(span);
+
+                let slash = document.createElement("span");
+                slash.textContent = "/";
+                $(".info-path-text").append(slash); 
+            }
+        }
+
+    }
 }
 
 function AddSun(obj, data) {
@@ -398,6 +433,7 @@ function ProjectPosiotionSet(data) {
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
+        // console.log(found);
         if (found) {
             var path = found[0].reverse()
                 // console.log(path);
@@ -428,6 +464,8 @@ function DashboardCreate(data, project_position = null) {
 
     g_root.universe.data = data[0];
     //g_project.project_position = project_position;
+
+    CreateDisplayName();
 
     PathCreation(data);
 

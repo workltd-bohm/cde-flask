@@ -91,6 +91,7 @@ var g_project = {
         hist_path : null,
         hist_path_len : 0,
         paths_path : null,
+        display_name : null,
         overlay : null,
         selection : null,
         move : null,

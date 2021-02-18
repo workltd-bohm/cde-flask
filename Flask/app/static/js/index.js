@@ -33,7 +33,7 @@ window.onload = function() {
             // console.log(history);
             //            console.log(history.state);
             //            console.log(SESSION);
-            SESSION = history.state
+            SESSION = history.state;
                 //            console.log(SESSION);
 
             // this function is the one that should be uncommented

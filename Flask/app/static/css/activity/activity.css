@@ -3,13 +3,13 @@
 .activity-menu
 {
     height: 100vh;
-    width: 5%;
+    width: 0%;
     transition: 0.5s ease all;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-/* $("#activity-container").toggleClass("d-none"); */ 
+/* $("#activity-container").toggleClass("d-none"); */
 
 .activity-menu.opened
 {
@@ -57,7 +57,7 @@
 .activity-arrow
 {
     position: relative;
-    color: var(--activity-menu-bg-light);
+    color: var(--login-bg-color);
     font-size: 50px;
     top: 50vh;
     text-align: center;
@@ -519,64 +519,3 @@ textarea, input, button
     0%      {opacity: 0; left: -2em;}
     100%    {opacity: 1; left: 0;}
 }
-
-/* .activity-menu
-{
-    height: 100vh;
-    width: 5%;
-
-    padding: 0;
-    margin: 0;
-
-    z-index: 2;
-    transition: all 0.3s;
-}
-
-.activity-menu.opened
-{
-    width: 25vw;
-    background-color: var(--activity-menu-bg-light);
-}
-
-#activity-body{
-    display: inline-block;
-    width: fill;
-}
-
-.activity-button
-{
-    float: left;
-    width: 100%;
-    height: 100%;
-
-    background-color: #47474700;
-    transition: .25s ease background;
-
-    cursor: pointer;
-}
-
-.activity-menu.opened .activity-button
-{
-    width: 50px;
-}
-
-.activity-button:hover
-{
-    background-color: #1b1b1b85;
-    transition: .25s ease all;
-}
-
-.activity-menu.opened .activity-button:hover
-{
-    background-color: #cccccc;
-    transition: .25s ease all;
-}
-
-.activity-arrow
-{
-    position: relative;
-    top: 50%;
-    transform: translate(0, -50%);
-    font-size: 50px;
-    color: var(--activity-menu-bg-light);
-} */

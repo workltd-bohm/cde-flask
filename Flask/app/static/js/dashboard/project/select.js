@@ -113,10 +113,12 @@ function SelectionCreate(obj, data) {
         .attr("class","item")
         .each(function(d, i){AddSelection(d3.select(this), d, data, i);});
 
+    // selection menu
     data.selection.allgroup = data.selection.object.append("g")
         .attr("class","selection allgroup")
-        .attr("transform","translate(0, "+(-g_OverlayRadius*CHECKED_ALLGROUP_OFFSET)+")");
-
+        .attr("transform","translate(" + (-g_project.width_h + g_OverlayRadius * 2) + ", " + (-g_project.height_h + g_OverlayRadius) + ")");
+    
+    // vertical line
     data.selection.allgroup.append("rect")
         .attr("class", "selection text_allgroup")
         .attr("x",0)

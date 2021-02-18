@@ -11,6 +11,7 @@ $( document ).ready(function(){
     //d-none
     $(".activity-button").click(function(){
         $(".activity-menu").toggleClass("opened");
+        $(".activity-menu").toggleClass("p-0");
     });
     
     $(".menu-fixed > .close").click(function(d){

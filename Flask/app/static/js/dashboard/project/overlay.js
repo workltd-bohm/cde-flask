@@ -85,6 +85,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     var type = g_OverNone;
     switch (data.overlay_type) {
         case "ic":
+            g_project.display_name.text(data.name);
             type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
             break;
         case "user":
@@ -166,6 +167,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
+            
+            // reset display text
+            g_project.display_name.text("");
         })
         .on("mousedown", function(d) {
             if (!data.values.sun) ClickStart(function(d) {}, data);

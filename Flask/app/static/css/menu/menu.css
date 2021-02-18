@@ -6,7 +6,7 @@
     min-width: 64px;
     height: 100vh;
     
-    background: var(--cur-dashboard-bg);
+    background: var(--dashboard-bg-light);
     transition: all .3s ease;
 }
 
@@ -55,4 +55,27 @@
 .sidebar li:nth-last-child(1)
 {
     margin-top: auto;
+}
+
+.topbar, .activity-tab-menu
+{
+    min-height: 40px;
+    height: 4vh;
+    background-color: var(--side-menu);
+}
+
+.topbar
+{
+    display: block;
+    width: 100%;
+}
+
+.path-link
+{
+    cursor: pointer;
+}
+
+.path-link:hover
+{
+    color: var(--neon-blue);
 }

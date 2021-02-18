@@ -597,7 +597,7 @@ function terminalAutocomplete(inp, arr) {
         currentFocus = -1;
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
+        a.setAttribute("class", "autocomplete-items ps-1");
         this.parentNode.appendChild(a);
         arr = currentArr;
         //      console.log(arr);
