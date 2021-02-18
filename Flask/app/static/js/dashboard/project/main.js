@@ -173,7 +173,11 @@ function AddSun(obj, data) {
         .attr("class", "star select")
         .attr("r", g_SunRadius)
         .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+            if (!g_project.move && g_root.zoom) 
+            {
+                OverlayDestroy();
+                OverlayCreate(d3.select(this), d, data);
+            }
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){
@@ -199,9 +203,7 @@ function AddSun(obj, data) {
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
 
         CreateSortMenu();
-
-        /*<a class="identification">
-        <span class="material-icons">sort</span><span class="ms-1">Sort</span></a>*/
+        CreateSelectMenu()
     }
 
     // data.values.select = data.values.this.append("circle")

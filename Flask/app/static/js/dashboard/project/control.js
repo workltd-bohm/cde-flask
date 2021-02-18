@@ -148,6 +148,8 @@ function SelectPlanet(data){
         }
     }
 
+    document.getElementById("select-all").checked = true;
+    document.getElementById("select-all").indeterminate = true;
     data.values.data.values.text.style("opacity", 100);
     g_project.overlay.remove();
     g_project.overlay = false;

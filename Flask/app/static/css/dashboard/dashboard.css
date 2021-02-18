@@ -39,7 +39,7 @@
 }
 
 #Touch {
-    fill : url("#grid");
+    fill : rgba(0,0,0,0.0);
     stroke-width: 0;
 }
 
@@ -64,6 +64,8 @@
 
 .hover-menu-item
 {
+    min-height: 40px;
+    vertical-align: top;
     margin-right: 1em;
     box-shadow: .1em .1em 1em gray;
 }
@@ -75,7 +77,7 @@
     cursor: pointer;
 }
 
-.hover-menu span
+.hover-menu span, .hover-menu input, .hover-menu label
 {
     vertical-align: middle;
 }

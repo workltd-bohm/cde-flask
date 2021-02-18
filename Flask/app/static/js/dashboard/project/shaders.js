@@ -1,34 +1,34 @@
 let SWGDefs = SVG.append("defs");
 
 // -------------------------------------------------------
-let g_SmallGrid = SWGDefs.append("pattern")
-    .attr("id", "smallGrid")
-    .attr("patternUnits", "userSpaceOnUse")
-    .attr("width", "10")
-    .attr("height", "10");
+// let g_SmallGrid = SWGDefs.append("pattern")
+//     .attr("id", "smallGrid")
+//     .attr("patternUnits", "userSpaceOnUse")
+//     .attr("width", "10")
+//     .attr("height", "10");
 
-g_SmallGrid.append("path")
-    .attr("d", "M10,0 L0,0 0,10")
-    .attr("fill", "none")
-    .attr("stroke", "gray")
-    .attr("stroke-width", "0.5");
+// g_SmallGrid.append("path")
+//     .attr("d", "M10,0 L0,0 0,10")
+//     .attr("fill", "none")
+//     .attr("stroke", "gray")
+//     .attr("stroke-width", "0.5");
 
-let g_Grid = SWGDefs.append("pattern")
-    .attr("id", "grid")
-    .attr("width", "100")
-    .attr("height", "100")
-    .attr("patternUnits", "userSpaceOnUse");
+// let g_Grid = SWGDefs.append("pattern")
+//     .attr("id", "grid")
+//     .attr("width", "100")
+//     .attr("height", "100")
+//     .attr("patternUnits", "userSpaceOnUse");
 
-g_Grid.append("path")
-    .attr("d", "M 100 0 L 0 0 0 100")
-    .attr("fill", "none")
-    .attr("stroke", "gray")
-    .attr("stroke-width", "1");
+// g_Grid.append("path")
+//     .attr("d", "M 100 0 L 0 0 0 100")
+//     .attr("fill", "none")
+//     .attr("stroke", "gray")
+//     .attr("stroke-width", "1");
 
-g_Grid.append("rect")
-    .attr("width", "100")
-    .attr("height", "100")
-    .attr("fill", "url(#smallGrid)");
+// g_Grid.append("rect")
+//     .attr("width", "100")
+//     .attr("height", "100")
+//     .attr("fill", "url(#smallGrid)");
 
 let g_GradientShadow = SWGDefs.append("radialGradient")
     .attr("id", "gradient_shadow")

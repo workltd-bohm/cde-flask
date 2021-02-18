@@ -113,52 +113,54 @@ function SelectionCreate(obj, data) {
         .attr("class","item")
         .each(function(d, i){AddSelection(d3.select(this), d, data, i);});
 
-    // selection menu
-    data.selection.allgroup = data.selection.object.append("g")
-        .attr("class","selection allgroup")
-        .attr("transform","translate(" + (-g_project.width_h + g_OverlayRadius * 2) + ", " + (-g_project.height_h + g_OverlayRadius) + ")");
+    // // selection menu
+    // data.selection.allgroup = data.selection.object.append("g")
+    //     .attr("class","selection allgroup")
+    //     .attr("transform","translate(" + (-g_project.width_h + g_OverlayRadius * 2) + ", " + (-g_project.height_h + g_OverlayRadius) + ")");
     
-    // vertical line
-    data.selection.allgroup.append("rect")
-        .attr("class", "selection text_allgroup")
-        .attr("x",0)
-        .attr("y",-25)
-        .attr("width",2)
-        .attr("height",40)
+    // // vertical line
+    // data.selection.allgroup.append("rect")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",0)
+    //     .attr("y",-25)
+    //     .attr("width",2)
+    //     .attr("height",40)
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_back")
-        .attr("x",-10)
-        .attr("y",0)
-        .style("text-anchor", "end")
-        .html("Select All")
+    // // Select all
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_back")
+    //     .attr("x",-10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "end")
+    //     .html("Select All")
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_allgroup")
-        .attr("x",-10)
-        .attr("y",0)
-        .style("text-anchor", "end")
-        .html("Select All")
-        .on("mouseup",function(d){
-            SelectAllPlanets(data);
-        });
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",-10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "end")
+    //     .html("Select All")
+    //     .on("mouseup",function(d){
+    //         SelectAllPlanets(data);
+    //     });
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_back")
-        .attr("x",10)
-        .attr("y",0)
-        .style("text-anchor", "start")
-        .html("Clear All")
+    // // clear all
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_back")
+    //     .attr("x",10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "start")
+    //     .html("Clear All")
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_allgroup")
-        .attr("x",10)
-        .attr("y",0)
-        .style("text-anchor", "start")
-        .html("Clear All")
-        .on("mouseup",function(d){
-            DeselectAllPlanets(data);
-        });
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "start")
+    //     .html("Clear All")
+    //     .on("mouseup",function(d){
+    //         DeselectAllPlanets(data);
+    //     });
 
 }
 

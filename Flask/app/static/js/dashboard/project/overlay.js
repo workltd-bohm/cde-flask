@@ -219,6 +219,14 @@ function OverlayCreate(obj, data, parent, planet = false) {
 
 }
 
+function OverlayDestroy()
+{
+    if (g_project.overlay) {
+        g_project.overlay.remove();
+        g_project.overlay = false;
+    }
+}
+
 function AddItem(obj, data, parent, position = 0) {
     data.box = {...g_box };
     data.values = {};
@@ -416,10 +424,10 @@ function SortByName(data){
             let sorted = items[j].name.localeCompare(items[i].name);
             
             if (sorted === -1){ // -1 = str1 is sorted before str2
-                item_tmp = items[j];
-                items.splice(j, 1);
-                items.splice(i, 0, item_tmp);
-                i = 0;  // reset loop
+                item_tmp = items[j];            // store
+                items.splice(j, 1);             // remove j'th element
+                items.splice(i, 0, item_tmp);   // replace element
+                i = 0;                          // reset loop
             }
         }
     }
@@ -434,5 +442,40 @@ function SortByDate(data){
     if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
 
     alert('To be implemented');
+}
+
+function CreateSelectMenu(){
+    let select_menu = document.createElement("div");
+    select_menu.className = "hover-menu-item px-3 py-2";
+
+    let button_select = document.createElement("a");
+    button_select.className = "btn-select-all";
+
+    let checkbox = document.createElement("input");
+    checkbox.id = "select-all";
+    checkbox.name = "select-all";
+    checkbox.type = "checkbox";
+
+    let label = document.createElement("label");
+    label.className = "ms-2";
+    label.htmlFor = "select-all";
+    label.textContent = "Select all"
+
+    button_select.appendChild(checkbox);
+    button_select.appendChild(label);
+
+    select_menu.appendChild(button_select);
+
+    select_menu.onclick = function(){
+        let checked = document.getElementById("select-all").checked;
+
+        if (checked) {
+            SelectAllPlanets(g_project.current_ic);
+        } else {
+            DeselectAllPlanets(g_project.current_ic);
+        }
+    }
+
+    $(".hover-menu").append(select_menu);
 }
 // -------------------------------------------------------
