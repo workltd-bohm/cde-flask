@@ -4,8 +4,18 @@ $(document).ready(function() {
     });
 
     $("div.pero > .content > .zatvori").click(function(d) {
+
+        if (document.getElementById('box') && uploadInProgress == true) {
+            uploadInProgress = false;
+            stopFunction();
+            MakeSnackbar('Upload stopped');
+            location.reload();
+        }
+
         GetForm().empty();
         $(this).parent().parent().hide();
+
+
     });
 });
 

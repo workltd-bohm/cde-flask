@@ -101,6 +101,8 @@ function createISORenamingPopup(files, folders) {
             form.empty();
 
             form.append(html);
+            console.log(html);
+            console.log(form);
             for (var i = 0; i < files.length; i++) {
                 let tr = document.createElement('tr');
                 tr.id = 'row_' + i;
@@ -165,6 +167,7 @@ function UploadFiles() {
     listing = document.getElementById('listing');
     box = document.getElementById('box');
 
+    uploadInProgress = true;
     sendFile(fileList, foldereList, 0, d);
 
     folders_only = true;

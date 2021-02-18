@@ -186,7 +186,7 @@ function SelectProject() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION);
+                    // console.log(SESSION);
                 }
                 if (!backButtonFlag) {
                     history.pushState(SESSION, null, '');
