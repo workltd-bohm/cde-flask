@@ -95,7 +95,7 @@ function GetWarp(data) {
             switch (g_root.universe.data.overlay_type) {
                 case "search":
                 case "ic":
-                    AddPath(g_project.skip.values.back);
+                    // AddPath(g_project.skip.values.back); remove old path
                     break;
                 default:
                     break;
@@ -183,6 +183,10 @@ function AnimateUniverse() {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("transform", "translate(" + (g_project.width) + "," + (g_PathRadius * HISTORY_ORBIT_COEF) + ")")
+
+    // position display name
+    g_project.display_name
+        .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
 }
 
 function AnimateStar(data) {

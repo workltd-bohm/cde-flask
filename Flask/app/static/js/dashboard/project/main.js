@@ -83,6 +83,8 @@ function CreateSpace(data) {
                 span.onclick = function() {
                     if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
                     d3.selectAll("g.star").remove();
+                    add.paths_path = {}
+                    add.paths_path.back = g_project.paths;
                     g_project.paths = add.paths_path.back;
                     g_project.hist_path_len = add.paths_path.start;
                     CreateSpace(add);
@@ -434,15 +436,15 @@ function ProjectPosiotionSet(data) {
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
         // console.log(found);
-        if (found) {
-            var path = found[0].reverse()
-                // console.log(path);
-            for (var add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-                AddPath(add);
-            }
-        }
+        // if (found) {
+        //     var path = found[0].reverse()
+        //         // console.log(path);
+        //     for (var add of path) {
+        //         add.box = {...g_box };
+        //         add.values = {...add.values };
+        //         AddPath(add);
+        //     }
+        // }
     }
     //console.log(found)
     CreateSpace(found ? found[1] : data);
