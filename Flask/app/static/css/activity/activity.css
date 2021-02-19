@@ -14,7 +14,7 @@
 .activity-menu.opened
 {
     width: 25vw;
-    background-color: var(--activity-menu-bg-light);
+    background-color: var(--bg-primary);
 }
 
 .activity-menu:not(.opened) #activity-container,
@@ -51,13 +51,13 @@
 
 .activity-button:hover
 {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--transparent-light);
 }
 
 .activity-arrow
 {
     position: relative;
-    color: var(--login-bg-color);
+    color: var(--text-primary);
     font-size: 50px;
     top: 50vh;
     text-align: center;
@@ -67,7 +67,7 @@
 .activity-tab
 {
     padding: .6em;
-    background-color: var(--activity-menu-bg);
+    background-color: var(--bg-primary);
     text-align: center;
     overflow: hidden;
     border-bottom: 4px solid darkgray;
@@ -88,7 +88,7 @@
 
 .activity-collapsible
 {
-    background-color: var(--activity-menu-bg);
+    background-color: var(--bg-secondary);
     text-align: center;
     padding: .8em;
     text-transform: uppercase;
@@ -100,13 +100,13 @@
 
 .activity-collapsible:hover
 {
-    background-color: white;
+    background-color: var(--bg-secondary);
     cursor: pointer;
 }
 
 .activity-collapsible.selected
 {
-    background-color: white;
+    background-color: var(--bg-primary);
 }
 
 .activity-collapsible.selected 
@@ -206,11 +206,11 @@
     border-radius: 0;
 }
 
-.form-control:focus, .btn:focus, .btn:visited
+.form-control:focus, .btn:focus, .btn:visited, .terminal-input
 { 
     border: 0;
-    outline: 0 none;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    outline: 1px var(--neon-blue);
+    box-shadow: inset 0 0 4px var(--shadow);
 }
 
 .btn
@@ -222,7 +222,7 @@
 .btn:hover
 {
     filter: contrast(0.9);
-    box-shadow: 0px 0px 5px blue;
+    box-shadow: 0px 0px 5px var(--blue);
 }
 
 
@@ -231,7 +231,7 @@
 .activity-access-box
 {
     height: fit-content;
-    border-bottom: 1px solid darkgray;
+    border-bottom: 1px solid var(--shadow);
 
     transition: 0.25s ease all;
 }
@@ -240,7 +240,7 @@
 .activity-comment-box:hover,
 .activity-access-box:hover
 {
-    background-color: rgba(169, 169, 169, 0.25);
+    backdrop-filter: contrast(0.9);
 }
 
 .activity-history-box > *,
@@ -266,8 +266,7 @@
 {
     overflow-y: auto;
     
-    /* shadow for comments */
-    box-shadow: inset 0px .25em .5em grey;
+    box-shadow: inset 0px .25em .5em var(--shadow);
 }
 
 .activity-comment-box,
@@ -309,12 +308,12 @@
 .comment-option
 {
     transition: .125s ease all;
+    text-shadow: 0px 0px 2px var(--shadow);
 }
 
 .comment-option:hover
 {
     color: var(--neon-blue);
-    text-shadow: 0px 0px 2px #0008;
     cursor: pointer;
 }
 
@@ -334,7 +333,7 @@ textarea, input, button
 
     vertical-align: top;
     
-    border: 1px dotted black;
+    border: none;
     border-radius: 50% !important;
 }
 
@@ -510,9 +509,9 @@ textarea, input, button
 }
 
 @keyframes glow {
-    0%   {box-shadow: 0px 0px 0px   var(--dashboard-bg);}
-    50%  {box-shadow: 0px 0px 10px  blue;}
-    100% {box-shadow: 0px 0px 0px   var(--dashboard-bg);}
+    0%   {box-shadow: 0px 0px 0px   var(--neon-blue);}
+    50%  {box-shadow: 0px 0px 10px  var(--blue);}
+    100% {box-shadow: 0px 0px 0px   var(--neon-blue);}
 }
 
 @keyframes fadeIn {

@@ -19,7 +19,7 @@ td {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: var(--cur-dashboard-bg);
+    background-color: var(--dashboard-bg);
     font-family: 'Roboto', sans-serif;
     /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
     overflow: hidden;
@@ -235,7 +235,7 @@ body {
     margin-bottom: 8px;
     margin-left: 8px;
     margin-right: 8px;
-    background-color: blue;
+    background-color: var(--blue);
     transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
@@ -348,7 +348,7 @@ body {
     -webkit-animation: pulse 3s;
     -webkit-animation-iteration-count: infinite;
     animation: pulse 3s;
-    animation-iteration-count: infinite;*/
+    animation-iteration-count: infinite;
     /* border-bottom: 2px solid var(--neon-blue); */
     position: relative;
     width: max(25vw, 400px);
@@ -360,9 +360,7 @@ body {
     outline: none;
     font-family: monospace;
 
-    color: var(--dashboard-text-light);
-    background-color: transparent;
-    backdrop-filter: contrast(.8);
+    color: var(--text-primary);
     caret-color: var(--neon-blue);
 }
 

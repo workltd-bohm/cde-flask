@@ -73,7 +73,7 @@ p {
 #file-preview {
     display: inline-block;
     margin-top: 10px;
-    color: var(--file-preview-text);
+    color: var(--text-primary);
 }
 
 .file-preview-div {

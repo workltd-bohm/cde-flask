@@ -2,7 +2,7 @@
 
 /*This is the default Menu position (collapsed)*/
 .menu-fixed {
-    background-color: var(--cur-side-menu);
+    background-color: var(--side-menu);
     width: 5%; /*5%*/
     z-index: 2;
     height: 100%;
@@ -23,7 +23,7 @@
 Its color should be the same as the dashboard*/
 .menu-fixed.closed {
   width: 5%; /*5%*/
-  background-color: var(--cur-dashboard-bg);
+  background-color: var(--dashboard-bg);
   transition: all 0.3s;
 }
 .menu-fixed.closed > a .material-icons.back {
@@ -107,7 +107,7 @@ Its color should be the same as the dashboard*/
 
 .menu-activity.opend {
   width: 20%;
-  background-color: var(--cur-activity-menu-bg); /*e1e1e1*/
+  background-color: var(--activity-menu-bg); /*e1e1e1*/
 }
 
 .menu-fixed .logo {
@@ -200,7 +200,7 @@ Its color should be the same as the dashboard*/
 }*/
 
 .menu-left .logo:hover > span::after {
-  border-left: 8px solid var(--cur-left-side-menu); /*This is the little arrow of the logo when hovered*/
+  border-left: 8px solid var(--left-side-menu); /*This is the little arrow of the logo when hovered*/
 }
 
 /*This is the little text under the Logo text - not used at the moment*/
@@ -271,7 +271,7 @@ At the moment the colors follows the planet text color*/
   display: block !important;
   z-index: 999;
   position: relative;
-  color: var(--cur-dashboard-text);
+  color: var(--dashboard-text);
   left: 2vw;
   top: 2vh;
   overflow: visible;
@@ -306,7 +306,7 @@ At the moment the colors follows the planet text color*/
 }
 
 .menu-left{
-    background-color: var(--cur-left-side-menu);
+    background-color: var(--left-side-menu);
     height: 100%;
 }
 

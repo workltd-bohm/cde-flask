@@ -350,8 +350,11 @@ function CreateSortMenu(){
     button.appendChild(icon);
     button.appendChild(text);
 
-    button.onclick = function(){
-        $(".sort-dropdown").toggleClass("d-none");
+    button.onclick = function(event){
+        $(event.target
+            .closest(".hover-menu-item")
+            .querySelector(".sort-dropdown"))
+                .toggleClass("d-none");
     }
 
     // add button to sort-menu

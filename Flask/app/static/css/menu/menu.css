@@ -6,7 +6,7 @@
     min-width: 64px;
     height: 100vh;
     
-    background: var(--dashboard-bg-light);
+    background: var(--bg-primary);
     transition: all .3s ease;
 }
 
@@ -61,13 +61,13 @@
 {
     min-height: 40px;
     height: 4vh;
-    background-color: var(--side-menu);
 }
 
 .topbar
 {
     display: block;
     width: 100%;
+    background-color: var(--bg-primary);
 }
 
 .path-link

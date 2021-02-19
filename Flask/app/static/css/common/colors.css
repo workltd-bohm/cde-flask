@@ -5,50 +5,64 @@
     --login-signup-btn-back-box-bg-color: #404040;
     --login-signup-btn-front-box-bg-color: #5e9bd1;
 
-    --dashboard-bg: #d4d4d4;
-    --dashboard-bg-light: #e8e8e8;
+    /* text */
+    --text-light: #e8e8e8;              /* new */
+    --text-lighter: #ffffff;            /* new */
+    --text-dark: #303030;               /* new */
+    --text-darker: #202020;             /* new */
 
-    --side-menu: #e8e8e8; /*I think this is not used anywhere*/
-    --side-menu-light: #e8e8e8; /*I think this is not used anywhere*/
+    /* backgrounds */
+    --bg-light: #e5e5e5;                /* new - secondary default */
+    --bg-lighter: #ffffff;              /* new - primary default */
+    --bg-dark: #303030;                 /* new */
+    --bg-darker: #1f1f1f;               /* new */
 
-    --sun-default-bg: #ffffff;
-    --sun-default-bg-light: #ababab;
+    
+    /* dashboard */
+    --dashboard-bg-light: #d4d4d4;      /* new */
+    --dashboard-bg-dark: #131313;       /* new */
+    --dashboard-text-light: #d4d4d4;      /* new */
+    --dashboard-text-dark: #131313;       /* new */
 
-    --planet-default-bg: #e8e8e8;
-    --planet-default-bg-light: #e8e8e8;
+    /* sun */
+    --sun-bg-light: #ffffff;            /* new */
+    --sun-bg-dark: #636363;             /* new */
+    --sun-text-light: #ffffff;          /* new */
+    --sun-text-dark: #000000;           /* new */
+
+    /* planet */
+    --planet-bg-light: #ffffff;         /* new */
+    --planet-bg-dark: #3b3b3b;          /* new */
+    --planet-stroke-light: #ffffff;     /* new */
+    --planet-stroke-dark: #1b1b1b;      /* new */
+    --planet-text-light: #ffffff;       /* new */
+    --planet-text-dark: #000000;        /* new */
 
     --activity-menu-bg: #ebebeb; /*e1e1e1*/
     --activity-menu-bg-light: #d7d7d7;
-
-    --activity-tab-title-bg: #cccccc; /*e1e1e1*/
-    --activity-tab-title-bg-light: #cccccc;
-
-    --activity-arrow: #e8e8e8; /*e1e1e1*/
-    --activity-arrow-light: #121212;
-
-    --left-side-menu: #121212;
-    --left-side-menu-light: #545454;
-
     --dashboard-text: #fafafa;
     --dashboard-text-light: #121212;
-
-    --side-menu-text: #b8b8b8; /*NOT USED ANY MORE - color of the text next to the icon (in an expanded menu)*/
-    --side-menu-logo-bg: #121212;
-    --side-menu-logo-bg-right: #e8e8e8;
 
     /* marketplace post */
     --file-preview-text: #ffffff;
 
+    /* constants */
+    --shadow: gray;
     --neon-blue: #00d5ff;
+    --blue: blue;
+    --transparent-light: #ffffffAA;
+    --transparent-dark: #ffffffAA;
 
-    /*Currently used (when we have dark/light themes JS will simply change the --cur-bg value*/
-    --cur-dashboard-bg:             var(--dashboard-bg);
-    --cur-side-menu:                var(--side-menu-light);/*not used anywhere at the moment I think*/
-    --cur-left-side-menu:           var(--left-side-menu);
-    --cur-sun-default-bg:           var(--sun-default-bg);
-    --cur-planet-default-bg:        var(--planet-default-bg);
-    --cur-activity-menu-bg:         var(--activity-menu-bg);
-    --cur-activity-tab-title-bg:    var(--activity-tab-title-bg);
-    --cur-dashboard-text:           var(--dashboard-text);
-    --cur-activity-arrow:           var(--activity-arrow);
+    /* Currently used (when we have dark/light themes JS will simply change the --bg value */
+    --dashboard-bg:             var(--dashboard-bg-light);          /* new */
+    --text-primary:             var(--text-dark);                   /* new */
+    --text-secondary:           var(--text-darker);                 /* new */
+    --bg-primary:               var(--bg-lighter);                  /* new */
+    --bg-secondary:             var(--bg-light);                    /* new */
+    --sun-bg:                   var(--sun-bg-light);                /* new */
+    --sun-text:                 var(--sun-text-dark);               /* new */
+    --planet-bg:                var(--planet-bg-light);             /* new */
+    --planet-stroke:            var(--planet-stroke-light);         /* new */
+    --planet-text:              var(--planet-text-dark);            /* new */
+    --dashboard-text:           var(--dashboard-text-dark);         /* new */
 }

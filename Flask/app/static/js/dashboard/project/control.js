@@ -138,9 +138,12 @@ function SelectPlanet(data){
         data.values.data.values.checked.style("opacity", 100);
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
-    //console.log(CHECKED)
-    if (Object.keys(CHECKED).length > 0) SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
-    else {
+    
+    let num_checked   = Object.keys(CHECKED).length;
+    let has_checked = (num_checked > 0);
+    if (has_checked) {
+        SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+    } else {
         data.values.data.values.back.values.text.style("opacity", 100);
         if(g_project.selection){
             g_project.selection.remove();
@@ -149,7 +152,7 @@ function SelectPlanet(data){
     }
 
     document.getElementById("select-all").checked = true;
-    document.getElementById("select-all").indeterminate = true;
+    document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
 
     data.values.data.values.text.style("opacity", 100);
