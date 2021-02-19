@@ -458,6 +458,7 @@ function CreateSelectMenu(){
 
     let label = document.createElement("label");
     label.className = "ms-2";
+    label.id = "select-all-label";
     label.htmlFor = "select-all";
     label.textContent = "Select all"
 
@@ -468,11 +469,14 @@ function CreateSelectMenu(){
 
     select_menu.onclick = function(){
         let checked = document.getElementById("select-all").checked;
+        let lbl = document.getElementById("select-all-label");
 
         if (checked) {
             SelectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Deselect";
         } else {
             DeselectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Select all";
         }
     }
 
