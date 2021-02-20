@@ -137,6 +137,13 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (!data.values.sun) g_OverlayRadius = g_PlanetRadius * OVERLAY_SELECT_PLANET_RATIO;
     else g_OverlayRadius = g_SunRadius;
 
+    //// [SLIDER START]
+    if (g_root.slider && data.values.sun){
+        data.overlay.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
     g_project.overlay = data.overlay.object;
 
