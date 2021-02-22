@@ -5,6 +5,31 @@ from app import *
 import app.views.actions.getters as gtr
 import app.model.helper as helper
 
+@app.route('/get_annotations/<path:file_id>', methods=['GET'])
+def get_annotations(file_id):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+
+        if db.connect(db_adapter):
+
+            annotations = db.get_file_annotations(db_adapter, file_id)
+
+            print(json.dumps(annotations))
+            return json.dumps(annotations)
+
+        else:        
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    else:
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
+
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -63,6 +88,21 @@ def get_open_file():
                                             parent_id =    parent_id,
                                             ic_id =        ic_id,
                                             user =         session['user']
+                                            )
+                elif result.type.lower() == '.jpg' or \
+                        result.type.lower() == '.jpeg' or \
+                        result.type.lower() == '.png' or \
+                        result.type.lower() == '.gif' or \
+                        result.type.lower() == '.bmp' or \
+                        result.type.lower() == '.psd' or \
+                        result.type.lower() == '.webp' or \
+                        result.type.lower() == '.tiff':
+
+                    html = render_template("popup/open_file_img.html",
+                                            preview = '/get_shared_file/' + result.stored_id,
+                                            file_name = file_name,
+                                            user = session['user']['username'],
+                                            stored_id = result.stored_id
                                             )
                 else:
                     html = render_template("popup/open_file.html",

@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='js/common/annotations/annotorious.min.css') }}">
+<h3>{{ file_name }}</h3>
+<div id="openseadragon1" class="preview-content"></div>
+
+<script>
+
+    var viewer = OpenSeadragon({
+        id: "openseadragon1",
+        prefixUrl: "js/common/annotations/openseadragon/images/",
+        showNavigator:  true,
+        tileSources: {
+            type: "image",
+            url: "{{ preview }}"
+        },
+        gestureSettingsTouch: {
+            pinchRotate: true
+          }
+    });
+
+    /*
+    viewer.addHandler('canvas-click', function (event) {
+        anno.setDrawingEnabled(true);
+        anno.setDrawingTool('rect');
+	});*/
+
+    viewer.addHandler('canvas-drag', function (event) {
+        anno.setDrawingEnabled(false);
+	});
+    
+
+    viewer.addHandler('canvas-enter', function (event) {
+		const webPoint = event.position;
+		const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+
+        
+        /*console.log(OpenSeadragon.getElementOffset(viewer.canvas));
+        console.log(viewportPoint);
+        console.log(webPoint);
+
+		console.log(OpenSeadragon.getMousePosition(event).minus(OpenSeadragon.getElementOffset(viewer.canvas)));
+        */
+
+        anno.setDrawingEnabled(true);
+        anno.setDrawingTool('rect');
+	});
+    
+
+    viewer.zoomPerClick = 1;
+    // Initialize the Annotorious plugin
+    var anno = OpenSeadragon.Annotorious(viewer, {
+          locale: 'auto',
+          widgets: ['COMMENT']
+        });
+
+    anno.loadAnnotations('/get_annotations/{{ stored_id }}');
+
+    anno.setDrawingEnabled(true);
+    anno.setDrawingTool('rect');
+
+    anno.setAuthInfo({
+          id: '{{ user }}',
+          displayName: "{{ user }}"
+        });
+
+    // Attach handlers to listen to events
+    anno.on('createAnnotation', function(annotation) {
+        updateAnnotation(annotation, '/update_file_annotation');            
+    });
+
+    anno.on('updateAnnotation', function(annotation, previous) {
+        console.log('update', annotation);
+        updateAnnotation(annotation, '/update_file_annotation');
+    });
+
+    anno.on('deleteAnnotation', function(annotation) {
+        console.log('delete', annotation);
+        updateAnnotation(annotation, '/delete_file_annotation');
+    });
+
+    
+    /*anno.on('changeSelectionTarget', function(target) {
+        console.log('here', target);
+    });*/
+
+    function updateAnnotation(annotation, url){
+        annotation.stored_id = '{{ stored_id }}';
+        console.log('create', annotation);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify(annotation),
+            timeout: 5000,
+            success: function(data) {
+                console.log(data);
+                MakeSnackbar(data);
+            },
+            error: function($jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown + ": " + $jqXHR.responseText);
+                MakeSnackbar($jqXHR.responseText);
+                if ($jqXHR.status == 401) {
+                    location.reload();
+                }
+            }
+        });
+    }
+    
+    
+</script>

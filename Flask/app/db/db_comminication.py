@@ -25,8 +25,10 @@ def edit_user(db_adapter, user):
 def upload_profile_image(db_adapter, request_json, file):
     return db_adapter.upload_profile_image(request_json, file)
 
+
 def delete_profile_image(db_adapter, image_id):
     return db_adapter.delete_profile_image(image_id)
+
 
 def confirm_account(db_adapter, user):
     return db_adapter.confirm_account(user)
@@ -51,6 +53,7 @@ def get_my_projects(db_adapter, user):
 def get_my_trash(db_adapter, user):
     return db_adapter.get_my_trash(user)
 
+
 def get_my_shares(db_adapter, user):
     return db_adapter.get_my_shares(user)
 
@@ -67,6 +70,18 @@ def update_file(db_adapter, project, file_obj, file=None):
     return db_adapter.update_file(project, file_obj, file)
 
 
+def update_file_annotations(db_adapter, request):
+    return db_adapter.update_file_annotations(request)
+
+
+def delete_file_annotation(db_adapter, request):
+    return db_adapter.delete_file_annotation(request)
+
+
+def get_file_annotations(db_adapter, stored_id):
+    return db_adapter.get_file_annotations(stored_id)
+
+
 def create_folder(db_adapter, project_name, folder):
     return db_adapter.create_folder(project_name, folder)
 
@@ -74,17 +89,22 @@ def create_folder(db_adapter, project_name, folder):
 def rename_ic(db_adapter, request_data, user):
     return db_adapter.rename_ic(request_data, user)
 
+
 def trash_ic(db_adapter, ic_data):
     return db_adapter.trash_ic(ic_data)
+
 
 def restore_ic(db_adapter, ic_data):
     return db_adapter.restore_ic(ic_data)
 
+
 def delete_ic(db_adapter, delete_ic_data):
     return db_adapter.delete_ic(delete_ic_data)
 
+
 def empty_my_trash(db_adapter, user):
     return db_adapter.empty_my_trash(user)
+
 
 def get_file(db_adapter, file_name):
     return db_adapter.get_file(file_name)
