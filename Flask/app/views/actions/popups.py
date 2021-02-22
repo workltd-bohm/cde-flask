@@ -14,7 +14,7 @@ def get_annotations(file_id):
 
             annotations = db.get_file_annotations(db_adapter, file_id)
 
-            print(json.dumps(annotations))
+            # print(json.dumps(annotations))
             return json.dumps(annotations)
 
         else:        
@@ -101,6 +101,7 @@ def get_open_file():
                     html = render_template("popup/open_file_img.html",
                                             preview = '/get_shared_file/' + result.stored_id,
                                             file_name = file_name,
+                                            user_id = session['user']['id'],
                                             user = session['user']['username'],
                                             stored_id = result.stored_id
                                             )

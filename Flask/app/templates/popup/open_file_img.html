@@ -12,28 +12,37 @@
             type: "image",
             url: "{{ preview }}"
         },
-        gestureSettingsTouch: {
-            pinchRotate: true
-          }
+        zoomPerClick: 1.0
+        /*gestureSettingsTouch: {
+            pinchRotate: true,
+            dblClickToZoom: false,
+            clickToZoom: false
+          },
+        gestureSettingsMouse: {
+            pinchRotate: true,
+            dblClickToZoom: false,
+            clickToZoom: false
+          }*/
     });
 
-    /*
-    viewer.addHandler('canvas-click', function (event) {
+    
+    /*viewer.addHandler('canvas-click', function (event) {
         anno.setDrawingEnabled(true);
         anno.setDrawingTool('rect');
 	});*/
 
-    viewer.addHandler('canvas-drag', function (event) {
-        anno.setDrawingEnabled(false);
-	});
+    /*viewer.addHandler('canvas-drag', function (event) {
+        anno.setDrawingEnabled(true);
+        anno.setDrawingTool('rect');
+	});*/
     
 
     viewer.addHandler('canvas-enter', function (event) {
-		const webPoint = event.position;
+		/*const webPoint = event.position;
 		const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
 
         
-        /*console.log(OpenSeadragon.getElementOffset(viewer.canvas));
+        console.log(OpenSeadragon.getElementOffset(viewer.canvas));
         console.log(viewportPoint);
         console.log(webPoint);
 
@@ -45,7 +54,7 @@
 	});
     
 
-    viewer.zoomPerClick = 1;
+    //viewer.zoomPerClick = 1;
     // Initialize the Annotorious plugin
     var anno = OpenSeadragon.Annotorious(viewer, {
           locale: 'auto',
@@ -58,7 +67,7 @@
     anno.setDrawingTool('rect');
 
     anno.setAuthInfo({
-          id: '{{ user }}',
+          id: '{{ user_id }}',
           displayName: "{{ user }}"
         });
 
@@ -68,12 +77,12 @@
     });
 
     anno.on('updateAnnotation', function(annotation, previous) {
-        console.log('update', annotation);
+        //console.log('update', annotation);
         updateAnnotation(annotation, '/update_file_annotation');
     });
 
     anno.on('deleteAnnotation', function(annotation) {
-        console.log('delete', annotation);
+        //console.log('delete', annotation);
         updateAnnotation(annotation, '/delete_file_annotation');
     });
 
@@ -82,9 +91,19 @@
         console.log('here', target);
     });*/
 
+    anno.on('mouseEnterAnnotation', function(annotation, event) {
+        //console.log('enter', annotation);
+        anno.setDrawingEnabled(false);
+    });
+
+    anno.on('mouseLeaveAnnotation', function(annotation, event) {
+        anno.setDrawingEnabled(true);
+        anno.setDrawingTool('rect');
+    });
+
     function updateAnnotation(annotation, url){
         annotation.stored_id = '{{ stored_id }}';
-        console.log('create', annotation);
+        //console.log('create', annotation);
 
         $.ajax({
             url: url,
