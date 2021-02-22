@@ -3,9 +3,13 @@
 
 function WindowResize(){
     var dash = $DASHBOARD;
+    let offX = $SVG.offset().left;
+    let offY = $SVG.offset().top;
 
     var dash_w = dash.width();
-    var dash_h = dash.height();
+    var dash_h = dash.height()-offY;
+    
+    $SVG.height(dash_h);
 
     g_project.width = dash_w;
     g_project.height = dash_h;
@@ -134,15 +138,22 @@ function SelectPlanet(data){
         data.values.data.values.checked.style("opacity", 100);
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
-    //console.log(CHECKED)
-    if (Object.keys(CHECKED).length > 0) SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
-    else {
+    
+    let num_checked   = Object.keys(CHECKED).length;
+    let has_checked = (num_checked > 0);
+    if (has_checked) {
+        SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+    } else {
         data.values.data.values.back.values.text.style("opacity", 100);
         if(g_project.selection){
             g_project.selection.remove();
             g_project.selection = false;
         }
     }
+
+    document.getElementById("select-all").checked = true;
+    document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
+    document.getElementById("select-all-label").textContent = "Deselect";
 
     data.values.data.values.text.style("opacity", 100);
     g_project.overlay.remove();

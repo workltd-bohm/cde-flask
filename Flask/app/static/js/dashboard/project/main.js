@@ -22,6 +22,9 @@ function CreateSpace(data) {
         g_project.selection = false;
     }
 
+    g_project.current_ic = data;
+    g_project.display_name.text("");
+
     // console.log(g_root.universe.data.overlay_type);
     // console.log(g_root.universe.data);
     // console.log(data);
@@ -44,6 +47,7 @@ function CreateSpace(data) {
     // g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
+    // create sun
     g_root.universe.selectAll("g")
         .data([data])
         .enter()
@@ -62,6 +66,41 @@ function CreateSpace(data) {
     //             g_project.overlay = false;
     //         }
     //     });
+
+    // add path to a top bar
+    if (SESSION.position) {
+        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        if (found) {
+            $(".info-path-text").empty();
+            var path = found[0].reverse();
+            
+            for (let add of path) {
+                add.box = {...g_box };
+                add.values = {...add.values };
+                
+                let span = document.createElement("span");
+                span.className = "path-link";
+                span.textContent = add.name;
+
+                span.onclick = function() {
+                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    d3.selectAll("g.star").remove();
+                    add.paths_path = {}
+                    add.paths_path.back = g_project.paths;
+                    g_project.paths = add.paths_path.back;
+                    g_project.hist_path_len = add.paths_path.start;
+                    CreateSpace(add);
+                }
+
+                $(".info-path-text").append(span);
+
+                let slash = document.createElement("span");
+                slash.textContent = "/";
+                $(".info-path-text").append(slash); 
+            }
+        }
+
+    }
 }
 
 function AddSun(obj, data) {
@@ -134,7 +173,11 @@ function AddSun(obj, data) {
         .attr("class", "star select")
         .attr("r", g_SunRadius)
         .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+            if (!g_project.move && g_root.zoom) 
+            {
+                OverlayDestroy();
+                OverlayCreate(d3.select(this), d, data);
+            }
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){
@@ -150,6 +193,7 @@ function AddSun(obj, data) {
 
     AddText(data, "star");
 
+    // create children
     if (data.sub_folders) {
         data.values.children.selectAll("g")
             .data(data.sub_folders)
@@ -157,6 +201,9 @@ function AddSun(obj, data) {
             .append("g")
             .attr("class", "planet dom")
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
+
+        CreateSortMenu();
+        CreateSelectMenu()
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -398,15 +445,16 @@ function ProjectPosiotionSet(data) {
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
-        if (found) {
-            var path = found[0].reverse()
-                // console.log(path);
-            for (var add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-                AddPath(add);
-            }
-        }
+        // console.log(found);
+        // if (found) {
+        //     var path = found[0].reverse()
+        //         // console.log(path);
+        //     for (var add of path) {
+        //         add.box = {...g_box };
+        //         add.values = {...add.values };
+        //         AddPath(add);
+        //     }
+        // }
     }
     //console.log(found)
     CreateSpace(found ? found[1] : data);
@@ -426,12 +474,15 @@ function DashboardCreate(data, project_position = null) {
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
-    g_root.universe.data = data[0];
     //g_project.project_position = project_position;
 
-    PathCreation(data);
+    g_root.universe.data = data[0];
 
-    HistoryCreation(data);
+    CreateDisplayName();
+
+    PathCreation();
+
+    HistoryCreation();
 
     ProjectPosiotionSet(g_root.universe.data);
 

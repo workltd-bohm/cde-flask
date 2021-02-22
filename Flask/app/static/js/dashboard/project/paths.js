@@ -78,11 +78,16 @@ function AddPath(data){
     DrawPath(g_project.paths, d);
 }
 
-function PathCreation(data){
+function PathCreation(){
     g_project.hist_path_len = 0;
     g_project.paths_path = SVG.append("g")
         .attr("id","Path")
         .attr("transform","translate("+(g_PathRadius*PATH_ORBIT_COEF)+","+(g_project.height-g_PathRadius*PATH_ORBIT_COEF)+")")
 }
 
+function CreateDisplayName(){
+    g_project.display_name = SVG.append("text")
+        .attr("id", "display_name")
+        .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
+}
 // -------------------------------------------------------

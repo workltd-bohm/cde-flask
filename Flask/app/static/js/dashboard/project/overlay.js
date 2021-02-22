@@ -85,6 +85,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     var type = g_OverNone;
     switch (data.overlay_type) {
         case "ic":
+            g_project.display_name.text(data.name);
             type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
             break;
         case "user":
@@ -166,6 +167,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
+            
+            // reset display text
+            g_project.display_name.text("");
         })
         .on("mousedown", function(d) {
             if (!data.values.sun) ClickStart(function(d) {}, data);
@@ -213,6 +217,14 @@ function OverlayCreate(obj, data, parent, planet = false) {
         .attr("class", "item")
         .each(function(d, i) { AddItem(d3.select(this), d, data, i); });
 
+}
+
+function OverlayDestroy()
+{
+    if (g_project.overlay) {
+        g_project.overlay.remove();
+        g_project.overlay = false;
+    }
 }
 
 function AddItem(obj, data, parent, position = 0) {
@@ -318,4 +330,159 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
+function CreateSortMenu(){
+    $(".hover-menu").empty();
+
+    let sort_menu = document.createElement("div");
+    sort_menu.className = "hover-menu-item px-3 py-2";
+
+    let button = document.createElement("a");
+    button.className = "btn-sort";
+
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort";
+
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Sort";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    button.onclick = function(event){
+        $(event.target
+            .closest(".hover-menu-item")
+            .querySelector(".sort-dropdown"))
+                .toggleClass("d-none");
+    }
+
+    // add button to sort-menu
+    sort_menu.appendChild(button);
+
+    let dropdown = document.createElement("div");
+    dropdown.className = "sort-dropdown d-none";
+
+    // by alphabet option
+    let menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort_by_alpha";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By name";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+    
+    menu_item.onclick = function(){
+        SortByName(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // by date option
+    menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "schedule";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By date";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function(){
+        SortByDate(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // add dropdown to sort-menu
+    sort_menu.appendChild(dropdown);
+
+    $(".hover-menu").append(sort_menu);
+}
+
+function SortByName(data){
+    if (data.sub_folders.length <= 1) 
+    {
+        MakeSnackbar("Nothing to sort");
+        return;
+    }
+
+    let items = data.sub_folders;
+    let item_tmp;
+    for(let i = 0; i < items.length - 1; i++)
+    {
+        for(let j = i+1; j < items.length; j++) 
+        {
+            let sorted = items[j].name.localeCompare(items[i].name);
+            
+            if (sorted === -1){ // -1 = str1 is sorted before str2
+                item_tmp = items[j];            // store
+                items.splice(j, 1);             // remove j'th element
+                items.splice(i, 0, item_tmp);   // replace element
+                i = 0;                          // reset loop
+            }
+        }
+    }
+
+    d3.selectAll("g.star").remove();
+    CreateSpace(data);
+    
+    MakeSnackbar("Items sorted alphabetically.");
+}
+
+function SortByDate(data){
+    if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
+
+    alert('To be implemented');
+}
+
+function CreateSelectMenu(){
+    let select_menu = document.createElement("div");
+    select_menu.className = "hover-menu-item px-3 py-2";
+
+    let button_select = document.createElement("a");
+    button_select.className = "btn-select-all";
+
+    let checkbox = document.createElement("input");
+    checkbox.id = "select-all";
+    checkbox.name = "select-all";
+    checkbox.type = "checkbox";
+
+    let label = document.createElement("label");
+    label.className = "ms-2";
+    label.id = "select-all-label";
+    label.htmlFor = "select-all";
+    label.textContent = "Select all"
+
+    button_select.appendChild(checkbox);
+    button_select.appendChild(label);
+
+    select_menu.appendChild(button_select);
+
+    select_menu.onclick = function(){
+        let checked = document.getElementById("select-all").checked;
+        let lbl = document.getElementById("select-all-label");
+
+        if (checked) {
+            SelectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Deselect";
+        } else {
+            DeselectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Select all";
+        }
+    }
+
+    $(".hover-menu").append(select_menu);
+}
 // -------------------------------------------------------

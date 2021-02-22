@@ -10,7 +10,10 @@ $( document ).ready(function(){
 
     //d-none
     $(".activity-button").click(function(){
-        $(".activity-menu").toggleClass("opened");
+        var menu = $(".activity-menu");
+        var x = menu.toggleClass("opened");
+        
+        x.hasClass("opened") ? menu.removeClass("p-0") : menu.addClass("p-0");
     });
     
     $(".menu-fixed > .close").click(function(d){

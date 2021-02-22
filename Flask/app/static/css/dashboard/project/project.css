@@ -3,21 +3,22 @@
     filter: url('#filter_eclipse_sun');
 }
 
-.background.star {
+.star.background {
     /* fill : url("#patern_planet_file"); */
-    fill: none;
+    fill: var(--sun-bg);
 }
-.background.planet {
+
+.planet.background {
     /* fill : url("#patern_planet_file"); */
-    fill: none;
+    fill: var(--planet-bg);
+    stroke: var(--planet-stroke);
+    stroke-width: 2;
 }
 .background.planet.dir {
     /* fill : url("#patern_planet_folder"); */
-    fill: none;
 }
 .background.planet.empty {
     /* fill : url("#patern_planet_empty"); */
-    fill: none;
 }
 
 .pattern.path {
@@ -28,20 +29,19 @@
 .pattern.star {
      /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
     /*fill : url("#patern_sun_fix"); */
-      fill: var(--cur-sun-default-bg);
+      /* fill: var(--sun-bg); */
      /*fill: black;*/
      /* filter: url('#filter_eclipse_planet'); */
     /*stroke: none;*/
       /*stroke: rgba(0,213,255,0.5);
     stroke-width: 2;*/
+    fill: none;
 }
 .pattern.planet {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
-    fill: var(--cur-planet-default-bg);
+    fill: none;
     /*stroke: none;*/
-    stroke: rgba(250, 250, 250, 0.7);
-    stroke-width: 2;
     /*opacity: 50%;*/
 }
 .pattern.planet.dir{
@@ -59,7 +59,7 @@
 
 .shader.star {
     fill : url("#gradient_shadow_sun");
-    /*fill: var(--cur-sun-default-bg);*/
+    /*fill: var(--sun-bg);*/
     /*stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 2;  */
     /*fill: none;*/
@@ -142,21 +142,20 @@ text.text_back {
 
 /*Text inside the planets and couple of other places, like bellow Undo*/
 text.text_front {
-    fill: var(--cur-dashboard-text); /*rgb(250, 250, 250);*/
+    fill: var(--text-primary); /*rgb(250, 250, 250);*/
     text-anchor: middle;
-    text-shadow: .08em .08em .1em #000;
 }
 
 /*Text above, like Select All and Clear All*/
 text.text_allgroup {
-    fill: var(--cur-dashboard-text); /*rgb(250, 250, 250);*/
+    fill: var(--dashboard-text); /*rgb(250, 250, 250);*/
     font-size: 20px;
     cursor: pointer;
 }
 
 /*Vertical Line for the text above | , like the one between Select All | Clear All*/
 rect.text_allgroup {
-    fill: var(--cur-dashboard-text); /*rgb(250, 250, 250);*/
+    fill: var(--dashboard-text); /*rgb(250, 250, 250);*/
 }
 
 g.star.object > g.text > text {

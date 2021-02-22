@@ -106,7 +106,7 @@ function AddRecycle(data) {
     DrawHistory(g_project.history, d, g_TypeRecycle);
 }
 
-function HistoryCreation(data) {
+function HistoryCreation() {
     g_project.hist_path = SVG.append("g")
         .attr("id", "History")
         .attr("transform", "translate(" + (g_project.width) + "," + (g_PathRadius * HISTORY_ORBIT_COEF) + ")")

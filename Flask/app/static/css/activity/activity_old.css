@@ -13,7 +13,7 @@
     margin-top: -2%;
     /*margin-right: 5%;*/
     text-align: center;
-    background-color: var(--cur-activity-menu-bg);
+    background-color: var(--activity-menu-bg);
 }
 
 #index-activity.closed>#activity-body {
@@ -120,7 +120,7 @@ p.details_date {
 .tab-title {
     width: 100%;
     text-align: center;
-    background-color: var(--cur-activity-tab-title-bg);
+    background-color: var(--activity-tab-title-bg);
     padding-top: 5px;
     padding-bottom: 5px;
     text-transform: uppercase;
