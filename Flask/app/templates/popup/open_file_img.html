@@ -4,6 +4,24 @@
 
 <script>
 
+
+ /** A minimal plugin example **/
+var HelloWorldPlugin = function(args) {
+
+  var currentColorBody = args.annotation ? args.annotation.bodies.find(function(b) {
+    return b.purpose == 'highlighting';
+  }) : null;
+
+  var currentColorValue = currentColorBody ? currentColorBody.value : null;
+
+  var container = document.createElement('div');
+  container.className = 'helloworld-plugin';
+
+  return container;
+}
+
+
+
     var viewer = OpenSeadragon({
         id: "openseadragon1",
         prefixUrl: "js/common/annotations/openseadragon/images/",
@@ -58,7 +76,10 @@
     // Initialize the Annotorious plugin
     var anno = OpenSeadragon.Annotorious(viewer, {
           locale: 'auto',
-          widgets: ['COMMENT']
+          widgets: [
+            //HelloWorldPlugin,
+            {widget: 'COMMENT', editable: 'MINE_ONLY'}
+          ]
         });
 
     anno.loadAnnotations('/get_annotations/{{ stored_id }}');
@@ -124,5 +145,5 @@
         });
     }
     
-    
+   
 </script>
