@@ -21,8 +21,8 @@
     /* dashboard */
     --dashboard-bg-light: #d4d4d4;      /* new */
     --dashboard-bg-dark: #131313;       /* new */
-    --dashboard-text-light: #d4d4d4;      /* new */
-    --dashboard-text-dark: #131313;       /* new */
+    --dashboard-text-light: #d4d4d4;    /* new */
+    --dashboard-text-dark: #131313;     /* new */
 
     /* sun */
     --sun-bg-light: #ffffff;            /* new */
@@ -54,15 +54,19 @@
     --transparent-dark: #ffffffAA;
 
     /* Currently used (when we have dark/light themes JS will simply change the --bg value */
+    --dashboard-text:           var(--dashboard-text-dark);         /* new */
     --dashboard-bg:             var(--dashboard-bg-light);          /* new */
+
     --text-primary:             var(--text-dark);                   /* new */
     --text-secondary:           var(--text-darker);                 /* new */
+    
     --bg-primary:               var(--bg-lighter);                  /* new */
     --bg-secondary:             var(--bg-light);                    /* new */
+
     --sun-bg:                   var(--sun-bg-light);                /* new */
     --sun-text:                 var(--sun-text-dark);               /* new */
+    
     --planet-bg:                var(--planet-bg-light);             /* new */
     --planet-stroke:            var(--planet-stroke-light);         /* new */
     --planet-text:              var(--planet-text-dark);            /* new */
-    --dashboard-text:           var(--dashboard-text-dark);         /* new */
 }

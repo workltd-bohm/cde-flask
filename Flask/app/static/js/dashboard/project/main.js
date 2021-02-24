@@ -23,7 +23,7 @@ function CreateSpace(data) {
     }
 
     g_project.current_ic = data;
-    g_project.display_name.text("");
+    ClearDisplayName();
 
     // console.log(g_root.universe.data.overlay_type);
     // console.log(g_root.universe.data);
@@ -95,11 +95,11 @@ function CreateSpace(data) {
                 $(".info-path-text").append(span);
 
                 let slash = document.createElement("span");
+                slash.className = "mx-2";
                 slash.textContent = "/";
                 $(".info-path-text").append(slash); 
             }
         }
-
     }
 }
 
@@ -172,12 +172,16 @@ function AddSun(obj, data) {
     data.values.select = data.values.this.append("circle")
         .attr("class", "star select")
         .attr("r", g_SunRadius)
-        .on("mouseover", function(d) {
+        .on("mouseenter", function(d) {
             if (!g_project.move && g_root.zoom) 
             {
                 OverlayDestroy();
                 OverlayCreate(d3.select(this), d, data);
             }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", () => {
+            ClearDisplayName();
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){
@@ -274,7 +278,6 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
         .attr("r", g_PlanetRadius);
-    if (data.color) data.values.picture.style("fill", data.color)
 
     // data.values.shader = data.values.object.append("circle")
     //     .attr("class", "planet shader")
@@ -294,6 +297,15 @@ function AddChildren(obj, data, parent, position = 0) {
             .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
     }
 
+    // set color of a planet
+    if (data.color) {
+        data.values.background
+            .style("fill", data.color)
+        
+        data.values.this.select(".text_front")
+            .style("fill", FlipColor(data.color))
+    }
+
     // planet select = mouse over overlay for planets
     data.values.select = data.values.this.append("circle")
         .attr("class", "planet select")
@@ -302,17 +314,11 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("r", g_PlanetRadius)
         .on("mouseover", function(d) {
             if (!g_project.overlay && !g_project.move && g_root.zoom) {
-                // console.log(g_root.universe.data);
-                switch (g_root.universe.data.overlay_type) {
-                    case "ic":
-                    case "trash":
-                    case "search":
-                        OverlayCreate(d3.select(this), d, data, true);
-                        break; // search?
-                    default:
-                        break;
-                }
             }
+            SetDisplayName(d.name);
+        })
+        .on("mouseleave", () => {
+            ClearDisplayName();
         })
         .on("mousedown", function(d) {
             ClickStart(function(d) {
@@ -321,7 +327,7 @@ function AddChildren(obj, data, parent, position = 0) {
                 // }
             }, data);
         })
-        .on("mouseup", function(d) {
+        .on("click", function(d) {
             if (!g_project.selection) {
                 var func = function() {};
                 switch (g_root.universe.data.overlay_type) {
@@ -334,6 +340,9 @@ function AddChildren(obj, data, parent, position = 0) {
                 }
                 ClickStop(func, data, true);
             }
+        })
+        .on("contextmenu", function(d){
+            CreateContextMenu(d);
         });
 
     data.values.checked = data.values.this.append("foreignObject")
@@ -342,14 +351,14 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
         .attr("transform", "translate(0, " + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
-        .style("opacity", 0)
+        .style("opacity", 0);
 
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
         .append("i")
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
-        .html("check_circle")
+        .html("check_circle");
 
 }
 
@@ -488,7 +497,7 @@ function DashboardCreate(data, project_position = null) {
 
     // 143 times per second
     d3.timer(function(elapsed) {
-        if (g_root.universe) AnimateUniverse();
+        if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
 
         if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() != g_project.height) {

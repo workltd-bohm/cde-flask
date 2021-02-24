@@ -86,8 +86,21 @@ function PathCreation(){
 }
 
 function CreateDisplayName(){
+    ClearDisplayName();
+
     g_project.display_name = SVG.append("text")
         .attr("id", "display_name")
         .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
+}
+
+function SetDisplayName(string)
+{
+    g_project.display_name.text(string);
+}
+
+function ClearDisplayName()
+{
+    if (InstanceExists(g_project.display_name))
+    g_project.display_name.text("");
 }
 // -------------------------------------------------------
