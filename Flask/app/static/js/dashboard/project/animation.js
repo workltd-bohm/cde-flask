@@ -169,6 +169,29 @@ function GetWarp(data) {
 
 // -------------------------------------------------------
 
+function AnimateScrollSun(data){
+    if (g_root.deg_exp >= 0) {
+        g_project.spiral_info.spiral_position = (g_root.deg + (360 * g_root.deg_exp)) % g_project.spiral_info.spiral_length;
+    }
+    else {
+        g_project.spiral_info.spiral_position = 
+            (g_root.deg + Math.abs(g_project.spiral_info.spiral_length + (360 * g_root.deg_exp) % g_project.spiral_info.spiral_length))
+            % g_project.spiral_info.spiral_length;
+    }
+    g_project.spiral_info.spiral_position += 90;
+}
+
+function AnimateScrollPlanet(data){
+    var dist_ratio = 
+        Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation - g_project.spiral_info.spiral_length), 
+        Math.abs(g_project.spiral_info.spiral_position - data.values.rotation + g_project.spiral_info.spiral_length));
+    dist_ratio = Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation), dist_ratio);
+    var planet_opacity = (g_project.spiral_info.planet_distance * g_project.spiral_info.planet_number > dist_ratio) ? 1 : 0;
+    //console.log(data.values.position, g_project.spiral_info.planet_distance, spiral_position, Math.abs(spiral_position - data.values.rotation), planet_opacity)
+
+    if(!planet_opacity) data.values.this.style("display", "none");
+     else data.values.this.style("display", "block");
+}
 
 function AnimateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
@@ -223,15 +246,7 @@ function AnimatePlanet(data) {
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (g_root.deg) + ")");
 
-        if (g_root.deg_exp >= 0) {
-            g_project.spiral_info.spiral_position = (g_root.deg + (360 * g_root.deg_exp)) % g_project.spiral_info.spiral_length;
-        }
-        else {
-            g_project.spiral_info.spiral_position = 
-                (g_root.deg + Math.abs(g_project.spiral_info.spiral_length + (360 * g_root.deg_exp) % g_project.spiral_info.spiral_length))
-                % g_project.spiral_info.spiral_length;
-        }
-        g_project.spiral_info.spiral_position += 90;
+        AnimateScrollSun(data);
 
         //console.log(g_project.spiral_info.spiral_position, g_root.deg_exp, g_root.deg, g_project.spiral_info.spiral_length, g_project.spiral_info.planet_distance)
         data.values.children.selectAll("g.planet").each(function(data) {
@@ -242,14 +257,7 @@ function AnimatePlanet(data) {
             var pos = 0; //rot_x*TEXT_MOVE_COEF*data.values.text_len;
             //data.values.text.selectAll("text").style("text-anchor", anchor)
 
-            var dist_ratio = 
-                Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation - g_project.spiral_info.spiral_length), 
-                Math.abs(g_project.spiral_info.spiral_position - data.values.rotation + g_project.spiral_info.spiral_length));
-            dist_ratio = Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation), dist_ratio);
-            var planet_opacity = (g_project.spiral_info.planet_distance * 4 > dist_ratio) ? 1 : 0;
-            //console.log(data.values.position, g_project.spiral_info.planet_distance, spiral_position, Math.abs(spiral_position - data.values.rotation), planet_opacity)
-            if(!planet_opacity) data.values.this.style("display", "none");
-            else data.values.this.style("display", "block");
+            AnimateScrollPlanet(data);
 
             data.values.text.transition()
                     .ease("linear")

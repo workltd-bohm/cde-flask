@@ -6,7 +6,7 @@ function CreateSpace(data) {
     g_root.scale = g_root.scale_old;
     g_root.cy_min = g_root.cy = -g_project.height_h /2;
     g_root.cy_max = g_root.cy_min;
-    g_root.deg = g_root.rad = g_root.rad_diff = 0;
+    g_root.deg = g_root.rad = g_root.rad_diff = g_root.deg_exp = 0;
     g_root.zoom = true;
     if (g_root.slider) g_SunRadius *= SUN_SCROLL_ZOOM;
     if (g_root.slider) g_PlanetRadius *= PLANET_SCROLL_ZOOM;
@@ -141,7 +141,7 @@ function AddSun(obj, data) {
         var deg_max_curr = data.sub_folders.length * deg_min;
         var deg_adjust = (deg_max_wanted - deg_max_curr) / data.sub_folders.length;
         g_project.spiral_info.planet_distance = deg_min + deg_adjust;
-
+        g_project.spiral_info.planet_number = (data.sub_folders.length < 15) ? 3 : 4;
         g_project.spiral_info.planet_number_max = data.sub_folders.length;
         g_project.spiral_info.spiral_length = g_project.spiral_info.planet_number_max * g_project.spiral_info.planet_distance;
     }
