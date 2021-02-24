@@ -66,6 +66,8 @@ const TEXT_MAX_SCROLL_TEXT = 60;
 // ----------------------------------------------------
 
 const $DASHBOARD = $("#index-dashboard");
+// define jQuery workspace
+const $WS = $(".workspace");
 
 const $SVG = $("#PROJECT");
 const SVG = d3.select("#PROJECT");

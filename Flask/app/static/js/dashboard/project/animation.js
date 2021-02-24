@@ -156,7 +156,7 @@ function GetWarp(data) {
 // -------------------------------------------------------
 
 
-function AnimateUniverse() {
+function UpdateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
 
     if (ORBIT_PATTERN && ORBIT_PATTERN_ANIM) {

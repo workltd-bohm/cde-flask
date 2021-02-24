@@ -37,19 +37,19 @@
     stroke-width: 2;*/
     fill: none;
 }
-.pattern.planet {
+.planet.pattern {
     /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
     /*fill : url("#patern_planet_fix");*/
-    fill: none;
     /*stroke: none;*/
     /*opacity: 50%;*/
+    fill: none;
 }
-.pattern.planet.dir{
+.planet.pattern.dir{
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
     /*opacity: 50%;*/
 }
-.pattern.planet.empty{
+.planet.pattern.empty{
     /*stroke: rgba(190, 30, 20, 0.5);*/
     stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 2;
@@ -191,4 +191,74 @@ g.path.draw > g.text > text {
 
 .foregin .material-icons.history{
     color: #bcbcbc;
+}
+
+.context-menu-wrapper
+{
+    position: absolute;
+    height: auto;
+    vertical-align: top;
+    transition: height .25s ease;
+    z-index: 5;
+    box-shadow: 0 0 1em var(--shadow);
+}
+
+.context-menu
+{
+    width: 10em;
+    min-width: 200px;
+    height: fit-content;
+}
+
+.context-menu-item
+{
+    position: relative;
+    display: block;
+    padding: .25em .5em;
+    width: 100%;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.context-menu-item > *
+{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    z-index: 7;
+}
+
+.context-menu-item-icon
+{
+    width: fit-content;
+}
+
+.context-menu-item-name
+{
+    text-transform: capitalize;
+    width: fit-content;
+}
+
+.context-menu-item-bg
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    line-height: 100%;
+
+    width: 0;
+    height: 100%;
+
+    z-index: 6 !important;
+
+    background-color: var(--bg-primary);
+    transition: width .5s ease;
+}
+
+.context-menu-item:hover .context-menu-item-bg
+{
+    width: 100%;
+    border-left: 4px solid var(--neon-blue);
 }

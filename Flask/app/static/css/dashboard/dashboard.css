@@ -53,6 +53,7 @@
 .workspace
 {
     background-color: var(--dashboard-bg);
+    overflow: hidden;
     position: relative;
 }
 

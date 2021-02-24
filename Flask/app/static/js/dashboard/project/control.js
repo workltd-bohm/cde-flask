@@ -156,8 +156,7 @@ function SelectPlanet(data){
     document.getElementById("select-all-label").textContent = "Deselect";
 
     data.values.data.values.text.style("opacity", 100);
-    g_project.overlay.remove();
-    g_project.overlay = false;
+    OverlayDestroy();
 }
 
 function SelectAllPlanets(data){
@@ -187,4 +186,8 @@ function DeselectAllPlanets(data){
     }
 }
 
+function InstanceExists(instance)
+{
+    return Boolean(instance);
+}
 // -------------------------------------------------------

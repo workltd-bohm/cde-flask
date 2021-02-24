@@ -20,4 +20,10 @@ $( document ).ready(function(){
         $(this).parent().removeClass("opend");
         $(this).parent().addClass("closed");
     });
+
+    $(".workspace").on("click", () => {
+        $(".context-menu-wrapper").remove();
+    });
+
+    document.addEventListener('contextmenu', event => event.preventDefault());
 });
