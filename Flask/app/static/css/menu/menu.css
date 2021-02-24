@@ -8,6 +8,7 @@
     
     background: var(--bg-primary);
     transition: all .3s ease;
+
 }
 
 .sidebar:hover
