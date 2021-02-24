@@ -13,25 +13,25 @@
 
     /* backgrounds */
     --bg-light: #e5e5e5;                /* new - secondary default */
-    --bg-lighter: #ffffff;              /* new - primary default */
+    --bg-lighter: #eaeaea;              /* new - primary default */
     --bg-dark: #303030;                 /* new */
     --bg-darker: #1f1f1f;               /* new */
 
     
     /* dashboard */
-    --dashboard-bg-light: #d4d4d4;      /* new */
+    --dashboard-bg-light: #f5f5f5;      /* new */
     --dashboard-bg-dark: #131313;       /* new */
     --dashboard-text-light: #d4d4d4;      /* new */
     --dashboard-text-dark: #131313;       /* new */
 
     /* sun */
-    --sun-bg-light: #ffffff;            /* new */
+    --sun-bg-light: #c8bd5d;            /* new */
     --sun-bg-dark: #636363;             /* new */
     --sun-text-light: #ffffff;          /* new */
     --sun-text-dark: #000000;           /* new */
 
     /* planet */
-    --planet-bg-light: #ffffff;         /* new */
+    --planet-bg-light: #14939b;         /* new */
     --planet-bg-dark: #3b3b3b;          /* new */
     --planet-stroke-light: #ffffff;     /* new */
     --planet-stroke-dark: #1b1b1b;      /* new */
