@@ -144,7 +144,7 @@ function FlipColor(color){
     
     var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
     console.log(luma);
-    if (luma < 100) {
+    if (luma < 128) {
         return '#e8e8e8';
     } else {
         return '#303030';
