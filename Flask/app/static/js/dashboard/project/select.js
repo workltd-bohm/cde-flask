@@ -85,6 +85,13 @@ function SelectionCreate(obj, data) {
     g_OverlayRadius = g_SunRadius;
     g_OverlayItemSize = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
+    //// [SLIDER START]
+    if (g_root.slider){
+        data.selection.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     data.selection.object.append("circle")
         .attr("class","selection pattern "+(
             ((file == 1 && folder == 0) || (folder == 1 && file == 0))? "single" :
