@@ -76,7 +76,6 @@ def create_project():
                       [],
                       [access])
         project = Project("default", request_data['project_name'], root_obj)
-        print(request_data['is_iso'])
         project.is_iso19650 = request_data['is_iso']
         # print('******', project.to_json())
         if db.connect(db_adapter):

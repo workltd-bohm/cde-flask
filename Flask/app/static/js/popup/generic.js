@@ -83,6 +83,9 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
     //    console.log(args);
     //    console.log(d);
 
+    if (job == 'create_project') {
+        args.is_iso = $("#is_iso19650_checkbox").is(':checked');
+    }
     LoadStart();
     $.ajax({
         url: job,
