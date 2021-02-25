@@ -340,10 +340,10 @@ function AddOverText(data, fix = false) {
 }
 
 function CreateSortMenu(){
-    $(".hover-menu").empty();
+    $(".hover-menu").empty();   // todo clear from elsewhere
 
     let sort_menu = document.createElement("div");
-    sort_menu.className = "hover-menu-item px-3 py-2";
+    sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
     let button = document.createElement("a");
     button.className = "btn-sort";
@@ -362,7 +362,7 @@ function CreateSortMenu(){
     button.onclick = function(event){
         $(event.target
             .closest(".hover-menu-item")
-            .querySelector(".sort-dropdown"))
+            .querySelector(".hover-dropdown"))
                 .toggleClass("d-none");
     }
 
@@ -370,7 +370,7 @@ function CreateSortMenu(){
     sort_menu.appendChild(button);
 
     let dropdown = document.createElement("div");
-    dropdown.className = "sort-dropdown d-none";
+    dropdown.className = "hover-dropdown d-none";
 
     // by alphabet option
     let menu_item = document.createElement("a");
@@ -458,7 +458,7 @@ function SortByDate(data){
 
 function CreateSelectMenu(){
     let select_menu = document.createElement("div");
-    select_menu.className = "hover-menu-item px-3 py-2";
+    select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
     let button_select = document.createElement("a");
     button_select.className = "btn-select-all";
@@ -584,6 +584,97 @@ function CreateContextMenu(data){
     }
 }
 
+function CreateViewMenu()
+{
+    let view_menu = document.createElement("div");
+    view_menu.className = "hover-menu-item px-3 py-2 mt-3";
+
+    // button
+    let button = document.createElement("a");
+    button.className = "btn-view";
+
+    // button icon
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "remove_red_eye";
+
+    // button text
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "View";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    button.onclick = function(event){
+        $(event.target
+            .closest(".hover-menu-item")
+            .querySelector(".hover-dropdown"))
+                .toggleClass("d-none");
+    }
+
+    // add button to view-menu
+    view_menu.appendChild(button);
+
+    // create dropdown
+    let dropdown = document.createElement("div");
+    dropdown.className = "hover-dropdown d-none";
+
+    /* options */
+
+    // > planetary option
+    // create button
+    let menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    // button icon
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "wb_sunny";
+
+    // button text
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Planetary";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+    
+    menu_item.onclick = function(){
+        // switch to planetary TODO
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // grid option
+    menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    // grid icon
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "view_comfy";
+
+    // grid text
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Grid";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function(){
+        SwitchViewsPlanetary(g_root.universe.data);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // add dropdown to sort-menu
+    view_menu.appendChild(dropdown);
+
+    $(".hover-menu").append(view_menu);
+}
+
 function GetContextType(data){
     let type = data.overlay_type;
     switch (type) {
@@ -620,5 +711,34 @@ function GetContextType(data){
     }
 
     return type;
+}
+
+function SwitchViewsPlanetary(data) {
+    $("#PROJECT").animate(
+        {
+            width: 0,
+            height: 0
+        },
+        () => {
+            // disable floating menu
+            $(".hover-menu")
+                .removeClass("position-absolute");
+
+            // create the grid
+            CreateGrid(data);
+
+            // animate the grid
+            $("#PROJECT-GRID").animate(
+                {
+                    width: '100%',
+                    height: '100%',
+                    opacity: 1
+                },
+                () => {
+                    $("#PROJECT-GRID").removeClass("HIDDEN")
+                }
+            );
+        }
+    );
 }
 // -------------------------------------------------------

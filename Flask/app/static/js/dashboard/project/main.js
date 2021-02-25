@@ -1,6 +1,7 @@
 // -------------------------------------------------------
 
 function CreateSpace(data) {
+    // config
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
@@ -12,6 +13,7 @@ function CreateSpace(data) {
     g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
 
+    // clear instances
     if (g_project.overlay) {
         g_project.overlay.remove();
         g_project.overlay = false;
@@ -207,7 +209,8 @@ function AddSun(obj, data) {
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
 
         CreateSortMenu();
-        CreateSelectMenu()
+        CreateSelectMenu();
+        CreateViewMenu();
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -469,7 +472,7 @@ function ProjectPosiotionSet(data) {
     CreateSpace(found ? found[1] : data);
 }
 
-function DashboardCreate(data, project_position = null) {
+function CreateDashboard(data, project_position = null) {
 
     WindowResize();
 
@@ -506,4 +509,118 @@ function DashboardCreate(data, project_position = null) {
     });
 }
 
+
+function CreateGrid(data){
+    g_project.current_ic = data;
+
+    switch (data.overlay_type) {
+        case "ic":
+            SendProject(data);
+            break;
+        case "post_ic":
+            EditPost(data, data.ic_id);
+            break;
+        case "bid_ic":
+            ViewPost(data, data.ic_id);
+            break;
+        case "all_post_ic":
+            ViewPost(data, data.ic_id);
+            break;
+        default:
+            break;
+    }
+
+    if (SESSION.position) {
+        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        if (found) {
+            $(".info-path-text").empty();
+            var path = found[0].reverse();
+            
+            for (let add of path) {
+                add.box = {...g_box };
+                add.values = {...add.values };
+                
+                let span = document.createElement("span");
+                span.className = "path-link";
+                span.textContent = add.name;
+
+                span.onclick = function() {
+                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    d3.selectAll("g.star").remove();
+                    add.paths_path = {}
+                    add.paths_path.back = g_project.paths;
+                    g_project.paths = add.paths_path.back;
+                    g_project.hist_path_len = add.paths_path.start;
+                    CreateWorkspace(add);
+                }
+
+                $(".info-path-text").append(span);
+
+                let slash = document.createElement("span");
+                slash.className = "mx-2";
+                slash.textContent = "/";
+                $(".info-path-text").append(slash); 
+            }
+        }
+    }
+
+    let grid = document.createElement('div');
+    grid.className = "row mx-3";
+    $("#PROJECT-GRID").empty().append(grid);
+
+    // process all grid items 
+    g_project.current_ic.sub_folders.forEach(
+        (d) => {
+            // create a card
+            let card = document.createElement("div");
+            card.className = "card col-md-2 me-3 mt-3";
+            card.onclick = () => {
+                CreateGrid(d);
+            }
+
+            // create image
+            let img = document.createElement('img');
+            img.className = "card-img-top";
+            img.alt = "Preview unavailable";
+            img.src = "/stock.png";
+
+            // create body
+            let body = document.createElement('div');
+            body.className = 'card-body';
+
+            // body title
+            let title = document.createElement('h5');
+            title.className = "card-title";
+            title.textContent = d.name;
+
+            // body info
+            let info = document.createElement('p');
+            info.className = "card-text";
+
+            body.appendChild(title);
+            body.appendChild(info);
+
+            card.appendChild(img);
+            card.appendChild(body);
+
+            grid.appendChild(card);
+        }
+    );
+}
+
+// TODO change all CreateSpace to CreateWorkspace
+function CreateWorkspace(data) {
+    switch(g_project.view)
+    {
+        // planetary
+        case 0:
+            CreateSpace(data);
+            break;
+        
+        // grid view
+        case 1:
+            CreateGrid(data);
+            break;
+    }
+}
 // -------------------------------------------------------

@@ -119,7 +119,7 @@ function GetWarp(data) {
             g_project.overlay = false;
         }
 
-        if (g_project.skip) g_project.skip.values.parent.remove()
+        if (g_project.skip) g_project.skip.values.parent.remove();
         if (data) g_project.skip = data;
 
         // console.log(g_project.skip, g_project.search, g_project.paths)

@@ -73,6 +73,8 @@ const $SVG = $("#PROJECT");
 const SVG = d3.select("#PROJECT");
 
 // ----------------------------------------------------
+const PLANETARY = 0;
+const GRID = 1;
 
 var g_project = {
         width : 0,
@@ -101,7 +103,8 @@ var g_project = {
         history : null,
         paths : null,
         warp : 0,
-        start : Date.now()
+        start : Date.now(),
+        view : GRID
     };
 var g_project_per = {...g_project};
 

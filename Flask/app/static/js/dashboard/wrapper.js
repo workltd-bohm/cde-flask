@@ -100,6 +100,7 @@ function SendProject(data) {
         status: data.status,
         revision: data.revision
     };
+
     SEARCH_HISTORY = data;
 
     if (!backButtonFlag) {
@@ -160,7 +161,7 @@ function UserProfile() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -192,7 +193,7 @@ function SelectProject() {
                     history.pushState(SESSION, null, '');
                 }
                 backButtonFlag = false;
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -241,7 +242,7 @@ function CreateProject(position = null) {
                 if (data.session) {
                     SESSION = data.session;
                 }
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
             }
         },
@@ -272,7 +273,7 @@ function SelectMarket() {
                     console.log(SESSION)
                 }
                 history.pushState(SESSION, null, '');
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard([data.json.root_ic], data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -325,7 +326,7 @@ function SelectTrash() {
                     SESSION = data.session;
                 }
                 history.pushState(SESSION, null, '');
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard([data.json.root_ic], data.project);
             }
         },
 

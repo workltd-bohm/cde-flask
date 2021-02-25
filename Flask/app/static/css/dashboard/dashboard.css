@@ -5,8 +5,19 @@
     width: 100%;
     height: 0;
     max-height: 100%;
-    transition: all 0.2s;
-    /*box-shadow: inset 0px 0px 1em var(--shadow);*/
+    transition: all 200ms;
+}
+
+#PROJECT-GRID
+{
+
+}
+
+.HIDDEN
+{
+    height: 0;
+    width: 0;
+    opacity: 0;
 }
 
 #MARKET{
@@ -29,7 +40,7 @@
     overflow-x: auto;
 }
 
-#3D_VIEWER{
+#3D_VIEWER {
     display: none;
     position: relative;
     width: 100%;
@@ -52,16 +63,18 @@
 
 .workspace
 {
+    height: 100%;
     background-color: var(--dashboard-bg);
     overflow: hidden;
     position: relative;
+    border: 1px solid var(--shadow);
+    border-bottom: none;
 }
 
 .hover-menu
 {
-    position: absolute;
-    top: 1em;
-    left: 1em;
+    top: 0;
+    left: 0;
     z-index: 5;
 }
 
@@ -78,6 +91,7 @@
     /*border: 2px solid gray;*/
     
     cursor: pointer;
+    border: 1px solid var(--shadow);
 }
 
 .hover-menu span, .hover-menu input, .hover-menu label
@@ -95,7 +109,7 @@
     color: var(--neon-blue);
 }
 
-.sort-dropdown > *
+.hover-dropdown > *
 {
     display: block;
 }
