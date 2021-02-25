@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='js/common/annotations/annotorious.min.css') }}">
 <h3>{{ file_name }}</h3>
+<!-- <div id="navigation-pane"><span id="ZoomIn"></span><span id="ZoomOut"></span></div> -->
 <div id="openseadragon1" class="preview-content"></div>
 
 <script>
@@ -26,6 +27,11 @@ var HelloWorldPlugin = function(args) {
         id: "openseadragon1",
         prefixUrl: "js/common/annotations/openseadragon/images/",
         showNavigator:  true,
+        constrainDuringPan: true,
+        //toolbar:       "navigation-pane",
+        //zoomInButton: "zoom-in",
+        //zoomOutButton: "zoom-out",
+        maxZoomLevel: 15,
         tileSources: {
             type: "image",
             url: "{{ preview }}"

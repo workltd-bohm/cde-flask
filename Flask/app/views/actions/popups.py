@@ -76,7 +76,6 @@ def get_open_file():
 
                 message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})
                 db.close_connection(db_adapter)
-
                 role_code = ''
                 if 'role_code' in user:
                     role_code = user['role_code']
@@ -109,6 +108,15 @@ def get_open_file():
                     html = render_template("popup/open_file.html",
                                             preview = '/get_shared_file/' + result.stored_id
                                             )
+                
+                project_code = project['code']
+                company_code = user['company_code']
+                for t in file_tags:
+                    if t['key'] == 'project_code' and t['tag'] != '':
+                        project_code = t['tag'][1:]
+                    if t['key'] == 'company_code' and t['tag'] != '':
+                        company_code = t['tag'][1:]
+
                 response = {
                     'html': html,
                     'activity': render_template("activity/file.html",
@@ -130,7 +138,8 @@ def get_open_file():
                                                 access =            access,
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
                                                 size =              file_size,
-                                                project_code =      project['code']
+                                                project_code =      project_code,
+                                                company_code =      company_code
                                                 ),
                     'data': []
                 }
@@ -340,6 +349,8 @@ def get_iso_rename_popup():
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 filter_file.pop('uniclass_2015', None)
+
+                input_file = gtr.get_input_file()
                 
                 response = {
                     'html': render_template("popup/upload_file_popup.html",
@@ -357,7 +368,8 @@ def get_iso_rename_popup():
                                             company_code=user['company_code'],
                                             inputs=filter_file,
                                             role_code=role_code
-                                            )
+                                            ),
+                    'input_file': input_file
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']

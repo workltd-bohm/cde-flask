@@ -98,11 +98,12 @@ function createISORenamingPopup(files, folders) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
             htmlBlock = input_json2['html-block'];
+            input_file = input_json2['input_file'];
             form.empty();
 
             form.append(html);
-            console.log(html);
-            console.log(form);
+            // console.log(html);
+            // console.log(form);
             for (var i = 0; i < files.length; i++) {
                 let tr = document.createElement('tr');
                 tr.id = 'row_' + i;
@@ -118,8 +119,102 @@ function createISORenamingPopup(files, folders) {
                     extension = splitted[1];
                 } catch {}
 
-                $(tr).find("input[name='name']").val(file_name);
-                $(tr).find("input[name='file_extension']").val(extension);
+                tags = [];
+                try {
+                    tags = file_name.split('-');
+                } catch {}
+
+                if (tags.length == 9 || tags.length == 10) {
+                    el = $(tr).find("input[name='project_code']");
+                    el.val(tags[0]);
+                    changeColorCustom(el, '#3CB371');
+                    el = $(tr).find("input[name='company_code']");
+                    el.val(tags[1]);
+                    changeColorCustom(el, '#3CB371');
+
+                    el = $(tr).find("select[name='project_volume_or_system']");
+                    if (tags[2] in input_file.project_volume_or_system) {
+                        el.val(tags[2] + ', ' + input_file.project_volume_or_system[tags[2]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+
+                    el = $(tr).find("select[name='project_level']");
+                    if (tags[3] in input_file.project_level) {
+                        el.val(tags[3] + ', ' + input_file.project_level[tags[3]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+
+                    el = $(tr).find("select[name='type_of_information']");
+                    if (tags[4] in input_file.type_of_information) {
+                        el.val(tags[4] + ', ' + input_file.type_of_information[tags[4]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+
+                    el = $(tr).find("select[name='role_code']");
+                    if (tags[5] in input_file.role_code) {
+                        el.val(tags[5] + ', ' + input_file.role_code[tags[5]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+
+                    el = $(tr).find("select[name='file_number']");
+                    if (tags[6] in input_file.file_number) {
+                        el.val(tags[6] + ', ' + input_file.file_number[tags[6]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+
+                    el = $(tr).find("select[name='status']");
+                    if (tags[7] in input_file.status) {
+                        el.val(tags[7] + ', ' + input_file.status[tags[7]]);
+                        changeColorCustom(el, '#3CB371');
+                    } else {
+                        changeColorCustom(el, '#FA8072');
+                    }
+                    if (tags.length == 9) {
+                        el = $(tr).find("select[name='revision']");
+                        if (tags[8].split('_')[0] in input_file.revision) {
+                            el.val(tags[8].split('_')[0] + ', ' + input_file.revision[tags[8].split('_')[0]]);
+                            changeColorCustom(el, '#3CB371');
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                        }
+                        file_name = tags[8].split('_').slice(1).join('_');
+                    }
+                    if (tags.length == 10) {
+                        el = $(tr).find("select[name='revision']");
+                        if (tags[8] in input_file.revision) {
+                            el.val(tags[8] + ', ' + input_file.revision[tags[8]]);
+                            changeColorCustom(el, '#3CB371');
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                        }
+
+                        el = $(tr).find("select[name='uniclass_2015']");
+                        if (tags[9] in input_file.uniclass_2015) {
+                            el.val(tags[9].split('_')[0] + ', ' + input_file.uniclass_2015[tags[9].split('_')[0]]);
+                            changeColorCustom(el, '#3CB371');
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                        }
+                        file_name = tags[9].split('_').slice(1).join('_');
+                    }
+                }
+
+                el = $(tr).find("input[name='name']");
+                el.val(file_name);
+                changeColorCustom(el, '#3CB371');
+                el = $(tr).find("input[name='file_extension']");
+                el.val(extension);
+                changeColorCustom(el, '#3CB371');
             }
 
             // FileDataInit();
@@ -160,6 +255,10 @@ function UploadFiles() {
         d1['file_extension'] = $('#row_' + i).find("input[name='file_extension']").val();
 
         d['file_' + i] = d1;
+
+        changedPath = fileList[i].path.split('/');
+        changedPath[changedPath.length - 1] = d1['name'] + '.' + d1['file_extension'];
+        fileList[i].path = changedPath.join('/');
     }
 
     total = fileList.length;
@@ -400,7 +499,7 @@ function OpenFolderStructurePopup(form, post_id) {
         success: function(data) {
             input_json1 = JSON.parse(data);
             input_json2 = input_json1['data'];
-            console.log(post_id);
+            // console.log(post_id);
             html = input_json1['html'];
             form.empty();
             div = document.getElementById('container');

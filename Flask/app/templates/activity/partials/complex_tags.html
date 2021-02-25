@@ -11,31 +11,22 @@
     <div class="form__group field">
         <label for="company_code" class="form__label">Company Code</label>
         <select class="form__field" name="company_code" id="company_code" required disabled>
-            <option>{{ user['company_code'] }}</option>
+            <option>{{ company_code }}</option>
         </select>
     </div>
 
     {% for key, value in complex_tag_list.items() %}
-        {% if key != 'role_code' %}
             <div class="form__group field">
                 <label for="{{ key }}" class="form__label">{{ value.name }}</label>
                 <select class="form__field" name="{{ key }}" id='{{ key }}' required >
                     <option></option>
                     {% for val in value.elements %}
                     <option {% for tag in tags %}
-                                {{ 'selected' if tag.tag == ('#' + val.replace('.', '_')) else '' }}
+                                {{ 'selected' if tag.tag == ('#' + val) else '' }}
                             {% endfor %} 
                         value="{{ val }}">{{ val }}</option>
                     {% endfor %}
                 </select>
             </div>
-        {% elif key == 'role_code' %}
-            <div class="form__group field">
-                <label for="{{ key }}" class="form__label">{{ value.name }}</label>
-                <select class="form__field" name="role_code" id='role_code' required disabled>
-                    <option>{{ role_code }}</option>
-                </select>
-            </div>
-        {% endif %}
     {% endfor %}
 </form>
