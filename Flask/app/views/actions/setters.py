@@ -203,9 +203,9 @@ def upload_existing_project():
                                           ('').join(['.', file_name.split('.')[-1]]))
 
                         tags = []
-                        temp_name_array = []
-                        if project.is_iso19650:
-                            temp_name_array = name.split('-')
+                        # temp_name_array = []
+                        # if project.is_iso19650:
+                        temp_name_array = name.split('-')
                         if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
                             if 'file_data' in request.form:
                                 file_data = json.loads(request.form['file_data'])
