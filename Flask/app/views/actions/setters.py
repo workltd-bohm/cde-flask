@@ -199,6 +199,11 @@ def upload_existing_project():
                         original_path = ('.').join(original_path.split('.')[:-1])
 
                         parent_directory = ('/').join(current_file_path_backup[:-1])
+
+                        comments = []
+                        if 'comment' in request.form:
+                            comments.append(Comments(str(uuid.uuid1()), us, request.form['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S")))
+                        
                         details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
                                           ('').join(['.', file_name.split('.')[-1]]))
 
@@ -224,7 +229,7 @@ def upload_existing_project():
 
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], tags, [], [access], '', '')
+                                           comments, tags, [], [access], '', '')
 
                         project.added = False
                         encoded = file
