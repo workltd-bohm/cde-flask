@@ -19,7 +19,7 @@ td {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: var(--cur-dashboard-bg);
+    background-color: var(--dashboard-bg);
     font-family: 'Roboto', sans-serif;
     /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
     overflow: hidden;
@@ -37,17 +37,6 @@ td {
     width: 70%;
     vertical-align: top;
     z-index: 0;
-}
-
-#index-activity {
-    /* width: 15%; */
-    height: 100vh;
-    vertical-align: top;
-    z-index: 5;
-    /* -webkit-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
-  -moz-box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);
-  box-shadow: -10px 0px 10px rgba(255,255,255, 0.19), -8px 0px 10px rgba(255,255,255, 0.23);*/
-    /*width: 28vw !important;*/
 }
 
 a:link,
@@ -246,7 +235,7 @@ body {
     margin-bottom: 8px;
     margin-left: 8px;
     margin-right: 8px;
-    background-color: blue;
+    background-color: var(--blue);
     transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
@@ -351,46 +340,34 @@ body {
     font-size: 2.5vh;
 }
 
-.terminal-div {
-    position: absolute;
+.terminal {
+    /* position: absolute;
     top: 8vh;
-    left: 120px;
-    border: none;
-    width: 25%;
+    left: 120px; */
     /*border: 2px solid transparent;
-  -webkit-animation: pulse 3s;
-  -webkit-animation-iteration-count: infinite;
-  animation: pulse 3s;
-  animation-iteration-count: infinite;*/
-    border-bottom: 2px solid var(--neon-blue);
-    background: transparent;
-    color: #bbb;
-    outline: 0;
-    font-family: monospace;
-    caret-color: green;
-    display: flex;
+    -webkit-animation: pulse 3s;
+    -webkit-animation-iteration-count: infinite;
+    animation: pulse 3s;
+    animation-iteration-count: infinite;
+    /* border-bottom: 2px solid var(--neon-blue); */
+    position: relative;
+    width: max(25vw, 400px);
 }
 
-.terminal {
-    /*-webkit-animation: pulse 3s;
-  -webkit-animation-iteration-count: infinite;
-  animation: pulse 3s;
-  animation-iteration-count: infinite;*/
+.terminal-input {
     width: 100%;
     border: none;
-    background: transparent;
-    /*color: green;*/
-    color: #bbb;
-    font-size: 17px;
-    outline: 0;
-    /*font-family: monospace;*/
-    /*caret-color: green;*/
-    caret-color: #bbb;
-    margin-left: 5px;
-    margin-bottom: 5px;
+    outline: none;
+    font-family: monospace;
+
+    color: var(--text-primary);
+    caret-color: var(--neon-blue);
 }
 
-.terminal-span {
+.terminal-x {
+    position: absolute;
+    right: 0;
+    padding: 2px 6px;
     cursor: pointer;
 }
 
@@ -405,7 +382,7 @@ body {
     opacity: 1;
 }
 
-.terminal-div input:focus+i {
+.terminal-input:focus + i {
     display: none;
 }
 

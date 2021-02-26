@@ -3,16 +3,30 @@ function SunFadeout(data) {
     g_root.scale_old = g_root.scale;
     g_root.scale *= PLANET_SUN_RATIO;
 
+    var orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * g_root.scale;
     if (!g_root.slider) {
-        var vec_x = Math.cos((g_root.deg + data.values.rotation) / 180 * Math.PI);
-        var vec_y = Math.sin((g_root.deg + data.values.rotation) / 180 * Math.PI);
-        g_root.x -= vec_x * g_SunRadius * PLANET_ORBIT_COEF * g_root.scale;
-        g_root.y -= vec_y * g_SunRadius * PLANET_ORBIT_COEF * g_root.scale;
+        var vec_x = Math.cos((g_root.deg - data.values.rotation) / 180 * Math.PI);
+        var vec_y = Math.sin((g_root.deg - data.values.rotation) / 180 * Math.PI);
+        //console.log(orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
+        //console.log(g_root.cx, vec_x * orbit, g_root.cy, vec_y * orbit)
+        g_root.x -= vec_x * orbit;
+        g_root.y -= vec_y * orbit;
     } else {
-        var vec_x = g_SunRadius * PLANET_ORBIT_COEF - g_SunRadius * SUN_SCROLL_X_COEF;
-        var vec_y = data.values.position * g_SunRadius * PLANET_SCROLL_COEF;
-        g_root.x -= vec_x * g_root.scale;
-        g_root.y -= (vec_y + g_root.cy) * g_root.scale;
+        //// [SLIDER START]
+        // var vec_x = g_SunRadius * PLANET_ORBIT_COEF - g_SunRadius * SUN_SCROLL_X_COEF;
+        // var vec_y = data.values.position * g_SunRadius * PLANET_SCROLL_COEF * SUN_SCROLL_Y_COEF;
+        // g_root.x -= (vec_x + g_root.cx) * g_root.scale;
+        // g_root.y -= (vec_y + g_root.cy) * g_root.scale;
+        //// [SLIDER OLD/NEW]
+        var vec_x = Math.cos((g_root.deg - data.values.rotation) / 180 * Math.PI);
+        var vec_y = Math.sin((g_root.deg - data.values.rotation) / 180 * Math.PI);
+
+        orbit *= ORBIT_SCROLL_COEF;
+        //console.log(orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
+        //console.log(g_root.cx, vec_x * orbit, g_root.cy, vec_y * orbit)
+        g_root.x -= g_root.cx * SUN_SCROLL_ANIM_FIX + vec_x * orbit;
+        g_root.y -= g_root.cy * SUN_SCROLL_ANIM_FIX + vec_y * orbit;
+        //// [SLIDER END]
     }
 
     // Animate shaders
@@ -95,7 +109,7 @@ function GetWarp(data) {
             switch (g_root.universe.data.overlay_type) {
                 case "search":
                 case "ic":
-                    AddPath(g_project.skip.values.back);
+                    // AddPath(g_project.skip.values.back); remove old path
                     break;
                 default:
                     break;
@@ -155,8 +169,31 @@ function GetWarp(data) {
 
 // -------------------------------------------------------
 
+function AnimateScrollSun(data){
+    if (g_root.deg_exp >= 0) {
+        g_project.spiral_info.spiral_position = (g_root.deg + (360 * g_root.deg_exp)) % g_project.spiral_info.spiral_length;
+    }
+    else {
+        g_project.spiral_info.spiral_position = 
+            (g_root.deg + Math.abs(g_project.spiral_info.spiral_length + (360 * g_root.deg_exp) % g_project.spiral_info.spiral_length))
+            % g_project.spiral_info.spiral_length;
+    }
+    g_project.spiral_info.spiral_position += 90;
+}
 
-function AnimateUniverse() {
+function AnimateScrollPlanet(data){
+    var dist_ratio = 
+        Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation - g_project.spiral_info.spiral_length), 
+        Math.abs(g_project.spiral_info.spiral_position - data.values.rotation + g_project.spiral_info.spiral_length));
+    dist_ratio = Math.min(Math.abs(g_project.spiral_info.spiral_position - data.values.rotation), dist_ratio);
+    var planet_opacity = (g_project.spiral_info.planet_distance * g_project.spiral_info.planet_number > dist_ratio) ? 1 : 0;
+    //console.log(data.values.position, g_project.spiral_info.planet_distance, spiral_position, Math.abs(spiral_position - data.values.rotation), planet_opacity)
+
+    if(!planet_opacity) data.values.this.style("display", "none");
+     else data.values.this.style("display", "block");
+}
+
+function UpdateUniverse() {
     g_root.universe.select("g.star").each(AnimateStar);
 
     if (ORBIT_PATTERN && ORBIT_PATTERN_ANIM) {
@@ -183,6 +220,11 @@ function AnimateUniverse() {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .attr("transform", "translate(" + (g_project.width) + "," + (g_PathRadius * HISTORY_ORBIT_COEF) + ")")
+
+    // position display name
+    if (g_project.display_name)
+        g_project.display_name
+            .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");
 }
 
 function AnimateStar(data) {
@@ -191,12 +233,50 @@ function AnimateStar(data) {
 
 function AnimatePlanet(data) {
     if (g_root.slider) {
-        if (1) {
-            data.values.children.transition()
+        //// [SLIDER START]
+        // if (1) {
+        //     data.values.children.transition()
+        //         .ease("linear")
+        //         .duration(ORBIT_ANIM_MOVE_SCROLL)
+        //         .attr("transform", "translate(0," + (g_root.cy) + ")");
+        // }
+        //// [SLIDER OLD/NEW]
+        data.values.children.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "rotate(" + (g_root.deg) + ")");
+
+        AnimateScrollSun(data);
+
+        //console.log(g_project.spiral_info.spiral_position, g_root.deg_exp, g_root.deg, g_project.spiral_info.spiral_length, g_project.spiral_info.planet_distance)
+        data.values.children.selectAll("g.planet").each(function(data) {
+            //var rot_x  = Math.cos((g_root.deg+data.values.rotation)/180*Math.PI);
+            // var anchor =  (rot_x > 0.2) ? "start" : (rot_x > -0.2 ) ? "middle" : "end";
+            //var anchor =  (rot_x > 0) ? "start" : "end";
+            //var anchor = "middle";
+            var pos = 0; //rot_x*TEXT_MOVE_COEF*data.values.text_len;
+            //data.values.text.selectAll("text").style("text-anchor", anchor)
+
+            AnimateScrollPlanet(data);
+
+            data.values.text.transition()
+                    .ease("linear")
+                    .duration(ORBIT_ANIM_MOVE)
+                    .attr("transform", "rotate(" + (-g_root.deg) + "), translate(" + (pos) + ")")
+
+            if (data.overlay)
+                data.overlay.object.transition()
                 .ease("linear")
-                .duration(ORBIT_ANIM_MOVE_SCROLL)
-                .attr("transform", "translate(0," + (g_root.cy) + ")");
-        }
+                .duration(ORBIT_ANIM_MOVE)
+                .attr("transform", "rotate(" + (-g_root.deg) + ")")
+
+            if (data.values.checked)
+                data.values.checked.transition()
+                .ease("linear")
+                .duration(ORBIT_ANIM_MOVE)
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
+        });
+        //// [SLIDER END]
     } else {
         data.values.children.transition()
             .ease("linear")

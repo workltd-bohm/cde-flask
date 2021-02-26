@@ -55,18 +55,30 @@ def get_iso_filename(file_ic, project, user):
     # tag_code_list = [x['tag'].split(',')[0][1:].replace("_", ".") for x in file_ic.to_json()['tags'] if ',' in x['tag']]
     tag_code_list = {}
     for tag in file_ic.to_json()['tags']:
+        if tag['tag'].startswith('#'):
+            tag['tag'] = tag['tag'][1:]
+
         if ',' in tag['tag']:
-            tag_code_list[tag['key']] = tag['tag'].split(',')[0][1:].replace("_", ".")
+            tag_code_list[tag['key']] = tag['tag'].split(',')[0]
+        else:
+            tag_code_list[tag['key']] = tag['tag']
     file_name = file_ic.name + file_ic.type
     # iso_name = '-'.join(tag_code_list) + '_' + file_name
     if project['is_iso19650']:
         try:
-            iso_name = project['code'] + '-' \
-                        + user['company_code'] + '-' \
+            pr_code = tag_code_list['project_code']
+            if pr_code == '':
+                pr_code = project['code']
+            com_code = tag_code_list['company_code']
+            if pr_code == '':
+                com_code = user['company_code']
+            print('yyyyyyyyyyyyy', tag_code_list['file_number'])
+            iso_name = pr_code + '-' \
+                        + com_code + '-' \
                         + tag_code_list['project_volume_or_system'] + '-' \
                         + tag_code_list['project_level'] + '-' \
                         + tag_code_list['type_of_information'] + '-' \
-                        + user['role_code'].split(',')[0] + '-' \
+                        + tag_code_list['role_code'].split(',')[0] + '-' \
                         + tag_code_list['file_number'] + '-' \
                         + tag_code_list['status'] + '-' \
                         + tag_code_list['revision'] \

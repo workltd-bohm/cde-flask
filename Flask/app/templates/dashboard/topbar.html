@@ -1,0 +1,15 @@
+<div class="topbar d-flex">
+    <div class="align-self-center">
+        <div id="terminal-main" class="terminal d-inline-block" onfocusout="onFocusOut();">
+            <input type="text" class="terminal-input ps-2" id="terminal-input" onkeypress="terminalListen(event)" 
+                onfocus="onFocus();" placeholder="TAG, SEARCH, CREATE...">
+                
+            <span id="terminal-span" class="terminal-x" 
+            title="Clear" style="display: none;" onclick="deleteTerminalInput()">✕</span>
+        </div>
+
+        <div class="info-path ms-2 d-inline-block">
+            <span class="info-path-text"></span>
+        </div>
+    </div>
+</div>

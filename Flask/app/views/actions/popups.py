@@ -5,6 +5,31 @@ from app import *
 import app.views.actions.getters as gtr
 import app.model.helper as helper
 
+@app.route('/get_annotations/<path:file_id>', methods=['GET'])
+def get_annotations(file_id):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+
+        if db.connect(db_adapter):
+
+            annotations = db.get_file_annotations(db_adapter, file_id)
+
+            # print(json.dumps(annotations))
+            return json.dumps(annotations)
+
+        else:        
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    else:
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
+
 @app.route('/get_open_file', methods=['POST'])
 def get_open_file():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
@@ -51,7 +76,6 @@ def get_open_file():
 
                 message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})
                 db.close_connection(db_adapter)
-
                 role_code = ''
                 if 'role_code' in user:
                     role_code = user['role_code']
@@ -64,10 +88,35 @@ def get_open_file():
                                             ic_id =        ic_id,
                                             user =         session['user']
                                             )
+                elif result.type.lower() == '.jpg' or \
+                        result.type.lower() == '.jpeg' or \
+                        result.type.lower() == '.png' or \
+                        result.type.lower() == '.gif' or \
+                        result.type.lower() == '.bmp' or \
+                        result.type.lower() == '.psd' or \
+                        result.type.lower() == '.webp' or \
+                        result.type.lower() == '.tiff':
+
+                    html = render_template("popup/open_file_img.html",
+                                            preview = '/get_shared_file/' + result.stored_id,
+                                            file_name = file_name,
+                                            user_id = session['user']['id'],
+                                            user = session['user']['username'],
+                                            stored_id = result.stored_id
+                                            )
                 else:
                     html = render_template("popup/open_file.html",
                                             preview = '/get_shared_file/' + result.stored_id
                                             )
+                
+                project_code = project['code']
+                company_code = user['company_code']
+                for t in file_tags:
+                    if t['key'] == 'project_code' and t['tag'] != '':
+                        project_code = t['tag'][1:]
+                    if t['key'] == 'company_code' and t['tag'] != '':
+                        company_code = t['tag'][1:]
+
                 response = {
                     'html': html,
                     'activity': render_template("activity/file.html",
@@ -89,7 +138,8 @@ def get_open_file():
                                                 access =            access,
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
                                                 size =              file_size,
-                                                project_code =      project['code']
+                                                project_code =      project_code,
+                                                company_code =      company_code
                                                 ),
                     'data': []
                 }
@@ -299,6 +349,8 @@ def get_iso_rename_popup():
             if result:
                 filter_file = gtr.get_input_file_fixed()
                 filter_file.pop('uniclass_2015', None)
+
+                input_file = gtr.get_input_file()
                 
                 response = {
                     'html': render_template("popup/upload_file_popup.html",
@@ -316,7 +368,8 @@ def get_iso_rename_popup():
                                             company_code=user['company_code'],
                                             inputs=filter_file,
                                             role_code=role_code
-                                            )
+                                            ),
+                    'input_file': input_file
                 }
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']

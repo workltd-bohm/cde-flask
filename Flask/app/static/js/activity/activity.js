@@ -202,6 +202,7 @@ function sendComment(el) {
             div.prepend(data);
             $('#comment').val('');
             div.animate({ scrollTop: "0" });
+            updateCommentSearchBuffer();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -304,6 +305,7 @@ function updateComment(el, elem) {
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
+            updateCommentSearchBuffer();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -353,6 +355,7 @@ function deleteComment(elem) {
         success: function(data) {
             elem.remove();
             MakeSnackbar(data);
+            updateCommentSearchBuffer();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -592,6 +595,10 @@ function openToggle(elem) {
     elem.toggleClass("selected");
 }
 
+function updateCommentSearchBuffer() {
+    allProjectComments = divWithAllComments.innerHTML;
+}
+
 var allProjectComments = null;
 
 function filterDirectoryComments(searchCommentboxText) {
@@ -599,7 +606,7 @@ function filterDirectoryComments(searchCommentboxText) {
     divWithAllComments = document.getElementById("activity-comments-container");
 
     if (allProjectComments == null)
-        allProjectComments = divWithAllComments.innerHTML;
+        updateCommentSearchBuffer();
     else
         divWithAllComments.innerHTML = allProjectComments;
 
@@ -808,7 +815,7 @@ function autocomplete(inp, arr) {
         currentFocusHere = -1;
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
+        a.setAttribute("class", "autocomplete-items ps-1");
         this.parentNode.appendChild(a);
         for (i = 0; i < arr.length; i++) {
             if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {

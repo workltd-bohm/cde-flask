@@ -4,8 +4,18 @@ $(document).ready(function() {
     });
 
     $("div.pero > .content > .zatvori").click(function(d) {
+
+        if (document.getElementById('box') && uploadInProgress == true) {
+            uploadInProgress = false;
+            stopFunction();
+            MakeSnackbar('Upload stopped');
+            location.reload();
+        }
+
         GetForm().empty();
         $(this).parent().parent().hide();
+
+
     });
 });
 
@@ -73,6 +83,9 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
     //    console.log(args);
     //    console.log(d);
 
+    if (job == 'create_project') {
+        args.is_iso = $("#is_iso19650_checkbox").is(':checked');
+    }
     LoadStart();
     $.ajax({
         url: job,

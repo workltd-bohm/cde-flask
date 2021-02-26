@@ -302,6 +302,51 @@ class DBMongoAdapter:
         self._close_connection()
         return msg.FILE_SUCCESSFULLY_UPDATED
 
+    def update_file_annotations(self, request):
+        col_file = self._db.fs.files
+        file_query = {'file_id': request['stored_id']}
+        stored_file = col_file.find_one(file_query, {'_id': 0})
+        # print('get_file', file_query)
+        if 'annotations' in stored_file:
+            already_in = False
+            for i, an in enumerate(stored_file['annotations']):
+                if an['id'] == request['id']:
+                    stored_file['annotations'][i] = request
+                    already_in = True
+                    break
+            if not already_in:
+                stored_file['annotations'].append(request)
+        else:
+            stored_file['annotations'] = [request]
+        col_file.update(file_query, stored_file) 
+        self._close_connection()
+        return msg.FILE_SUCCESSFULLY_UPDATED
+
+    def delete_file_annotation(self, request):
+        col_file = self._db.fs.files
+        file_query = {'file_id': request['stored_id']}
+        stored_file = col_file.find_one(file_query, {'_id': 0})
+        # print('get_file', file_query)
+        if 'annotations' in stored_file:
+            for i, an in enumerate(stored_file['annotations']):
+                if an['id'] == request['id']:
+                    stored_file['annotations'].pop(i)
+                    break
+        col_file.update(file_query, stored_file) 
+        self._close_connection()
+        return msg.FILE_SUCCESSFULLY_DELETED
+
+    def get_file_annotations(self, stored_id):
+        col_file = self._db.fs.files
+        file_query = {'file_id': stored_id}
+        stored_file = col_file.find_one(file_query, {'_id': 0})
+        annotations = []
+        if 'annotations' in stored_file:
+            annotations = stored_file['annotations']
+        self._close_connection()
+        return annotations
+
+
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects
         # col_file = self._db.Projects.Files
@@ -1590,7 +1635,7 @@ class DBMongoAdapter:
         return message
 
     def update_iso_tags(self, data):
-        print('\nupdate_iso_tags():\n')
+        # print('\nupdate_iso_tags():\n', data)
         # tables
         projects = self._db.Projects
         tags = self._db.Tags
@@ -1649,7 +1694,7 @@ class DBMongoAdapter:
                                 tags_json[tag].remove(obj)
                                 # break
                             for tag_obj in ic.tags:
-                                if tag == tag_obj.tag:
+                                if tag.replace('_', '.') == tag_obj.tag:
                                     ic.tags.remove(tag_obj)
 
         # write
@@ -1660,6 +1705,8 @@ class DBMongoAdapter:
                     if not obj in tags_json[tag]:
                         # print('accepted.')
                         tags_json[tag].append(obj)
+                        if '_' in tag:
+                            tag = tag.replace("_", ".")
                         ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
                         break
 

@@ -186,7 +186,7 @@ function SelectProject() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION);
+                    // console.log(SESSION);
                 }
                 if (!backButtonFlag) {
                     history.pushState(SESSION, null, '');
@@ -236,12 +236,10 @@ function CreateProject(position = null) {
         timeout: 5000,
         success: function(data) {
             data = JSON.parse(data);
-            //console.log(data)
             if (data) {
                 //                console.log(data);
                 if (data.session) {
                     SESSION = data.session;
-                    // console.log(SESSION);
                 }
                 DashboardCreate([data.json.root_ic], data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..

@@ -6,8 +6,9 @@
     min-width: 64px;
     height: 100vh;
     
-    background: var(--cur-dashboard-bg);
+    background: var(--bg-primary);
     transition: all .3s ease;
+
 }
 
 .sidebar:hover
@@ -30,7 +31,7 @@
 
 .sidebar li img {
     display: block;
-    width: 100%;
+    width: 80%;
     height: auto;
 
     object-fit: contain;
@@ -55,4 +56,27 @@
 .sidebar li:nth-last-child(1)
 {
     margin-top: auto;
+}
+
+.topbar, .activity-tab-menu
+{
+    min-height: 40px;
+    height: 4vh;
+}
+
+.topbar
+{
+    display: block;
+    width: 100%;
+    background-color: var(--bg-primary);
+}
+
+.path-link
+{
+    cursor: pointer;
+}
+
+.path-link:hover
+{
+    color: var(--neon-blue);
 }

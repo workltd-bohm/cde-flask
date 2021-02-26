@@ -85,6 +85,13 @@ function SelectionCreate(obj, data) {
     g_OverlayRadius = g_SunRadius;
     g_OverlayItemSize = g_OverlayRadius/OVERLAY_SUN_RATIO;
 
+    //// [SLIDER START]
+    if (g_root.slider){
+        data.selection.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     data.selection.object.append("circle")
         .attr("class","selection pattern "+(
             ((file == 1 && folder == 0) || (folder == 1 && file == 0))? "single" :
@@ -113,50 +120,54 @@ function SelectionCreate(obj, data) {
         .attr("class","item")
         .each(function(d, i){AddSelection(d3.select(this), d, data, i);});
 
-    data.selection.allgroup = data.selection.object.append("g")
-        .attr("class","selection allgroup")
-        .attr("transform","translate(0, "+(-g_OverlayRadius*CHECKED_ALLGROUP_OFFSET)+")");
+    // // selection menu
+    // data.selection.allgroup = data.selection.object.append("g")
+    //     .attr("class","selection allgroup")
+    //     .attr("transform","translate(" + (-g_project.width_h + g_OverlayRadius * 2) + ", " + (-g_project.height_h + g_OverlayRadius) + ")");
+    
+    // // vertical line
+    // data.selection.allgroup.append("rect")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",0)
+    //     .attr("y",-25)
+    //     .attr("width",2)
+    //     .attr("height",40)
 
-    data.selection.allgroup.append("rect")
-        .attr("class", "selection text_allgroup")
-        .attr("x",0)
-        .attr("y",-25)
-        .attr("width",2)
-        .attr("height",40)
+    // // Select all
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_back")
+    //     .attr("x",-10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "end")
+    //     .html("Select All")
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_back")
-        .attr("x",-10)
-        .attr("y",0)
-        .style("text-anchor", "end")
-        .html("Select All")
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",-10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "end")
+    //     .html("Select All")
+    //     .on("mouseup",function(d){
+    //         SelectAllPlanets(data);
+    //     });
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_allgroup")
-        .attr("x",-10)
-        .attr("y",0)
-        .style("text-anchor", "end")
-        .html("Select All")
-        .on("mouseup",function(d){
-            SelectAllPlanets(data);
-        });
+    // // clear all
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_back")
+    //     .attr("x",10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "start")
+    //     .html("Clear All")
 
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_back")
-        .attr("x",10)
-        .attr("y",0)
-        .style("text-anchor", "start")
-        .html("Clear All")
-
-    data.selection.allgroup.append("text")
-        .attr("class", "selection text_allgroup")
-        .attr("x",10)
-        .attr("y",0)
-        .style("text-anchor", "start")
-        .html("Clear All")
-        .on("mouseup",function(d){
-            DeselectAllPlanets(data);
-        });
+    // data.selection.allgroup.append("text")
+    //     .attr("class", "selection text_allgroup")
+    //     .attr("x",10)
+    //     .attr("y",0)
+    //     .style("text-anchor", "start")
+    //     .html("Clear All")
+    //     .on("mouseup",function(d){
+    //         DeselectAllPlanets(data);
+    //     });
 
 }
 

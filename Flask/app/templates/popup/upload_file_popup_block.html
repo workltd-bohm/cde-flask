@@ -8,7 +8,6 @@
   </th>
 
   {% for key, value in inputs.items() %}
-    {% if key != 'role_code' %}
       <th class="file_naming_field">
           <select class="form__field_popup shortened-select" name="{{ key }}" onchange="changeColor(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
               {% for v in value.elements %}
@@ -16,14 +15,6 @@
               {% endfor %}
           </select>
       </th>
-    {% elif key == 'role_code' %}
-      <th class="file_naming_field">
-        
-        <select class="form__field_popup ext shortened-select" name="{{ key }}">
-                <option value="{{ role_code }}">{{ role_code.split(',')[0] }}</option>
-        </select>
-      </th>
-    {% endif %}
   {% endfor %}
 
   <th class="file_naming_field">

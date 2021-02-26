@@ -812,3 +812,44 @@ def get_input_file_fixed():
             order = 9
         filter_file[key] = {'elements': elements, 'name': name, 'order': order}
     return filter_file
+
+
+def generate_key_value_input_json():
+    doc = open('app/static/file/input.json', 'r')
+    file = json.loads(doc.read())
+    doc.close()
+    filter_file = {}
+    keys = list(file.keys())
+    values = list(file.values())
+    for i in range(0, len(keys), 2):
+        elements = {}
+        name = 'Default'
+        order = -1
+        for j in range(0, len(values[i])):
+            elements[values[i][j]] = values[i + 1][j]
+        key = ''
+        if keys[i] == 'volume_system_code':
+            key = 'project_volume_or_system'
+        if keys[i] == 'level_code':
+            key = 'project_level'
+        if keys[i] == 'type_code':
+            key = 'type_of_information'
+        if keys[i] == 'role_code':
+            key = 'role_code'
+        if keys[i] == 'number_code':
+            key = 'file_number'
+        if keys[i] == 'status_code':
+            key = 'status'
+        if keys[i] == 'revision_code':
+            key = 'revision'
+        if keys[i] == 'uniclass_code':
+            key = 'uniclass_2015'
+        filter_file[key] = elements
+    return filter_file
+
+
+def get_input_file():
+    doc = open('app/static/file/input_key_value.json', 'r')
+    file = json.loads(doc.read())
+    doc.close()
+    return file

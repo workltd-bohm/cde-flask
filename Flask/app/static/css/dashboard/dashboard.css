@@ -3,8 +3,10 @@
 #PROJECT {
     display: none;
     width: 100%;
-    height: 100vh;
+    height: 0;
+    max-height: 100%;
     transition: all 0.2s;
+    /*box-shadow: inset 0px 0px 1em var(--shadow);*/
 }
 
 #MARKET{
@@ -38,6 +40,62 @@
 }
 
 #Touch {
-    fill : rgba(0, 0, 0, 0.0);
+    fill : transparent;
     stroke-width: 0;
+}
+
+#display_name
+{
+    font-size: 1.5em;
+    text-anchor: middle;
+}
+
+.workspace
+{
+    background-color: var(--dashboard-bg);
+    overflow: hidden;
+    position: relative;
+}
+
+.hover-menu
+{
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    z-index: 5;
+}
+
+.hover-menu-item
+{
+    display: inline-block;
+    vertical-align: top;
+    
+    min-height: 40px;
+    margin-right: 1em;
+    
+    background-color: var(--bg-primary);
+    /*box-shadow: .1em .1em 1em var(--shadow);*/
+    /*border: 2px solid gray;*/
+    
+    cursor: pointer;
+}
+
+.hover-menu span, .hover-menu input, .hover-menu label
+{
+    vertical-align: middle;
+}
+
+.hover-menu a
+{
+    text-decoration: none;
+}
+
+.hover-menu a:hover
+{
+    color: var(--neon-blue);
+}
+
+.sort-dropdown > *
+{
+    display: block;
 }

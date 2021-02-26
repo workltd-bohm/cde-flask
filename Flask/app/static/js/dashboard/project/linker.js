@@ -22,7 +22,7 @@ function WrapCreateFolder(data) {
 
 function WrapOpenFile(data, open = true) {
     if (g_project.overlay) {
-        data.values.data.values.text.style("opacity", 100);
+        // data.values.data.values.text.style("opacity", 100);
         g_project.overlay.remove();
         g_project.overlay = false;
     }
@@ -49,6 +49,7 @@ function WrapCreateFile(data) {
 }
 
 function WrapRename(data) {
+    console.log(data);
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
     //console.log(tmp);

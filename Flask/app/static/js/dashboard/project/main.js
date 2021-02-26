@@ -6,10 +6,11 @@ function CreateSpace(data) {
     g_root.scale = g_root.scale_old;
     g_root.cy_min = g_root.cy = -g_project.height_h /2;
     g_root.cy_max = g_root.cy_min;
-    g_root.deg = g_root.rad = g_root.rad_diff = 0;
+    g_root.deg = g_root.rad = g_root.rad_diff = g_root.deg_exp = 0;
     g_root.zoom = true;
     if (g_root.slider) g_SunRadius *= SUN_SCROLL_ZOOM;
-    g_PlanetRadius = g_PlanetRadius_old;
+    if (g_root.slider) g_PlanetRadius *= PLANET_SCROLL_ZOOM;
+    //g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
 
     if (g_project.overlay) {
@@ -21,6 +22,9 @@ function CreateSpace(data) {
         g_project.selection.remove();
         g_project.selection = false;
     }
+
+    g_project.current_ic = data;
+    ClearDisplayName();
 
     // console.log(g_root.universe.data.overlay_type);
     // console.log(g_root.universe.data);
@@ -44,6 +48,7 @@ function CreateSpace(data) {
     // g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
+    // create sun
     g_root.universe.selectAll("g")
         .data([data])
         .enter()
@@ -55,13 +60,48 @@ function CreateSpace(data) {
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
 
-    g_root.universe.selectAll("#Touch")
-        .on("mouseover", function(){
-            if (g_project.overlay){
-                g_project.overlay.remove();
-                g_project.overlay = false;
+    // g_root.universe.selectAll("#Touch")
+    //     .on("mouseover", function(){
+    //         if (g_project.overlay){
+    //             g_project.overlay.remove();
+    //             g_project.overlay = false;
+    //         }
+    //     });
+
+    // add path to a top bar
+    if (SESSION.position) {
+        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        if (found) {
+            $(".info-path-text").empty();
+            var path = found[0].reverse();
+            
+            for (let add of path) {
+                add.box = {...g_box };
+                add.values = {...add.values };
+                
+                let span = document.createElement("span");
+                span.className = "path-link";
+                span.textContent = add.name;
+
+                span.onclick = function() {
+                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    d3.selectAll("g.star").remove();
+                    add.paths_path = {}
+                    add.paths_path.back = g_project.paths;
+                    g_project.paths = add.paths_path.back;
+                    g_project.hist_path_len = add.paths_path.start;
+                    CreateSpace(add);
+                }
+
+                $(".info-path-text").append(span);
+
+                let slash = document.createElement("span");
+                slash.className = "mx-2";
+                slash.textContent = "/";
+                $(".info-path-text").append(slash); 
             }
-        });
+        }
+    }
 }
 
 function AddSun(obj, data) {
@@ -93,16 +133,31 @@ function AddSun(obj, data) {
         }
     }
 
+    //// [SLIDER START]
+    if (g_root.slider) {
+        var deg_min = (360 / PLANET_MAX_NUMBER_MAX);
+        var max_size_coef = Math.trunc(data.sub_folders.length / PLANET_MAX_NUMBER_MAX) + 1;
+        var deg_max_wanted = max_size_coef * 360;
+        var deg_max_curr = data.sub_folders.length * deg_min;
+        var deg_adjust = (deg_max_wanted - deg_max_curr) / data.sub_folders.length;
+        g_project.spiral_info.planet_distance = deg_min + deg_adjust;
+        g_project.spiral_info.planet_number = (data.sub_folders.length < 15) ? 3 : 4;
+        g_project.spiral_info.planet_number_max = data.sub_folders.length;
+        g_project.spiral_info.spiral_length = g_project.spiral_info.planet_number_max * g_project.spiral_info.planet_distance;
+    }
+    //// [SLIDER END]
+
     data.values.this.attr("id", "obj-" + data.id);
 
     if (g_root.slider) {
         g_root.cx = (-g_SunRadius * SUN_SCROLL_X_COEF);
+        g_root.cy = (-g_SunRadius * SUN_SCROLL_Y_COEF);
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + g_root.cx + ", 0)"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
+            .attr("transform", "translate(" + g_root.cx + ", " + g_root.cy + ")"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
-
+    //console.log(g_root.x, g_root.cx, g_root.y, g_root.cy)
     //Milos commented this out on 14.01.2021
     // data.values.effect = data.values.this.append("circle")
     //     .attr("class", "star effect")
@@ -133,8 +188,16 @@ function AddSun(obj, data) {
     data.values.select = data.values.this.append("circle")
         .attr("class", "star select")
         .attr("r", g_SunRadius)
-        .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) OverlayCreate(d3.select(this), d, data);
+        .on("mouseenter", function(d) {
+            if (!g_project.move && g_root.zoom) 
+            {
+                OverlayDestroy();
+                OverlayCreate(d3.select(this), d, data);
+            }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", () => {
+            ClearDisplayName();
         })
         .on("mousedown", function(d) {
             // ClickStart(function(data){
@@ -147,9 +210,22 @@ function AddSun(obj, data) {
             //     // NONE
             // }, data);
         });
+    //// [SLIDER START]
+    if (g_root.slider){
+        data.values.object.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+        data.values.select.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
 
     AddText(data, "star");
 
+    // create children
     if (data.sub_folders) {
         data.values.children.selectAll("g")
             .data(data.sub_folders)
@@ -157,6 +233,9 @@ function AddSun(obj, data) {
             .append("g")
             .attr("class", "planet dom")
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
+
+        CreateSortMenu();
+        CreateSelectMenu()
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -194,28 +273,49 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.parent = (parent != null) ? d3.select("#obj-" + data.par_id) : null;
     data.values.sun = false;
 
-    data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    //// [SLIDER START]
+    // data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    //// [SLIDER OLD/NEW]
+    if (g_root.slider) {
+        data.values.rotation = position * g_project.spiral_info.planet_distance;
+        //data.values.rotation = position * 360 / PLANET_MAX_NUMBER_MAX;
+    }
+    else{
+        data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    }
+    //// [SLIDER END]
 
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
     // Planet position
     if (g_root.slider) {
-        let distance = {
-            x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
-            y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
-        };
+        //// [SLIDER START]
+        // let distance = {
+        //     x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
+        //     y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
+        // };
+        // data.values.this.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
+        //// [SLIDER OLD/NEW]
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF;  // distance from the center
+        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
+            .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
+        //// [SLIDER END]
     } else {
         let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2);  // distance from the center 
+        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (-data.values.rotation) + ")");
+            .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
+    
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
@@ -227,7 +327,6 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.picture = data.values.object.append("circle")
         .attr("class", "planet pattern" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
         .attr("r", g_PlanetRadius);
-    if (data.color) data.values.picture.style("fill", data.color)
 
     // data.values.shader = data.values.object.append("circle")
     //     .attr("class", "planet shader")
@@ -241,10 +340,21 @@ function AddChildren(obj, data, parent, position = 0) {
 
     // Text
     AddText(data, "planet");
-    if (g_root.slider) {
-        data.values.text.selectAll("text")
-            .style("text-anchor", "start")
-            .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
+    //// [SLIDER START]
+    // if (g_root.slider) {
+    //     data.values.text.selectAll("text")
+    //         .style("text-anchor", "start")
+    //         .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
+    // }
+    //// [SLIDER END]
+
+    // set color of a planet
+    if (data.color) {
+        data.values.background
+            .style("fill", data.color)
+        
+        data.values.this.select(".text_front")
+            .style("fill", FlipColor(data.color))
     }
 
     // planet select = mouse over overlay for planets
@@ -255,17 +365,11 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("r", g_PlanetRadius)
         .on("mouseover", function(d) {
             if (!g_project.overlay && !g_project.move && g_root.zoom) {
-                // console.log(g_root.universe.data);
-                switch (g_root.universe.data.overlay_type) {
-                    case "ic":
-                    case "trash":
-                    case "search":
-                        OverlayCreate(d3.select(this), d, data, true);
-                        break; // search?
-                    default:
-                        break;
-                }
             }
+            SetDisplayName(d.name);
+        })
+        .on("mouseleave", () => {
+            ClearDisplayName();
         })
         .on("mousedown", function(d) {
             ClickStart(function(d) {
@@ -274,7 +378,7 @@ function AddChildren(obj, data, parent, position = 0) {
                 // }
             }, data);
         })
-        .on("mouseup", function(d) {
+        .on("click", function(d) {
             if (!g_project.selection) {
                 var func = function() {};
                 switch (g_root.universe.data.overlay_type) {
@@ -287,6 +391,9 @@ function AddChildren(obj, data, parent, position = 0) {
                 }
                 ClickStop(func, data, true);
             }
+        })
+        .on("contextmenu", function(d){
+            CreateContextMenu(d);
         });
 
     data.values.checked = data.values.this.append("foreignObject")
@@ -295,14 +402,14 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
         .attr("transform", "translate(0, " + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
-        .style("opacity", 0)
+        .style("opacity", 0);
 
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
         .append("i")
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
-        .html("check_circle")
+        .html("check_circle");
 
 }
 
@@ -312,10 +419,12 @@ function AddTspan(target, newobj, text, prefix = null) {
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
     var max_text = TEXT_MAX_TEXT;
     var max_text_len = TEXT_MAX_LENGHT;
-    if (g_root.slider) {
-        max_text = TEXT_MAX_SCROLL_TEXT;
-        max_text_len = TEXT_MAX_SCROLL_LENGHT;
-    }
+    //// [SLIDER START]
+    // if (g_root.slider) {
+    //     max_text = TEXT_MAX_SCROLL_TEXT;
+    //     max_text_len = TEXT_MAX_SCROLL_LENGHT;
+    // }
+    //// [SLIDER END]
 
     text = text.slice(0, max_text);
     if (text.length >= max_text)
@@ -398,15 +507,16 @@ function ProjectPosiotionSet(data) {
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
-        if (found) {
-            var path = found[0].reverse()
-                // console.log(path);
-            for (var add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-                AddPath(add);
-            }
-        }
+        // console.log(found);
+        // if (found) {
+        //     var path = found[0].reverse()
+        //         // console.log(path);
+        //     for (var add of path) {
+        //         add.box = {...g_box };
+        //         add.values = {...add.values };
+        //         AddPath(add);
+        //     }
+        // }
     }
     //console.log(found)
     CreateSpace(found ? found[1] : data);
@@ -420,27 +530,35 @@ function DashboardCreate(data, project_position = null) {
         .attr("id", "Universe")
         .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         .call(globDrag)
-        .call(globZoom);
+        .call(globZoom)
+        .on("mousedown.zoom", null)
+        .on("touchstart.zoom", null)
+        .on("touchmove.zoom", null)
+        .on("touchend.zoom", null);
 
     g_root.universe.append("circle")
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
-    g_root.universe.data = data[0];
     //g_project.project_position = project_position;
 
-    PathCreation(data);
+    g_root.universe.data = data[0];
 
-    HistoryCreation(data);
+    CreateDisplayName();
+
+    PathCreation();
+
+    HistoryCreation();
 
     ProjectPosiotionSet(g_root.universe.data);
 
     // 143 times per second
     d3.timer(function(elapsed) {
-        if (g_root.universe) AnimateUniverse();
+        if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
 
-        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() != g_project.height) {
+        let offY = $SVG.offset().top;
+        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height()-offY != g_project.height) {
             WindowResize();
         }
     });

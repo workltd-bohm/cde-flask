@@ -330,6 +330,64 @@ def update_file():
     return resp
 
 
+@app.route('/update_file_annotation', methods=['POST'])
+def update_file_annotation():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    if main.IsLogin():
+
+        if db.connect(db_adapter):
+            
+            message = db.update_file_annotations(db_adapter, request_data)
+
+            resp = Response()
+            resp.status_code = message['code']
+            resp.data = str(message['message'])
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/delete_file_annotation', methods=['POST'])
+def delete_file_annotation():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_data = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+    if main.IsLogin():
+
+        if db.connect(db_adapter):
+            
+            message = db.delete_file_annotation(db_adapter, request_data)
+
+            resp = Response()
+            resp.status_code = message['code']
+            resp.data = str(message['message'])
+            return resp
+        
+        else:
+            logger.log(LOG_LEVEL, str(msg.DB_FAILURE))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
 def create_dir_process(request_data):
     logger.log(LOG_LEVEL, "Create Dir Process")
     u = {'user_id': session['user']['id'], 'username': session['user']['username']}

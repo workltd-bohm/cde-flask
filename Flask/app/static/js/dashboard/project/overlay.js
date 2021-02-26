@@ -11,34 +11,34 @@ g_OverProject = [
 
 g_OverSearch = [
     { name: "GO TO FILE", icon: "open_with", link: SearchOpen },
-]
+];
 
 g_OverFolder = [
-    { name: "DETAILS", icon: "preview", link: WrapOpenFile },
     { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
     { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "TRASH", icon: "delete", link: WrapTrash },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
-]
+    { name: "SHARE", icon: "share", link: WrapShare },
+    // { name: "DETAILS", icon: "preview", link: WrapOpenFile },
+    // { name: "RENAME", icon: "create", link: WrapRename },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
+    // { name: "COPY", icon: "content_copy", link: WrapCopy },
+    // { name: "MOVE", icon: "open_with", link: WrapMove },
+    // { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
+    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+];
 
 g_OverFile = [
     { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
     { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "TRASH", icon: "delete", link: WrapTrash },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
     { name: "SHARE", icon: "share", link: WrapShare },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
-]
+    // { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
+    // { name: "RENAME", icon: "create", link: WrapRename },
+    // { name: "TRASH", icon: "delete", link: WrapTrash },
+    // { name: "COPY", icon: "content_copy", link: WrapCopy },
+    // { name: "MOVE", icon: "open_with", link: WrapMove },
+    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+];
 
 g_OverPlanet = [
     { name: "SELECT", icon: "check_circle", link: SelectPlanet },
@@ -50,32 +50,33 @@ g_OverPlanet = [
     { name: "SHARE", icon: "share", link: WrapShare },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
     { name: "COLOR", icon: "color_lens", link: ColorPicker },
-]
+];
 
 g_OverTrash = [
-    { name: "EMPTY", icon: "delete_sweep", link: WrapEmptyTrash }, // TODO WrapEmptyTrash
-]
+    { name: "EMPTY", icon: "delete_sweep", link: WrapEmptyTrash },
+];
 
-g_OverTrashPlanet = [
+g_OverPlanetTrash = [
     { name: "SELECT", icon: "check_circle", link: SelectPlanet },
     { name: "RESTORE", icon: "restore_from_trash", link: WrapRestore },
     { name: "DESTROY", icon: "delete", link: WrapDelete }
-]
+];
+
 g_OverMarket = [
     { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
     { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
     { name: "NEW POST", icon: "addchart", link: WrapNewPost },
-]
+];
 
 g_OverPost = [
     { name: "NEW POST", icon: "create_new_folder", link: WrapNewPost }, //WrapNewPost
     // { name: "ALL POSTS", icon: "preview", link: WrapOpenFile },
-]
+];
 
 g_OverBid = [
-        { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
-    ]
-    // -------------------------------------------------------
+    { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
+];
+// -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
     data.overlay = {};
@@ -85,7 +86,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     var type = g_OverNone;
     switch (data.overlay_type) {
         case "ic":
-            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : () => { return; };
             break;
         case "user":
             type = g_OverUser;
@@ -100,7 +101,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             type = g_OverTrash;
             break;
         case "trash_planet":
-            type = g_OverTrashPlanet;
+            type = g_OverPlanetTrash;
             break;
         case "market":
             type = g_OverMarket;
@@ -114,7 +115,11 @@ function OverlayCreate(obj, data, parent, planet = false) {
         default:
             break;
     }
-    if (type.length == 0) return;
+    if (type.length == 0) {
+        OverlayDestroy();
+        data.overlay = false;
+        return;
+    }
 
     if (planet) {
         if (data.overlay_type != "trash_planet") {
@@ -129,6 +134,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     data.values.text.style("opacity", 0);
     data.overlay.items = type.slice();
 
+    // create an overlay group
     data.overlay.object = data.values.this.append("g")
         .attr("class", "star overlay");
 
@@ -136,8 +142,15 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (!data.values.sun) g_OverlayRadius = g_PlanetRadius * OVERLAY_SELECT_PLANET_RATIO;
     else g_OverlayRadius = g_SunRadius;
 
+    //// [SLIDER START]
+    if (g_root.slider && data.values.sun) {
+        data.overlay.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
-    g_project.overlay = data.overlay.object;
+    g_project.overlay = data.overlay.object; // set global variable to point to this group
 
     // var pie = d3.layout.pie().sort(null);
     // var arc = d3.svg.arc().innerRadius(g_OverlayRadius).outerRadius(g_OverlayRadius*1.5);
@@ -148,11 +161,12 @@ function OverlayCreate(obj, data, parent, planet = false) {
     //     .append("path")
     //     .attr("d", arc)
     //     .attr("class","overlay pattern")
+    // append this group with a pattern (dark color)
     data.overlay.object.append("circle")
         .attr("class", "overlay pattern")
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", g_OverlayRadius)
+        .attr("r", g_OverlayRadius);
 
     data.overlay.object.append("circle")
         .attr("class", "overlay select")
@@ -166,11 +180,13 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
+
+            ClearDisplayName();
         })
         .on("mousedown", function(d) {
             if (!data.values.sun) ClickStart(function(d) {}, data);
         })
-        .on("mouseup", function(d) {
+        .on("click", function(d) {
             if (!data.values.sun) {
                 if (!g_project.selection) {
                     var func = function() {};
@@ -190,6 +206,9 @@ function OverlayCreate(obj, data, parent, planet = false) {
                     }, data, true);
                 }
             }
+        })
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d);
         });
 
     AddOverText(data, obj = true, name = false);
@@ -213,6 +232,13 @@ function OverlayCreate(obj, data, parent, planet = false) {
         .attr("class", "item")
         .each(function(d, i) { AddItem(d3.select(this), d, data, i); });
 
+}
+
+function OverlayDestroy() {
+    if (g_project.overlay) {
+        g_project.overlay.remove();
+        g_project.overlay = false;
+    }
 }
 
 function AddItem(obj, data, parent, position = 0) {
@@ -252,7 +278,7 @@ function AddItem(obj, data, parent, position = 0) {
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
         .append("xhtml:div")
-        .attr("class", "item foregin")
+        .attr("class", "item foregin");
 
 
     var defaultColor = null; //$(".foregin .material-icons .planet").css("color");
@@ -261,7 +287,7 @@ function AddItem(obj, data, parent, position = 0) {
     var tmp = data.values.picture.append("i")
         .attr("class", "item material-icons" + ((data.values.data.values.sun) ? " sun" : " planet"))
         .style("font-size", g_OverlayItemSize + "px")
-        .html(data.icon)
+        .html(data.icon);
 
     if (defaultColor) tmp.style("color", defaultColor)
 
@@ -278,11 +304,11 @@ function AddItem(obj, data, parent, position = 0) {
             //if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
             // if (d3.mouse(this)[0] >= divRect.left && event.clientX <= divRect.right &&
             //     event.clientY >= divRect.top && event.clientY <= divRect.bottom) {
-                if (data.name != "COLOR") {
-                    parent.values.text.style("opacity", 100);
-                    g_project.overlay.remove();
-                    g_project.overlay = false;
-                }
+            if (data.name != "COLOR") {
+                parent.values.text.style("opacity", 100);
+                g_project.overlay.remove();
+                g_project.overlay = false;
+            }
             //}
         })
         .on("mousedown", function(d) {
@@ -318,4 +344,280 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
+function CreateSortMenu() {
+    $(".hover-menu").empty();
+
+    let sort_menu = document.createElement("div");
+    sort_menu.className = "hover-menu-item px-3 py-2";
+
+    let button = document.createElement("a");
+    button.className = "btn-sort";
+
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort";
+
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Sort";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    button.onclick = function(event) {
+        $(event.target
+                .closest(".hover-menu-item")
+                .querySelector(".sort-dropdown"))
+            .toggleClass("d-none");
+    }
+
+    // add button to sort-menu
+    sort_menu.appendChild(button);
+
+    let dropdown = document.createElement("div");
+    dropdown.className = "sort-dropdown d-none";
+
+    // by alphabet option
+    let menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "sort_by_alpha";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By name";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function() {
+        SortByName(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // by date option
+    menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "schedule";
+
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "By date";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function() {
+        SortByDate(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // add dropdown to sort-menu
+    sort_menu.appendChild(dropdown);
+
+    $(".hover-menu").append(sort_menu);
+}
+
+function SortByName(data) {
+    if (data.sub_folders.length <= 1) {
+        MakeSnackbar("Nothing to sort");
+        return;
+    }
+
+    let items = data.sub_folders;
+    let item_tmp;
+    for (let i = 0; i < items.length - 1; i++) {
+        for (let j = i + 1; j < items.length; j++) {
+            let sorted = items[j].name.localeCompare(items[i].name);
+
+            if (sorted === -1) { // -1 = str1 is sorted before str2
+                item_tmp = items[j]; // store
+                items.splice(j, 1); // remove j'th element
+                items.splice(i, 0, item_tmp); // replace element
+                i = 0; // reset loop
+            }
+        }
+    }
+
+    d3.selectAll("g.star").remove();
+    CreateSpace(data);
+
+    MakeSnackbar("Items sorted alphabetically.");
+}
+
+function SortByDate(data) {
+    if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
+
+    alert('To be implemented');
+}
+
+function CreateSelectMenu() {
+    let select_menu = document.createElement("div");
+    select_menu.className = "hover-menu-item px-3 py-2";
+
+    let button_select = document.createElement("a");
+    button_select.className = "btn-select-all";
+
+    let checkbox = document.createElement("input");
+    checkbox.id = "select-all";
+    checkbox.name = "select-all";
+    checkbox.type = "checkbox";
+
+    let label = document.createElement("label");
+    label.className = "ms-2";
+    label.id = "select-all-label";
+    label.htmlFor = "select-all";
+    label.textContent = "Select all";
+
+    button_select.appendChild(checkbox);
+    button_select.appendChild(label);
+
+    select_menu.appendChild(button_select);
+
+    select_menu.onclick = function() {
+        let checked = document.getElementById("select-all").checked;
+        let lbl = document.getElementById("select-all-label");
+
+        if (checked) {
+            SelectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Deselect";
+        } else {
+            DeselectAllPlanets(g_project.current_ic);
+            lbl.textContent = "Select all";
+        }
+    }
+
+    $(".hover-menu").append(select_menu);
+}
+
+function CreateContextMenu(data) {
+    // get the type of context menu (using ic type)
+    let type = GetContextType(data);
+    // exit if non-applicable
+    if (!type) { return; }
+
+    // create the new context wrapper
+    let wrap = document.createElement("div");
+    wrap.className = "context-menu-wrapper";
+
+    let menu = document.createElement("div");
+    menu.className = "context-menu";
+
+    // fill the menu with items
+    for (let item of type) {
+        // create new item on the menu
+        let new_item = document.createElement("div");
+        new_item.className = "context-menu-item";
+
+        // create icon for the new item
+        let icon = document.createElement("span");
+        icon.className = "context-menu-item-icon material-icons";
+        icon.textContent = item.icon;
+
+        // create name of the new item
+        let name = document.createElement("span");
+        name.className = "context-menu-item-name ms-2 me-5";
+        name.textContent = item.name.toLowerCase();
+
+        /* used for animated background on hover */
+        let bg = document.createElement("div");
+        bg.className = "context-menu-item-bg";
+        bg.innerHTML = "&nbsp;";
+
+        // attach icon, name, bg and event to menu-item 
+        new_item.appendChild(icon);
+        new_item.appendChild(name);
+        new_item.appendChild(bg);
+
+        // hack the data for the function to work
+        data.values.data = data;
+
+        // attach the item's function to this item
+        new_item.addEventListener("click", () => {
+            item.link(data);
+        });
+
+        // finally, add the item we've generated to the context-menu list
+        menu.appendChild(new_item);
+    }
+
+    // add the menu to the wrapper
+    wrap.appendChild(menu);
+
+    // get position of the mouse
+    let mouse = {
+        x: d3.event.clientX - $(".sidebar").outerWidth(),
+        y: d3.event.clientY - $(".topbar").height()
+    };
+
+    // set the position of context menu
+    wrap.style.left = mouse.x + "px";
+    wrap.style.top = mouse.y + "px";
+
+    // remove existing and add new context menu to the screen
+    $(".context-menu-wrapper").remove();
+    $(".workspace").append(wrap);
+
+    // prevent from going off screen
+    // element must be rendered first
+    let width = $(wrap).outerWidth();
+    let height = $(wrap).outerHeight();
+    let offX = parseInt(wrap.style.left);
+    let offY = parseInt(wrap.style.top);
+    let wsWidth = parseInt($WS.outerWidth());
+    let wsHeight = parseInt($WS.outerHeight());
+
+    if (offY + height > wsHeight) {
+        wrap.style.top = (wsHeight - height) + "px";
+    }
+
+    if (offX + width > wsWidth) {
+        wrap.style.left = (wsWidth - width) + "px";
+    }
+}
+
+function GetContextType(data) {
+    let type = data.overlay_type;
+    switch (type) {
+        case "ic":
+            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            break;
+        case "user":
+            type = g_OverUser;
+            break;
+        case "project":
+            type = g_OverProject;
+            break;
+        case "search_target":
+            type = g_OverPlanet;
+            break;
+        case "trash":
+            type = g_OverTrash;
+            break;
+        case "trash_planet":
+            type = g_OverPlanetTrash;
+            break;
+        case "market":
+            type = g_OverMarket;
+            break;
+        case "posts":
+            type = g_OverPost;
+            break;
+        case "bids":
+            type = g_OverBid;
+            break;
+        default:
+            type = false;
+            break;
+    }
+
+    return type;
+}
 // -------------------------------------------------------

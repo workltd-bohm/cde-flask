@@ -368,7 +368,8 @@ function refreshTags() {
             data = JSON.parse(data);
             $(".tag-container").remove();
             for (let i = 0; i < data.length; i++) {
-                if (!data[i].tag.includes(",")) {
+                console.log(data[i]);
+                if (!data[i].tag.includes(",") && data[i].key != 'project_code' && data[i].key != 'company_code') {
                     createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
                 }
             }
@@ -597,7 +598,7 @@ function terminalAutocomplete(inp, arr) {
         currentFocus = -1;
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
+        a.setAttribute("class", "autocomplete-items ps-1");
         this.parentNode.appendChild(a);
         arr = currentArr;
         //      console.log(arr);
