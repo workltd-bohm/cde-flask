@@ -20,7 +20,7 @@ g_OverFolder = [
     { name: "SHARE", icon: "share", link: WrapShare },
     // { name: "DETAILS", icon: "preview", link: WrapOpenFile },
     // { name: "RENAME", icon: "create", link: WrapRename },
-    // { name: "TRASH", icon: "delete", link: WrapTrash },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
     // { name: "COPY", icon: "content_copy", link: WrapCopy },
     // { name: "MOVE", icon: "open_with", link: WrapMove },
     // { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
@@ -53,7 +53,7 @@ g_OverPlanet = [
 ];
 
 g_OverTrash = [
-    { name: "EMPTY", icon: "delete_sweep", link: WrapEmptyTrash }, 
+    { name: "EMPTY", icon: "delete_sweep", link: WrapEmptyTrash },
 ];
 
 g_OverPlanetTrash = [
@@ -76,7 +76,7 @@ g_OverPost = [
 g_OverBid = [
     { name: "ALL POSTS", icon: "preview", link: WrapAllPost },
 ];
-    // -------------------------------------------------------
+// -------------------------------------------------------
 
 function OverlayCreate(obj, data, parent, planet = false) {
     data.overlay = {};
@@ -86,7 +86,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
     var type = g_OverNone;
     switch (data.overlay_type) {
         case "ic":
-            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : ()=>{return;};
+            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : () => { return; };
             break;
         case "user":
             type = g_OverUser;
@@ -115,8 +115,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
         default:
             break;
     }
-    if (type.length == 0) 
-    {
+    if (type.length == 0) {
         OverlayDestroy();
         data.overlay = false;
         return;
@@ -143,8 +142,15 @@ function OverlayCreate(obj, data, parent, planet = false) {
     if (!data.values.sun) g_OverlayRadius = g_PlanetRadius * OVERLAY_SELECT_PLANET_RATIO;
     else g_OverlayRadius = g_SunRadius;
 
+    //// [SLIDER START]
+    if (g_root.slider && data.values.sun) {
+        data.overlay.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
-    g_project.overlay = data.overlay.object;    // set global variable to point to this group
+    g_project.overlay = data.overlay.object; // set global variable to point to this group
 
     // var pie = d3.layout.pie().sort(null);
     // var arc = d3.svg.arc().innerRadius(g_OverlayRadius).outerRadius(g_OverlayRadius*1.5);
@@ -174,7 +180,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 g_project.overlay.remove();
                 g_project.overlay = false;
             }
-            
+
             ClearDisplayName();
         })
         .on("mousedown", function(d) {
@@ -228,8 +234,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
 
 }
 
-function OverlayDestroy()
-{
+function OverlayDestroy() {
     if (g_project.overlay) {
         g_project.overlay.remove();
         g_project.overlay = false;
@@ -299,11 +304,11 @@ function AddItem(obj, data, parent, position = 0) {
             //if(Math.abs(d3.mouse(this)[0])+Math.abs(d3.mouse(this)[1]) >= g_OverlayRadius*OVARLAY_DESELECT_RATIO){ // TODO FIX
             // if (d3.mouse(this)[0] >= divRect.left && event.clientX <= divRect.right &&
             //     event.clientY >= divRect.top && event.clientY <= divRect.bottom) {
-                if (data.name != "COLOR") {
-                    parent.values.text.style("opacity", 100);
-                    g_project.overlay.remove();
-                    g_project.overlay = false;
-                }
+            if (data.name != "COLOR") {
+                parent.values.text.style("opacity", 100);
+                g_project.overlay.remove();
+                g_project.overlay = false;
+            }
             //}
         })
         .on("mousedown", function(d) {
@@ -359,7 +364,7 @@ function CreateSortMenu(){
     button.appendChild(icon);
     button.appendChild(text);
 
-    button.onclick = function(event){
+    button.onclick = function(event) {
         $(event.target
             .closest(".hover-menu-item")
             .querySelector(".hover-dropdown"))
@@ -386,8 +391,8 @@ function CreateSortMenu(){
 
     menu_item.appendChild(icon);
     menu_item.appendChild(text);
-    
-    menu_item.onclick = function(){
+
+    menu_item.onclick = function() {
         SortByName(g_project.current_ic);
     }
 
@@ -408,7 +413,7 @@ function CreateSortMenu(){
     menu_item.appendChild(icon);
     menu_item.appendChild(text);
 
-    menu_item.onclick = function(){
+    menu_item.onclick = function() {
         SortByDate(g_project.current_ic);
     }
 
@@ -420,26 +425,23 @@ function CreateSortMenu(){
     $(".hover-menu").append(sort_menu);
 }
 
-function SortByName(data){
-    if (data.sub_folders.length <= 1) 
-    {
+function SortByName(data) {
+    if (data.sub_folders.length <= 1) {
         MakeSnackbar("Nothing to sort");
         return;
     }
 
     let items = data.sub_folders;
     let item_tmp;
-    for(let i = 0; i < items.length - 1; i++)
-    {
-        for(let j = i+1; j < items.length; j++) 
-        {
+    for (let i = 0; i < items.length - 1; i++) {
+        for (let j = i + 1; j < items.length; j++) {
             let sorted = items[j].name.localeCompare(items[i].name);
-            
-            if (sorted === -1){ // -1 = str1 is sorted before str2
-                item_tmp = items[j];            // store
-                items.splice(j, 1);             // remove j'th element
-                items.splice(i, 0, item_tmp);   // replace element
-                i = 0;                          // reset loop
+
+            if (sorted === -1) { // -1 = str1 is sorted before str2
+                item_tmp = items[j]; // store
+                items.splice(j, 1); // remove j'th element
+                items.splice(i, 0, item_tmp); // replace element
+                i = 0; // reset loop
             }
         }
     }
@@ -449,13 +451,13 @@ function SortByName(data){
     MakeSnackbar("Items sorted alphabetically.");
 }
 
-function SortByDate(data){
+function SortByDate(data) {
     if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
 
     alert('To be implemented');
 }
 
-function CreateSelectMenu(){
+function CreateSelectMenu() {
     let select_menu = document.createElement("div");
     select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
@@ -478,7 +480,7 @@ function CreateSelectMenu(){
 
     select_menu.appendChild(button_select);
 
-    select_menu.onclick = function(){
+    select_menu.onclick = function() {
         let checked = document.getElementById("select-all").checked;
         let lbl = document.getElementById("select-all-label");
 
@@ -496,20 +498,19 @@ function CreateSelectMenu(){
 
 function CreateContextMenu(event, data){
     // get the type of context menu (using ic type)
-    let type = GetContextType(data);
+    let type = GetContextMenuType(data);
     // exit if non-applicable
-    if (!type) { return; } 
+    if (!type) { return; }
 
     // create the new context wrapper
     let wrap = document.createElement("div");
     wrap.className = "context-menu-wrapper";
-    
+
     let menu = document.createElement("div");
     menu.className = "context-menu";
 
     // fill the menu with items
-    for(let item of type)
-    {
+    for (let item of type) {
         // create new item on the menu
         let new_item = document.createElement("div");
         new_item.className = "context-menu-item";
@@ -518,7 +519,7 @@ function CreateContextMenu(event, data){
         let icon = document.createElement("span");
         icon.className = "context-menu-item-icon material-icons";
         icon.textContent = item.icon;
-        
+
         // create name of the new item
         let name = document.createElement("span");
         name.className = "context-menu-item-name ms-2 me-5";
@@ -535,7 +536,7 @@ function CreateContextMenu(event, data){
         new_item.appendChild(bg);
 
         // hack the data for the function to work
-        data.values.data = data;    
+        data.values.data = data;
 
         // attach the item's function to this item
         new_item.addEventListener("click", () => {
@@ -548,7 +549,7 @@ function CreateContextMenu(event, data){
 
     // add the menu to the wrapper
     wrap.appendChild(menu);
-    
+
     // get position of the mouse
     let mouse = {
         x: event.clientX - $(".sidebar").outerWidth(),
@@ -571,14 +572,12 @@ function CreateContextMenu(event, data){
     let offY = parseInt(wrap.style.top);
     let wsWidth = parseInt($WS.outerWidth());
     let wsHeight = parseInt($WS.outerHeight());
-    
-    if (offY + height > wsHeight)
-    {
+
+    if (offY + height > wsHeight) {
         wrap.style.top = (wsHeight - height) + "px";
     }
 
-    if (offX + width > wsWidth)
-    {
+    if (offX + width > wsWidth) {
         wrap.style.left = (wsWidth - width) + "px";
     }
 }
@@ -676,7 +675,7 @@ function CreateViewMenu()
     $(".hover-menu").append(view_menu);
 }
 
-function GetContextType(data){
+function GetContextMenuType(data){
     let type = data.overlay_type;
     switch (type) {
         case "ic":
@@ -686,6 +685,7 @@ function GetContextType(data){
             type = g_OverUser;
             break;
         case "project":
+            // todo differ root_project / project / folder / file
             type = g_OverProject;
             break;
         case "search_target":

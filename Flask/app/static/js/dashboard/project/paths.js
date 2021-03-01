@@ -98,6 +98,7 @@ function CreateDisplayName(){
 
 function SetDisplayName(string)
 {
+    if (InstanceExists(g_project.display_name))
     g_project.display_name.text(string);
 }
 

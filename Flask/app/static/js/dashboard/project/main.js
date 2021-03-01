@@ -1,7 +1,7 @@
 // -------------------------------------------------------
 
 function CreateSpace(data) {
-    // config
+    // cache
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
@@ -12,6 +12,7 @@ function CreateSpace(data) {
     if (g_root.slider) g_SunRadius *= SUN_SCROLL_ZOOM;
     g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
+    g_project.current_ic = data;
 
     // clear instances
     if (g_project.overlay) {
@@ -24,8 +25,10 @@ function CreateSpace(data) {
         g_project.selection = false;
     }
 
-    g_project.current_ic = data;
     ClearDisplayName();
+
+    // hide activity when on root path
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "."));
 
     switch (data.overlay_type) {
         case "ic":
@@ -43,6 +46,7 @@ function CreateSpace(data) {
         default:
             break;
     }
+
     // g_project.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
@@ -58,15 +62,7 @@ function CreateSpace(data) {
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
 
-    // g_root.universe.selectAll("#Touch")
-    //     .on("mouseover", function(){
-    //         if (g_project.overlay){
-    //             g_project.overlay.remove();
-    //             g_project.overlay = false;
-    //         }
-    //     });
-
-    // add path to a top bar
+    // add path to a top bar TODO store in a function
     if (SESSION.position) {
         found = RecursiveFileSearch(g_project.data, g_project.data);
         if (found) {

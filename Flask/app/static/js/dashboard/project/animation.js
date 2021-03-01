@@ -171,7 +171,6 @@ function UpdateUniverse() {
     }
 
     if (g_project.skip != false || g_project.warp) {
-        console.log("warping")
         g_root.universe.transition()
             .duration(1)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")

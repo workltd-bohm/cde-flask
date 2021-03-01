@@ -311,6 +311,9 @@ function RenameFile(form, json) {
             form.empty();
             form.append(html);
 
+            let input = document.getElementById("new_name");
+            input.value = newOldName;
+            input.select();
             document.getElementById('name_div').style.bottom = "120px";
 
             LoadStop();
