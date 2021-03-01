@@ -184,7 +184,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             if (!data.values.sun) {
                 if (!g_project.selection) {
                     var func = function() {};
-                    switch (g_root.universe.data.overlay_type) {
+                    switch (g_project.data.overlay_type) {
                         case "user":
                             func = GetWarp;
                             break;
@@ -202,7 +202,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             }
         })
         .on("contextmenu", function(d){
-            CreateContextMenu(d);
+            CreateContextMenu(d3.event, d);
         });
 
     AddOverText(data, obj = true, name = false);
@@ -444,8 +444,7 @@ function SortByName(data){
         }
     }
 
-    d3.selectAll("g.star").remove();
-    CreateSpace(data);
+    CreateWorkspace(data);
     
     MakeSnackbar("Items sorted alphabetically.");
 }
@@ -495,7 +494,7 @@ function CreateSelectMenu(){
     $(".hover-menu").append(select_menu);
 }
 
-function CreateContextMenu(data){
+function CreateContextMenu(event, data){
     // get the type of context menu (using ic type)
     let type = GetContextType(data);
     // exit if non-applicable
@@ -552,8 +551,8 @@ function CreateContextMenu(data){
     
     // get position of the mouse
     let mouse = {
-        x: d3.event.clientX - $(".sidebar").outerWidth(),
-        y: d3.event.clientY - $(".topbar").height()
+        x: event.clientX - $(".sidebar").outerWidth(),
+        y: event.clientY - $(".topbar").height()
     };
 
     // set the position of context menu
@@ -641,7 +640,8 @@ function CreateViewMenu()
     menu_item.appendChild(text);
     
     menu_item.onclick = function(){
-        // switch to planetary TODO
+        g_view = VIEW_PL;
+        CreateWorkspace(g_project.current_ic);
     }
 
     dropdown.appendChild(menu_item);
@@ -664,7 +664,8 @@ function CreateViewMenu()
     menu_item.appendChild(text);
 
     menu_item.onclick = function(){
-        SwitchViewsPlanetary(g_root.universe.data);
+        g_view = VIEW_GR;
+        CreateWorkspace(g_project.current_ic);
     }
 
     dropdown.appendChild(menu_item);

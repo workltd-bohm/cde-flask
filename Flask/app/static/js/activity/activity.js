@@ -34,10 +34,6 @@ $(document).ready(function() {
     $("body").on('click', '.btn-update', function() {
         $(this).removeClass("glow");
     });
-
-    setInterval(function() {
-        getComments();
-    }, 50000);
 });
 
 function OpenActivity(html, head = null, open = true) {
@@ -45,11 +41,15 @@ function OpenActivity(html, head = null, open = true) {
         ACTIVITY.html(html);
         SwitchTabs($(".activity-tab").first());
     }
+
+    // obsolete (i think x))
     if (head) {
         ACTIVITY_HEAD.html(head);
     } else ACTIVITY_HEAD.style("display", "none");
+
     if (open) {
-        $ACTIVITY.parent().addClass("opened");
+        let menu = $(".activity-menu");
+        menu.addClass("opened").removeClass("p-0");
     }
 }
 

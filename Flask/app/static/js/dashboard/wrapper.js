@@ -100,6 +100,7 @@ function SendProject(data) {
         status: data.status,
         revision: data.revision
     };
+    console.log("here");
 
     SEARCH_HISTORY = data;
 
@@ -161,7 +162,7 @@ function UserProfile() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                CreateDashboard([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -193,7 +194,7 @@ function SelectProject() {
                     history.pushState(SESSION, null, '');
                 }
                 backButtonFlag = false;
-                CreateDashboard([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -242,7 +243,7 @@ function CreateProject(position = null) {
                 if (data.session) {
                     SESSION = data.session;
                 }
-                CreateDashboard([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
             }
         },
@@ -273,7 +274,7 @@ function SelectMarket() {
                     console.log(SESSION)
                 }
                 history.pushState(SESSION, null, '');
-                CreateDashboard([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -326,7 +327,7 @@ function SelectTrash() {
                     SESSION = data.session;
                 }
                 history.pushState(SESSION, null, '');
-                CreateDashboard([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
 

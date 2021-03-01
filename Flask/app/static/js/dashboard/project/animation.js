@@ -89,10 +89,10 @@ function SunFadeout(data) {
 
 function GetWarp(data) {
     if (!g_project.warp) {
-        //console.log(g_root.universe.data)
+        //console.log(g_project.data)
         //console.log(g_project.skip, g_project.search,g_project.paths)
         if (!g_project.search)
-            switch (g_root.universe.data.overlay_type) {
+            switch (g_project.data.overlay_type) {
                 case "search":
                 case "ic":
                     // AddPath(g_project.skip.values.back); remove old path
@@ -111,24 +111,27 @@ function GetWarp(data) {
             // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
             if (data) g_project.skip = g_project.search;
             else g_project.search = g_project.skip;
-            g_root.universe.data = g_project.search;
+            g_project.data = g_project.search;
+            console.log("check")
 
         }
         if (g_project.overlay) {
             g_project.overlay.remove();
             g_project.overlay = false;
         }
+        
+        // remove star dom
+        if (g_project.skip) ClearSpace();
 
-        if (g_project.skip) g_project.skip.values.parent.remove();
         if (data) g_project.skip = data;
 
         // console.log(g_project.skip, g_project.search, g_project.paths)
-        switch (g_root.universe.data.overlay_type) {
+        switch (g_project.data.overlay_type) {
             case "user":
                 UserActivity(g_project.skip);
                 break;
             case "ic":
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break;
             case "project":
                 backButtonFlag = false;
@@ -138,13 +141,13 @@ function GetWarp(data) {
                 WrapGetMarket(g_project.skip);
                 break;
             case "search":
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break; // TODO 
             case "search_target":
                 SearchOpen(g_project.skip);
                 break; // TODO 
             default:
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break;
         }
 
@@ -157,6 +160,7 @@ function GetWarp(data) {
 
 
 function UpdateUniverse() {
+    if (g_view === VIEW_GR) return;// todo remove
     g_root.universe.select("g.star").each(AnimateStar);
 
     if (ORBIT_PATTERN && ORBIT_PATTERN_ANIM) {
@@ -167,6 +171,7 @@ function UpdateUniverse() {
     }
 
     if (g_project.skip != false || g_project.warp) {
+        console.log("warping")
         g_root.universe.transition()
             .duration(1)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")

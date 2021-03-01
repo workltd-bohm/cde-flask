@@ -1,6 +1,5 @@
 
 // -------------------------------------------------------
-
 function DrawPath(obj, data){
     data.paths_path = {};
     data.paths_path.this = obj;
@@ -31,11 +30,10 @@ function DrawPath(obj, data){
         .on("mouseup",function(d){
             ClickStop(function(data){
                 if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
-                d3.selectAll("g.star").remove();
                 g_project.paths = data.paths_path.back;
                 g_project.hist_path_len = data.paths_path.start;
                 data.paths_path.this.selectAll("g").remove();
-                CreateSpace(data);
+                CreateWorkspace(data);
             }, data, true);
         });
 
@@ -86,8 +84,13 @@ function PathCreation(){
 }
 
 function CreateDisplayName(){
+    // reset
     ClearDisplayName();
 
+    // singleton
+    if (document.getElementById("display_name")) return;
+
+    // create SVG with display name text
     g_project.display_name = SVG.append("text")
         .attr("id", "display_name")
         .attr("transform", "translate(" + (g_root.x) + ", " + (g_root.y + g_project.height_h - g_PathRadius * PATH_ORBIT_COEF) + ")");

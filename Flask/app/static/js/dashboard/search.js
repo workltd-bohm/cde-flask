@@ -43,7 +43,7 @@ function FilterOut(obj) {
             data = JSON.parse(data);
             if (data) {
                 data = data.root_ic;
-                g_root.universe.data = data;
+                g_project.data = data;
                 g_project.skip = SEARCH_HISTORY;
                 GetWarp(data);
                 g_project.search = data;

@@ -215,13 +215,13 @@ def get_root_project():
             # if result:
             for project in result:
                 if project and Project.project_access(session['user'], project['root_ic']):
-                    
                     proj_obj = {
                         "ic_id": "",
                         "name": project["project_name"],
                         "parent": "Projects",
-                        "history": [],
-                        "path": "Projects/"+project["project_name"],
+                        "history": project['root_ic']['history'],
+                        "path": "Projects/" + project["project_name"],
+                        "overlay_type": "project",
                         "is_directory": False,
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)

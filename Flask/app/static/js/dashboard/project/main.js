@@ -27,9 +27,6 @@ function CreateSpace(data) {
     g_project.current_ic = data;
     ClearDisplayName();
 
-    // console.log(g_root.universe.data.overlay_type);
-    // console.log(g_root.universe.data);
-    // console.log(data);
     switch (data.overlay_type) {
         case "ic":
             SendProject(data);
@@ -46,7 +43,7 @@ function CreateSpace(data) {
         default:
             break;
     }
-    // g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
+    // g_project.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
     // create sun
@@ -71,7 +68,7 @@ function CreateSpace(data) {
 
     // add path to a top bar
     if (SESSION.position) {
-        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        found = RecursiveFileSearch(g_project.data, g_project.data);
         if (found) {
             $(".info-path-text").empty();
             var path = found[0].reverse();
@@ -86,12 +83,11 @@ function CreateSpace(data) {
 
                 span.onclick = function() {
                     if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
-                    d3.selectAll("g.star").remove();
                     add.paths_path = {}
                     add.paths_path.back = g_project.paths;
                     g_project.paths = add.paths_path.back;
                     g_project.hist_path_len = add.paths_path.start;
-                    CreateSpace(add);
+                    CreateWorkspace(add);
                 }
 
                 $(".info-path-text").append(span);
@@ -253,7 +249,7 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
-    // Planet position
+    // position planet
     if (g_root.slider) {
         let distance = {
             x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
@@ -333,7 +329,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .on("click", function(d) {
             if (!g_project.selection) {
                 var func = function() {};
-                switch (g_root.universe.data.overlay_type) {
+                switch (g_project.data.overlay_type) {
                     case "user":
                         func = GetWarp;
                         break;
@@ -345,7 +341,7 @@ function AddChildren(obj, data, parent, position = 0) {
             }
         })
         .on("contextmenu", function(d){
-            CreateContextMenu(d);
+            CreateContextMenu(d3.event, d);
         });
 
     data.values.checked = data.values.this.append("foreignObject")
@@ -453,11 +449,9 @@ function RecursiveFileSearch(back, data) {
 }
 
 function ProjectPosiotionSet(data) {
-    // console.log(SESSION["position"])
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
-        // console.log(found);
         // if (found) {
         //     var path = found[0].reverse()
         //         // console.log(path);
@@ -468,12 +462,10 @@ function ProjectPosiotionSet(data) {
         //     }
         // }
     }
-    //console.log(found)
-    CreateSpace(found ? found[1] : data);
+    CreateWorkspace(found ? found[1] : data);
 }
 
 function CreateDashboard(data, project_position = null) {
-
     WindowResize();
 
     g_root.universe = SVG.append("g")
@@ -488,7 +480,7 @@ function CreateDashboard(data, project_position = null) {
 
     //g_project.project_position = project_position;
 
-    g_root.universe.data = data[0];
+    g_project.data = data;
 
     CreateDisplayName();
 
@@ -496,7 +488,7 @@ function CreateDashboard(data, project_position = null) {
 
     HistoryCreation();
 
-    ProjectPosiotionSet(g_root.universe.data);
+    ProjectPosiotionSet(g_project.data);
 
     // 143 times per second
     d3.timer(function(elapsed) {
@@ -509,12 +501,40 @@ function CreateDashboard(data, project_position = null) {
     });
 }
 
+function CreateWorkspace(data) {
+    CreateSortMenu();
+    CreateSelectMenu();
+    CreateViewMenu();
+
+    switch(g_view)
+    {
+        // planetary
+        case 0:
+            $("#PROJECT-GRID").hide(); // todo animate maybe
+            $("#PROJECT").show();
+            ClearSpace();
+            CreateSpace(data);
+            break;
+        
+        // grid view
+        case 1:
+            $("#PROJECT-GRID").show(); // todo animate maybe
+            $("#PROJECT").hide();
+            CreateGrid(data);
+            break;
+    }
+}
 
 function CreateGrid(data){
+    data.values = {};
+    data.values.back = data;
+    data.values.data = data;
     g_project.current_ic = data;
+    data.id = data.ic_id;
 
     switch (data.overlay_type) {
         case "ic":
+            WrapOpenFile(data, false);
             SendProject(data);
             break;
         case "post_ic":
@@ -530,8 +550,9 @@ function CreateGrid(data){
             break;
     }
 
+    // Topbar path
     if (SESSION.position) {
-        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
+        found = RecursiveFileSearch(g_project.data, g_project.data);
         if (found) {
             $(".info-path-text").empty();
             var path = found[0].reverse();
@@ -546,7 +567,6 @@ function CreateGrid(data){
 
                 span.onclick = function() {
                     if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
-                    d3.selectAll("g.star").remove();
                     add.paths_path = {}
                     add.paths_path.back = g_project.paths;
                     g_project.paths = add.paths_path.back;
@@ -566,23 +586,47 @@ function CreateGrid(data){
 
     let grid = document.createElement('div');
     grid.className = "row mx-3";
+    grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
+    grid.onclick = function(event){
+        // deselect card
+        if (!event.target.closest(".card")) {
+            $(".card").removeClass("selected");
+        }
+    }
+    
     $("#PROJECT-GRID").empty().append(grid);
 
     // process all grid items 
     g_project.current_ic.sub_folders.forEach(
         (d) => {
             // create a card
+            let card_holder = document.createElement("div");
+            card_holder.className = "col-md-2 p-2";
+
             let card = document.createElement("div");
-            card.className = "card col-md-2 me-3 mt-3";
-            card.onclick = () => {
-                CreateGrid(d);
+            card.className = "card";
+            card.onclick = function(event){
+                // select cards
+                if (event.ctrlKey) {
+                    $(this).addClass("selected");
+                }
+                else
+                {
+                    $(".card").not(this).fadeOut(() => {
+                        data.overlay_type !== "project" ? CreateGrid(d) : WrapGetProject(d);
+                    });
+                }
+            }
+
+            card.oncontextmenu = (event) => {
+                CreateContextMenu(event, d);
             }
 
             // create image
             let img = document.createElement('img');
             img.className = "card-img-top";
             img.alt = "Preview unavailable";
-            img.src = "/stock.png";
+            img.src = "https://yuanpaygroup.com/assets/img/ficoin_FIH.png";
 
             // create body
             let body = document.createElement('div');
@@ -596,6 +640,7 @@ function CreateGrid(data){
             // body info
             let info = document.createElement('p');
             info.className = "card-text";
+            info.textContent = d.history[0].date.split("-")[0]; // parse date of file creation
 
             body.appendChild(title);
             body.appendChild(info);
@@ -603,24 +648,17 @@ function CreateGrid(data){
             card.appendChild(img);
             card.appendChild(body);
 
-            grid.appendChild(card);
+            card_holder.appendChild(card);
+            grid.appendChild(card_holder);
         }
     );
 }
 
-// TODO change all CreateSpace to CreateWorkspace
-function CreateWorkspace(data) {
-    switch(g_project.view)
+function ClearSpace()
+{
+    if (InstanceExists(g_root.universe))
     {
-        // planetary
-        case 0:
-            CreateSpace(data);
-            break;
-        
-        // grid view
-        case 1:
-            CreateGrid(data);
-            break;
+        d3.selectAll("g.star").remove();
     }
 }
 // -------------------------------------------------------
