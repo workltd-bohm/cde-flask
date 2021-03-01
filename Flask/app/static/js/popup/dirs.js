@@ -161,6 +161,10 @@ function changeColor(element) {
     $(element).css('border-color', '#3CB371');
 }
 
+function changeColorCustom(element, color) {
+    $(element).css('border-color', color);
+}
+
 function OnFileUpload(files, folders = []) {
     //    $("#file").change(function(e){
     //        var file = e.target.files[0];

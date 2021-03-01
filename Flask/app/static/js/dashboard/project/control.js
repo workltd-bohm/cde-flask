@@ -27,7 +27,7 @@ function WindowResize(){
     if(g_SunRadius < SUN_MIN_SIZE) g_SunRadius = SUN_MIN_SIZE;
 
     g_PlanetRadius = g_SunRadius/PLANET_SUN_RATIO;
-    g_PlanetRadius_old = g_PlanetRadius;
+    //g_PlanetRadius_old = g_PlanetRadius;
 
     g_PathRadius = g_SunRadius/PATH_SUN_RATIO;
     g_HistRadius = g_SunRadius/HISTORY_SUN_RATIO;
@@ -49,7 +49,9 @@ var globDrag = d3.behavior.drag()
 //var globZoom = d3.zoom()
 var globZoom = d3.behavior.zoom()
     .scaleExtent([ORBIT_MIN_ZOOM,ORBIT_MAX_ZOOM])
+    .on("zoomstart", function(d){g_project.dragging = true;})
     .on("zoom", Zoom)
+    .on("zoomend", function(d){})
     .scale(g_root.scale);
 
 function Move(zoom=false) {
@@ -59,35 +61,62 @@ function Move(zoom=false) {
         g_root.cy += tmp;
     }
 }
-function Rotate() {
-    var dif_x = -(g_root.x - d3.event.x);
-    var dif_y = -(g_root.y - d3.event.y);
-    var rad  = Math.atan2(dif_y, dif_x);
-    if(g_project.dragging) {
-        g_root.rad_diff = (rad-g_root.rad);
-        g_project.dragging = false;
+
+var temp_deg_old = 0;
+function Rotate(slider=false, zoom=false) {
+    if(zoom){
+        var dif_y = d3.event.sourceEvent.deltaY / ORBIT_ZOOM_SCROLL_COEF;
+        g_root.rad += dif_y;
     }
-    else {
+    else{
+        var dif_x = -(g_root.x + (slider ? g_root.cx : 0) - d3.event.x);
+        var dif_y = -(g_root.y + (slider ? g_root.cy : 0) - d3.event.y);
+        var rad  = Math.atan2(dif_y, dif_x);
+        //if(rad < 0) rad = (Math.PI*2) + rad;
+        if(g_project.dragging && !zoom) {
+            g_root.rad_diff = (rad-g_root.rad);
+            g_project.dragging = false;
+        }
         g_root.rad = (rad-g_root.rad_diff);
-        g_root.deg = g_root.rad*180/Math.PI;
     }
+    if(g_root.rad < 0) g_root.rad = (Math.PI*2) + g_root.rad;
+    g_root.rad = ((g_root.rad * ORBIT_ZOOM_PI_QA) % (Math.PI * ORBIT_ZOOM_PI_QA * 2)) / ORBIT_ZOOM_PI_QA;
+    g_root.deg = g_root.rad * 180 / Math.PI;
+
+    if(g_root.deg > 270 && temp_deg_old < 90) g_root.deg_exp--;
+    if(g_root.deg < 90 && temp_deg_old > 270) g_root.deg_exp++;
+
+    temp_deg_old = g_root.deg;
 }
-function Drag(){
+
+function Drag(d){
     if(g_root.slider){
-        Move();
+        //// [SLIDER START]
+        // Move();
+        //// [SLIDER OLD/NEW]
+        Rotate(true);
+        //// [SLIDER END]
     }
     else{
         Rotate();
     }
 }
-function Zoom() {
+function Zoom(d) {
     if(g_root.slider){
-        Move(true);
+        //// [SLIDER START]
+        // Move(true);
+        //// [SLIDER OLD/NEW]
+        Rotate(true, true);
+        //// [SLIDER END]
     }
     else{
-        if(g_root.zoom){
-            g_root.scale = d3.event.scale;
-        }
+        //// [ZOOM-DRAG START]
+        // if(g_root.zoom){
+        //     g_root.scale = d3.event.scale;
+        // }
+        //// [ZOOM-DRAG OLD/NEW]
+        Rotate(false, true);
+        //// [ZOOM-DRAG END]
     }
 }
 

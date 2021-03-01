@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 
 from app import *
+import app.views.actions.getters as gtr
 
 
 # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
@@ -75,6 +76,7 @@ def create_project():
                       [],
                       [access])
         project = Project("default", request_data['project_name'], root_obj)
+        project.is_iso19650 = request_data['is_iso']
         # print('******', project.to_json())
         if db.connect(db_adapter):
             result, id = db.upload_project(db_adapter, project, user)
@@ -194,23 +196,40 @@ def upload_existing_project():
                     if message == msg.PROJECT_SUCCESSFULLY_UPDATED:
                         new_id = str(uuid.uuid1())
                         name = ('.').join(file_name.split('.')[:-1])
+                        original_path = ('.').join(original_path.split('.')[:-1])
+
                         parent_directory = ('/').join(current_file_path_backup[:-1])
+
+                        comments = []
+                        if 'comment' in request.form:
+                            comments.append(Comments(str(uuid.uuid1()), us, request.form['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S")))
+                        
                         details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
                                           ('').join(['.', file_name.split('.')[-1]]))
 
                         tags = []
-
-                        if 'file_data' in request.form:
-                            file_data = json.loads(request.form['file_data'])
+                        # temp_name_array = []
+                        # if project.is_iso19650:
+                        temp_name_array = name.split('-')
+                        if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
+                            if 'file_data' in request.form:
+                                file_data = json.loads(request.form['file_data'])
+                            else:
+                                name, file_data = iso_auto_naming(temp_name_array, name)
+                                original_path_temp = original_path.split('/')
+                                original_path_temp[len(original_path_temp) - 1] = name
+                                original_path = '/'.join(original_path_temp)
                             for key in file_data:
-                                # print("key: {} | value: {}".format(key, file_data[key]))
-                                if key != 'name' and key != 'file_extension' and key != 'project_code' and key != 'company_code':
-                                    tags.append(ISO19650(key, file_data[key], 'ISO19650', 'grey'))
-
+                                # print("key: {} ||||||| value: {}".format(key, file_data[key]))
+                                if key != 'name' and key != 'file_extension': # and key != 'project_code' and key != 'company_code':
+                                    tag = '#' + file_data[key]
+                                    if file_data[key] == '':
+                                        tag = ''
+                                    tags.append(ISO19650(key, tag, 'ISO19650', 'grey'))
 
                         ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
                                            ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           [], tags, [], [access], '', '')
+                                           comments, tags, [], [access], '', '')
 
                         project.added = False
                         encoded = file
@@ -218,6 +237,7 @@ def upload_existing_project():
                         # print('+++++++++', len(file))
                         # TODO: fix this mess
                         if len(file) == 0:
+                            logger.log(LOG_LEVEL, 'File has 0kb - not uploaded')
                             return request.form['path']
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
@@ -237,8 +257,11 @@ def upload_existing_project():
                             resp.data = result['message']
                             return resp
                         else:
-                            if 'file_data' in request.form:
-                                file_data = json.loads(request.form['file_data'])
+                            if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
+                                if 'file_data' in request.form:
+                                    file_data = json.loads(request.form['file_data'])
+                                # else:
+                                #     file_data = json_tags
                                 request_data = {}
                                 request_data['project_name'] = project.name
                                 request_data['ic_id'] = new_id
@@ -246,8 +269,10 @@ def upload_existing_project():
                                 request_data['iso'] = 'ISO19650'
                                 request_data['tags'] = {}
                                 for key in file_data:
-                                    if key != 'name' and key != 'file_extension' and key != 'project_code':
+                                    # print("key: {} | value: {}".format(key, file_data[key]))
+                                    if key != 'name' and key != 'file_extension': # and key != 'project_code':
                                         request_data['tags'][key] = file_data[key]
+                                request_data['update'] = False
                                 update_tags = db.update_iso_tags(db_adapter, request_data)
                                 logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
                             return request.form['path']
@@ -818,3 +843,99 @@ def set_project_config():
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
+def iso_auto_naming(temp_name_array, fil_name):
+    json_tags = {}
+    input_file = gtr.get_input_file() 
+    for i, tag_key in enumerate(temp_name_array):
+        if i == 0:
+            key = 'project_code'
+            tag = tag_key
+        if i == 1:
+            key = 'company_code'
+            tag = tag_key
+        if i == 2:
+            key = 'project_volume_or_system'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = 'ZZ'
+                value = 'Multiple volumes/systems'
+            tag = tag_key + ', ' + value
+        if i == 3:
+            key = 'project_level'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = 'ZZ'
+                value = 'Multiple levels'
+            tag = tag_key + ', ' + value
+        if i == 4:
+            key = 'type_of_information'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = 'AF'
+                value = 'Animation file (of model)'
+            tag = tag_key + ', ' + value
+        if i == 5:
+            key = 'role_code'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = 'A'
+                value = 'Architect'
+            tag = tag_key + ', ' + value
+            
+        if i == 6:
+            key = 'file_number'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = '1.0'
+                value = 'General'
+            tag = tag_key + ', ' + value
+        if i == 7:
+            key = 'status'
+            if tag_key in input_file[key]:
+                value = input_file[key][tag_key]
+            else:
+                tag_key = 'S0'
+                value = 'Initial status'
+            tag = tag_key + ', ' + value
+        if len(temp_name_array) == 9:
+            if i == 8:
+                file_name = '_'.join(tag_key.split('_')[1:])
+                tag_key = tag_key.split('_')[0]
+                key = 'revision'
+                if tag_key in input_file[key]:
+                    value = input_file[key][tag_key]
+                else:
+                    tag_key = 'P01.01'
+                    value = 'Work in progress version'
+                tag = tag_key + ', ' + value
+        if len(temp_name_array) == 10:
+            if i == 8:
+                key = 'revision'
+                if tag_key in input_file[key]:
+                    value = input_file[key][tag_key]
+                else:
+                    tag_key = 'P01.01'
+                    value = 'Work in progress version'
+                tag = tag_key + ', ' + value
+            if i == 9:
+                file_name = '_'.join(tag_key.split('_')[1:])
+                tag_key = tag_key.split('_')[0]
+                key = 'uniclass_2015'
+                if tag_key in input_file[key]:
+                    value = input_file[key][tag_key]
+                else:
+                    tag_key = ''
+                    value = ''
+                tag = tag_key
+            
+        json_tags[key] = tag
+    if len(temp_name_array) == 9:
+        key = 'uniclass_2015'
+        tag = ''
+        json_tags[key] = tag
+    return file_name, json_tags

@@ -7,10 +7,11 @@ function CreateSpace(data) {
     g_root.scale = g_root.scale_old;
     g_root.cy_min = g_root.cy = -g_project.height_h /2;
     g_root.cy_max = g_root.cy_min;
-    g_root.deg = g_root.rad = g_root.rad_diff = 0;
+    g_root.deg = g_root.rad = g_root.rad_diff = g_root.deg_exp = 0;
     g_root.zoom = true;
     if (g_root.slider) g_SunRadius *= SUN_SCROLL_ZOOM;
-    g_PlanetRadius = g_PlanetRadius_old;
+    if (g_root.slider) g_PlanetRadius *= PLANET_SCROLL_ZOOM;
+    //g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
     g_project.current_ic = data;
 
@@ -126,16 +127,31 @@ function AddSun(obj, data) {
         }
     }
 
+    //// [SLIDER START]
+    if (g_root.slider) {
+        var deg_min = (360 / PLANET_MAX_NUMBER_MAX);
+        var max_size_coef = Math.trunc(data.sub_folders.length / PLANET_MAX_NUMBER_MAX) + 1;
+        var deg_max_wanted = max_size_coef * 360;
+        var deg_max_curr = data.sub_folders.length * deg_min;
+        var deg_adjust = (deg_max_wanted - deg_max_curr) / data.sub_folders.length;
+        g_project.spiral_info.planet_distance = deg_min + deg_adjust;
+        g_project.spiral_info.planet_number = (data.sub_folders.length < 15) ? 3 : 4;
+        g_project.spiral_info.planet_number_max = data.sub_folders.length;
+        g_project.spiral_info.spiral_length = g_project.spiral_info.planet_number_max * g_project.spiral_info.planet_distance;
+    }
+    //// [SLIDER END]
+
     data.values.this.attr("id", "obj-" + data.id);
 
     if (g_root.slider) {
         g_root.cx = (-g_SunRadius * SUN_SCROLL_X_COEF);
+        g_root.cy = (-g_SunRadius * SUN_SCROLL_Y_COEF);
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + g_root.cx + ", 0)"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
+            .attr("transform", "translate(" + g_root.cx + ", " + g_root.cy + ")"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
-
+    //console.log(g_root.x, g_root.cx, g_root.y, g_root.cy)
     //Milos commented this out on 14.01.2021
     // data.values.effect = data.values.this.append("circle")
     //     .attr("class", "star effect")
@@ -188,6 +204,18 @@ function AddSun(obj, data) {
             //     // NONE
             // }, data);
         });
+    //// [SLIDER START]
+    if (g_root.slider){
+        data.values.object.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+        data.values.select.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
 
     AddText(data, "star");
 
@@ -240,28 +268,49 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.parent = (parent != null) ? d3.select("#obj-" + data.par_id) : null;
     data.values.sun = false;
 
-    data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    //// [SLIDER START]
+    // data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    //// [SLIDER OLD/NEW]
+    if (g_root.slider) {
+        data.values.rotation = position * g_project.spiral_info.planet_distance;
+        //data.values.rotation = position * 360 / PLANET_MAX_NUMBER_MAX;
+    }
+    else{
+        data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+    }
+    //// [SLIDER END]
 
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
     // position planet
     if (g_root.slider) {
-        let distance = {
-            x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
-            y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
-        };
+        //// [SLIDER START]
+        // let distance = {
+        //     x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
+        //     y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
+        // };
+        // data.values.this.transition()
+        //     .ease("linear")
+        //     .duration(ORBIT_ANIM_MOVE)
+        //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
+        //// [SLIDER OLD/NEW]
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF;  // distance from the center
+        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
+            .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
+        //// [SLIDER END]
     } else {
         let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2);  // distance from the center 
+        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
-            .attr("transform", "rotate(" + (data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (-data.values.rotation) + ")");
+            .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
+    
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
@@ -286,11 +335,13 @@ function AddChildren(obj, data, parent, position = 0) {
 
     // Text
     AddText(data, "planet");
-    if (g_root.slider) {
-        data.values.text.selectAll("text")
-            .style("text-anchor", "start")
-            .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
-    }
+    //// [SLIDER START]
+    // if (g_root.slider) {
+    //     data.values.text.selectAll("text")
+    //         .style("text-anchor", "start")
+    //         .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
+    // }
+    //// [SLIDER END]
 
     // set color of a planet
     if (data.color) {
@@ -363,10 +414,12 @@ function AddTspan(target, newobj, text, prefix = null) {
     // TEXT_SUN_SCALE TEXT_MAX_LENGHT
     var max_text = TEXT_MAX_TEXT;
     var max_text_len = TEXT_MAX_LENGHT;
-    if (g_root.slider) {
-        max_text = TEXT_MAX_SCROLL_TEXT;
-        max_text_len = TEXT_MAX_SCROLL_LENGHT;
-    }
+    //// [SLIDER START]
+    // if (g_root.slider) {
+    //     max_text = TEXT_MAX_SCROLL_TEXT;
+    //     max_text_len = TEXT_MAX_SCROLL_LENGHT;
+    // }
+    //// [SLIDER END]
 
     text = text.slice(0, max_text);
     if (text.length >= max_text)
@@ -468,7 +521,11 @@ function CreateDashboard(data, project_position = null) {
         .attr("id", "Universe")
         .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         .call(globDrag)
-        .call(globZoom);
+        .call(globZoom)
+        .on("mousedown.zoom", null)
+        .on("touchstart.zoom", null)
+        .on("touchmove.zoom", null)
+        .on("touchend.zoom", null);
 
     g_root.universe.append("circle")
         .attr("id", "Touch")
@@ -491,7 +548,8 @@ function CreateDashboard(data, project_position = null) {
         if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
 
-        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() != g_project.height) {
+        let offY = $SVG.offset().top;
+        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height()-offY != g_project.height) {
             WindowResize();
         }
     });

@@ -16,6 +16,13 @@ function MoveCreate(obj, data) {
     g_OverlayRadius = g_SunRadius;
     g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
 
+    //// [SLIDER START]
+    if (g_root.slider){
+        data.move.object
+            .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
+    }
+    //// [SLIDER END]
+
     data.move.object.append("circle")
         .attr("class", "move pattern " + (MULTI.to_copy ? "copy" : "move"))
         .attr("cx", 0)

@@ -173,13 +173,13 @@ function sendFilesHelper(files, folders) {
 function createProject(files, folders) {
     var current = 0;
     counter = 1;
-    console.log(folders_only);
+    // console.log(folders_only);
     if (folders_only) {
         uploadInProgress = true;
         sendFile(files, folders, current);
     } else {
-        console.log(files[current].path);
-        console.log(folders[current].path);
+        // console.log(files[current].path);
+        // console.log(folders[current].path);
         if (files.length > 0) {
             if (files[current].path.startsWith('/'))
                 files[current].path = files[current].path.substring(1);
@@ -189,8 +189,10 @@ function createProject(files, folders) {
                 folders[current].path = folders[current].path.substring(1);
             project_name = folders[current].path.split('/')[0];
         }
-        let data = { project_name: project_name };
-        console.log(data);
+        let is_iso = $("#is_iso19650_checkbox").is(':checked');
+        $("#is_iso19650_checkbox").hide();
+        let data = { project_name: project_name, is_iso: is_iso };
+        // console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
         $.ajax({
             url: 'create_project',
@@ -471,10 +473,10 @@ function filesDroped(event) {
         var path = (entry.fullPath || entry.webkitRelativePath.slice(0, entry.webkitRelativePath.lastIndexOf("/")));
         //    var cname = path.split("/").filter(Boolean).join("-");
         //    console.log("dir path", path.substring(1))
-        console.log(path);
+        // console.log(path);
         if (path.startsWith('/'))
             path = path.substring(1);
-        console.log(path);
+        // console.log(path);
         webkitResultDir.push({ 'path': path, 'isDir': true });
 
         return Promise.resolve(webkitResultDir);

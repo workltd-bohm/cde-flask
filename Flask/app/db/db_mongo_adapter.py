@@ -1635,7 +1635,7 @@ class DBMongoAdapter:
         return message
 
     def update_iso_tags(self, data):
-        print('\nupdate_iso_tags():\n')
+        # print('\nupdate_iso_tags():\n', data)
         # tables
         projects = self._db.Projects
         tags = self._db.Tags
@@ -1694,7 +1694,7 @@ class DBMongoAdapter:
                                 tags_json[tag].remove(obj)
                                 # break
                             for tag_obj in ic.tags:
-                                if tag == tag_obj.tag:
+                                if tag.replace('_', '.') == tag_obj.tag:
                                     ic.tags.remove(tag_obj)
 
         # write
@@ -1705,6 +1705,8 @@ class DBMongoAdapter:
                     if not obj in tags_json[tag]:
                         # print('accepted.')
                         tags_json[tag].append(obj)
+                        if '_' in tag:
+                            tag = tag.replace("_", ".")
                         ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
                         break
 

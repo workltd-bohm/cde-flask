@@ -368,7 +368,8 @@ function refreshTags() {
             data = JSON.parse(data);
             $(".tag-container").remove();
             for (let i = 0; i < data.length; i++) {
-                if (!data[i].tag.includes(",")) {
+                console.log(data[i]);
+                if (!data[i].tag.includes(",") && data[i].key != 'project_code' && data[i].key != 'company_code') {
                     createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
                 }
             }
