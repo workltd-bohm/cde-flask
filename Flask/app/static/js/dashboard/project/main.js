@@ -28,9 +28,6 @@ function CreateSpace(data) {
 
     ClearDisplayName();
 
-    // hide activity when on root path
-    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "."));
-
     switch (data.overlay_type) {
         case "ic":
             SendProject(data);
@@ -577,6 +574,9 @@ function CreateWorkspace(data) {
             CreateGrid(data);
             break;
     }
+    
+    // hide activity when on root path
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "."));
 }
 
 function CreateGrid(data){

@@ -100,7 +100,6 @@ function SendProject(data) {
         status: data.status,
         revision: data.revision
     };
-    console.log("here");
 
     SEARCH_HISTORY = data;
 
