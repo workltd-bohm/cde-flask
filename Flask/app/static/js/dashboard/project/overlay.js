@@ -207,13 +207,8 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 }
             }
         })
-<<<<<<< HEAD
         .on("contextmenu", function(d){
             CreateContextMenu(d3.event, d);
-=======
-        .on("contextmenu", function(d) {
-            CreateContextMenu(d);
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
         });
 
     AddOverText(data, obj = true, name = false);
@@ -349,13 +344,8 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
-<<<<<<< HEAD
 function CreateSortMenu(){
     $(".hover-menu").empty();   // todo clear from elsewhere
-=======
-function CreateSortMenu() {
-    $(".hover-menu").empty();
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
 
     let sort_menu = document.createElement("div");
     sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
@@ -376,15 +366,9 @@ function CreateSortMenu() {
 
     button.onclick = function(event) {
         $(event.target
-<<<<<<< HEAD
             .closest(".hover-menu-item")
             .querySelector(".hover-dropdown"))
                 .toggleClass("d-none");
-=======
-                .closest(".hover-menu-item")
-                .querySelector(".sort-dropdown"))
-            .toggleClass("d-none");
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
     }
 
     // add button to sort-menu
@@ -462,14 +446,8 @@ function SortByName(data) {
         }
     }
 
-<<<<<<< HEAD
     CreateWorkspace(data);
     
-=======
-    d3.selectAll("g.star").remove();
-    CreateSpace(data);
-
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
     MakeSnackbar("Items sorted alphabetically.");
 }
 
@@ -518,11 +496,7 @@ function CreateSelectMenu() {
     $(".hover-menu").append(select_menu);
 }
 
-<<<<<<< HEAD
 function CreateContextMenu(event, data){
-=======
-function CreateContextMenu(data) {
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
     // get the type of context menu (using ic type)
     let type = GetContextMenuType(data);
     // exit if non-applicable
@@ -608,7 +582,6 @@ function CreateContextMenu(data) {
     }
 }
 
-<<<<<<< HEAD
 function CreateViewMenu()
 {
     let view_menu = document.createElement("div");
@@ -703,9 +676,6 @@ function CreateViewMenu()
 }
 
 function GetContextMenuType(data){
-=======
-function GetContextType(data) {
->>>>>>> 28e600b3984ff86ed0dbb9ea1fab56a03b63686a
     let type = data.overlay_type;
     switch (type) {
         case "ic":
