@@ -10,7 +10,7 @@ g_OverProject = [
 ]
 
 g_OverSearch = [
-    { name: "GO TO FILE", icon: "open_with", link: SearchOpen },
+    { name: "GO TO FOLDER", icon: "open_with", link: SearchOpen },
 ];
 
 g_OverFolder = [

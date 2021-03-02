@@ -788,7 +788,7 @@ function terminalAutocomplete(inp, arr) {
                 }
             }
             console.log(currValArray.length);
-            if (currentArr.length > 0) {
+            if (currentArr.length > 0 && currValArray.length > 0) {
                 if (currValArray[0].startsWith('#')) {
                     console.log(currValArray);
                     searchByTag(currValArray);
