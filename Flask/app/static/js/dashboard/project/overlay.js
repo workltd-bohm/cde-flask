@@ -95,7 +95,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             type = g_OverProject;
             break;
         case "search_target":
-            type = g_OverPlanet;
+            type = g_OverSearch;
             break;
         case "trash":
             type = g_OverTrash;
@@ -207,7 +207,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
                 }
             }
         })
-        .on("contextmenu", function(d){
+        .on("contextmenu", function(d) {
             CreateContextMenu(d3.event, d);
         });
 
@@ -344,8 +344,8 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
-function CreateSortMenu(){
-    $(".hover-menu").empty();   // todo clear from elsewhere
+function CreateSortMenu() {
+    $(".hover-menu").empty(); // todo clear from elsewhere
 
     let sort_menu = document.createElement("div");
     sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
@@ -366,9 +366,9 @@ function CreateSortMenu(){
 
     button.onclick = function(event) {
         $(event.target
-            .closest(".hover-menu-item")
-            .querySelector(".hover-dropdown"))
-                .toggleClass("d-none");
+                .closest(".hover-menu-item")
+                .querySelector(".hover-dropdown"))
+            .toggleClass("d-none");
     }
 
     // add button to sort-menu
@@ -447,7 +447,7 @@ function SortByName(data) {
     }
 
     CreateWorkspace(data);
-    
+
     MakeSnackbar("Items sorted alphabetically.");
 }
 
@@ -496,7 +496,7 @@ function CreateSelectMenu() {
     $(".hover-menu").append(select_menu);
 }
 
-function CreateContextMenu(event, data){
+function CreateContextMenu(event, data) {
     // get the type of context menu (using ic type)
     let type = GetContextMenuType(data);
     // exit if non-applicable
@@ -582,8 +582,7 @@ function CreateContextMenu(event, data){
     }
 }
 
-function CreateViewMenu()
-{
+function CreateViewMenu() {
     let view_menu = document.createElement("div");
     view_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
@@ -604,11 +603,11 @@ function CreateViewMenu()
     button.appendChild(icon);
     button.appendChild(text);
 
-    button.onclick = function(event){
+    button.onclick = function(event) {
         $(event.target
-            .closest(".hover-menu-item")
-            .querySelector(".hover-dropdown"))
-                .toggleClass("d-none");
+                .closest(".hover-menu-item")
+                .querySelector(".hover-dropdown"))
+            .toggleClass("d-none");
     }
 
     // add button to view-menu
@@ -637,8 +636,8 @@ function CreateViewMenu()
 
     menu_item.appendChild(icon);
     menu_item.appendChild(text);
-    
-    menu_item.onclick = function(){
+
+    menu_item.onclick = function() {
         g_view = VIEW_PL;
         CreateWorkspace(g_project.current_ic);
     }
@@ -662,7 +661,7 @@ function CreateViewMenu()
     menu_item.appendChild(icon);
     menu_item.appendChild(text);
 
-    menu_item.onclick = function(){
+    menu_item.onclick = function() {
         g_view = VIEW_GR;
         CreateWorkspace(g_project.current_ic);
     }
@@ -675,7 +674,7 @@ function CreateViewMenu()
     $(".hover-menu").append(view_menu);
 }
 
-function GetContextMenuType(data){
+function GetContextMenuType(data) {
     let type = data.overlay_type;
     switch (type) {
         case "ic":
@@ -689,7 +688,7 @@ function GetContextMenuType(data){
             type = g_OverProject;
             break;
         case "search_target":
-            type = g_OverPlanet;
+            type = g_OverSearch;
             break;
         case "trash":
             type = g_OverTrash;
@@ -715,8 +714,7 @@ function GetContextMenuType(data){
 }
 
 function SwitchViewsPlanetary(data) {
-    $("#PROJECT").animate(
-        {
+    $("#PROJECT").animate({
             width: 0,
             height: 0
         },
@@ -729,8 +727,7 @@ function SwitchViewsPlanetary(data) {
             CreateGrid(data);
 
             // animate the grid
-            $("#PROJECT-GRID").animate(
-                {
+            $("#PROJECT-GRID").animate({
                     width: '100%',
                     height: '100%',
                     opacity: 1
