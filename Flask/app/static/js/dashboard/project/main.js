@@ -13,6 +13,8 @@ function CreateSpace(data) {
     if (g_root.slider) g_PlanetRadius *= PLANET_SCROLL_ZOOM;
     //g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
+    if (g_root.looper.this) g_root.looper.this.remove();
+    g_root.looper.this = false;
     g_project.current_ic = data;
 
     // clear instances
@@ -251,6 +253,8 @@ function AddSun(obj, data) {
     //     });
 
     if (g_project.move) MoveCreate(data.values.this, data.values.back);
+
+    if (g_root.slider) CreateSlider();
 
 }
 
@@ -528,6 +532,11 @@ function CreateDashboard(data, project_position = null) {
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
+    g_root.looper = SVG.append("g")
+        .attr("id", "Slider")
+        .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
+        .call(loopDrag);
+
     //g_project.project_position = project_position;
 
     g_project.data = data;
@@ -706,6 +715,54 @@ function CreateGrid(data){
             grid.appendChild(card_holder);
         }
     );
+}
+
+function CreateSlider(){
+
+    g_root.looper.this = g_root.looper.append("g").attr("class", "looper")
+
+    g_root.looper.this.attr("transform", "translate(0, " + ( g_project.height_h - SCROLL_LOOP_X ) + ")");
+
+    g_root.looper.box = g_root.looper.this.append("rect")
+        .attr("class", "slider rect")
+        .attr("x",-g_project.width_h/2)
+        .attr("y",-SCROLL_LOOP_H/2)
+        .attr("width",g_project.width_h)
+        .attr("height",SCROLL_LOOP_H)
+
+    g_root.looper.svg = g_root.looper.this.append("svg")
+        .attr("class", "slider svg")
+        .attr("x",-g_project.width_h/2)
+        .attr("y",-SCROLL_LOOP_H/2)
+        .attr("width",g_project.width_h)
+        .attr("height",SCROLL_LOOP_H)
+
+    g_root.looper.svg.append("rect")
+        .attr("class", "slider bground")
+        .attr("x",0)
+        .attr("y",0)
+        .attr("width",g_project.width_h)
+        .attr("height",SCROLL_LOOP_H)
+
+    g_root.looper.size = g_project.width_h/g_project.spiral_info.spiral_length*g_project.spiral_info.planet_distance*g_project.spiral_info.planet_number;
+    g_root.looper.pos = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x",-g_root.looper.size/2)
+        .attr("y",0)
+        .attr("width",g_root.looper.size)
+        .attr("height",SCROLL_LOOP_H)
+    g_root.looper.posL = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x",-g_root.looper.size/2+g_project.width_h)
+        .attr("y",0)
+        .attr("width",g_root.looper.size)
+        .attr("height",SCROLL_LOOP_H)
+    g_root.looper.posR = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x",-g_root.looper.size/2-g_project.width_h)
+        .attr("y",0)
+        .attr("width",g_root.looper.size)
+        .attr("height",SCROLL_LOOP_H)
 }
 
 function ClearSpace()

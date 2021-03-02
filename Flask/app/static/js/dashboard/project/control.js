@@ -122,6 +122,44 @@ function Zoom(d) {
 
 // -------------------------------------------------------
 
+var loopDrag = d3.behavior.drag()
+    .on("dragstart", LoopDragStart)
+    .on("drag", LoopDrag)
+    .on("dragend", function(d){});
+
+function LoopDragStart(d){
+    var dif_x = -(g_root.x - g_project.width_h/2 - d3.event.sourceEvent.layerX + g_root.looper.size/SCROLL_LOOP_SIZE_FIX);
+    var atc = g_project.spiral_info.spiral_length/g_project.width_h*(dif_x)/SCROLL_LOOP_POS_FIX;
+    g_root.deg = atc;
+    g_root.rad = g_root.deg/180*Math.PI;
+
+    g_root.deg_exp = Math.trunc(g_root.deg/360);
+
+    if(g_root.rad < 0) g_root.rad = (Math.PI*2) + g_root.rad;
+    g_root.rad = ((g_root.rad * ORBIT_ZOOM_PI_QA) % (Math.PI * ORBIT_ZOOM_PI_QA * 2)) / ORBIT_ZOOM_PI_QA;
+    g_root.deg = g_root.rad * 180 / Math.PI;
+
+    //console.log(g_root.deg, g_root.deg_exp)
+}
+function LoopDrag(d){
+    var dif_x = -(g_root.x - g_project.width_h/2 - d3.event.x + g_root.looper.size/SCROLL_LOOP_SIZE_FIX);
+    var atc = (g_project.spiral_info.spiral_length)/g_project.width_h*(dif_x)/SCROLL_LOOP_POS_FIX;
+    g_root.deg = atc;
+    g_root.rad = g_root.deg/180*Math.PI;
+
+    if(g_root.rad < 0) g_root.rad = (Math.PI*2) + g_root.rad;
+    g_root.rad = ((g_root.rad * ORBIT_ZOOM_PI_QA) % (Math.PI * ORBIT_ZOOM_PI_QA * 2)) / ORBIT_ZOOM_PI_QA;
+    g_root.deg = g_root.rad * 180 / Math.PI;
+
+    if(g_root.deg > 270 && temp_deg_old < 90) g_root.deg_exp--;
+    if(g_root.deg < 90 && temp_deg_old > 270) g_root.deg_exp++;
+
+    temp_deg_old = g_root.deg;
+    //console.log(g_root.deg, g_root.deg_exp)
+}
+
+// -------------------------------------------------------
+
 function ClickStart(ToDo, data){
     data.box.position.x = d3.event.x;
     data.box.position.y = d3.event.y;
