@@ -20,7 +20,7 @@ g_OverFolder = [
     { name: "SHARE", icon: "share", link: WrapShare },
     // { name: "DETAILS", icon: "preview", link: WrapOpenFile },
     // { name: "RENAME", icon: "create", link: WrapRename },
-    // { name: "TRASH", icon: "delete", link: WrapTrash },
+    { name: "TRASH", icon: "delete", link: WrapTrash },
     // { name: "COPY", icon: "content_copy", link: WrapCopy },
     // { name: "MOVE", icon: "open_with", link: WrapMove },
     // { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },

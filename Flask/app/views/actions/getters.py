@@ -128,7 +128,9 @@ def get_project():
 
                 resp.status_code = msg.DEFAULT_OK['code']
                 # print(project.to_json())
-                resp.data = json.dumps({"json": project, "project" : position, "session": session.get("project")})
+                ses = session.get("project")
+                ses['is_iso'] = project['is_iso19650']
+                resp.data = json.dumps({"json": project, "project" : position, "session": ses})
                 return resp
             else:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))

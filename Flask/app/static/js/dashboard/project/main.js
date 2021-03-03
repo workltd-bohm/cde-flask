@@ -5,7 +5,7 @@ function CreateSpace(data) {
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
-    g_root.cy_min = g_root.cy = -g_project.height_h /2;
+    g_root.cy_min = g_root.cy = -g_project.height_h / 2;
     g_root.cy_max = g_root.cy_min;
     g_root.deg = g_root.rad = g_root.rad_diff = g_root.deg_exp = 0;
     g_root.zoom = true;
@@ -68,17 +68,17 @@ function CreateSpace(data) {
         if (found) {
             $(".info-path-text").empty();
             var path = found[0].reverse();
-            
+
             for (let add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };
-                
+
                 let span = document.createElement("span");
                 span.className = "path-link";
                 span.textContent = add.name;
 
                 span.onclick = function() {
-                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    if (g_project.search /*&& g_project.search.overlay_type == "ic"*/ ) g_project.search = false;
                     add.paths_path = {}
                     add.paths_path.back = g_project.paths;
                     g_project.paths = add.paths_path.back;
@@ -91,7 +91,7 @@ function CreateSpace(data) {
                 let slash = document.createElement("span");
                 slash.className = "mx-2";
                 slash.textContent = "/";
-                $(".info-path-text").append(slash); 
+                $(".info-path-text").append(slash);
             }
         }
     }
@@ -182,8 +182,7 @@ function AddSun(obj, data) {
         .attr("class", "star select")
         .attr("r", g_SunRadius)
         .on("mouseenter", function(d) {
-            if (!g_project.move && g_root.zoom) 
-            {
+            if (!g_project.move && g_root.zoom) {
                 OverlayDestroy();
                 OverlayCreate(d3.select(this), d, data);
             }
@@ -204,7 +203,7 @@ function AddSun(obj, data) {
             // }, data);
         });
     //// [SLIDER START]
-    if (g_root.slider){
+    if (g_root.slider) {
         data.values.object.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
@@ -275,8 +274,7 @@ function AddChildren(obj, data, parent, position = 0) {
     if (g_root.slider) {
         data.values.rotation = position * g_project.spiral_info.planet_distance;
         //data.values.rotation = position * 360 / PLANET_MAX_NUMBER_MAX;
-    }
-    else{
+    } else {
         data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
     }
     //// [SLIDER END]
@@ -296,7 +294,7 @@ function AddChildren(obj, data, parent, position = 0) {
         //     .duration(ORBIT_ANIM_MOVE)
         //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
         //// [SLIDER OLD/NEW]
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF;  // distance from the center
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF; // distance from the center
         //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
@@ -304,14 +302,14 @@ function AddChildren(obj, data, parent, position = 0) {
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
         //// [SLIDER END]
     } else {
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2);  // distance from the center 
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2); // distance from the center 
         //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
-    
+
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
@@ -348,7 +346,7 @@ function AddChildren(obj, data, parent, position = 0) {
     if (data.color) {
         data.values.background
             .style("fill", data.color)
-        
+
         data.values.this.select(".text_front")
             .style("fill", FlipColor(data.color))
     }
@@ -360,9 +358,8 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
         .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) {
-            }
-            SetDisplayName(d.name);
+            if (!g_project.overlay && !g_project.move && g_root.zoom) {}
+            SetDisplayName(GetDisplayName(d));
         })
         .on("mouseleave", () => {
             ClearDisplayName();
@@ -388,7 +385,7 @@ function AddChildren(obj, data, parent, position = 0) {
                 ClickStop(func, data, true);
             }
         })
-        .on("contextmenu", function(d){
+        .on("contextmenu", function(d) {
             CreateContextMenu(d3.event, d);
         });
 
@@ -555,7 +552,7 @@ function CreateDashboard(data, project_position = null) {
         else return;
 
         let offY = $SVG.offset().top;
-        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height()-offY != g_project.height) {
+        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() - offY != g_project.height) {
             WindowResize();
         }
     });
@@ -566,8 +563,7 @@ function CreateWorkspace(data) {
     CreateSelectMenu();
     CreateViewMenu();
 
-    switch(g_view)
-    {
+    switch (g_view) {
         // planetary
         case 0:
             $("#PROJECT-GRID").hide(); // todo animate maybe
@@ -575,20 +571,20 @@ function CreateWorkspace(data) {
             ClearSpace();
             CreateSpace(data);
             break;
-        
-        // grid view
+
+            // grid view
         case 1:
             $("#PROJECT-GRID").show(); // todo animate maybe
             $("#PROJECT").hide();
             CreateGrid(data);
             break;
     }
-    
+
     // hide activity when on root path
     $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "."));
 }
 
-function CreateGrid(data){
+function CreateGrid(data) {
     data.values = {};
     data.values.back = data;
     data.values.data = data;
@@ -619,17 +615,17 @@ function CreateGrid(data){
         if (found) {
             $(".info-path-text").empty();
             var path = found[0].reverse();
-            
+
             for (let add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };
-                
+
                 let span = document.createElement("span");
                 span.className = "path-link";
                 span.textContent = add.name;
 
                 span.onclick = function() {
-                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
+                    if (g_project.search /*&& g_project.search.overlay_type == "ic"*/ ) g_project.search = false;
                     add.paths_path = {}
                     add.paths_path.back = g_project.paths;
                     g_project.paths = add.paths_path.back;
@@ -642,7 +638,7 @@ function CreateGrid(data){
                 let slash = document.createElement("span");
                 slash.className = "mx-2";
                 slash.textContent = "/";
-                $(".info-path-text").append(slash); 
+                $(".info-path-text").append(slash);
             }
         }
     }
@@ -650,13 +646,13 @@ function CreateGrid(data){
     let grid = document.createElement('div');
     grid.className = "row mx-3";
     grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
-    grid.onclick = function(event){
+    grid.onclick = function(event) {
         // deselect card
         if (!event.target.closest(".card")) {
             $(".card").removeClass("selected");
         }
     }
-    
+
     $("#PROJECT-GRID").empty().append(grid);
 
     // process all grid items 
@@ -668,13 +664,11 @@ function CreateGrid(data){
 
             let card = document.createElement("div");
             card.className = "card";
-            card.onclick = function(event){
+            card.onclick = function(event) {
                 // select cards
                 if (event.ctrlKey) {
                     $(this).addClass("selected");
-                }
-                else
-                {
+                } else {
                     $(".card").not(this).fadeOut(() => {
                         data.overlay_type !== "project" ? CreateGrid(d) : WrapGetProject(d);
                     });
@@ -717,58 +711,56 @@ function CreateGrid(data){
     );
 }
 
-function CreateSlider(){
+function CreateSlider() {
 
     g_root.looper.this = g_root.looper.append("g").attr("class", "looper")
 
-    g_root.looper.this.attr("transform", "translate(0, " + ( g_project.height_h - SCROLL_LOOP_X ) + ")");
+    g_root.looper.this.attr("transform", "translate(0, " + (g_project.height_h - SCROLL_LOOP_X) + ")");
 
     g_root.looper.box = g_root.looper.this.append("rect")
         .attr("class", "slider rect")
-        .attr("x",-g_project.width_h/2)
-        .attr("y",-SCROLL_LOOP_H/2)
-        .attr("width",g_project.width_h)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", -g_project.width_h / 2)
+        .attr("y", -SCROLL_LOOP_H / 2)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
 
     g_root.looper.svg = g_root.looper.this.append("svg")
         .attr("class", "slider svg")
-        .attr("x",-g_project.width_h/2)
-        .attr("y",-SCROLL_LOOP_H/2)
-        .attr("width",g_project.width_h)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", -g_project.width_h / 2)
+        .attr("y", -SCROLL_LOOP_H / 2)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
 
     g_root.looper.svg.append("rect")
         .attr("class", "slider bground")
-        .attr("x",0)
-        .attr("y",0)
-        .attr("width",g_project.width_h)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
 
-    g_root.looper.size = g_project.width_h/g_project.spiral_info.spiral_length*g_project.spiral_info.planet_distance*g_project.spiral_info.planet_number;
+    g_root.looper.size = g_project.width_h / g_project.spiral_info.spiral_length * g_project.spiral_info.planet_distance * g_project.spiral_info.planet_number;
     g_root.looper.pos = g_root.looper.svg.append("rect")
         .attr("class", "slider pos")
-        .attr("x",-g_root.looper.size/2)
-        .attr("y",0)
-        .attr("width",g_root.looper.size)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", -g_root.looper.size / 2)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
     g_root.looper.posL = g_root.looper.svg.append("rect")
         .attr("class", "slider pos")
-        .attr("x",-g_root.looper.size/2+g_project.width_h)
-        .attr("y",0)
-        .attr("width",g_root.looper.size)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", -g_root.looper.size / 2 + g_project.width_h)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
     g_root.looper.posR = g_root.looper.svg.append("rect")
         .attr("class", "slider pos")
-        .attr("x",-g_root.looper.size/2-g_project.width_h)
-        .attr("y",0)
-        .attr("width",g_root.looper.size)
-        .attr("height",SCROLL_LOOP_H)
+        .attr("x", -g_root.looper.size / 2 - g_project.width_h)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
 }
 
-function ClearSpace()
-{
-    if (InstanceExists(g_root.universe))
-    {
+function ClearSpace() {
+    if (InstanceExists(g_root.universe)) {
         d3.selectAll("g.star").remove();
     }
 }
