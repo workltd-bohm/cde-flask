@@ -363,7 +363,7 @@ body {
     border: none;
     outline: none;
     font-family: monospace;
-    background-color: #b8efb9;
+    background-color: #ecd256;
     color: var(--text-primary);
     caret-color: black; /*var(--neon-blue);*/
 }
