@@ -313,7 +313,6 @@ function AddSun(obj, data) {
     if (g_project.move) MoveCreate(data.values.this, data.values.back);
 
     if (g_root.slider) CreateSlider();
-
 }
 
 function AddChildren(obj, data, parent, position = 0) {
@@ -520,7 +519,7 @@ function AddText(data, cls = "", fix = false) {
         .attr("class", cls + " text_front")
         .attr("x", 0)
         .attr("y", 0)
-        .style("fill", FlipColor(data.color))
+        .style("fill", data.color ? FlipColor(data.color) : "")
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
     AddTspan(tmp, newobj, newName, data.type ? data.type : null);
