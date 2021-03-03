@@ -140,6 +140,7 @@ function GetWarp(data) {
         if (data) g_project.skip = data;
 
         // console.log(g_project.skip, g_project.search, g_project.paths)
+        console.log(g_project.data.overlay_type);
         switch (g_project.data.overlay_type) {
             case "user":
                 UserActivity(g_project.skip);
@@ -147,7 +148,7 @@ function GetWarp(data) {
             case "ic":
                 CreateWorkspace(g_project.skip);
                 break;
-            case "project":
+            case "project_root":
                 backButtonFlag = false;
                 WrapGetProject(g_project.skip);
                 break;

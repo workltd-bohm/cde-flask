@@ -197,6 +197,27 @@ g.path.draw > g.text > text {
     color: #bcbcbc;
 }
 
+.overlay-menu
+{
+    opacity: 0;
+    transition: opacity 500ms linear;
+}
+
+.overlay-menu:hover
+{
+    opacity: 1;
+}
+
+.overlay-menu-items
+{
+    cursor: pointer;
+}
+
+.overlay-menu-items > *:hover
+{
+    /* add rules overlay item hover */
+}
+
 .context-menu-wrapper
 {
     position: absolute;

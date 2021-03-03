@@ -27,8 +27,8 @@ function ColorPicker(data) {
         .attr("class", "color_wheel")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("transform", "scale(0.5), rotate(90)")  // animation property
-        .attr("opacity", "0");          // animation property
+        .attr("transform", "scale(0.5), rotate(90)")    // animation property
+        .attr("opacity", "0");                          // animation property
 
     var circle = wheel.append("circle")
         .attr("r", _radius)
@@ -143,7 +143,7 @@ function FlipColor(color){
     var b = (rgb >>  0) & 0xff;  // extract blue
     
     var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-    console.log(luma);
+    
     if (luma < 128) {
         return '#e8e8e8';
     } else {

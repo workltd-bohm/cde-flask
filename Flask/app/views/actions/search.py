@@ -218,6 +218,7 @@ def search_by_name():
                         "type": ic_type,
                         "overlay_type": "search_target",
                         "is_directory": False,
+                        "color": ic.color
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)

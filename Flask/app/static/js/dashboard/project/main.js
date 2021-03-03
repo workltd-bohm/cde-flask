@@ -161,11 +161,96 @@ function AddSun(obj, data) {
     // Shaders start
     data.values.background = data.values.object.append("circle")
         .attr("class", "star background")
-        .attr("r", g_SunRadius);
+        .attr("r", g_SunRadius)
+        .style("fill", data.color);
 
     data.values.picture = data.values.object.append("circle")
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
+
+    
+    data.values.select = data.values.this.append("circle")
+    .attr("class", "star select")
+    .attr("r", 0)
+    .on("mouseenter", function(d) {
+        if (!g_project.move && g_root.zoom) 
+        {
+            // OverlayDestroy();
+            // OverlayCreate(d3.select(this), d, data);
+        }
+        SetDisplayName(data.name);
+    })
+    .on("mouseleave", function () {
+        ClearDisplayName();
+    })
+    .on("contextmenu", function(d){
+        CreateContextMenu(d3.event, d);
+    });    
+
+    // add name to the sun
+    AddText(data, "star");
+
+    // Gets overlay type
+    let overlay_type = GetContextType(data);
+    data.values.overlay = data.values.object
+        .append("g")
+        .attr("class", "overlay-menu")
+        .on("mouseenter", function(d) {
+            if (!g_project.move && g_root.zoom) 
+            {
+                // OverlayDestroy();
+                // OverlayCreate(d3.select(this), d, data);
+            }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", function () {
+            ClearDisplayName();
+        })
+        .on("contextmenu", function(d){
+            CreateContextMenu(d3.event, data);
+        });
+        
+    data.values.overlay.append("circle")
+        .attr("r", g_SunRadius)
+        .attr("fill", "transparent");
+
+    let menu_items = data.values.overlay.append("g")
+        .attr("class", "overlay-menu-items");
+
+    menu_items.selectAll("g.overlay-menu-items")
+        .data(overlay_type)
+        .enter()
+        .append("foreignObject")
+        .each(function(d, i){
+            // calculate position
+            let rot = i * 360 / overlay_type.length - 90;
+            let len = g_SunRadius - g_OverlayItemSize;
+            let pos = {};
+            pos.x = Math.cos(rot * Math.PI / 180) * len;
+            pos.y = Math.sin(rot * Math.PI / 180) * len;
+
+            g_OverlayItemSize = 28;
+            d3.select(this)
+                // center object
+                .attr("x", -g_OverlayItemSize / 2)
+                .attr("y", -g_OverlayItemSize / 2)
+                .attr("width", g_OverlayItemSize)
+                .attr("height", g_OverlayItemSize)
+                .style("overflow", "visible")
+                // place around circle
+                .attr("transform", "translate(" + (pos.x) + ", " + (pos.y) + ")")
+                    .append("xhtml:i")
+                    .attr("class", "material-icons")
+                    .attr("title", d.name)
+                    .style("font-size", g_OverlayItemSize + "px")
+                    .style("color", data.color ? FlipColor(data.color) : "#303030")
+                    // icon
+                    .text(d.icon)
+                    // function    
+                    .on("click", function(){
+                        d.link(data);
+                    });
+        });
 
     // data.values.shader = data.values.object.append("circle")
     //     .attr("class", "star shader")
@@ -175,32 +260,7 @@ function AddSun(obj, data) {
     //     .attr("class", "star gloss")
     //     .attr("r", g_SunRadius)
     // Shaders end
-
-    data.values.select = data.values.this.append("circle")
-        .attr("class", "star select")
-        .attr("r", g_SunRadius)
-        .on("mouseenter", function(d) {
-            if (!g_project.move && g_root.zoom) 
-            {
-                OverlayDestroy();
-                OverlayCreate(d3.select(this), d, data);
-            }
-            SetDisplayName(data.name);
-        })
-        .on("mouseleave", () => {
-            ClearDisplayName();
-        })
-        .on("mousedown", function(d) {
-            // ClickStart(function(data){
-            //     // TODO: action menu
-            //     // OverlayCreate(data);
-            // }, data);
-        })
-        .on("mouseup", function(d) {
-            // ClickStop(function(data){
-            //     // NONE
-            // }, data);
-        });
+        
     //// [SLIDER START]
     if (g_root.slider){
         data.values.object.transition()
@@ -213,8 +273,6 @@ function AddSun(obj, data) {
             .attr("transform", "translate(" + (-g_SunRadius * SUN_SCROLL_X_SUN_OFFS) + ", " + (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) + ")");
     }
     //// [SLIDER END]
-
-    AddText(data, "star");
 
     // create children
     if (data.sub_folders) {
@@ -460,6 +518,7 @@ function AddText(data, cls = "", fix = false) {
         .attr("class", cls + " text_front")
         .attr("x", 0)
         .attr("y", 0)
+        .style("fill", FlipColor(data.color))
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
     AddTspan(tmp, newobj, newName, data.type ? data.type : null);

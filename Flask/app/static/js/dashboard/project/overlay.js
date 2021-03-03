@@ -4,52 +4,69 @@ g_OverNone = []
 
 g_OverUser = []
 
-g_OverProject = [
-    { name: "NEW PROJECT", icon: "create_new_folder", link: WrapNewProject },
-    { name: "UPLOAD PROJECT", icon: "cloud_upload", link: WrapUploadProject }
+/* SUNs */
+g_OverProjectRoot = [
+    { name: "NEW PROJECT",      icon: "create_new_folder",  link: WrapNewProject },
+    { name: "UPLOAD PROJECT",   icon: "cloud_upload",       link: WrapUploadProject }
 ]
 
-g_OverSearch = [
-    { name: "GO TO FOLDER", icon: "open_with", link: SearchOpen },
+g_OverProject = [
+    { name: "UPLOAD",           icon: "arrow_circle_up",            link: WrapCreateFile },
+    { name: "NEW",              icon: "create_new_folder",          link: WrapCreateFolder },
+    { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
+    { name: "SHARE PROJECT",    icon: "control_point_duplicate",    link: WrapShareProject }
 ];
 
 g_OverFolder = [
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    // { name: "DETAILS", icon: "preview", link: WrapOpenFile },
-    // { name: "RENAME", icon: "create", link: WrapRename },
-    // { name: "TRASH", icon: "delete", link: WrapTrash },
-    // { name: "COPY", icon: "content_copy", link: WrapCopy },
-    // { name: "MOVE", icon: "open_with", link: WrapMove },
-    // { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
-    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "UPLOAD",       icon: "arrow_circle_up",    link: WrapCreateFile },
+    { name: "NEW",          icon: "create_new_folder",  link: WrapCreateFolder },
+    { name: "DOWNLOAD",     icon: "cloud_download",     link: WrapDownload },
+    { name: "SHARE",        icon: "share",              link: WrapShare },
 ];
 
 g_OverFile = [
-    { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    // { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    // { name: "RENAME", icon: "create", link: WrapRename },
-    // { name: "TRASH", icon: "delete", link: WrapTrash },
-    // { name: "COPY", icon: "content_copy", link: WrapCopy },
-    // { name: "MOVE", icon: "open_with", link: WrapMove },
-    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "PREVIEW",  icon: "preview",            link: WrapOpenFile },
+    { name: "UPLOAD",   icon: "arrow_circle_up",    link: WrapCreateFile },
+    { name: "SHARE",    icon: "share",              link: WrapShare },
+    { name: "DOWNLOAD", icon: "cloud_download",     link: WrapDownload },
 ];
 
-g_OverPlanet = [
-    { name: "SELECT", icon: "check_circle", link: SelectPlanet },
-    { name: "OPEN", icon: "preview", link: WrapOpenFile },
-    { name: "TRASH", icon: "delete", link: WrapTrash },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
-    { name: "SHARE", icon: "share", link: WrapShare },
+/* PLANETs */
+g_OverProjectPlanet = [
+    { name: "SELECT",           icon: "check_circle",               link: SelectPlanet },
+    { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
+    { name: "RENAME",           icon: "create",                     link: WrapRename },
+    { name: "COLOR",            icon: "color_lens",                 link: ColorPicker },
+    { name: "SHARE PROJECT",    icon: "control_point_duplicate",    link: WrapShareProject },
+    { name: "TRASH",            icon: "delete",                     link: WrapTrash },
+];
+
+g_OverFolderPlanet = [
+    { name: "SELECT",   icon: "check_circle",   link: SelectPlanet },
+    { name: "DETAILS",  icon: "preview",        link: WrapOpenFile },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "RENAME",   icon: "create",         link: WrapRename },
+    { name: "COPY",     icon: "content_copy",   link: WrapCopy },
+    { name: "MOVE",     icon: "open_with",      link: WrapMove },
+    { name: "SHARE",    icon: "share",          link: WrapShare },
+    { name: "COLOR",    icon: "color_lens",     link: ColorPicker },
+    { name: "TRASH",    icon: "delete",         link: WrapTrash },
+];
+
+g_OverFilePlanet = [
+    { name: "SELECT",   icon: "check_circle",   link: SelectPlanet },
+    { name: "PREVIEW",  icon: "preview",        link: WrapOpenFile },
+    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
+    { name: "RENAME",   icon: "create",         link: WrapRename },
+    { name: "COPY",     icon: "content_copy",   link: WrapCopy },
+    { name: "MOVE",     icon: "open_with",      link: WrapMove },
+    { name: "SHARE",    icon: "share",          link: WrapShare },
+    { name: "COLOR",    icon: "color_lens",     link: ColorPicker },
+    { name: "TRASH",    icon: "delete",         link: WrapTrash },
+];
+
+g_OverSearch = [
+    { name: "GO TO FOLDER", icon: "open_with", link: SearchOpen },
 ];
 
 g_OverTrash = [
@@ -57,15 +74,15 @@ g_OverTrash = [
 ];
 
 g_OverPlanetTrash = [
-    { name: "SELECT", icon: "check_circle", link: SelectPlanet },
-    { name: "RESTORE", icon: "restore_from_trash", link: WrapRestore },
-    { name: "DESTROY", icon: "delete", link: WrapDelete }
+    { name: "SELECT",   icon: "check_circle",       link: SelectPlanet },
+    { name: "RESTORE",  icon: "restore_from_trash", link: WrapRestore },
+    { name: "DESTROY",  icon: "delete",             link: WrapDelete }
 ];
 
 g_OverMarket = [
-    { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
-    { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
-    { name: "NEW POST", icon: "addchart", link: WrapNewPost },
+    { name: "MY POSTS", icon: "view_headline",  link: WrapMarketGetPosts }, //WrapNewPost
+    { name: "MY BIDS",  icon: "view_list",      link: WrapMarketGetBids },
+    { name: "NEW POST", icon: "addchart",       link: WrapNewPost },
 ];
 
 g_OverPost = [
@@ -91,8 +108,8 @@ function OverlayCreate(obj, data, parent, planet = false) {
         case "user":
             type = g_OverUser;
             break;
-        case "project":
-            type = g_OverProject;
+        case "project_root":
+            type = g_OverProjectRoot;
             break;
         case "search_target":
             type = g_OverSearch;
@@ -231,7 +248,6 @@ function OverlayCreate(obj, data, parent, planet = false) {
         .append("g")
         .attr("class", "item")
         .each(function(d, i) { AddItem(d3.select(this), d, data, i); });
-
 }
 
 function OverlayDestroy() {
@@ -498,7 +514,7 @@ function CreateSelectMenu() {
 
 function CreateContextMenu(event, data) {
     // get the type of context menu (using ic type)
-    let type = GetContextMenuType(data);
+    let type = GetContextType(data);
     // exit if non-applicable
     if (!type) { return; }
 
@@ -674,18 +690,22 @@ function CreateViewMenu() {
     $(".hover-menu").append(view_menu);
 }
 
-function GetContextMenuType(data) {
+function GetContextType(data) {
     let type = data.overlay_type;
     switch (type) {
         case "ic":
-            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            type = data.values.sun ? data.is_directory ? data.parent === '.' ? 
+                g_OverProject : g_OverFolder : g_OverFile : 
+                    data.is_directory ? g_OverFolderPlanet : g_OverFilePlanet;
             break;
         case "user":
             type = g_OverUser;
             break;
+        case "project_root":
+            type = g_OverProjectRoot;
+            break;
         case "project":
-            // todo differ root_project / project / folder / file
-            type = g_OverProject;
+            type = data.values.sun ? g_OverProject : g_OverProjectPlanet;
             break;
         case "search_target":
             type = g_OverSearch;

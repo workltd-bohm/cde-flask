@@ -206,7 +206,7 @@ def get_root_project():
                     "name": "Projects",
                     "history": [],
                     "path": ".",
-                    "overlay_type": "project",
+                    "overlay_type": "project_root",
                     "is_directory": True,
                     "sub_folders": []
                 }
@@ -358,6 +358,7 @@ def get_trash():
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = []
                     proj_obj['overlay_type'] = "trash_planet"
+                    proj_obj["color"] = trashed_project["color"]
 
                     if 'project_name' in trashed_project.keys():
                         proj_obj['name'] =          trashed_project['project_name']
