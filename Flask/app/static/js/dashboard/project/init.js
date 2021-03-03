@@ -39,6 +39,12 @@ const PLANET_ORBIT_COEF = 1.8;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
 const PLANET_SCROLL_ZOOM = 1;
+const PLANET_SCROLL_DEG_OFF = 90;
+
+const SCROLL_LOOP_X = 100;
+const SCROLL_LOOP_H = 15;
+const SCROLL_LOOP_SIZE_FIX = 3.5;
+const SCROLL_LOOP_POS_FIX = 1.1;
 
 const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
@@ -162,7 +168,8 @@ var g_root = {
     obj : null,
     zoom : false,
     slider : false,
-    universe : null
+    universe : null,
+    looper : null,
 }
 
 function ClearProject(hard=false){
