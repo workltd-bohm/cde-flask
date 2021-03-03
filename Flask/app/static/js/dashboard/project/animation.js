@@ -66,7 +66,10 @@ function SunFadeout(data) {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
-        // if(g_root.slider) 
+    if(g_root.slider) g_root.looper.this.transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_MOVE)
+        .style("opacity", 0)
     data.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -182,7 +185,7 @@ function AnimateScrollSun(data){
             (g_root.deg + Math.abs(g_project.spiral_info.spiral_length + (360 * g_root.deg_exp) % g_project.spiral_info.spiral_length))
             % g_project.spiral_info.spiral_length;
     }
-    g_project.spiral_info.spiral_position += 90;
+    g_project.spiral_info.spiral_position += PLANET_SCROLL_DEG_OFF;
 }
 
 function AnimateScrollPlanet(data){
@@ -209,16 +212,34 @@ function UpdateUniverse() {
     }
 
     if (g_project.skip != false || g_project.warp) {
+        g_root.looper.transition()
+            .duration(1)
+            .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         g_root.universe.transition()
             .duration(1)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")
         GetWarp();
     } else {
+        g_root.looper.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         g_root.universe.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")
     }
+
+    g_root.looper.x = g_project.width_h/g_project.spiral_info.spiral_length*(g_project.spiral_info.spiral_position);
+    if (g_root.looper.pos)
+        g_root.looper.pos
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
+    if (g_root.looper.posL)
+        g_root.looper.posL
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
+    if (g_root.looper.posR)
+        g_root.looper.posR
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
 
     if (g_project.hist_path)
         g_project.hist_path.transition()

@@ -287,3 +287,17 @@ g.path.draw > g.text > text {
     width: 100%;
     border-left: 4px solid var(--neon-blue);
 }
+
+.slider.rect{
+    fill: rgba(0, 0, 0, 0);
+    stroke: rgba(97, 97, 97, 0.5);
+    stroke-width: 2;
+}
+
+.slider.bground{
+    fill: rgba(255, 255, 255, 0);
+}
+
+.slider.pos{
+    fill: rgba(121, 121, 121, 1);
+}

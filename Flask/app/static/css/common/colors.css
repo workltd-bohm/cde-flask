@@ -17,9 +17,12 @@
     --bg-dark: #303030;                 /* new */
     --bg-darker: #1f1f1f;               /* new */
 
+    /* sidebar */
+    --sidebar-bg-dark: #121212;        /* new */
+
     
     /* dashboard */
-    --dashboard-bg-light: #f5f5f5;      /* new */
+    --dashboard-bg-light: #f6f6f6;      /* new */
     --dashboard-bg-dark: #131313;       /* new */
     --dashboard-text-light: #d4d4d4;    /* new */
     --dashboard-text-dark: #131313;     /* new */
@@ -61,6 +64,7 @@
     --text-secondary:           var(--text-darker);                 /* new */
     
     --bg-primary:               var(--bg-lighter);                  /* new */
+    --sidebar-bg:               var(--sidebar-bg-dark);
     --bg-secondary:             var(--bg-light);                    /* new */
 
     --sun-bg:                   var(--sun-bg-light);                /* new */

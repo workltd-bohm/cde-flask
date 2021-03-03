@@ -60,13 +60,14 @@ def get_filtered_files():
                     }
                 }
                 for file in filtered:
+                    path = file.path if file.is_directory else file.path + file.type
                     proj_obj = {
                         "ic_id": file.ic_id,
                         "parent_id": file.parent_id,
                         "name": file.name,
                         "parent": "Search",
                         "history": [],
-                        "path": "Search/"+file.name + file.type,
+                        "path": path,
                         "type": file.type,
                         "overlay_type": "search_target",
                         "is_directory": False,
@@ -137,7 +138,7 @@ def search_by_tags():
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
                     # print(file)
                     if file:
-                        path = file.name if file.is_directory else file.name + file.type
+                        path = file.path if file.is_directory else file.path + file.type
                         ic_type = '' if file.is_directory else file.type
                         proj_obj = {
                             "ic_id": file.ic_id,
@@ -145,7 +146,7 @@ def search_by_tags():
                             "name": file.name,
                             "parent": "Search",
                             "history": [],
-                            "path": "Search/" + path,
+                            "path": path,
                             "type": ic_type,
                             "overlay_type": "search_target",
                             "is_directory": False,
@@ -206,7 +207,7 @@ def search_by_name():
                 # print(ics)
                 for ic in ics:
                     # print(ic.name)
-                    path = ic.name if ic.is_directory else ic.name + ic.type
+                    path = ic.path if ic.is_directory else ic.path + ic.type
                     ic_type = '' if ic.is_directory else ic.type
                     proj_obj = {
                         "ic_id": ic.ic_id,
@@ -214,7 +215,7 @@ def search_by_name():
                         "name": ic.name,
                         "parent": "Search",
                         "history": [],
-                        "path": "Search/" + path,
+                        "path": path,
                         "type": ic_type,
                         "overlay_type": "search_target",
                         "is_directory": False,
