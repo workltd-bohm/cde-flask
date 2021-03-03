@@ -14,7 +14,6 @@ g_OverProject = [
     { name: "UPLOAD",           icon: "arrow_circle_up",            link: WrapCreateFile },
     { name: "NEW",              icon: "create_new_folder",          link: WrapCreateFolder },
     { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
-    { name: "SHARE PROJECT",    icon: "control_point_duplicate",    link: WrapShareProject }
 ];
 
 g_OverFolder = [
@@ -37,7 +36,6 @@ g_OverProjectPlanet = [
     { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
     { name: "RENAME",           icon: "create",                     link: WrapRename },
     { name: "COLOR",            icon: "color_lens",                 link: ColorPicker },
-    { name: "SHARE PROJECT",    icon: "control_point_duplicate",    link: WrapShareProject },
     { name: "TRASH",            icon: "delete",                     link: WrapTrash },
 ];
 
