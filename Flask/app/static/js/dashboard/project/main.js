@@ -466,37 +466,51 @@ function AddChildren(obj, data, parent, position = 0) {
 
 // -------------------------------------------------------
 
-function AddTspan(target, newobj, text, prefix = null) {
-    // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+function AddTspan(target, newobj, text, suffix = null) {
     var max_text = TEXT_MAX_TEXT;
-    var max_text_len = TEXT_MAX_LENGHT;
-    //// [SLIDER START]
-    // if (g_root.slider) {
-    //     max_text = TEXT_MAX_SCROLL_TEXT;
-    //     max_text_len = TEXT_MAX_SCROLL_LENGHT;
-    // }
-    //// [SLIDER END]
+    var max_text_len = TEXT_MAX_LINE_CHARS;
 
-    text = text.slice(0, max_text);
     if (text.length >= max_text)
-        text = text.slice(0, max_text - 4) + "...";
+        text = text.slice(0, max_text - 3) + "...";
 
-    var slice = ((text.length / max_text_len) | 0); // + 1;
-    newobj.text_len = (slice > 0) ? max_text_len : newobj.text_len;
+    // slice the text to fit inside circle
+    var slices = ((text.length / max_text_len) | 0);
+    
+    // calculate line height spacing
     var spacing = parseFloat($(target.node()).css("fontSize"));
 
-    for (var i = 0; i <= slice; i++) {
+    for (var i = 0; i <= slices; i++) {
         target.append("tspan")
             .attr('x', 0)
-            .attr('y', (i - (slice) / 2) * spacing) //TEXT_SPACING)
+            .attr('y', (i - (slices) / 2) * spacing)
             .html(text.slice(i * max_text_len, (i + 1) * max_text_len))
     }
-    if (prefix) {
+
+    if (suffix) {
         target.append("tspan")
             .attr('x', 0)
-            .attr('y', (slice + 1 - (slice) / 2) * spacing) //TEXT_SPACING)
-            .html(prefix.slice(0)) // 1 to remove "."
+            .attr('y', (slices + 1 - (slices) / 2) * spacing) 
+            .html(suffix.slice(0)) // 1 to remove "."
     }
+}
+
+function AddText2(data, text, x, y, cls = "") {
+    let values = data.values;
+    
+    values.text_len = text.length;
+
+    // create new text group
+    values.text = values.object.append("g")
+        .attr("class", cls + " text")
+
+    // add new text element
+    tmp = values.text.append("text")
+        .attr("class", cls + " text_front")
+        .attr("x", x)
+        .attr("y", y)
+        .style("fill", data.color ? FlipColor(data.color) : "")
+        
+    AddTspan(tmp, values, text, data.type ? data.type : null);
 }
 
 function AddText(data, cls = "", fix = false) {
