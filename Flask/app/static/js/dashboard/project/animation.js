@@ -231,6 +231,7 @@ function UpdateUniverse() {
     }
 
     g_root.looper.x = g_project.width_h/g_project.spiral_info.spiral_length*(g_project.spiral_info.spiral_position);
+    if(!g_root.looper.x) g_root.looper.x = 0;
     if (g_root.looper.pos)
         g_root.looper.pos
             .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")

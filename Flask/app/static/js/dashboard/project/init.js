@@ -174,6 +174,7 @@ var g_root = {
 
 function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
+    if(g_root.looper) g_root.looper.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.paths_path) g_project.paths_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
