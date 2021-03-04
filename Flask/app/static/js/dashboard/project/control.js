@@ -6,10 +6,11 @@ function WindowResize(){
     let offX = $SVG.offset().left;
     let offY = $SVG.offset().top;
 
-    var dash_w = dash.width();
-    var dash_h = dash.height()-offY;
+    var dash_w = dash.width() - offX;
+    var dash_h = dash.height() - offY;
     
     $SVG.height(dash_h);
+    $SVG.width(dash_w);
 
     g_project.width = dash_w;
     g_project.height = dash_h;
@@ -257,4 +258,29 @@ function InstanceExists(instance)
 {
     return Boolean(instance);
 }
+
+var handler = document.querySelector(".dragbar");
+var isHandlerDragging = false;
+
+// turn on dragging
+document.addEventListener('mousedown', function(e) {
+    if (e.target === handler) {
+        isHandlerDragging = true;
+    }
+});
+  
+document.addEventListener('mousemove', function(e) {
+    if (!isHandlerDragging) {
+        return false;
+    }
+
+    // resize
+    let x = $(".tree-view").offset().left;
+    $(".tree-view").width(e.clientX - x);
+});
+
+// flag dragging off
+document.addEventListener('mouseup', function(e) {
+    isHandlerDragging = false;
+});
 // -------------------------------------------------------

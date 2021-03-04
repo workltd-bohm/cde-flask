@@ -63,12 +63,38 @@
 
 .workspace
 {
+    display: flex;
     height: 100%;
     background-color: var(--dashboard-bg);
     overflow: hidden;
     position: relative;
     border: 1px solid var(--shadow);
     border-bottom: none;
+}
+
+.tree-view
+{
+    height: 100%;
+    display: inline-block;
+    width: 300px;
+    resize: horizontal;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+.dragbar
+{
+    transform: translate(50%, 0);
+    right: 0;
+    width: 8px;
+    height: 100%;
+    background-color: var(--bg-primary);
+    cursor: col-resize;
+}
+
+.dragbar:hover
+{
+    background-color: var(--bg-secondary);
 }
 
 .hover-menu
