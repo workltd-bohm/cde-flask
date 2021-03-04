@@ -413,6 +413,8 @@ def set_color():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
+        if not project_name:
+            project_name = request_data['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             color_change = {
