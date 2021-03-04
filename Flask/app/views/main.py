@@ -15,8 +15,8 @@ def IsLogin():
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'img/brush2.png',
-                               mimetype='img/brush2.png')
+                               'img/favicon.ico',
+                               mimetype='img/favicon.ico')
 
 
 @app.route('/')
