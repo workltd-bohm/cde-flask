@@ -897,6 +897,8 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
+            if file_obj['ic_id'] == '':
+                file_obj['ic_id'] = project.root_ic.ic_id
             add = project.change_color(file_obj, project.root_ic)
             if add == msg.IC_COLOR_CHANGED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
