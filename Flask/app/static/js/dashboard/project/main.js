@@ -325,6 +325,8 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.position = position;
     data.values.parent = (parent != null) ? d3.select("#obj-" + data.par_id) : null;
     data.values.sun = false;
+    data.values.data = parent;
+    data.values.data.checked = false;
 
     //// [SLIDER START]
     // data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;

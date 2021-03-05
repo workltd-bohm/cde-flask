@@ -35,7 +35,7 @@ g_OverProjectPlanet = [
     { name: "SELECT",           icon: "check_circle",               link: SelectPlanet },
     { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
     { name: "RENAME",           icon: "create",                     link: WrapRename },
-    { name: "COLOR",            icon: "color_lens",                 link: ColorPicker },
+    { name: "COLOR",            icon: "color_lens",                 link: ChangeColor },
     { name: "TRASH",            icon: "delete",                     link: WrapTrash },
 ];
 
@@ -47,7 +47,7 @@ g_OverFolderPlanet = [
     { name: "COPY",     icon: "content_copy",   link: WrapCopy },
     { name: "MOVE",     icon: "open_with",      link: WrapMove },
     { name: "SHARE",    icon: "share",          link: WrapShare },
-    { name: "COLOR",    icon: "color_lens",     link: ColorPicker },
+    { name: "COLOR",    icon: "color_lens",     link: ChangeColor },
     { name: "TRASH",    icon: "delete",         link: WrapTrash },
 ];
 
@@ -59,7 +59,7 @@ g_OverFilePlanet = [
     { name: "COPY",     icon: "content_copy",   link: WrapCopy },
     { name: "MOVE",     icon: "open_with",      link: WrapMove },
     { name: "SHARE",    icon: "share",          link: WrapShare },
-    { name: "COLOR",    icon: "color_lens",     link: ColorPicker },
+    { name: "COLOR",    icon: "color_lens",     link: ChangeColor },
     { name: "TRASH",    icon: "delete",         link: WrapTrash },
 ];
 
@@ -727,8 +727,18 @@ function GetContextType(data) {
             type = false;
             break;
     }
-
-    return type;
+    
+    switch(type) {
+        case g_OverFilePlanet:
+        case g_OverFolderPlanet:
+        case g_OverProjectPlanet:
+            let g_OverTemp = type.slice();
+            let deselect = { name: "DESELECT", icon: "check_circle_outline", link: SelectPlanet };
+            g_OverTemp[0] = data.values.data.checked ? deselect : g_OverTemp[0];
+            return g_OverTemp;
+        default:
+            return type;
+    }
 }
 
 function SwitchViewsPlanetary(data) {

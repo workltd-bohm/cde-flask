@@ -7,7 +7,7 @@ g_OverSelect = [
     { name : "MOVE",        icon : "open_with",         link : WrapMove},
     { name : "SHARE",       icon : "share",             link : WrapShare},
     { name : "DOWNLOAD",    icon : "cloud_download",    link : WrapDownload},
-    { name : "COLOR",       icon : "color_lens",        link : ColorPicker},
+    { name : "COLOR",       icon : "color_lens",        link : ChangeColor},
     { name : "COPY",        icon : "content_copy",      link : WrapCopy},
 ]
 
@@ -176,6 +176,7 @@ function AddSelection(obj, data, parent, position=0) {
     data.values = {};
     data.values.this = obj;
     data.values.data = parent;
+    data.values.data.checked = false;
     data.values.back = parent.selection;
 
     data.values.rotation = position*360/data.values.back.items.length-90;
