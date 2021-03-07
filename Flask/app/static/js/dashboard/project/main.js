@@ -656,7 +656,8 @@ function CreateWorkspace(data) {
     }
 
     // hide activity when on root path
-    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "."));
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." 
+        && g_project.current_ic.overlay_type !== "user"));
 }
 
 function CreateGrid(data) {
