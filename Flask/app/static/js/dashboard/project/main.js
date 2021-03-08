@@ -62,39 +62,7 @@ function CreateSpace(data) {
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
 
-    // add path to a top bar TODO store in a function
-    if (SESSION.position) {
-        found = RecursiveFileSearch(g_project.data, g_project.data);
-        if (found) {
-            $(".info-path-text").empty();
-            var path = found[0].reverse();
-
-            for (let add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-
-                let span = document.createElement("span");
-                span.className = "path-link";
-                span.textContent = add.name;
-
-                span.onclick = function() {
-                    if (g_project.search /*&& g_project.search.overlay_type == "ic"*/ ) g_project.search = false;
-                    add.paths_path = {}
-                    add.paths_path.back = g_project.paths;
-                    g_project.paths = add.paths_path.back;
-                    g_project.hist_path_len = add.paths_path.start;
-                    CreateWorkspace(add);
-                }
-
-                $(".info-path-text").append(span);
-
-                let slash = document.createElement("span");
-                slash.className = "mx-2";
-                slash.textContent = "/";
-                $(".info-path-text").append(slash);
-            }
-        }
-    }
+    CreatePath();
 }
 
 function AddSun(obj, data) {
@@ -685,39 +653,7 @@ function CreateGrid(data) {
             break;
     }
 
-    // Topbar path
-    if (SESSION.position) {
-        found = RecursiveFileSearch(g_project.data, g_project.data);
-        if (found) {
-            $(".info-path-text").empty();
-            var path = found[0].reverse();
-
-            for (let add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-
-                let span = document.createElement("span");
-                span.className = "path-link";
-                span.textContent = add.name;
-
-                span.onclick = function() {
-                    if (g_project.search /*&& g_project.search.overlay_type == "ic"*/ ) g_project.search = false;
-                    add.paths_path = {}
-                    add.paths_path.back = g_project.paths;
-                    g_project.paths = add.paths_path.back;
-                    g_project.hist_path_len = add.paths_path.start;
-                    CreateWorkspace(add);
-                }
-
-                $(".info-path-text").append(span);
-
-                let slash = document.createElement("span");
-                slash.className = "mx-2";
-                slash.textContent = "/";
-                $(".info-path-text").append(slash);
-            }
-        }
-    }
+    CreatePath();
 
     let grid = document.createElement('div');
     grid.className = "row mx-3";
