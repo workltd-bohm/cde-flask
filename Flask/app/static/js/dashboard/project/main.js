@@ -1,6 +1,6 @@
 // -------------------------------------------------------
 
-function CreateSpace(data) {
+function CreateSpace(data, refreshTree = true) {
     // cache
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
@@ -32,7 +32,7 @@ function CreateSpace(data) {
 
     switch (data.overlay_type) {
         case "ic":
-            SendProject(data);
+            SendProject(data, refreshTree);
             break;
         case "post_ic":
             EditPost(data, data.ic_id);
@@ -444,7 +444,7 @@ function AddChildren(obj, data, parent, position = 0) {
     //     .on("contextmenu", function(d){
     //         CreateContextMenu(d3.event, data);
     //     });
-        
+
     // data.values.overlay.append("circle")
     //     .attr("r", g_PlanetRadius)
     //     .attr("fill", "transparent");
@@ -673,7 +673,7 @@ function CreateDashboard(data, project_position = null) {
     });
 }
 
-function CreateWorkspace(data) {
+function CreateWorkspace(data, refreshTree = true) {
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
@@ -684,23 +684,23 @@ function CreateWorkspace(data) {
             $("#PROJECT-GRID").hide(); // todo animate maybe
             $("#PROJECT").show();
             ClearSpace();
-            CreateSpace(data);
+            CreateSpace(data, refreshTree);
             break;
 
             // grid view
         case 1:
             $("#PROJECT-GRID").show(); // todo animate maybe
             $("#PROJECT").hide();
-            CreateGrid(data);
+            CreateGrid(data, refreshTree);
             break;
     }
 
     // hide activity when on root path
-    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." 
-        && g_project.current_ic.overlay_type !== "user"));
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." &&
+        g_project.current_ic.overlay_type !== "user"));
 }
 
-function CreateGrid(data) {
+function CreateGrid(data, refreshTree = true) {
     data.values = {};
     data.values.back = data;
     data.values.data = data;
@@ -710,7 +710,7 @@ function CreateGrid(data) {
     switch (data.overlay_type) {
         case "ic":
             WrapOpenFile(data, false);
-            SendProject(data);
+            SendProject(data, refreshTree);
             break;
         case "post_ic":
             EditPost(data, data.ic_id);
