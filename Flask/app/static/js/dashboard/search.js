@@ -1,6 +1,7 @@
 SEARCH_HISTORY = {};
 
 function OpenFilterActivity(json, open = false) {
+    console.log(json);
     $.ajax({
         url: "/get_filter_activity",
         type: 'POST',

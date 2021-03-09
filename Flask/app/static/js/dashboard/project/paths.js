@@ -201,7 +201,7 @@ function ClearDisplayName() {
         g_project.display_name.text("");
 }
 
-function CreatePath(){
+function CreatePath() {
     // Topbar path
     if (SESSION.position) {
         found = RecursiveFileSearch(g_project.data, g_project.data);

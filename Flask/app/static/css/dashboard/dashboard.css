@@ -1,5 +1,4 @@
 @import url("../common/colors.css");
-
 #PROJECT {
     display: none;
     width: 100%;
@@ -8,19 +7,15 @@
     transition: all 200ms;
 }
 
-#PROJECT-GRID
-{
+#PROJECT-GRID {}
 
-}
-
-.HIDDEN
-{
+.HIDDEN {
     height: 0;
     width: 0;
     opacity: 0;
 }
 
-#MARKET{
+#MARKET {
     display: none;
     position: relative;
     width: 100%;
@@ -30,7 +25,7 @@
     overflow-x: auto;
 }
 
-#EDITOR{
+#EDITOR {
     display: none;
     position: relative;
     width: 100%;
@@ -51,18 +46,16 @@
 }
 
 #Touch {
-    fill : transparent;
+    fill: transparent;
     stroke-width: 0;
 }
 
-#display_name
-{
+#display_name {
     font-size: 1.5em;
     text-anchor: middle;
 }
 
-.workspace
-{
+.workspace {
     display: flex;
     height: 100%;
     background-color: var(--dashboard-bg);
@@ -72,18 +65,17 @@
     border-bottom: none;
 }
 
-.tree-view
-{
+.tree-view {
     height: 100%;
     display: inline-block;
     width: 300px;
     resize: horizontal;
     max-width: 400px;
     min-width: 200px;
+    top: 100px;
 }
 
-.dragbar
-{
+.dragbar {
     transform: translate(50%, 0);
     right: 0;
     width: 8px;
@@ -92,50 +84,42 @@
     cursor: col-resize;
 }
 
-.dragbar:hover
-{
+.dragbar:hover {
     background-color: var(--bg-secondary);
 }
 
-.hover-menu
-{
+.hover-menu {
     top: 0;
     left: 0;
     z-index: 5;
 }
 
-.hover-menu-item
-{
+.hover-menu-item {
     display: inline-block;
     vertical-align: top;
-    
     min-height: 40px;
     margin-right: 1em;
-    
     background-color: var(--bg-primary);
     /*box-shadow: .1em .1em 1em var(--shadow);*/
     /*border: 2px solid gray;*/
-    
     cursor: pointer;
     border: 1px solid var(--shadow);
 }
 
-.hover-menu span, .hover-menu input, .hover-menu label
-{
+.hover-menu span,
+.hover-menu input,
+.hover-menu label {
     vertical-align: middle;
 }
 
-.hover-menu a
-{
+.hover-menu a {
     text-decoration: none;
 }
 
-.hover-menu a:hover
-{
+.hover-menu a:hover {
     color: var(--neon-blue);
 }
 
-.hover-dropdown > *
-{
+.hover-dropdown>* {
     display: block;
 }

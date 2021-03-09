@@ -138,24 +138,23 @@ function AddSun(obj, data) {
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
 
-    
+
     data.values.select = data.values.this.append("circle")
-    .attr("class", "star select")
-    .attr("r", 0)
-    .on("mouseenter", function(d) {
-        if (!g_project.move && g_root.zoom) 
-        {
-            // OverlayDestroy();
-            // OverlayCreate(d3.select(this), d, data);
-        }
-        SetDisplayName(data.name);
-    })
-    .on("mouseleave", function () {
-        ClearDisplayName();
-    })
-    .on("contextmenu", function(d){
-        CreateContextMenu(d3.event, d);
-    });    
+        .attr("class", "star select")
+        .attr("r", 0)
+        .on("mouseenter", function(d) {
+            if (!g_project.move && g_root.zoom) {
+                // OverlayDestroy();
+                // OverlayCreate(d3.select(this), d, data);
+            }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", function() {
+            ClearDisplayName();
+        })
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d3.event, d);
+        });
 
     // add name to the sun
     AddText(data, "star");
@@ -166,20 +165,19 @@ function AddSun(obj, data) {
         .append("g")
         .attr("class", "overlay-menu")
         .on("mouseenter", function(d) {
-            if (!g_project.move && g_root.zoom) 
-            {
+            if (!g_project.move && g_root.zoom) {
                 // OverlayDestroy();
                 // OverlayCreate(d3.select(this), d, data);
             }
             SetDisplayName(data.name);
         })
-        .on("mouseleave", function () {
+        .on("mouseleave", function() {
             ClearDisplayName();
         })
-        .on("contextmenu", function(d){
+        .on("contextmenu", function(d) {
             CreateContextMenu(d3.event, data);
         });
-        
+
     data.values.overlay.append("circle")
         .attr("r", g_SunRadius)
         .attr("fill", "transparent");
@@ -191,7 +189,7 @@ function AddSun(obj, data) {
         .data(overlay_type)
         .enter()
         .append("foreignObject")
-        .each(function(d, i){
+        .each(function(d, i) {
             // calculate position
             let rot = i * 360 / overlay_type.length - 90;
             let len = g_SunRadius - g_OverlayItemSize;
@@ -209,17 +207,17 @@ function AddSun(obj, data) {
                 .style("overflow", "visible")
                 // place around circle
                 .attr("transform", "translate(" + (pos.x) + ", " + (pos.y) + ")")
-                    .append("xhtml:i")
-                    .attr("class", "material-icons")
-                    .attr("title", d.name)
-                    .style("font-size", g_OverlayItemSize + "px")
-                    .style("color", data.color ? FlipColor(data.color) : "#303030")
-                    // icon
-                    .text(d.icon)
-                    // function    
-                    .on("click", function(){
-                        d.link(data);
-                    });
+                .append("xhtml:i")
+                .attr("class", "material-icons")
+                .attr("title", d.name)
+                .style("font-size", g_OverlayItemSize + "px")
+                .style("color", data.color ? FlipColor(data.color) : "#303030")
+                // icon
+                .text(d.icon)
+                // function    
+                .on("click", function() {
+                    d.link(data);
+                });
         });
 
     // data.values.shader = data.values.object.append("circle")
@@ -230,7 +228,7 @@ function AddSun(obj, data) {
     //     .attr("class", "star gloss")
     //     .attr("r", g_SunRadius)
     // Shaders end
-        
+
     //// [SLIDER START]
     if (g_root.slider) {
         data.values.object.transition()
@@ -445,7 +443,7 @@ function AddTspan(target, newobj, text, suffix = null) {
 
     // slice the text to fit inside circle
     var slices = ((text.length / max_text_len) | 0);
-    
+
     // calculate line height spacing
     var spacing = parseFloat($(target.node()).css("fontSize"));
 
@@ -459,14 +457,14 @@ function AddTspan(target, newobj, text, suffix = null) {
     if (suffix) {
         target.append("tspan")
             .attr('x', 0)
-            .attr('y', (slices + 1 - (slices) / 2) * spacing) 
+            .attr('y', (slices + 1 - (slices) / 2) * spacing)
             .html(suffix.slice(0)) // 1 to remove "."
     }
 }
 
 function AddText2(data, text, x, y, cls = "") {
     let values = data.values;
-    
+
     values.text_len = text.length;
 
     // create new text group
@@ -479,7 +477,7 @@ function AddText2(data, text, x, y, cls = "") {
         .attr("x", x)
         .attr("y", y)
         .style("fill", data.color ? FlipColor(data.color) : "")
-        
+
     AddTspan(tmp, values, text, data.type ? data.type : null);
 }
 
