@@ -379,14 +379,14 @@ function setSession(data) {
         //     revision: data.revision
         // };
 
-        SelectProject({ 'choose_project': data.path.split('/')[0] }, data);
+        SelectProjectNew({ 'choose_project': data.path.split('/')[0] }, data);
     }
 
     // CreatePath();
 
 }
 
-function SelectProject(request, ic_data) {
+function SelectProjectNew(request, ic_data) {
     $.ajax({
         url: "/select_project",
         type: 'POST',
