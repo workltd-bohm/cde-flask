@@ -1,6 +1,6 @@
 // -------------------------------------------------------
 
-function CreateSpace(data, refreshTree = true) {
+function CreateSpace(data) {
     // cache
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
@@ -32,7 +32,7 @@ function CreateSpace(data, refreshTree = true) {
 
     switch (data.overlay_type) {
         case "ic":
-            SendProject(data, refreshTree);
+            SendProject(data);
             break;
         case "post_ic":
             EditPost(data, data.ic_id);
@@ -673,7 +673,7 @@ function CreateDashboard(data, project_position = null) {
     });
 }
 
-function CreateWorkspace(data, refreshTree = true) {
+function CreateWorkspace(data) {
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
@@ -684,14 +684,14 @@ function CreateWorkspace(data, refreshTree = true) {
             $("#PROJECT-GRID").hide(); // todo animate maybe
             $("#PROJECT").show();
             ClearSpace();
-            CreateSpace(data, refreshTree);
+            CreateSpace(data);
             break;
 
             // grid view
         case 1:
             $("#PROJECT-GRID").show(); // todo animate maybe
             $("#PROJECT").hide();
-            CreateGrid(data, refreshTree);
+            CreateGrid(data);
             break;
     }
 
@@ -700,7 +700,7 @@ function CreateWorkspace(data, refreshTree = true) {
         g_project.current_ic.overlay_type !== "user"));
 }
 
-function CreateGrid(data, refreshTree = true) {
+function CreateGrid(data) {
     data.values = {};
     data.values.back = data;
     data.values.data = data;
@@ -710,7 +710,7 @@ function CreateGrid(data, refreshTree = true) {
     switch (data.overlay_type) {
         case "ic":
             WrapOpenFile(data, false);
-            SendProject(data, refreshTree);
+            SendProject(data);
             break;
         case "post_ic":
             EditPost(data, data.ic_id);

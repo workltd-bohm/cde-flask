@@ -78,7 +78,7 @@ function CheckSession() {
     });
 }
 
-function SendProject(data, noTree = true) {
+function SendProject(data) {
     // console.log(data);
     // console.log(SESSION);
     SESSION["position"] = {
@@ -114,9 +114,16 @@ function SendProject(data, noTree = true) {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
-            if (noTree) {
+            if (treeStruct == null) {
+                console.log('jjj');
                 $('.tree-view').show();
                 CreateTreeStructure();
+            } else {
+                console.log(treeStruct.getRoot());
+                // treeStruct.getRoot().setExpanded(true);
+                // treeStruct.getRoot().setSelected(true);
+                // console.log(treeStruct.getChildren().toString());
+                // treeStruct.expandPath(treeStruct.getRoot().getChildren().path);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -192,6 +199,7 @@ function SelectProject() {
         success: function(data) {
             data = JSON.parse(data);
             $('.tree-view').hide();
+            treeStruct = null;
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
@@ -256,6 +264,10 @@ function CreateTreeStructure() {
                     // console.log(input_json2[i]);
                     for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
                         AddTreeSubfolders(node, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
+                    }
+                    if (SESSION.position.ic_id == input_json2[i].root_ic.ic_id) {
+                        node.setExpanded(true);
+                        node.setSelected(true);
                     }
                     root.addChild(node);
                 }
@@ -325,6 +337,10 @@ function AddTreeSubfolders(node, sub_folder, project) {
     // console.log(sub_folder);
     // node.setOptions({ ic_id: sub_folder.ic_id, name: sub_folder.name, parent_id: sub_folder.parent_id, parent: sub_folder.parent });
     if (sub_folder.is_directory) {
+        if (SESSION.position.ic_id == sub_folder.ic_id) {
+            child.setExpanded(true);
+            child.setSelected(true);
+        }
         child.on('select', function(n) {
             nodeSelected(n);
         });
@@ -341,7 +357,7 @@ function nodeSelected(node) {
     // console.log(node.isExpanded());
     if (node.isLeaf()) {
         setSession(node.getOptions());
-        CreateWorkspace(node.getOptions(), false);
+        CreateWorkspace(node.getOptions());
         node.setExpanded(true);
         // CreatePath();
     } else {
@@ -352,7 +368,7 @@ function nodeSelected(node) {
                 node.setExpanded(false);
             } else {
                 setSession(node.getOptions());
-                CreateWorkspace(node.getOptions(), false);
+                CreateWorkspace(node.getOptions());
                 // CreatePath();
                 node.setExpanded(true);
             }
