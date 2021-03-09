@@ -196,14 +196,20 @@ function ClickStop(ToDo, data, single=false){
 }
 
 function SelectPlanet(data){
-    if (data.values.data.checked) {
+    if (data.values.data.checked) 
+    {
         data.values.data.checked = false;
-        data.values.data.values.checked.style("opacity", 0);
-        if(data.values.data.ic_id in CHECKED) delete CHECKED[data.values.data.ic_id];
+        data.values.checked.style("opacity", 0);
+
+        if (data.values.data.ic_id in CHECKED) 
+        {
+            delete CHECKED[data.values.data.ic_id];
+        }
     }
-    else {
+    else 
+    {
         data.values.data.checked = true;
-        data.values.data.values.checked.style("opacity", 100);
+        data.values.checked.style("opacity", 1);
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
     
@@ -211,8 +217,11 @@ function SelectPlanet(data){
     let has_checked = (num_checked > 0);
     if (has_checked) {
         SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
-    } else {
-        data.values.data.values.back.values.text.style("opacity", 100);
+    } 
+    else 
+    {
+        data.values.data.values.back.values.text.style("opacity", 1);
+
         if(g_project.selection){
             g_project.selection.remove();
             g_project.selection = false;
@@ -223,7 +232,7 @@ function SelectPlanet(data){
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
 
-    data.values.data.values.text.style("opacity", 100);
+    data.values.data.values.text.style("opacity", 1);
     OverlayDestroy();
 }
 

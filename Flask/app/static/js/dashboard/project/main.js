@@ -378,42 +378,116 @@ function AddChildren(obj, data, parent, position = 0) {
     }
 
     // planet select = mouse over overlay for planets
-    data.values.select = data.values.this.append("circle")
-        .attr("class", "planet select")
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("r", g_PlanetRadius)
-        .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) {}
-            SetDisplayName(GetDisplayName(d));
-        })
-        .on("mouseleave", () => {
-            ClearDisplayName();
-        })
-        .on("mousedown", function(d) {
-            ClickStart(function(d) {
-                // if(!g_project.overlay && g_root.zoom){
-                //     OverlayCreate(d3.select(this), d, data);
-                // }
-            }, data);
-        })
-        .on("click", function(d) {
-            if (!g_project.selection) {
-                var func = function() {};
-                switch (g_project.data.overlay_type) {
-                    case "user":
-                        func = GetWarp;
-                        break;
-                    default:
-                        func = SunFadeout;
-                        break;
-                }
-                ClickStop(func, data, true);
-            }
-        })
-        .on("contextmenu", function(d) {
-            CreateContextMenu(d3.event, d);
-        });
+    // data.values.select = data.values.this.append("circle")
+    //     .attr("class", "planet select")
+    //     .attr("cx", 0)
+    //     .attr("cy", 0)
+    //     .attr("r", g_PlanetRadius)
+    //     .on("mouseover", function(d) {
+    //         if (!g_project.overlay && !g_project.move && g_root.zoom) {}
+    //         SetDisplayName(GetDisplayName(d));
+    //     })
+    //     .on("mouseleave", () => {
+    //         ClearDisplayName();
+    //     })
+    //     .on("mousedown", function(d) {
+    //         ClickStart(function(d) {
+    //             // if(!g_project.overlay && g_root.zoom){
+    //             //     OverlayCreate(d3.select(this), d, data);
+    //             // }
+    //         }, data);
+    //     })
+    //     .on("click", function(d) {
+    //         if (!g_project.selection) {
+    //             var func = function() {};
+    //             switch (g_project.data.overlay_type) {
+    //                 case "user":
+    //                     func = GetWarp;
+    //                     break;
+    //                 default:
+    //                     func = SunFadeout;
+    //                     break;
+    //             }
+    //             ClickStop(func, data, true);
+    //         }
+    //     })
+    //     .on("contextmenu", function(d) {
+    //         CreateContextMenu(d3.event, d);
+    //     });
+
+    // Select button
+    // let overlay_type = GetContextType(data);
+    // overlay_type = [overlay_type[0], overlay_type[7]]; // hand-pick select and color
+    // data.values.overlay = data.values.object
+    //     .append("g")
+    //     .attr("class", "overlay-menu")
+    //     .on("mouseenter", function(d) {
+    //         SetDisplayName(data.name);
+    //     })
+    //     .on("mouseleave", function () {
+    //         ClearDisplayName();
+    //     })
+    //     .on("click", function(d) {
+    //         if (!g_project.selection) {
+    //             var func = function() {};
+    //             switch (g_project.data.overlay_type) {
+    //                 case "user":
+    //                     func = GetWarp;
+    //                     break;
+    //                 default:
+    //                     func = SunFadeout;
+    //                     break;
+    //             }
+    //             ClickStop(func, data, true);
+    //         }
+    //     })
+    //     .on("contextmenu", function(d){
+    //         CreateContextMenu(d3.event, data);
+    //     });
+        
+    // data.values.overlay.append("circle")
+    //     .attr("r", g_PlanetRadius)
+    //     .attr("fill", "transparent");
+
+    // let menu_items = data.values.overlay.append("g")
+    //     .attr("class", "overlay-menu-items");
+
+    // menu_items.selectAll("g.overlay-menu-items")
+    //     .data(overlay_type)
+    //     .enter()
+    //     .append("foreignObject")
+    //     .each(function(d, i){
+    //         // calculate position
+    //         g_OverlayItemSize = 28;
+    //         let len = g_PlanetRadius - g_OverlayItemSize;
+    //         let dir = (i * 360 / overlay_type.length - 90) * Math.PI / 180;
+    //         let posx, posy;
+    //         posx = Math.cos(dir) * len;
+    //         posy = Math.sin(dir) * len;
+
+    //         d3.select(this)
+    //             // center object
+    //             .attr("x", -g_OverlayItemSize / 2)
+    //             .attr("y", -g_OverlayItemSize / 2)
+    //             .attr("width", g_OverlayItemSize)
+    //             .attr("height", g_OverlayItemSize)
+    //             .style("overflow", "visible")
+    //             // place around circle
+    //             .attr("transform", "translate("+ (posx) +", " + (posy) + ")")
+    //             .append("xhtml:i")
+    //                 .attr("class", "material-icons")
+    //                 .attr("title", d.name)  // hover name
+    //                 .style("font-size", g_OverlayItemSize + "px")
+    //                 .style("color", data.color ? FlipColor(data.color) : "#303030") // color
+    //                 .text(d.icon) // icon
+    //                 .on("click", function(){
+    //                     // let select stay
+    //                     if (d.name == "SELECT") {
+    //                     }
+    //                     console.log(d3.select(this))
+    //                     d.link(data); // function
+    //                 });
+    //     });
 
     data.values.checked = data.values.this.append("foreignObject")
         .attr("x", -g_OverlayItemSize / 2)
