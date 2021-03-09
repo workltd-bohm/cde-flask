@@ -55,10 +55,10 @@
 }
 
 .tj_container span.tj_description.selected{
-	background-color: #2b2b2b;
-	color: #fff;
+	background-color: var(--neon-blue);
+	color: var(--text-primary);
 }
 
 .tj_container span.tj_description.selected:hover{
-	background-color: #606060;
+	backdrop-filter: contrast(1.2);
 }

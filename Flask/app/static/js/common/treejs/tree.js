@@ -143,7 +143,7 @@ function TreeView(root, container, options){
 		var li_outer = document.createElement("li");
 		var span_desc = document.createElement("span");
 		span_desc.className = "tj_description";
-		span_desc.tj_node = node;
+        span_desc.tj_node = node;
 
 		if(!node.isEnabled()){
 			li_outer.setAttribute("disabled", "");
@@ -196,7 +196,7 @@ function TreeView(root, container, options){
 
 					self.reload();
 				}
-			}
+            }
 		});
 
 		span_desc.addEventListener("contextmenu", function(e){
@@ -233,7 +233,13 @@ function TreeView(root, container, options){
 			}
 
 			span_desc.innerHTML = ret + node.toString() + "</span>";
-			span_desc.classList.add("tj_leaf");
+            span_desc.classList.add("tj_leaf");
+            
+            // Add color
+            // if (node.getOptions().color) {
+            //     span_desc.style.backgroundColor = node.getOptions().color;
+            //     span_desc.style.color = FlipColor(node.getOptions().color);
+            // }
 
 			li_outer.appendChild(span_desc);
 		}else{
@@ -242,9 +248,10 @@ function TreeView(root, container, options){
 				ret += '<span class="tj_mod_icon">' + TreeConfig.open_icon + '</span>';
 			}else{
 				ret+= '<span class="tj_mod_icon">' + TreeConfig.close_icon + '</span>';
-			}
-
-			var icon = TreeUtil.getProperty(node.getOptions(), "icon", "");
+            }
+            
+            var icon = TreeUtil.getProperty(node.getOptions(), "icon", "");
+            
 			if(icon != ""){
 				ret += '<span class="tj_icon">' + icon + '</span>';
 			}else if((icon = TreeUtil.getProperty(options, "parent_icon", "")) != ""){
@@ -253,8 +260,14 @@ function TreeView(root, container, options){
 				ret += '<span class="tj_icon">' + TreeConfig.parent_icon + '</span>';
 			}
 
-			span_desc.innerHTML = ret + node.toString() + '</span>';
-
+            span_desc.innerHTML = ret + node.toString() + '</span>';
+            
+            // Add color
+            // if (node.getOptions().color) {
+            //     span_desc.style.backgroundColor = node.getOptions().color;
+            //     span_desc.style.color = FlipColor(node.getOptions().color);
+            // }
+            
 			li_outer.appendChild(span_desc);
 
 			if(node.isExpanded()){
@@ -266,8 +279,8 @@ function TreeView(root, container, options){
 
 				li_outer.appendChild(ul_container)
 			}
-		}
-
+        }
+        
 		return li_outer;
 	}
 

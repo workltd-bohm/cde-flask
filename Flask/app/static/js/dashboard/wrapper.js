@@ -229,6 +229,9 @@ function CreateTreeStructure() {
             // div = document.getElementById('container');
             // div.id = 'container';
             var root = new TreeNode("projects");
+
+
+            
             for (var i = 0; i < input_json2.length; i++) {
                 // console.log('kkk', input_json2[i]);
                 color = input_json2[i].root_ic.color;
@@ -246,7 +249,8 @@ function CreateTreeStructure() {
                     type: (input_json2[i].root_ic.is_directory) ? '' : input_json2[i].root_ic.type,
                     sub_folders: input_json2[i].root_ic.sub_folders,
                     is_iso: input_json2[i].is_iso19650,
-                    icon: "<span style='background-color:" + color + ";color:white;'>" + input_json2[i].project_name + "</span>"
+                    icon: "<span style='background-color:" + color + ";color:white;'>" + input_json2[i].project_name + "</span>",
+                    color: color
 
                 });
                 // console.log(input_json2[i]);
@@ -289,13 +293,25 @@ function CreateTreeStructure() {
 }
 
 function AddTreeSubfolders(node, sub_folder, project) {
-    name = sub_folder.name;
+    let name = sub_folder.name;
     if (!sub_folder.is_directory) {
         name = sub_folder.name + sub_folder.type;
     }
-    color = sub_folder.color;
-    if (color == '')
-        color = '#14939b';
+    
+    let color = sub_folder.color;
+    if (color === '')
+        color = '#14939b';  // default color
+
+    let icon_name = document.createElement("span");
+    let icon = document.createElement("span");
+    let _name = document.createElement("span");
+    _name.textContent = name;
+    icon.className = "material-icons";
+    icon.textContent = "folder";
+    icon.style.color = color;
+    icon_name.appendChild(icon);
+    icon_name.appendChild(_name);
+
     var child = new TreeNode('', {
 
         ic_id: sub_folder.ic_id,
@@ -308,7 +324,8 @@ function AddTreeSubfolders(node, sub_folder, project) {
         type: (sub_folder.is_directory) ? '' : sub_folder.type,
         sub_folders: sub_folder.sub_folders,
         is_iso: project.is_iso19650,
-        icon: "<span style='background-color:" + color + ";color:white;'>" + name + "</span>"
+        icon: icon_name.outerHTML,
+        color: color
 
     });
     for (var k = 0; k < sub_folder.sub_folders.length; k++) {
@@ -335,7 +352,7 @@ function nodeSelected(node) {
     if (node.isLeaf()) {
         setSession(node.getOptions());
         CreateWorkspace(node.getOptions());
-        // CreatePath();
+        CreatePath();
     } else {
         if (!node.isExpanded()) {
             // console.log(SESSION);

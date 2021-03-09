@@ -378,42 +378,42 @@ function AddChildren(obj, data, parent, position = 0) {
     }
 
     // planet select = mouse over overlay for planets
-    // data.values.select = data.values.this.append("circle")
-    //     .attr("class", "planet select")
-    //     .attr("cx", 0)
-    //     .attr("cy", 0)
-    //     .attr("r", g_PlanetRadius)
-    //     .on("mouseover", function(d) {
-    //         if (!g_project.overlay && !g_project.move && g_root.zoom) {}
-    //         SetDisplayName(GetDisplayName(d));
-    //     })
-    //     .on("mouseleave", () => {
-    //         ClearDisplayName();
-    //     })
-    //     .on("mousedown", function(d) {
-    //         ClickStart(function(d) {
-    //             // if(!g_project.overlay && g_root.zoom){
-    //             //     OverlayCreate(d3.select(this), d, data);
-    //             // }
-    //         }, data);
-    //     })
-    //     .on("click", function(d) {
-    //         if (!g_project.selection) {
-    //             var func = function() {};
-    //             switch (g_project.data.overlay_type) {
-    //                 case "user":
-    //                     func = GetWarp;
-    //                     break;
-    //                 default:
-    //                     func = SunFadeout;
-    //                     break;
-    //             }
-    //             ClickStop(func, data, true);
-    //         }
-    //     })
-    //     .on("contextmenu", function(d) {
-    //         CreateContextMenu(d3.event, d);
-    //     });
+    data.values.select = data.values.this.append("circle")
+        .attr("class", "planet select")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", g_PlanetRadius)
+        .on("mouseover", function(d) {
+            if (!g_project.overlay && !g_project.move && g_root.zoom) {}
+            SetDisplayName(GetDisplayName(d));
+        })
+        .on("mouseleave", () => {
+            ClearDisplayName();
+        })
+        .on("mousedown", function(d) {
+            ClickStart(function(d) {
+                // if(!g_project.overlay && g_root.zoom){
+                //     OverlayCreate(d3.select(this), d, data);
+                // }
+            }, data);
+        })
+        .on("click", function(d) {
+            if (!g_project.selection) {
+                var func = function() {};
+                switch (g_project.data.overlay_type) {
+                    case "user":
+                        func = GetWarp;
+                        break;
+                    default:
+                        func = SunFadeout;
+                        break;
+                }
+                ClickStop(func, data, true);
+            }
+        })
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d3.event, d);
+        });
 
     // Select button
     // let overlay_type = GetContextType(data);
