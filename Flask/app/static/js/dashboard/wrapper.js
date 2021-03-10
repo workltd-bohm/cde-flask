@@ -236,17 +236,11 @@ function CreateTreeStructure() {
             input_json2 = input_json1['data'];
             // console.log(post_id);
             html = input_json1['html'];
-<<<<<<< HEAD
             // form.empty();
             // div = document.getElementById('container');
             // div.id = 'container';
             var root = new TreeNode("projects");
             
-=======
-            var root = new TreeNode("project");
-            // console.log('SESSION', SESSION);
-
->>>>>>> 73dca7ed4c18e11f36ed4acd5b3e4198bd32b715
             for (var i = 0; i < input_json2.length; i++) {
                 if (SESSION.name == input_json2[i].project_name) {
                     // console.log('kkk', input_json2[i]);
