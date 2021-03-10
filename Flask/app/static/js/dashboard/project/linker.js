@@ -49,7 +49,6 @@ function WrapCreateFile(data) {
 }
 
 function WrapRename(data) {
-    console.log(data);
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
     //console.log(tmp);
