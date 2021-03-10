@@ -496,7 +496,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("y", -g_OverlayItemSize / 2)
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
-        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 2)) + ")")
+        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
         .attr("title", "SELECT")
         .on("click", function(data){
             let isSelected = (data.values.data.ic_id in CHECKED);
