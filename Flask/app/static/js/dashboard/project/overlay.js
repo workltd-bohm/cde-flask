@@ -32,7 +32,6 @@ g_OverFile = [
 
 /* PLANETs */
 g_OverProjectPlanet = [
-    { name: "SELECT",           icon: "check_circle",               link: SelectPlanet },
     { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
     { name: "RENAME",           icon: "create",                     link: WrapRename },
     { name: "COLOR",            icon: "color_lens",                 link: ChangeColor },
@@ -40,7 +39,6 @@ g_OverProjectPlanet = [
 ];
 
 g_OverFolderPlanet = [
-    { name: "SELECT",   icon: "check_circle",   link: SelectPlanet },
     { name: "DETAILS",  icon: "preview",        link: WrapOpenFile },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
     { name: "RENAME",   icon: "create",         link: WrapRename },
@@ -52,7 +50,6 @@ g_OverFolderPlanet = [
 ];
 
 g_OverFilePlanet = [
-    { name: "SELECT",   icon: "check_circle",   link: SelectPlanet },
     { name: "PREVIEW",  icon: "preview",        link: WrapOpenFile },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
     { name: "RENAME",   icon: "create",         link: WrapRename },

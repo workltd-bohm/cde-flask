@@ -489,13 +489,15 @@ function AddChildren(obj, data, parent, position = 0) {
 
     data.values.data = data;
 
+    g_OverlayItemSize = 24;
     data.values.checked = data.values.this.append("foreignObject")
         .attr("class", "planet-select")
         .attr("x", -g_OverlayItemSize / 2)
         .attr("y", -g_OverlayItemSize / 2)
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
-        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize)) + ")")
+        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 2)) + ")")
+        .attr("title", "SELECT")
         .on("click", function(data){
             let isSelected = (data.values.data.ic_id in CHECKED);
             

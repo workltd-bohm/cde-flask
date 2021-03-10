@@ -226,11 +226,6 @@ function SelectPlanet(data){
         }
     }
 
-    // data.values.object.selectAll(".planet-select")
-    //     .style("display", "none")
-    // $(".planet-select").addClass("show");
-    // $(".planet-select i").text("check_circle");
-
     document.getElementById("select-all").checked = true;
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
