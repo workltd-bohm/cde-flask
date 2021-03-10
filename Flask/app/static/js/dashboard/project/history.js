@@ -56,7 +56,7 @@ function SubmitUndo(data) {
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
-            CheckSession(); //CreateProject();
+            CheckSession(); //GetProject();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

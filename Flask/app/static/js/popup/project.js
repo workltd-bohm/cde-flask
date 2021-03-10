@@ -233,7 +233,7 @@ function sendFile(files, folders, current, fileData = {}) {
         // console.log(folders);
         if (folders.length == 0) {
             CheckSession();
-            //CreateProject();
+            //GetProject();
             PopupClose();
             return;
         }
@@ -297,7 +297,7 @@ function sendFile(files, folders, current, fileData = {}) {
                     uploadInProgress = false;
                     //                    counter = 1;
                     CheckSession();
-                    //CreateProject();
+                    //GetProject();
                     MakeSnackbar(data);
                     PopupClose();
                 }

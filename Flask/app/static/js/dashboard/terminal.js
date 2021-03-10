@@ -63,7 +63,7 @@ function terminalListen(el) {
                     parent_path: SESSION['position'].path,
                     new_name: terminal.slice(1).join(' ')
                 }
-                FormSubmit('create_dir', args, true, CreateProject);
+                FormSubmit('create_dir', args, true, GetProject);
             } else {
                 PopupOpen(NewFolder, SESSION['position']);
             }

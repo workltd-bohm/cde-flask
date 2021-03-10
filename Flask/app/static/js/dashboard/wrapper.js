@@ -20,7 +20,7 @@ $(document).ready(function() {
     $ACTIVITY_HEAD = $("#activity-head");
     ACTIVITY_HEAD = d3.select("#activity-head");
 
-    //CreateProject();
+    //GetProject();
     // SelectProject();
     CheckSession();
 });
@@ -53,7 +53,7 @@ function CheckSession() {
                     }
                 case "project":
                     {
-                        SESSION["name"] ? CreateProject() : SelectProject();
+                        SESSION["name"] ? GetProject() : SelectProject();
                         break;
                     }
                 case "market":
@@ -146,7 +146,7 @@ function SendProjectBackButton() {
         timeout: 5000,
         success: function(data) {
             backButtonFlag = true;
-            CreateProject(history.state);
+            GetProject(history.state);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -399,7 +399,7 @@ function SelectProjectNew(request, ic_data) {
         data: JSON.stringify(request),
         timeout: 5000,
         success: function(data) {
-            // CreateProject(ic_data);
+            // GetProject(ic_data);
             CreatePath();
             SendProject(ic_data, false);
         },
@@ -413,7 +413,7 @@ function SelectProjectNew(request, ic_data) {
     });
 }
 
-function CreateProject(position = null) {
+function GetProject(position = null) {
     // if (g_project.project_position_mix){
     //     g_project.project_position = position ? position : g_project.project_position_mix;
     //     g_project.project_position_mix = null;

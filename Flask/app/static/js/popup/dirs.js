@@ -381,7 +381,7 @@ function TrashFile(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
             LoadStop();
@@ -501,7 +501,7 @@ function DeleteFile(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
 
@@ -531,7 +531,7 @@ function EmptyTrash(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
             LoadStop();

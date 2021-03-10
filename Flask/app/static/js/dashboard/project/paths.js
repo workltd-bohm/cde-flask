@@ -183,7 +183,11 @@ function CreateDisplayName() {
     ClearDisplayName();
 
     // singleton
-    if (document.getElementById("display_name")) return;
+    if (document.getElementById("display_name")) 
+    {
+        g_project.display_name = d3.select("#display_name")
+        return;
+    }
 
     // create SVG with display name text
     g_project.display_name = SVG.append("text")

@@ -1,7 +1,7 @@
 function WrapGetProject(data) {
     var tmp = { choose_project: data.name };
     //console.log(tmp)
-    FormSubmit('select_project', tmp, true, CreateProject);
+    FormSubmit('select_project', tmp, true, GetProject);
     //PopupOpen(GetProjects);
 }
 
