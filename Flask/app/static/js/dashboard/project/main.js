@@ -676,8 +676,10 @@ function CreateDashboard(data, project_position = null) {
         if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
 
+        let offX = $SVG.offset().left;
         let offY = $SVG.offset().top;
-        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height() - offY != g_project.height) {
+        
+        if ($($DASHBOARD).width() - offX != g_project.width || $($DASHBOARD).height() - offY != g_project.height) {
             WindowResize();
         }
     });
