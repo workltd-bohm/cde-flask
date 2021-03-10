@@ -37,6 +37,14 @@
 	display: inline-block;
 }
 
+span.tj_icon > span > * {
+    vertical-align: middle;
+}
+
+span.tj_icon > span > *:first-child {
+    margin-right: 4px;
+}
+
 .tj_container li span.tj_mod_icon, .tj_container li span.tj_mod_icon *{
 	width: 1em;
 }
