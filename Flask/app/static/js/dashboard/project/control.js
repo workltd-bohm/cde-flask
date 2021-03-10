@@ -226,6 +226,11 @@ function SelectPlanet(data){
         }
     }
 
+    // data.values.object.selectAll(".planet-select")
+    //     .style("display", "none")
+    // $(".planet-select").addClass("show");
+    // $(".planet-select i").text("check_circle");
+
     document.getElementById("select-all").checked = true;
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
@@ -241,6 +246,9 @@ function SelectAllPlanets(data){
         CHECKED[d.ic_id] = d;
     });
     SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+
+    $(".planet-select").addClass("show");
+    $(".planet-select i").text("check_circle");
 }
 
 function DeselectAllPlanets(data){
@@ -258,6 +266,9 @@ function DeselectAllPlanets(data){
         g_project.selection.remove();
         g_project.selection = false;
     }
+
+    $(".planet-select").removeClass("show");
+    $(".planet-select i").text("check_circle_outline");
 }
 
 function InstanceExists(instance)
