@@ -239,7 +239,7 @@ function CreateTreeStructure() {
             // form.empty();
             // div = document.getElementById('container');
             // div.id = 'container';
-            var root = new TreeNode("projects");
+            var root = new TreeNode("Projects");
             
             for (var i = 0; i < input_json2.length; i++) {
                 if (SESSION.name == input_json2[i].project_name) {

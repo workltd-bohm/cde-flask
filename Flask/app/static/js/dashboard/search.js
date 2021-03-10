@@ -66,7 +66,6 @@ function SearchOpen(data) {
     //SESSION["position"] = {parent_id: data.values.data.parent_id, ic_id: data.values.data.ic_id};
     SESSION["position"] = { parent_id: data.parent_id, ic_id: data.ic_id };
     GetProject();
-    console.log("yep")
     searchArr = [];
     $("#terminal-span").hide();
 }
