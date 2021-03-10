@@ -28,6 +28,10 @@
 	text-align: left;
 }
 
+span.tj_description > * {
+    vertical-align: middle;
+}
+
 .tj_container li span.tj_description:hover{
 	background-color: #ccc;
 }

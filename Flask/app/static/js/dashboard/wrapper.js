@@ -278,7 +278,7 @@ function CreateTreeStructure() {
             // form.append(html);
             treeStruct = new TreeView(root, "#tree-view", {
                 leaf_icon: "<span>&#128441;</span>",
-                parent_icon: "<span>&#128449;</span>",
+                parent_icon: "<span class='material-icons'>folder</span>",
                 open_icon: "<span>&#9698;</span>",
                 close_icon: "<span>&#9654;</span>"
             });
