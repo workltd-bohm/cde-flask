@@ -229,8 +229,6 @@ function CreateTreeStructure() {
             // div = document.getElementById('container');
             // div.id = 'container';
             var root = new TreeNode("projects");
-
-
             
             for (var i = 0; i < input_json2.length; i++) {
                 // console.log('kkk', input_json2[i]);

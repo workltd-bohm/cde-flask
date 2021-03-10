@@ -197,6 +197,23 @@ g.path.draw > g.text > text {
     color: #bcbcbc;
 }
 
+.show
+{
+    opacity: 1 !important;
+}
+
+.planet-select
+{
+    opacity: 0;
+    transition: opacity 200ms ease;
+}
+
+.planet.select:hover + .planet-select,
+.planet-select:hover
+{
+    opacity: 1;
+}
+
 .overlay-menu
 {
     opacity: 0;

@@ -199,7 +199,6 @@ function SelectPlanet(data){
     if (data.values.data.checked) 
     {
         data.values.data.checked = false;
-        data.values.checked.style("opacity", 0);
 
         if (data.values.data.ic_id in CHECKED) 
         {
@@ -209,7 +208,6 @@ function SelectPlanet(data){
     else 
     {
         data.values.data.checked = true;
-        data.values.checked.style("opacity", 1);
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
     
@@ -240,7 +238,6 @@ function SelectAllPlanets(data){
     d3.selectAll("g.planet.dom").each(function(d){
         //console.log(d);
         d.checked = true;
-        d.values.checked.style("opacity", 100);
         CHECKED[d.ic_id] = d;
     });
     SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
@@ -253,10 +250,9 @@ function DeselectAllPlanets(data){
     d3.selectAll("g.planet.dom").each(function(d){
         //console.log(d);
         d.checked = false;
-        d.values.checked.style("opacity", 0);
     });
 
-    data.values.data.values.back.values.text.style("opacity", 100);
+    data.values.data.values.back.values.text.style("opacity", 1);
     
     if(g_project.selection){
         g_project.selection.remove();

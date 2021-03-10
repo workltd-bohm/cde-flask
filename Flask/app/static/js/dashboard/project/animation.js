@@ -301,7 +301,7 @@ function AnimatePlanet(data) {
                 data.values.checked.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_PlanetRadius - g_OverlayItemSize)) + ")")
         });
         //// [SLIDER END]
     } else {
@@ -332,7 +332,7 @@ function AnimatePlanet(data) {
                 data.values.checked.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_PlanetRadius - g_OverlayItemSize)) + ")")
         });
     }
 }
