@@ -78,7 +78,7 @@ function CheckSession() {
     });
 }
 
-function SendProject(data, noTree = true) {
+function SendProject(data) {
     // console.log(data);
     // console.log(SESSION);
     SESSION["position"] = {
@@ -114,8 +114,17 @@ function SendProject(data, noTree = true) {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
-            if (noTree)
+            if (treeStruct == null) {
+                console.log('jjj');
+                $('.tree-view').show();
                 CreateTreeStructure();
+            } else {
+                console.log(treeStruct.getRoot());
+                // treeStruct.getRoot().setExpanded(true);
+                // treeStruct.getRoot().setSelected(true);
+                // console.log(treeStruct.getChildren().toString());
+                // treeStruct.expandPath(treeStruct.getRoot().getChildren().path);
+            }
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -189,6 +198,8 @@ function SelectProject() {
         timeout: 5000,
         success: function(data) {
             data = JSON.parse(data);
+            $('.tree-view').hide();
+            treeStruct = null;
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
@@ -225,37 +236,49 @@ function CreateTreeStructure() {
             input_json2 = input_json1['data'];
             // console.log(post_id);
             html = input_json1['html'];
+<<<<<<< HEAD
             // form.empty();
             // div = document.getElementById('container');
             // div.id = 'container';
             var root = new TreeNode("projects");
             
+=======
+            var root = new TreeNode("project");
+            // console.log('SESSION', SESSION);
+
+>>>>>>> 73dca7ed4c18e11f36ed4acd5b3e4198bd32b715
             for (var i = 0; i < input_json2.length; i++) {
-                // console.log('kkk', input_json2[i]);
-                color = input_json2[i].root_ic.color;
-                if (color == '')
-                    color = '#c8bd5d';
-                var node = new TreeNode('', {
+                if (SESSION.name == input_json2[i].project_name) {
+                    // console.log('kkk', input_json2[i]);
+                    color = input_json2[i].root_ic.color;
+                    if (color == '')
+                        color = '#c8bd5d';
 
-                    ic_id: input_json2[i].root_ic.ic_id,
-                    name: input_json2[i].root_ic.name,
-                    path: input_json2[i].root_ic.path,
-                    parent_id: input_json2[i].root_ic.parent_id,
-                    parent: input_json2[i].root_ic.parent,
-                    is_directory: input_json2[i].root_ic.is_directory,
-                    stored_id: (input_json2[i].root_ic.is_directory) ? '' : input_json2[i].root_ic.stored_id,
-                    type: (input_json2[i].root_ic.is_directory) ? '' : input_json2[i].root_ic.type,
-                    sub_folders: input_json2[i].root_ic.sub_folders,
-                    is_iso: input_json2[i].is_iso19650,
-                    icon: "<span style='background-color:" + color + ";color:white;'>" + input_json2[i].project_name + "</span>",
-                    color: color
+                    let icon_name = document.createElement("span");
+                    let icon = document.createElement("span");
+                    let _name = document.createElement("span");
+                    _name.textContent = input_json2[i].project_name;
+                    icon.className = "material-icons";
+                    icon.textContent = "folder";
+                    icon.style.color = color;
+                    icon_name.appendChild(icon);
+                    icon_name.appendChild(_name);
 
-                });
-                // console.log(input_json2[i]);
-                for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
-                    AddTreeSubfolders(node, input_json2[i].root_ic.sub_folders[j], input_json2[i]);
+
+                    input_json2[i].root_ic.icon = icon_name.outerHTML;
+                    input_json2[i].root_ic.color = color;
+
+                    var node = new TreeNode('', input_json2[i].root_ic);
+                    // console.log(input_json2[i]);
+                    for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
+                        AddTreeSubfolders(node, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
+                    }
+                    if (SESSION.position.ic_id == input_json2[i].root_ic.ic_id) {
+                        node.setExpanded(true);
+                        node.setSelected(true);
+                    }
+                    root.addChild(node);
                 }
-                root.addChild(node);
             }
 
             // form.append(html);
@@ -295,10 +318,10 @@ function AddTreeSubfolders(node, sub_folder, project) {
     if (!sub_folder.is_directory) {
         name = sub_folder.name + sub_folder.type;
     }
-    
+
     let color = sub_folder.color;
     if (color === '')
-        color = '#14939b';  // default color
+        color = '#14939b'; // default color
 
     let icon_name = document.createElement("span");
     let icon = document.createElement("span");
@@ -310,22 +333,11 @@ function AddTreeSubfolders(node, sub_folder, project) {
     icon_name.appendChild(icon);
     icon_name.appendChild(_name);
 
-    var child = new TreeNode('', {
+    sub_folder.icon = icon_name.outerHTML;
+    sub_folder.color = color;
 
-        ic_id: sub_folder.ic_id,
-        name: sub_folder.name,
-        path: sub_folder.path,
-        parent_id: sub_folder.parent_id,
-        parent: sub_folder.parent,
-        is_directory: sub_folder.is_directory,
-        stored_id: (sub_folder.is_directory) ? '' : sub_folder.stored_id,
-        type: (sub_folder.is_directory) ? '' : sub_folder.type,
-        sub_folders: sub_folder.sub_folders,
-        is_iso: project.is_iso19650,
-        icon: icon_name.outerHTML,
-        color: color
+    var child = new TreeNode('', sub_folder);
 
-    });
     for (var k = 0; k < sub_folder.sub_folders.length; k++) {
         // console.log(sub_folder.sub_folders[k].name);
         AddTreeSubfolders(child, sub_folder.sub_folders[k], project);
@@ -333,6 +345,10 @@ function AddTreeSubfolders(node, sub_folder, project) {
     // console.log(sub_folder);
     // node.setOptions({ ic_id: sub_folder.ic_id, name: sub_folder.name, parent_id: sub_folder.parent_id, parent: sub_folder.parent });
     if (sub_folder.is_directory) {
+        if (SESSION.position.ic_id == sub_folder.ic_id) {
+            child.setExpanded(true);
+            child.setSelected(true);
+        }
         child.on('select', function(n) {
             nodeSelected(n);
         });
@@ -350,7 +366,8 @@ function nodeSelected(node) {
     if (node.isLeaf()) {
         setSession(node.getOptions());
         CreateWorkspace(node.getOptions());
-        CreatePath();
+        node.setExpanded(true);
+        // CreatePath();
     } else {
         if (!node.isExpanded()) {
             // console.log(SESSION);
@@ -375,30 +392,9 @@ function setSession(data) {
     } else {
         SESSION.project_name = data.path.split('/')[0];
         SESSION.is_iso = data.is_iso;
-        // SESSION["position"] = {
-        //     project_name: data.path.split('/')[0],
-        //     parent_id: data.parent_id,
-        //     ic_id: data.ic_id,
-        //     path: data.path,
-        //     is_directory: data.is_directory,
-        //     name: data.name,
-        //     type: data.type ? data.type : null,
-        //     parent: data.parent,
-        //     project_code: data.project_code,
-        //     company_code: data.company_code,
-        //     project_volume_or_system: data.project_volume_or_system,
-        //     project_level: data.project_level,
-        //     type_of_information: data.type_of_information,
-        //     role_code: data.role_code,
-        //     file_number: data.file_number,
-        //     status: data.status,
-        //     revision: data.revision
-        // };
 
         SelectProjectNew({ 'choose_project': data.path.split('/')[0] }, data);
     }
-
-    // CreatePath();
 
 }
 

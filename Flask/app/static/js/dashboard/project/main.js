@@ -442,7 +442,7 @@ function AddChildren(obj, data, parent, position = 0) {
     //     .on("contextmenu", function(d){
     //         CreateContextMenu(d3.event, data);
     //     });
-        
+
     // data.values.overlay.append("circle")
     //     .attr("r", g_PlanetRadius)
     //     .attr("fill", "transparent");
@@ -704,8 +704,8 @@ function CreateWorkspace(data) {
     }
 
     // hide activity when on root path
-    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." 
-        && g_project.current_ic.overlay_type !== "user"));
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." &&
+        g_project.current_ic.overlay_type !== "user"));
 }
 
 function CreateGrid(data) {
