@@ -29,14 +29,20 @@
     /* fill : url("#patern_planet_file"); */
     fill: var(--planet-bg);
     stroke: var(--planet-stroke);
-    stroke-width: 3;
+    stroke-width: 0;
 
     transition: stroke, 100ms linear;
+}
+
+.planet.background:not(.dir)
+{
+    stroke-width: 3;
 }
 
 .planet:hover .planet.background
 {
     stroke: var(--neon-blue);
+    stroke-width: 3;
 }
 
 .planet.pattern {
