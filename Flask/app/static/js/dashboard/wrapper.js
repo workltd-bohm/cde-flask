@@ -115,15 +115,18 @@ function SendProject(data) {
         timeout: 5000,
         success: function(data) {
             if (treeStruct == null) {
-                console.log('jjj');
+                // console.log('jjj');
                 $('.tree-view').show();
                 CreateTreeStructure();
             } else {
-                console.log(treeStruct.getRoot());
-                // treeStruct.getRoot().setExpanded(true);
-                // treeStruct.getRoot().setSelected(true);
-                // console.log(treeStruct.getChildren().toString());
-                // treeStruct.expandPath(treeStruct.getRoot().getChildren().path);
+
+                // let node = findTheNode(treeStruct.getRoot().getChildren()[0]);
+                // // console.log('jjjjjjjj', node);
+                // if (typeof node != 'undefined') {
+                //     console.log('jjjjjjjj11111', node.getOptions().name);
+                //     node.setExpanded(true);
+                //     // node.setSelected(true);
+                // }
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -134,6 +137,20 @@ function SendProject(data) {
             //MakeSnackbar($jqXHR.responseText);
         }
     });
+}
+
+function findTheNode(node) {
+    if (SESSION.position.ic_id == node.getOptions().ic_id) {
+        return node
+    } else {
+        for (let i = 0; i < node.getChildren().length; i++) {
+            response = findTheNode(node.getChildren()[i]);
+            if (typeof response != 'undefined') {
+                return response;
+            }
+        }
+    }
+
 }
 
 var backButtonFlag = false;
@@ -240,7 +257,7 @@ function CreateTreeStructure() {
             // div = document.getElementById('container');
             // div.id = 'container';
             var root = new TreeNode("Projects");
-            
+
             for (var i = 0; i < input_json2.length; i++) {
                 if (SESSION.name == input_json2[i].project_name) {
                     // console.log('kkk', input_json2[i]);
