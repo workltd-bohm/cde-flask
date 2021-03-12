@@ -279,16 +279,16 @@ function CreateTreeStructure() {
                     input_json2[i].root_ic.icon = icon_name.outerHTML;
                     input_json2[i].root_ic.color = color;
 
-                    var node = new TreeNode('', input_json2[i].root_ic);
+                    root = new TreeNode('', input_json2[i].root_ic);
                     // console.log(input_json2[i]);
                     for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
-                        AddTreeSubfolders(node, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
+                        AddTreeSubfolders(root, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
                     }
                     if (SESSION.position.ic_id == input_json2[i].root_ic.ic_id) {
-                        node.setExpanded(true);
-                        node.setSelected(true);
+                        root.setExpanded(true);
+                        root.setSelected(true);
                     }
-                    root.addChild(node);
+                    // root.addChild(node);
                 }
             }
 
