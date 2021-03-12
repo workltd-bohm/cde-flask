@@ -270,7 +270,7 @@ function CreateTreeStructure() {
                     let _name = document.createElement("span");
                     _name.textContent = input_json2[i].project_name;
                     icon.className = "material-icons";
-                    icon.textContent = "folder";
+                    icon.textContent = "fiber_manual_record";
                     icon.style.color = color;
                     icon_name.appendChild(icon);
                     icon_name.appendChild(_name);
@@ -295,7 +295,7 @@ function CreateTreeStructure() {
             // form.append(html);
             treeStruct = new TreeView(root, "#tree-view", {
                 leaf_icon: "<span>&#128441;</span>",
-                parent_icon: "<span class='material-icons'>folder</span>",
+                parent_icon: "<span class='material-icons'>fiber_manual_record</span>",
                 open_icon: "<span>&#9698;</span>",
                 close_icon: "<span>&#9654;</span>"
             });
@@ -339,7 +339,7 @@ function AddTreeSubfolders(node, sub_folder, project) {
     let _name = document.createElement("span");
     _name.textContent = name;
     icon.className = "material-icons";
-    icon.textContent = "folder";
+    icon.textContent = "fiber_manual_record";
     icon.style.color = color;
     icon_name.appendChild(icon);
     icon_name.appendChild(_name);

@@ -156,8 +156,16 @@ function AddSun(obj, data) {
             CreateContextMenu(d3.event, d);
         });
 
+    // create text group
+    data.values.text = data.values.object.append("g")
+        .attr("class", "star text")
+
     // add name to the sun
-    AddText(data, "star");
+    AddText2(data, data.name, 0, 0);
+    
+    // add date to the sun
+    if (data.history.length)
+    AddText2(data, GetDate(data), 0, GetRadius(data) * 2/3, .75);
 
     // Gets overlay type
     let overlay_type = GetContextType(data);
@@ -359,7 +367,13 @@ function AddChildren(obj, data, parent, position = 0) {
     //     .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
 
     // Text
-    AddText(data, "planet");
+    data.values.text = data.values.object.append("g")
+        .attr("class", "planet text")
+
+    AddText2(data, data.name, 0, 0);
+
+    if (data.history.length)
+    AddText2(data, GetDate(data), 0, GetRadius(data) * 2/3, .8);
     //// [SLIDER START]
     // if (g_root.slider) {
     //     data.values.text.selectAll("text")
@@ -518,7 +532,7 @@ function AddChildren(obj, data, parent, position = 0) {
 
 // -------------------------------------------------------
 
-function AddTspan(target, newobj, text, suffix = null) {
+function AddTspan(target, text, x, y, suffix = null, size = 1) {
     var max_text = TEXT_MAX_TEXT;
     var max_text_len = TEXT_MAX_LINE_CHARS;
 
@@ -532,10 +546,13 @@ function AddTspan(target, newobj, text, suffix = null) {
     var spacing = parseFloat($(target.node()).css("fontSize"));
 
     for (var i = 0; i <= slices; i++) {
-        target.append("tspan")
-            .attr('x', 0)
-            .attr('y', (i - (slices) / 2) * spacing)
-            .html(text.slice(i * max_text_len, (i + 1) * max_text_len))
+        let txt = target.append("tspan")
+            .attr('x', x)
+            .attr('y', y ? y : (i - (slices) / 2) * spacing)
+            .html(text.slice(i * max_text_len, (i + 1) * max_text_len));
+
+        // scale text if given 'size' argument
+        txt.style("font-size", (size !== 1) ? spacing * size : spacing);
     }
 
     if (suffix) {
@@ -546,23 +563,19 @@ function AddTspan(target, newobj, text, suffix = null) {
     }
 }
 
-function AddText2(data, text, x, y, cls = "") {
+function AddText2(data, text, x, y, size = 1, cls = "") {
     let values = data.values;
 
     values.text_len = text.length;
 
-    // create new text group
-    values.text = values.object.append("g")
-        .attr("class", cls + " text")
-
     // add new text element
-    tmp = values.text.append("text")
+    let tmp = values.text.append("text")
         .attr("class", cls + " text_front")
         .attr("x", x)
         .attr("y", y)
         .style("fill", data.color ? FlipColor(data.color) : "")
 
-    AddTspan(tmp, values, text, data.type ? data.type : null);
+    AddTspan(tmp, text, x, y, data.type ? data.type : null, size);
 }
 
 function AddText(data, cls = "", fix = false) {
@@ -572,8 +585,7 @@ function AddText(data, cls = "", fix = false) {
     //     newName = data.name + data.type
     // }
     newobj.text_len = newName.length;
-    newobj.text = newobj.object.append("g")
-        .attr("class", cls + " text")
+    
     var tmp = newobj.text.append("text")
         .attr("class", cls + " text_back")
         .attr("x", 0)
@@ -861,3 +873,13 @@ function ClearSpace() {
     }
 }
 // -------------------------------------------------------
+
+function GetRadius(data)
+{
+    return data.values.object.selectAll("circle").attr("r");
+}
+
+function GetDate(data)
+{
+    return data.history[0].date.split("-")[0];
+}
