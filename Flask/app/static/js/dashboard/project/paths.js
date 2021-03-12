@@ -83,6 +83,9 @@ function PathCreation() {
 }
 
 function GetDisplayName(ic) {
+    if (ic.overlay_type == 'project') {
+        return ic.name;
+    }
     if (ic.overlay_type == 'search_target') {
         return ic.path;
     }
@@ -183,8 +186,7 @@ function CreateDisplayName() {
     ClearDisplayName();
 
     // singleton
-    if (document.getElementById("display_name")) 
-    {
+    if (document.getElementById("display_name")) {
         g_project.display_name = d3.select("#display_name")
         return;
     }
