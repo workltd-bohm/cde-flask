@@ -134,6 +134,8 @@ function AddSun(obj, data) {
         .attr("r", g_SunRadius)
         .style("fill", data.color);
 
+    console.log(data.color);
+
     data.values.picture = data.values.object.append("circle")
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
