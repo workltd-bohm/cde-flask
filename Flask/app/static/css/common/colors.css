@@ -13,12 +13,13 @@
 
     /* backgrounds */
     --bg-light: #e5e5e5;                /* new - secondary default */
-    --bg-lighter: #eaeaea;              /* new - primary default */
+    --bg-lighter: #f6f6f6;              /* new - primary default */
     --bg-dark: #303030;                 /* new */
     --bg-darker: #1f1f1f;               /* new */
 
     /* sidebar */
     --sidebar-bg-dark: #121212;        /* new */
+    --sidebar-bg-light: #f6f6f6;        /* new */
 
     
     /* dashboard */
@@ -28,7 +29,7 @@
     --dashboard-text-dark: #131313;     /* new */
 
     /* sun */
-    --sun-bg-light: #c8bd5d;            /* new */
+    --sun-bg-light: #e5e5e5;            /* new */
     --sun-bg-dark: #636363;             /* new */
     --sun-text-light: #ffffff;          /* new */
     --sun-text-dark: #000000;           /* new */
@@ -51,8 +52,9 @@
 
     /* constants */
     --shadow: gray;
-    --neon-blue: #00d5ff;
+    --neon-blue: #fff/*#00d5ff*/;
     --blue: blue;
+    --yellow: #ecd256;
     --transparent-light: #ffffffAA;
     --transparent-dark: #ffffffAA;
 
@@ -64,13 +66,13 @@
     --text-secondary:           var(--text-darker);                 /* new */
     
     --bg-primary:               var(--bg-lighter);                  /* new */
-    --sidebar-bg:               var(--sidebar-bg-dark);
-    --bg-secondary:             var(--bg-light);                    /* new */
+    --sidebar-bg:               var(--sidebar-bg-light);
+    --bg-secondary:             var(--bg-lighter);                    /* new */
 
     --sun-bg:                   var(--sun-bg-light);                /* new */
     --sun-text:                 var(--sun-text-dark);               /* new */
     
     --planet-bg:                var(--planet-bg-light);             /* new */
-    --planet-stroke:            var(--planet-stroke-light);         /* new */
+    --planet-stroke:            var(--planet-stroke-dark);         /* new */
     --planet-text:              var(--planet-text-dark);            /* new */
 }

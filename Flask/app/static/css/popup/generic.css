@@ -141,10 +141,10 @@
         font-family: inherit;
         width: 100%;
         border: 0;
-        border-bottom: 2px solid #9b9b9b;
+        border-bottom: 1px solid #9b9b9b;
         outline: 0;
         font-size: 1rem;
-        color: #777;
+        color: #000;
         padding: 10px 0;
         background: transparent;
         transition: border-color 0.2s;
@@ -166,14 +166,14 @@
         display: block;
         transition: 0.2s;
         font-size: 1rem;
-        color: #7a7a7a;
+        color: #000;
     }
     
     .form__field:focus {
         padding-bottom: 6px;
         font-weight: 700;
         border-width: 3px;
-        border-image: linear-gradient(to right, #11998e, #38ef7d);
+        border-image: linear-gradient(to right, #000, var(--neon-blue));
         border-image-slice: 1;
     }
     
@@ -183,7 +183,7 @@
         display: block;
         transition: 0.2s;
         font-size: 1rem;
-        color: #11998e;
+        /*color: #11998e;*/
         font-weight: 700;
     }
     /* reset input */
