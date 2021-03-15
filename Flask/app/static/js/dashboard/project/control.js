@@ -278,6 +278,7 @@ var isHandlerDragging = false;
 document.addEventListener('mousedown', function(e) {
     if (e.target === handler) {
         isHandlerDragging = true;
+        document.getElementsByClassName("tree-view")[0].style.transition = 'none';
     }
 });
   
@@ -294,5 +295,6 @@ document.addEventListener('mousemove', function(e) {
 // flag dragging off
 document.addEventListener('mouseup', function(e) {
     isHandlerDragging = false;
+    document.getElementsByClassName("tree-view")[0].style.transition = 'all 500ms ease';
 });
 // -------------------------------------------------------

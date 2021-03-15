@@ -84,7 +84,7 @@
 .tree-view.opened #tree-view
 {
     width: 100%;
-    overflow-y: scroll
+    overflow-y: scroll;
 }
 
 .tree-view.opened

@@ -1,5 +1,12 @@
     /* The Modal Background */
-    
+    * {
+        user-select: none;
+       -khtml-user-select: none;
+       -o-user-select: none;
+       -moz-user-select: -moz-none;
+       -webkit-user-select: none;
+   }
+
     div.pero,
     div.preview {
         display: none;
