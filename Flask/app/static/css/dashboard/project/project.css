@@ -6,6 +6,8 @@
 .star.background {
     /* fill : url("#patern_planet_file"); */
     fill: var(--sun-bg);
+    stroke: gray;
+    stroke-width: 2;
 }
 
 .background.planet.dir {
@@ -34,9 +36,11 @@
     transition: stroke, 100ms linear;
 }
 
+/*The FILE Planet*/
 .planet.background:not(.dir)
 {
-    stroke-width: 3;
+    stroke-width: 5;
+    /*stroke-dasharray: 3;*/
 }
 
 .planet:hover .planet.background
@@ -49,17 +53,20 @@
     fill: none;
 }
 
+/*The FOLDER Planet*/
 .planet.pattern.dir {
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
     /*opacity: 50%;*/
 }
 
+/*The EMPTY FOLDER Planet*/
 .planet.pattern.empty {
     /*stroke: rgba(190, 30, 20, 0.5);*/
-    stroke: var(--shadow);
+    stroke: none;
+    /*stroke: var(--shadow);
     stroke-width: 3;
-    stroke-dasharray: 3;
+    stroke-dasharray: 3;*/
     /*opacity: 50%;*/
 }
 

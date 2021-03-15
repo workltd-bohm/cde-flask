@@ -116,7 +116,7 @@
     position: relative;
     color: var(--text-primary);
     font-size: 50px;
-    top: 50vh;
+    top: 10vh;
     text-align: center;
     transform: translateY(-50%);
 }
@@ -131,14 +131,15 @@
     /* transform: translate(50%, 0); */
     right: 0;
     top: 0;
-    width: 8px;
+    width: 5px;
     height: 100%;
-    background-color: var(--bg-primary);
+    background-color: gray /*var(--bg-primary)*/;
+    opacity: 50%;
     cursor: col-resize;
 }
 
 .dragbar:hover {
-    background-color: var(--bg-secondary);
+    background-color: gray /*var(--bg-secondary)*/;
 }
 
 .hover-menu {
@@ -156,7 +157,7 @@
     /*box-shadow: .1em .1em 1em var(--shadow);*/
     /*border: 2px solid gray;*/
     cursor: pointer;
-    border: 1px solid var(--shadow);
+    border-bottom: 1px solid var(--shadow);
 }
 
 .hover-menu span,

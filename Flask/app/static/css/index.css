@@ -352,7 +352,7 @@ body {
     animation: pulse 3s;
     animation-iteration-count: infinite;
     /* border-bottom: 2px solid var(--neon-blue); */
-    margin-left: 1rem;
+    /*margin-left: 1rem;*/
     position: relative;
     width: max(25vw, 400px);
 
@@ -360,10 +360,10 @@ body {
 
 .terminal-input {
     width: 100%;
-    border: none;
+    border: 1px solid gray;
     outline: none;
     font-family: monospace;
-    background-color: #ecd256;
+    background-color: #fff; /*#ecd256;*/
     color: var(--text-primary);
     caret-color: black; /*var(--neon-blue);*/
 }
