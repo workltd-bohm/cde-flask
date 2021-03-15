@@ -164,7 +164,7 @@ function AddSun(obj, data) {
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
     
     // add date to the sun
-    if (data.history.length)
+    if (data.history.length && !data.is_directory)
     AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .75);
 
     // Gets overlay type
@@ -372,7 +372,7 @@ function AddChildren(obj, data, parent, position = 0) {
 
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
-    if (data.history.length)
+    if (data.history.length && !data.is_directory)
     AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .8);
     //// [SLIDER START]
     // if (g_root.slider) {
