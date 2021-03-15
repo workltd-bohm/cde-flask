@@ -161,11 +161,11 @@ function AddSun(obj, data) {
         .attr("class", "star text")
 
     // add name to the sun
-    AddText2(data, data.name, 0, 0);
+    AddText2(data, data.name, data.type ? data.type : null, 0, 0);
     
     // add date to the sun
     if (data.history.length)
-    AddText2(data, GetDate(data), 0, GetRadius(data) * 2/3, .75);
+    AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .75);
 
     // Gets overlay type
     let overlay_type = GetContextType(data);
@@ -370,10 +370,10 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.text = data.values.object.append("g")
         .attr("class", "planet text")
 
-    AddText2(data, data.name, 0, 0);
+    AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
     if (data.history.length)
-    AddText2(data, GetDate(data), 0, GetRadius(data) * 2/3, .8);
+    AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .8);
     //// [SLIDER START]
     // if (g_root.slider) {
     //     data.values.text.selectAll("text")
@@ -540,7 +540,7 @@ function AddTspan(target, text, x, y, suffix = null, size = 1) {
         text = text.slice(0, max_text - 3) + "...";
 
     // slice the text to fit inside circle
-    var slices = ((text.length / max_text_len) | 0);
+    var slices = text.length > max_text_len ? ((text.length / max_text_len) | 0) : 0;
 
     // calculate line height spacing
     var spacing = parseFloat($(target.node()).css("fontSize"));
@@ -563,7 +563,7 @@ function AddTspan(target, text, x, y, suffix = null, size = 1) {
     }
 }
 
-function AddText2(data, text, x, y, size = 1, cls = "") {
+function AddText2(data, text, suffix = null, x, y, size = 1, cls = "") {
     let values = data.values;
 
     values.text_len = text.length;
@@ -575,7 +575,7 @@ function AddText2(data, text, x, y, size = 1, cls = "") {
         .attr("y", y)
         .style("fill", data.color ? FlipColor(data.color) : "")
 
-    AddTspan(tmp, text, x, y, data.type ? data.type : null, size);
+    AddTspan(tmp, text, x, y, suffix, size);
 }
 
 function AddText(data, cls = "", fix = false) {
@@ -872,7 +872,7 @@ function ClearSpace() {
         d3.selectAll("g.star").remove();
     }
 }
-// -------------------------------------------------------
+// ---------------------HELPER FUNCTIONS FOR PROJECT-------------------
 
 function GetRadius(data)
 {

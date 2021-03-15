@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $("div.pero > .cover.back").click(function(d) {
-        $(this).parent().hide();
+        // $(this).parent().hide();
     });
 
     $("div.pero > .content > .zatvori").click(function(d) {

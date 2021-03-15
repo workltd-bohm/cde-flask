@@ -68,15 +68,67 @@
 .tree-view {
     height: 100%;
     display: inline-block;
-    width: 300px;
+    width: 0;
+    top: 100px;
+
+    transition: all 500ms ease;
+}
+
+.tree-view:not(.opened) #tree-view
+{
+    width: 0;
+    overflow: hidden;
+    transition: all 500ms ease;
+}
+
+.tree-view.opened #tree-view
+{
+    width: 100%;
+    overflow-y: scroll
+}
+
+.tree-view.opened
+{
     resize: horizontal;
     max-width: 400px;
     min-width: 200px;
-    top: 100px;
+    width: 300px;
+}
+
+.tree-view-button
+{
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 50px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: 0.25s ease all;
+}
+
+.tree-view-button:hover
+{
+    background-color: var(--transparent-light);
+}
+
+.tree-view-arrow
+{
+    position: relative;
+    color: var(--text-primary);
+    font-size: 50px;
+    top: 50vh;
+    text-align: center;
+    transform: translateY(-50%);
+}
+
+.tree-view:not(.opened) .tree-view-arrow:first-of-type,
+.tree-view.opened .tree-view-arrow:last-of-type
+{
+    display: none;
 }
 
 .dragbar {
-    transform: translate(50%, 0);
+    /* transform: translate(50%, 0); */
     right: 0;
     top: 0;
     width: 8px;
