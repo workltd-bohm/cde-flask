@@ -18,7 +18,7 @@ const ORBIT_SPEED_SCALE = 10;
 const ORBIT_SCROLL_COEF = 1.6;
 
 const SUN_MIN_SIZE = 100;
-const SUN_SIZE_COEF = 4; //g_SunRadius = frame/SUN_SIZE_COEF;
+const SUN_SIZE_COEF = 4.5; //g_SunRadius = frame/SUN_SIZE_COEF;
 const SUN_SCROLL_X_COEF = 0;
 const SUN_SCROLL_X_SUN_OFFS = 0;
 const SUN_SCROLL_Y_COEF = -4;

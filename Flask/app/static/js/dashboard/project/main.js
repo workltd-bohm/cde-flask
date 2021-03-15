@@ -336,7 +336,7 @@ function AddChildren(obj, data, parent, position = 0) {
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
         //// [SLIDER END]
     } else {
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2); // distance from the center 
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center 
         //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
         data.values.this.transition()
             .ease("linear")
