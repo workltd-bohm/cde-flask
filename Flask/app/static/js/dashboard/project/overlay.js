@@ -355,9 +355,33 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
-function CreateSortMenu() {
-    $(".hover-menu").empty(); // todo clear from elsewhere
+function CreateUndoMenu(){
+    let undo_menu = document.createElement("div");
+    undo_menu.className = "hover-menu-item px-3 py-2 mt-3";
+    
+    let button = document.createElement("a");
+    button.className = "btn-undo";
 
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "undo";
+
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Undo";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+    undo_menu.appendChild(button);
+
+    undo_menu.addEventListener("click", function() {
+        SubmitUndo(g_project.history);
+    });
+
+    $(".hover-menu").append(undo_menu);
+}
+
+function CreateSortMenu() {
     let sort_menu = document.createElement("div");
     sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
 

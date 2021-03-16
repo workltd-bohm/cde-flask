@@ -260,10 +260,6 @@ function AddSun(obj, data) {
             .append("g")
             .attr("class", "planet dom")
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
-
-        CreateSortMenu();
-        CreateSelectMenu();
-        CreateViewMenu();
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -374,7 +370,7 @@ function AddChildren(obj, data, parent, position = 0) {
 
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
-    //  exclude user profile    exclude folders      exclude projects
+    //  exclude user profile   exclude folders       exclude projects
     if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
     AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .8);
     //// [SLIDER START]
@@ -680,10 +676,6 @@ function CreateDashboard(data, project_position = null) {
 
     CreateDisplayName();
 
-    PathCreation();
-
-    HistoryCreation();
-
     ProjectPosiotionSet(g_project.data);
 
     // 143 times per second
@@ -700,10 +692,17 @@ function CreateDashboard(data, project_position = null) {
     });
 }
 
-function CreateWorkspace(data) {
+function CreateHoverMenu()
+{
+    $(".hover-menu").empty();
+    CreateUndoMenu();
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
+}
+
+function CreateWorkspace(data) {
+    CreateHoverMenu();
 
     switch (g_view) {
         // planetary
