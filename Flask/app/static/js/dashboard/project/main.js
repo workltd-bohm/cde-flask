@@ -374,7 +374,8 @@ function AddChildren(obj, data, parent, position = 0) {
 
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
-    if (data.history.length && !data.is_directory)
+    //  exclude user profile    exclude folders      exclude projects
+    if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
     AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .8);
     //// [SLIDER START]
     // if (g_root.slider) {
