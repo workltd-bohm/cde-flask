@@ -463,9 +463,44 @@ function SortByName(data) {
 }
 
 function SortByDate(data) {
-    if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
+    if (data.sub_folders.length <= 1) 
+    {
+        MakeSnackbar("Nothing to sort");
+        return;
+    }
 
-    alert('To be implemented');
+    // local function will parse the date from history of creation in data values
+    function parseDate(objdate) 
+    {
+        let date_time = objdate.split("-");
+        let date = date_time[0].split(".");
+        let time = date_time[1].split(":");
+
+        let y = date[2];
+        let m = date[1];
+        let d = date[0];
+
+        let h = time[0];
+        let mn= time[1];
+        let s = time[2];
+        
+        return new Date(y, m, d, h, mn, s);
+    }
+
+    let items = data.sub_folders;
+
+    // for each sub folder, add date object
+    items.forEach((item) => {
+        item.date = parseDate(item.history[0].date);
+    })
+    
+    // use the date object to sort items
+    items.sort((a, b) => a.date - b.date);
+
+    // create the workspace with sorted items
+    CreateWorkspace(data);
+
+    MakeSnackbar("Items sorted by date of creation.");
 }
 
 function CreateSelectMenu() {
