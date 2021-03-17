@@ -166,8 +166,10 @@ function AddSun(obj, data) {
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
     
     // add date to the sun
-    if (data.history.length && !data.is_directory)
-    AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .75);
+    if (data.history.length && !data.is_directory) {
+        AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .75, "planet-date");
+        AddText2(data, GetDate(data)[1], null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .75, "planet-time");
+    }
 
     // Gets overlay type
     let overlay_type = GetContextType(data);
@@ -372,7 +374,10 @@ function AddChildren(obj, data, parent, position = 0) {
 
     //  exclude user profile   exclude folders       exclude projects
     if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
-    AddText2(data, GetDate(data), null, 0, GetRadius(data) * 2/3, .8);
+    {
+        AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .8, "planet-date");
+        AddText2(data, GetDate(data)[1].split(":").slice(0, 2).join(":"), null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .8, "planet-time");
+    }
     //// [SLIDER START]
     // if (g_root.slider) {
     //     data.values.text.selectAll("text")
@@ -883,5 +888,5 @@ function GetRadius(data)
 
 function GetDate(data)
 {
-    return data.history[0].date.split("-")[0];
+    return data.history[0].date.split("-");
 }

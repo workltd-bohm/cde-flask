@@ -87,5 +87,5 @@
 
 .path-link:hover
 {
-    color: var(--neon-blue);
+    color: var(--link-hover);
 }
