@@ -21,7 +21,7 @@ $(document).ready(function() {
     ACTIVITY_HEAD = d3.select("#activity-head");
 
     //GetProject();
-    // SelectProject();
+    SelectProject();
     CheckSession();
 });
 
@@ -64,6 +64,11 @@ function CheckSession() {
                 case "trash":
                     {
                         SelectTrash();
+                        break;
+                    }
+                default:
+                    {
+                        SelectProject();
                         break;
                     }
             }

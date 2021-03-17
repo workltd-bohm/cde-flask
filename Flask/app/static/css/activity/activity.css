@@ -310,6 +310,7 @@
 .activity-access-owner-profile
 {
     width: fit-content;
+    text-align: center;
 }
 
 .activity-comment-box:hover .comment-options-box
