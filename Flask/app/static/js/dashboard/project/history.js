@@ -56,13 +56,13 @@ function SubmitUndo(data) {
         timeout: 5000,
         success: function(data) {
             MakeSnackbar(data);
-            CheckSession(); //CreateProject();
+            CheckSession(); //GetProject();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });

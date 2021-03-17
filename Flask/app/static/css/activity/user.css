@@ -4,8 +4,11 @@
 }
 
 .profile-icon{
-    width: 100%;
-    border: 2px dotted #ffffff;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    border: 1px solid #000;
     border-radius: 50%;
 }
 

@@ -1,10 +1,11 @@
 // -------------------------------------------------------
 
 function CreateSpace(data) {
+    // cache
     g_root.x = g_project.width_h;
     g_root.y = g_project.height_h;
     g_root.scale = g_root.scale_old;
-    g_root.cy_min = g_root.cy = -g_project.height_h /2;
+    g_root.cy_min = g_root.cy = -g_project.height_h / 2;
     g_root.cy_max = g_root.cy_min;
     g_root.deg = g_root.rad = g_root.rad_diff = g_root.deg_exp = 0;
     g_root.zoom = true;
@@ -12,7 +13,11 @@ function CreateSpace(data) {
     if (g_root.slider) g_PlanetRadius *= PLANET_SCROLL_ZOOM;
     //g_PlanetRadius = g_PlanetRadius_old;
     g_root.slider = false;
+    if (g_root.looper.this) g_root.looper.this.remove();
+    g_root.looper.this = false;
+    g_project.current_ic = data;
 
+    // clear instances
     if (g_project.overlay) {
         g_project.overlay.remove();
         g_project.overlay = false;
@@ -23,12 +28,8 @@ function CreateSpace(data) {
         g_project.selection = false;
     }
 
-    g_project.current_ic = data;
     ClearDisplayName();
 
-    // console.log(g_root.universe.data.overlay_type);
-    // console.log(g_root.universe.data);
-    // console.log(data);
     switch (data.overlay_type) {
         case "ic":
             SendProject(data);
@@ -45,7 +46,8 @@ function CreateSpace(data) {
         default:
             break;
     }
-    // g_root.universe.data.overlay_type == "ic" ? SendProject(data) : 1;
+
+    // g_project.data.overlay_type == "ic" ? SendProject(data) : 1;
     CHECKED = {};
 
     // create sun
@@ -60,48 +62,7 @@ function CreateSpace(data) {
         .style("opacity", 100) // must - old not deleted yet
         .each(function(d) { AddSun(d3.select(this), d); });
 
-    // g_root.universe.selectAll("#Touch")
-    //     .on("mouseover", function(){
-    //         if (g_project.overlay){
-    //             g_project.overlay.remove();
-    //             g_project.overlay = false;
-    //         }
-    //     });
-
-    // add path to a top bar
-    if (SESSION.position) {
-        found = RecursiveFileSearch(g_root.universe.data, g_root.universe.data);
-        if (found) {
-            $(".info-path-text").empty();
-            var path = found[0].reverse();
-            
-            for (let add of path) {
-                add.box = {...g_box };
-                add.values = {...add.values };
-                
-                let span = document.createElement("span");
-                span.className = "path-link";
-                span.textContent = add.name;
-
-                span.onclick = function() {
-                    if(g_project.search /*&& g_project.search.overlay_type == "ic"*/) g_project.search = false;
-                    d3.selectAll("g.star").remove();
-                    add.paths_path = {}
-                    add.paths_path.back = g_project.paths;
-                    g_project.paths = add.paths_path.back;
-                    g_project.hist_path_len = add.paths_path.start;
-                    CreateSpace(add);
-                }
-
-                $(".info-path-text").append(span);
-
-                let slash = document.createElement("span");
-                slash.className = "mx-2";
-                slash.textContent = "/";
-                $(".info-path-text").append(slash); 
-            }
-        }
-    }
+    CreatePath();
 }
 
 function AddSun(obj, data) {
@@ -157,7 +118,6 @@ function AddSun(obj, data) {
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "translate(" + g_root.cx + ", " + g_root.cy + ")"); //, scale("+(SUN_SCROLL_SIZE_COEF)+")");
     }
-    //console.log(g_root.x, g_root.cx, g_root.y, g_root.cy)
     //Milos commented this out on 14.01.2021
     // data.values.effect = data.values.this.append("circle")
     //     .attr("class", "star effect")
@@ -170,11 +130,104 @@ function AddSun(obj, data) {
     // Shaders start
     data.values.background = data.values.object.append("circle")
         .attr("class", "star background")
-        .attr("r", g_SunRadius);
+        .attr("r", g_SunRadius)
+        .style("fill", data.color); // set color background 
 
     data.values.picture = data.values.object.append("circle")
         .attr("class", "star pattern")
         .attr("r", g_SunRadius)
+
+
+    data.values.select = data.values.this.append("circle")
+        .attr("class", "star select")
+        .attr("r", 0)
+        .on("mouseenter", function(d) {
+            if (!g_project.move && g_root.zoom) {
+                // OverlayDestroy();
+                // OverlayCreate(d3.select(this), d, data);
+            }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", function() {
+            ClearDisplayName();
+        })
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d3.event, d);
+        });
+
+    // create text group
+    data.values.text = data.values.object.append("g")
+        .attr("class", "star text")
+
+    // add name to the sun
+    AddText2(data, data.name, data.type ? data.type : null, 0, 0);
+    
+    // add date to the sun
+    if (data.history.length && !data.is_directory) {
+        AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .75, "planet-date");
+        AddText2(data, GetDate(data)[1], null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .75, "planet-time");
+    }
+
+    // Gets overlay type
+    let overlay_type = GetContextType(data);
+    data.values.overlay = data.values.object
+        .append("g")
+        .attr("class", "overlay-menu")
+        .on("mouseenter", function(d) {
+            if (!g_project.move && g_root.zoom) {
+                // OverlayDestroy();
+                // OverlayCreate(d3.select(this), d, data);
+            }
+            SetDisplayName(data.name);
+        })
+        .on("mouseleave", function() {
+            ClearDisplayName();
+        })
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d3.event, data);
+        });
+
+    data.values.overlay.append("circle")
+        .attr("r", g_SunRadius)
+        .attr("fill", "transparent");
+
+    let menu_items = data.values.overlay.append("g")
+        .attr("class", "overlay-menu-items");
+
+    menu_items.selectAll("g.overlay-menu-items")
+        .data(overlay_type)
+        .enter()
+        .append("foreignObject")
+        .each(function(d, i) {
+            // calculate position
+            let rot = i * 360 / overlay_type.length - 90;
+            let len = g_SunRadius - g_OverlayItemSize;
+            let pos = {};
+            pos.x = Math.cos(rot * Math.PI / 180) * len;
+            pos.y = Math.sin(rot * Math.PI / 180) * len;
+
+            g_OverlayItemSize = 28;
+            d3.select(this)
+                // center object
+                .attr("x", -g_OverlayItemSize / 2)
+                .attr("y", -g_OverlayItemSize / 2)
+                .attr("width", g_OverlayItemSize)
+                .attr("height", g_OverlayItemSize)
+                .style("overflow", "visible")
+                // place around circle
+                .attr("transform", "translate(" + (pos.x) + ", " + (pos.y) + ")")
+                .append("xhtml:i")
+                .attr("class", "material-icons")
+                .attr("title", d.name)
+                .style("font-size", g_OverlayItemSize + "px")
+                .style("color", data.color ? FlipColor(data.color) : "#303030")
+                // icon
+                .text(d.icon)
+                // function    
+                .on("click", function() {
+                    d.link(data);
+                });
+        });
 
     // data.values.shader = data.values.object.append("circle")
     //     .attr("class", "star shader")
@@ -185,33 +238,8 @@ function AddSun(obj, data) {
     //     .attr("r", g_SunRadius)
     // Shaders end
 
-    data.values.select = data.values.this.append("circle")
-        .attr("class", "star select")
-        .attr("r", g_SunRadius)
-        .on("mouseenter", function(d) {
-            if (!g_project.move && g_root.zoom) 
-            {
-                OverlayDestroy();
-                OverlayCreate(d3.select(this), d, data);
-            }
-            SetDisplayName(data.name);
-        })
-        .on("mouseleave", () => {
-            ClearDisplayName();
-        })
-        .on("mousedown", function(d) {
-            // ClickStart(function(data){
-            //     // TODO: action menu
-            //     // OverlayCreate(data);
-            // }, data);
-        })
-        .on("mouseup", function(d) {
-            // ClickStop(function(data){
-            //     // NONE
-            // }, data);
-        });
     //// [SLIDER START]
-    if (g_root.slider){
+    if (g_root.slider) {
         data.values.object.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
@@ -223,8 +251,6 @@ function AddSun(obj, data) {
     }
     //// [SLIDER END]
 
-    AddText(data, "star");
-
     // create children
     if (data.sub_folders) {
         data.values.children.selectAll("g")
@@ -233,9 +259,6 @@ function AddSun(obj, data) {
             .append("g")
             .attr("class", "planet dom")
             .each(function(d, i) { AddChildren(d3.select(this), d, data, i); });
-
-        CreateSortMenu();
-        CreateSelectMenu()
     }
 
     // data.values.select = data.values.this.append("circle")
@@ -260,6 +283,7 @@ function AddSun(obj, data) {
 
     if (g_project.move) MoveCreate(data.values.this, data.values.back);
 
+    if (g_root.slider) CreateSlider();
 }
 
 function AddChildren(obj, data, parent, position = 0) {
@@ -272,6 +296,8 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.position = position;
     data.values.parent = (parent != null) ? d3.select("#obj-" + data.par_id) : null;
     data.values.sun = false;
+    data.values.data = parent;
+    data.values.data.checked = false;
 
     //// [SLIDER START]
     // data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
@@ -279,8 +305,7 @@ function AddChildren(obj, data, parent, position = 0) {
     if (g_root.slider) {
         data.values.rotation = position * g_project.spiral_info.planet_distance;
         //data.values.rotation = position * 360 / PLANET_MAX_NUMBER_MAX;
-    }
-    else{
+    } else {
         data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
     }
     //// [SLIDER END]
@@ -288,7 +313,7 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
-    // Planet position
+    // position planet
     if (g_root.slider) {
         //// [SLIDER START]
         // let distance = {
@@ -300,22 +325,20 @@ function AddChildren(obj, data, parent, position = 0) {
         //     .duration(ORBIT_ANIM_MOVE)
         //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
         //// [SLIDER OLD/NEW]
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF;  // distance from the center
-        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF; // distance from the center
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
         //// [SLIDER END]
     } else {
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2);  // distance from the center 
-        //console.log(g_orbit, g_SunRadius, g_project.height_h, ORBIT_SCROLL_COEF) 
+        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
-    
+
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
@@ -339,7 +362,17 @@ function AddChildren(obj, data, parent, position = 0) {
     //     .attr("transform", "rotate(" + ((g_root.slider) ? 0 : data.values.rotation) + ")");
 
     // Text
-    AddText(data, "planet");
+    data.values.text = data.values.object.append("g")
+        .attr("class", "planet text")
+
+    AddText2(data, data.name, data.type ? data.type : null, 0, 0);
+
+    //  exclude user profile   exclude folders       exclude projects
+    if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
+    {
+        AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .8, "planet-date");
+        AddText2(data, GetDate(data)[1].split(":").slice(0, 2).join(":"), null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .8, "planet-time");
+    }
     //// [SLIDER START]
     // if (g_root.slider) {
     //     data.values.text.selectAll("text")
@@ -352,8 +385,8 @@ function AddChildren(obj, data, parent, position = 0) {
     if (data.color) {
         data.values.background
             .style("fill", data.color)
-        
-        data.values.this.select(".text_front")
+
+        data.values.this.selectAll(".text_front")
             .style("fill", FlipColor(data.color))
     }
 
@@ -363,10 +396,9 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", g_PlanetRadius)
-        .on("mouseover", function(d) {
-            if (!g_project.overlay && !g_project.move && g_root.zoom) {
-            }
-            SetDisplayName(d.name);
+        .on("mouseenter", function(d) {
+            if (!g_project.overlay && !g_project.move && g_root.zoom) {}
+            SetDisplayName(GetDisplayName(d));
         })
         .on("mouseleave", () => {
             ClearDisplayName();
@@ -379,73 +411,96 @@ function AddChildren(obj, data, parent, position = 0) {
             }, data);
         })
         .on("click", function(d) {
-            if (!g_project.selection) {
-                var func = function() {};
-                switch (g_root.universe.data.overlay_type) {
-                    case "user":
-                        func = GetWarp;
-                        break;
-                    default:
-                        func = SunFadeout;
-                        break;
-                }
-                ClickStop(func, data, true);
+            var func = function() {};
+            switch (g_project.data.overlay_type) {
+                case "user":
+                    func = GetWarp;
+                    break;
+                default:
+                    func = SunFadeout;
+                    break;
             }
+            ClickStop(func, data, true);
         })
-        .on("contextmenu", function(d){
-            CreateContextMenu(d);
+        .on("contextmenu", function(d) {
+            CreateContextMenu(d3.event, d);
         });
 
+    data.values.data = data;
+
+    g_OverlayItemSize = 24;
     data.values.checked = data.values.this.append("foreignObject")
+        .attr("class", "planet-select")
         .attr("x", -g_OverlayItemSize / 2)
         .attr("y", -g_OverlayItemSize / 2)
         .attr("width", g_OverlayItemSize)
         .attr("height", g_OverlayItemSize)
-        .attr("transform", "translate(0, " + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
-        .style("opacity", 0);
+        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
+        .attr("title", "SELECT")
+        .on("click", function(data){
+            let isSelected = (data.values.data.ic_id in CHECKED);
+            
+            this.classList.toggle("show");
+
+            this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
+            SelectPlanet(data);
+        })
 
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
         .append("i")
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
-        .html("check_circle");
+        .html("check_circle_outline");
 
 }
 
 // -------------------------------------------------------
 
-function AddTspan(target, newobj, text, prefix = null) {
-    // TEXT_SUN_SCALE TEXT_MAX_LENGHT
+function AddTspan(target, text, x, y, suffix = null, size = 1) {
     var max_text = TEXT_MAX_TEXT;
-    var max_text_len = TEXT_MAX_LENGHT;
-    //// [SLIDER START]
-    // if (g_root.slider) {
-    //     max_text = TEXT_MAX_SCROLL_TEXT;
-    //     max_text_len = TEXT_MAX_SCROLL_LENGHT;
-    // }
-    //// [SLIDER END]
+    var max_text_len = TEXT_MAX_LINE_CHARS;
 
-    text = text.slice(0, max_text);
     if (text.length >= max_text)
-        text = text.slice(0, max_text - 4) + "...";
+        text = text.slice(0, max_text - 3) + "...";
 
-    var slice = ((text.length / max_text_len) | 0); // + 1;
-    newobj.text_len = (slice > 0) ? max_text_len : newobj.text_len;
+    // slice the text to fit inside circle
+    var slices = text.length > max_text_len ? ((text.length / max_text_len) | 0) : 0;
+
+    // calculate line height spacing
     var spacing = parseFloat($(target.node()).css("fontSize"));
 
-    for (var i = 0; i <= slice; i++) {
+    for (var i = 0; i <= slices; i++) {
+        let txt = target.append("tspan")
+            .attr('x', x)
+            .attr('y', y ? y : (i - (slices) / 2) * spacing)
+            .html(text.slice(i * max_text_len, (i + 1) * max_text_len));
+
+        // scale text if given 'size' argument
+        txt.style("font-size", (size !== 1) ? spacing * size : spacing);
+    }
+
+    if (suffix) {
         target.append("tspan")
             .attr('x', 0)
-            .attr('y', (i - (slice) / 2) * spacing) //TEXT_SPACING)
-            .html(text.slice(i * max_text_len, (i + 1) * max_text_len))
+            .attr('y', (slices + 1 - (slices) / 2) * spacing)
+            .html(suffix.slice(0)) // 1 to remove "."
     }
-    if (prefix) {
-        target.append("tspan")
-            .attr('x', 0)
-            .attr('y', (slice + 1 - (slice) / 2) * spacing) //TEXT_SPACING)
-            .html(prefix.slice(0)) // 1 to remove "."
-    }
+}
+
+function AddText2(data, text, suffix = null, x, y, size = 1, cls = "") {
+    let values = data.values;
+
+    values.text_len = text.length;
+
+    // add new text element
+    let tmp = values.text.append("text")
+        .attr("class", cls + " text_front")
+        .attr("x", x)
+        .attr("y", y)
+        .style("fill", data.color ? FlipColor(data.color) : "")
+
+    AddTspan(tmp, text, x, y, suffix, size);
 }
 
 function AddText(data, cls = "", fix = false) {
@@ -455,8 +510,7 @@ function AddText(data, cls = "", fix = false) {
     //     newName = data.name + data.type
     // }
     newobj.text_len = newName.length;
-    newobj.text = newobj.object.append("g")
-        .attr("class", cls + " text")
+    
     var tmp = newobj.text.append("text")
         .attr("class", cls + " text_back")
         .attr("x", 0)
@@ -468,6 +522,7 @@ function AddText(data, cls = "", fix = false) {
         .attr("class", cls + " text_front")
         .attr("x", 0)
         .attr("y", 0)
+        .style("fill", data.color ? FlipColor(data.color) : "")
         //.attr("transform","rotate("+(fix ? 0:-g_root.deg)+")")
         //.html(newName);
     AddTspan(tmp, newobj, newName, data.type ? data.type : null);
@@ -477,7 +532,6 @@ function AddText(data, cls = "", fix = false) {
 
 function RecursiveFileSearch(back, data) {
     var found = false;
-    // console.log(data.parent_id +"  "+ data.ic_id, data.sub_folders.length)
     if ((data.parent_id == SESSION["position"]["parent_id"]) &&
         (data.ic_id == SESSION["position"]["ic_id"])) {
         return [
@@ -503,14 +557,11 @@ function RecursiveFileSearch(back, data) {
 }
 
 function ProjectPosiotionSet(data) {
-    // console.log(SESSION["position"])
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
-        // console.log(found);
         // if (found) {
         //     var path = found[0].reverse()
-        //         // console.log(path);
         //     for (var add of path) {
         //         add.box = {...g_box };
         //         add.values = {...add.values };
@@ -518,12 +569,10 @@ function ProjectPosiotionSet(data) {
         //     }
         // }
     }
-    //console.log(found)
-    CreateSpace(found ? found[1] : data);
+    CreateWorkspace(found ? found[1] : data);
 }
 
-function DashboardCreate(data, project_position = null) {
-
+function CreateDashboard(data, project_position = null) {
     WindowResize();
 
     g_root.universe = SVG.append("g")
@@ -540,28 +589,223 @@ function DashboardCreate(data, project_position = null) {
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
 
+    g_root.looper = SVG.append("g")
+        .attr("id", "Slider")
+        .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
+        .call(loopDrag);
+
     //g_project.project_position = project_position;
 
-    g_root.universe.data = data[0];
+    g_project.data = data;
 
     CreateDisplayName();
 
-    PathCreation();
-
-    HistoryCreation();
-
-    ProjectPosiotionSet(g_root.universe.data);
+    ProjectPosiotionSet(g_project.data);
 
     // 143 times per second
     d3.timer(function(elapsed) {
         if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
 
+        let offX = $SVG.offset().left;
         let offY = $SVG.offset().top;
-        if ($($DASHBOARD).width() != g_project.width || $($DASHBOARD).height()-offY != g_project.height) {
+        
+        if ($($DASHBOARD).width() - offX != g_project.width || $($DASHBOARD).height() - offY != g_project.height) {
             WindowResize();
         }
     });
 }
 
-// -------------------------------------------------------
+function CreateHoverMenu()
+{
+    $(".hover-menu").empty();
+    CreateUndoMenu();
+    CreateSortMenu();
+    CreateSelectMenu();
+    CreateViewMenu();
+}
+
+function CreateWorkspace(data) {
+    CreateHoverMenu();
+
+    switch (g_view) {
+        // planetary
+        case 0:
+            $("#PROJECT-GRID").hide(); // todo animate maybe
+            $("#PROJECT").show();
+            ClearSpace();
+            CreateSpace(data);
+            break;
+
+            // grid view
+        case 1:
+            $("#PROJECT-GRID").show(); // todo animate maybe
+            $("#PROJECT").hide();
+            CreateGrid(data);
+            break;
+    }
+
+    // hide activity when on root path
+    $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." &&
+        g_project.current_ic.overlay_type !== "user"));
+}
+
+function CreateGrid(data) {
+    data.values = {};
+    data.values.back = data;
+    data.values.data = data;
+    g_project.current_ic = data;
+    data.id = data.ic_id;
+
+    switch (data.overlay_type) {
+        case "ic":
+            WrapOpenFile(data, false);
+            SendProject(data);
+            break;
+        case "post_ic":
+            EditPost(data, data.ic_id);
+            break;
+        case "bid_ic":
+            ViewPost(data, data.ic_id);
+            break;
+        case "all_post_ic":
+            ViewPost(data, data.ic_id);
+            break;
+        default:
+            break;
+    }
+
+    CreatePath();
+
+    let grid = document.createElement('div');
+    grid.className = "row mx-3";
+    grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
+    grid.onclick = function(event) {
+        // deselect card
+        if (!event.target.closest(".card")) {
+            $(".card").removeClass("selected");
+        }
+    }
+
+    $("#PROJECT-GRID").empty().append(grid);
+
+    // process all grid items 
+    g_project.current_ic.sub_folders.forEach(
+        (d) => {
+            // create a card
+            let card_holder = document.createElement("div");
+            card_holder.className = "col-md-2 p-2";
+
+            let card = document.createElement("div");
+            card.className = "card";
+            card.onclick = function(event) {
+                // select cards
+                if (event.ctrlKey) {
+                    $(this).addClass("selected");
+                } else {
+                    $(".card").not(this).fadeOut(() => {
+                        data.overlay_type !== "project" ? CreateGrid(d) : WrapGetProject(d);
+                    });
+                }
+            }
+
+            card.oncontextmenu = (event) => {
+                CreateContextMenu(event, d);
+            }
+
+            // create image
+            let img = document.createElement('img');
+            img.className = "card-img-top";
+            img.alt = "Preview unavailable";
+            img.src = "https://yuanpaygroup.com/assets/img/ficoin_FIH.png";
+
+            // create body
+            let body = document.createElement('div');
+            body.className = 'card-body';
+
+            // body title
+            let title = document.createElement('h5');
+            title.className = "card-title";
+            title.textContent = d.name;
+
+            // body info
+            let info = document.createElement('p');
+            info.className = "card-text";
+            info.textContent = d.history[0].date.split("-")[0]; // parse date of file creation
+
+            body.appendChild(title);
+            body.appendChild(info);
+
+            card.appendChild(img);
+            card.appendChild(body);
+
+            card_holder.appendChild(card);
+            grid.appendChild(card_holder);
+        }
+    );
+}
+
+function CreateSlider() {
+
+    g_root.looper.this = g_root.looper.append("g").attr("class", "looper")
+
+    g_root.looper.this.attr("transform", "translate(0, " + (g_project.height_h - SCROLL_LOOP_X) + ")");
+
+    g_root.looper.box = g_root.looper.this.append("rect")
+        .attr("class", "slider rect")
+        .attr("x", -g_project.width_h / 2)
+        .attr("y", -SCROLL_LOOP_H / 2)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
+
+    g_root.looper.svg = g_root.looper.this.append("svg")
+        .attr("class", "slider svg")
+        .attr("x", -g_project.width_h / 2)
+        .attr("y", -SCROLL_LOOP_H / 2)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
+
+    g_root.looper.svg.append("rect")
+        .attr("class", "slider bground")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", g_project.width_h)
+        .attr("height", SCROLL_LOOP_H)
+
+    g_root.looper.size = g_project.width_h / g_project.spiral_info.spiral_length * g_project.spiral_info.planet_distance * g_project.spiral_info.planet_number;
+    g_root.looper.pos = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x", -g_root.looper.size / 2)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
+    g_root.looper.posL = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x", -g_root.looper.size / 2 + g_project.width_h)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
+    g_root.looper.posR = g_root.looper.svg.append("rect")
+        .attr("class", "slider pos")
+        .attr("x", -g_root.looper.size / 2 - g_project.width_h)
+        .attr("y", 0)
+        .attr("width", g_root.looper.size)
+        .attr("height", SCROLL_LOOP_H)
+}
+
+function ClearSpace() {
+    if (InstanceExists(g_root.universe)) {
+        d3.selectAll("g.star").remove();
+    }
+}
+// ---------------------HELPER FUNCTIONS FOR PROJECT-------------------
+
+function GetRadius(data)
+{
+    return data.values.object.selectAll("circle").attr("r");
+}
+
+function GetDate(data)
+{
+    return data.history[0].date.split("-");
+}

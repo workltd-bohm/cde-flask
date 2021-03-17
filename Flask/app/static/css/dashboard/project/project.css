@@ -6,14 +6,10 @@
 .star.background {
     /* fill : url("#patern_planet_file"); */
     fill: var(--sun-bg);
-}
-
-.planet.background {
-    /* fill : url("#patern_planet_file"); */
-    fill: var(--planet-bg);
-    stroke: var(--planet-stroke);
+    stroke: gray;
     stroke-width: 2;
 }
+
 .background.planet.dir {
     /* fill : url("#patern_planet_folder"); */
 }
@@ -26,55 +22,74 @@
     stroke: rgba(250,250,250,0.2);
     stroke-width: 2;
 }
-.pattern.star {
-     /*fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%);*/
-    /*fill : url("#patern_sun_fix"); */
-      /* fill: var(--sun-bg); */
-     /*fill: black;*/
-     /* filter: url('#filter_eclipse_planet'); */
-    /*stroke: none;*/
-      /*stroke: rgba(0,213,255,0.5);
-    stroke-width: 2;*/
+
+.star.pattern {
     fill: none;
 }
+
+.planet.background {
+    /* fill : url("#patern_planet_file"); */
+    fill: var(--planet-bg);
+    stroke: var(--planet-stroke);
+    stroke-width: 0;
+
+    transition: stroke, 100ms linear;
+}
+
+/*The FILE Planet*/
+.planet.background:not(.dir)
+{
+    stroke-width: 5;
+    /*stroke-dasharray: 3;*/
+}
+
+.planet:hover .planet.background
+{
+    stroke: var(--neon-blue);
+    stroke-width: 3;
+}
+
 .planet.pattern {
-    /* fill: linear-gradient(180deg, #22447a 5.11%, #2a3541 150%); */
-    /*fill : url("#patern_planet_fix");*/
-    /*stroke: none;*/
-    /*opacity: 50%;*/
     fill: none;
 }
-.planet.pattern.dir{
+
+/*The FOLDER Planet*/
+.planet.pattern.dir {
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
     /*opacity: 50%;*/
 }
-.planet.pattern.empty{
+
+/*The EMPTY FOLDER Planet*/
+.planet.pattern.empty {
     /*stroke: rgba(190, 30, 20, 0.5);*/
-    stroke: rgba(250, 250, 250, 0.5);
-    stroke-width: 2;
-    stroke-dasharray: 3;
+    stroke: none;
+    /*stroke: var(--shadow);
+    stroke-width: 3;
+    stroke-dasharray: 3;*/
     /*opacity: 50%;*/
 }
 
-.shader.star {
+.star.shader {
     fill : url("#gradient_shadow_sun");
     /*fill: var(--sun-bg);*/
     /*stroke: rgba(250, 250, 250, 0.5);
     stroke-width: 2;  */
     /*fill: none;*/
 }
-.shader.planet {
+
+.star.gloss {
+    /* fill : url("#patern_planet_file"); */
+    fill: none;
+}
+
+.planet.shader {
     fill : url("#gradient_shadow");
     stroke: 0;
     stroke-width: 0;
 }
 
-.gloss.star {
-    /* fill : url("#patern_planet_file"); */
-    fill: none;
-}
-.gloss.planet {
+.planet.gloss {
     /* fill : url("#patern_planet_file"); */
     fill: none;
 }
@@ -83,6 +98,7 @@
     fill: rgba(0, 0, 0, 0);
     stroke: none;
 }
+
 .select:hover {
     cursor: pointer;
     /* fill: rgba(230,254,255,0.3); */
@@ -94,6 +110,7 @@
     /* stroke: rgb(204, 204, 204); */
     /* stroke-opacity: 0.9; */
 }
+
 .overlay.select {
     fill: rgba(0, 0, 0, 0.0);
 }
@@ -193,6 +210,44 @@ g.path.draw > g.text > text {
     color: #bcbcbc;
 }
 
+.show
+{
+    opacity: 1 !important;
+}
+
+.planet-select
+{
+    opacity: 0;
+    transition: opacity 200ms ease;
+}
+
+.planet.select:hover + .planet-select,
+.planet-select:hover
+{
+    opacity: 1;
+}
+
+.overlay-menu
+{
+    opacity: 0;
+    transition: opacity 500ms linear;
+}
+
+.overlay-menu:hover
+{
+    opacity: 1;
+}
+
+.overlay-menu-items
+{
+    cursor: pointer;
+}
+
+.overlay-menu-items > *:hover
+{
+    /* add rules overlay item hover */
+}
+
 .context-menu-wrapper
 {
     position: absolute;
@@ -261,4 +316,18 @@ g.path.draw > g.text > text {
 {
     width: 100%;
     border-left: 4px solid var(--neon-blue);
+}
+
+.slider.rect{
+    fill: rgba(0, 0, 0, 0);
+    stroke: rgba(97, 97, 97, 0.5);
+    stroke-width: 2;
+}
+
+.slider.bground{
+    fill: rgba(255, 255, 255, 0);
+}
+
+.slider.pos{
+    fill: rgba(121, 121, 121, 1);
 }

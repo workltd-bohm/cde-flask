@@ -19,7 +19,21 @@
     
     {% include 'dashboard/topbar.html' %}
     <div class="workspace">
-        <div class="hover-menu"></div>
+        <div class="tree-view position-relative">
+            <div id="tree-view"></div>
+            
+            <div class="dragbar position-absolute"></div>
+            <div class="tree-view-button position-absolute start-100 top-0">
+                <i class="material-icons tree-view-arrow">
+                    keyboard_arrow_left
+                </i>
+                <i class="material-icons tree-view-arrow">
+                    keyboard_arrow_right
+                </i>
+            </div>
+        </div>
+        <div class="hover-menu position-absolute ms-3 end-0 me-5"></div>
+        <div id="PROJECT-GRID"></div>
         <svg id="PROJECT"></svg>
     </div>
     <div id="MARKET"></div>

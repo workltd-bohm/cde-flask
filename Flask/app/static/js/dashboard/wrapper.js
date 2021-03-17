@@ -20,7 +20,7 @@ $(document).ready(function() {
     $ACTIVITY_HEAD = $("#activity-head");
     ACTIVITY_HEAD = d3.select("#activity-head");
 
-    //CreateProject();
+    //GetProject();
     // SelectProject();
     CheckSession();
 });
@@ -53,7 +53,7 @@ function CheckSession() {
                     }
                 case "project":
                     {
-                        SESSION["name"] ? CreateProject() : SelectProject();
+                        SESSION["name"] ? GetProject() : SelectProject();
                         break;
                     }
                 case "market":
@@ -64,6 +64,11 @@ function CheckSession() {
                 case "trash":
                     {
                         SelectTrash();
+                        break;
+                    }
+                default:
+                    {
+                        SelectProject();
                         break;
                     }
             }
@@ -100,6 +105,7 @@ function SendProject(data) {
         status: data.status,
         revision: data.revision
     };
+
     SEARCH_HISTORY = data;
 
     if (!backButtonFlag) {
@@ -112,6 +118,22 @@ function SendProject(data) {
         type: 'POST',
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
+        success: function(data) {
+            if (treeStruct == null) {
+                // console.log('jjj');
+                $('.tree-view').show();
+                CreateTreeStructure();
+            } else {
+
+                // let node = findTheNode(treeStruct.getRoot().getChildren()[0]);
+                // // console.log('jjjjjjjj', node);
+                // if (typeof node != 'undefined') {
+                //     console.log('jjjjjjjj11111', node.getOptions().name);
+                //     node.setExpanded(true);
+                //     // node.setSelected(true);
+                // }
+            }
+        },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             if ($jqXHR.status == 401) {
@@ -121,6 +143,21 @@ function SendProject(data) {
         }
     });
 }
+
+function findTheNode(node) {
+    if (SESSION.position.ic_id == node.getOptions().ic_id) {
+        return node
+    } else {
+        for (let i = 0; i < node.getChildren().length; i++) {
+            response = findTheNode(node.getChildren()[i]);
+            if (typeof response != 'undefined') {
+                return response;
+            }
+        }
+    }
+
+}
+
 var backButtonFlag = false;
 
 function SendProjectBackButton() {
@@ -131,7 +168,7 @@ function SendProjectBackButton() {
         timeout: 5000,
         success: function(data) {
             backButtonFlag = true;
-            CreateProject(history.state);
+            GetProject(history.state);
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -160,7 +197,7 @@ function UserProfile() {
                     SESSION = data.session;
                     console.log(SESSION)
                 }
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -183,6 +220,8 @@ function SelectProject() {
         timeout: 5000,
         success: function(data) {
             data = JSON.parse(data);
+            $('.tree-view').hide();
+            treeStruct = null;
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
@@ -192,7 +231,8 @@ function SelectProject() {
                     history.pushState(SESSION, null, '');
                 }
                 backButtonFlag = false;
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
+                // CreateTreeStructure();
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -205,7 +245,197 @@ function SelectProject() {
     });
 }
 
-function CreateProject(position = null) {
+var treeStruct = null;
+
+function CreateTreeStructure() {
+    $.ajax({
+        url: "/get_my_projects",
+        type: 'POST',
+        data: JSON.stringify({}),
+        timeout: 5000,
+        success: function(data) {
+            input_json1 = JSON.parse(data);
+            input_json2 = input_json1['data'];
+            // console.log(post_id);
+            html = input_json1['html'];
+            // form.empty();
+            // div = document.getElementById('container');
+            // div.id = 'container';
+            var root = new TreeNode("Projects");
+
+            for (var i = 0; i < input_json2.length; i++) {
+                if (SESSION.name == input_json2[i].project_name) {
+                    // console.log('kkk', input_json2[i]);
+                    color = input_json2[i].root_ic.color;
+                    if (color == '')
+                        color = '#c8bd5d';
+
+                    let icon_name = document.createElement("span");
+                    let icon = document.createElement("span");
+                    let _name = document.createElement("span");
+                    _name.textContent = input_json2[i].project_name;
+                    icon.className = "material-icons";
+                    icon.textContent = "fiber_manual_record";
+                    icon.style.color = color;
+                    icon_name.appendChild(icon);
+                    icon_name.appendChild(_name);
+
+
+                    input_json2[i].root_ic.icon = icon_name.outerHTML;
+                    input_json2[i].root_ic.color = color;
+
+                    root = new TreeNode('', input_json2[i].root_ic);
+                    // console.log(input_json2[i]);
+                    for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
+                        AddTreeSubfolders(root, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
+                    }
+                    if (SESSION.position.ic_id == input_json2[i].root_ic.ic_id) {
+                        root.setExpanded(true);
+                        root.setSelected(true);
+                    }
+                    // root.addChild(node);
+                }
+            }
+
+            // form.append(html);
+            treeStruct = new TreeView(root, "#tree-view", {
+                leaf_icon: "<span>&#128441;</span>",
+                parent_icon: "<span class='material-icons'>fiber_manual_record</span>",
+                open_icon: "<span>&#9698;</span>",
+                close_icon: "<span>&#9654;</span>"
+            });
+
+            // treeStruct.changeOption("leaf_icon", '<i class="fas fa-file"></i>');
+            // treeStruct.changeOption("parent_icon", '<i class="fas fa-folder"></i>');
+
+            // TreeConfig.open_icon = '<i class="fas fa-angle-down"></i>';
+            // TreeConfig.close_icon = '<i class="fas fa-angle-right"></i>';
+
+            // Resets the root-node (TreeNode)
+            treeStruct.setRoot(root);
+
+            // tree.collapseAllNodes();
+            root.setExpanded(true);
+
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            PopupClose();
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+function AddTreeSubfolders(node, sub_folder, project) {
+    let name = sub_folder.name;
+    if (!sub_folder.is_directory) {
+        name = sub_folder.name + sub_folder.type;
+    }
+
+    let color = sub_folder.color;
+    if (color === '')
+        color = '#14939b'; // default color
+
+    let icon_name = document.createElement("span");
+    let icon = document.createElement("span");
+    let _name = document.createElement("span");
+    _name.textContent = name;
+    icon.className = "material-icons";
+    icon.textContent = "fiber_manual_record";
+    icon.style.color = color;
+    icon_name.appendChild(icon);
+    icon_name.appendChild(_name);
+
+    sub_folder.icon = icon_name.outerHTML;
+    sub_folder.color = color;
+
+    var child = new TreeNode('', sub_folder);
+
+    for (var k = 0; k < sub_folder.sub_folders.length; k++) {
+        // console.log(sub_folder.sub_folders[k].name);
+        AddTreeSubfolders(child, sub_folder.sub_folders[k], project);
+    }
+    // console.log(sub_folder);
+    // node.setOptions({ ic_id: sub_folder.ic_id, name: sub_folder.name, parent_id: sub_folder.parent_id, parent: sub_folder.parent });
+    if (sub_folder.is_directory) {
+        if (SESSION.position.ic_id == sub_folder.ic_id) {
+            child.setExpanded(true);
+            child.setSelected(true);
+        }
+        child.on('select', function(n) {
+            nodeSelected(n);
+        });
+        node.addChild(child);
+        node.setExpanded(false);
+        node.on('select', function(n) {
+            nodeSelected(n);
+        });
+    }
+}
+
+function nodeSelected(node) {
+    // console.log("The selected node's id: " + JSON.stringify(node.getOptions())); // To alert the selected node's id.
+    // console.log(node.isExpanded());
+    if (node.isLeaf()) {
+        setSession(node.getOptions());
+        CreateWorkspace(node.getOptions());
+        node.setExpanded(true);
+        // CreatePath();
+    } else {
+        if (!node.isExpanded()) {
+            // console.log(SESSION);
+            // console.log(node.getOptions());
+            if (SESSION['position'].ic_id == node.getOptions().ic_id) {
+                node.setExpanded(false);
+            } else {
+                setSession(node.getOptions());
+                CreateWorkspace(node.getOptions());
+                // CreatePath();
+                node.setExpanded(true);
+            }
+        } else {
+            node.setExpanded(true);
+        }
+    }
+}
+
+function setSession(data) {
+    if (SESSION.project_name == data.path.split('/')[0]) {
+        SendProject(data, false);
+    } else {
+        SESSION.project_name = data.path.split('/')[0];
+        SESSION.is_iso = data.is_iso;
+
+        SelectProjectNew({ 'choose_project': data.path.split('/')[0] }, data);
+    }
+
+}
+
+function SelectProjectNew(request, ic_data) {
+    $.ajax({
+        url: "/select_project",
+        type: 'POST',
+        data: JSON.stringify(request),
+        timeout: 5000,
+        success: function(data) {
+            // GetProject(ic_data);
+            CreatePath();
+            SendProject(ic_data, false);
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
+function GetProject(position = null) {
     // if (g_project.project_position_mix){
     //     g_project.project_position = position ? position : g_project.project_position_mix;
     //     g_project.project_position_mix = null;
@@ -241,7 +471,7 @@ function CreateProject(position = null) {
                 if (data.session) {
                     SESSION = data.session;
                 }
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
                 //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
             }
         },
@@ -272,7 +502,7 @@ function SelectMarket() {
                     console.log(SESSION)
                 }
                 history.pushState(SESSION, null, '');
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -325,7 +555,7 @@ function SelectTrash() {
                     SESSION = data.session;
                 }
                 history.pushState(SESSION, null, '');
-                DashboardCreate([data.json.root_ic], data.project);
+                CreateDashboard(data.json.root_ic, data.project);
             }
         },
 

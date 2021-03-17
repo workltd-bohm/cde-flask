@@ -8,22 +8,35 @@ $( document ).ready(function(){
         }
     });
 
-    //d-none
+    // activity button functionality
     $(".activity-button").click(function(){
-        var menu = $(".activity-menu");
-        var x = menu.toggleClass("opened");
+        // set activity to open
+        let menu = $(".activity-menu").toggleClass("opened");       
         
-        x.hasClass("opened") ? menu.removeClass("p-0") : menu.addClass("p-0");
-    });
-    
-    $(".menu-fixed > .close").click(function(d){
-        $(this).parent().removeClass("opend");
-        $(this).parent().addClass("closed");
+        // add padding to activity when opened (by default it displays when closed) 
+        menu.hasClass("opened") ? menu.removeClass("p-0") : menu.addClass("p-0");
     });
 
+    // tree-view button functionality
+    $(".tree-view-button").click(function(){
+        // set activity to open
+        let menu = $(".tree-view").toggleClass("opened");       
+        
+        // add padding to activity when opened (by default it displays when closed) 
+        if (menu.hasClass("opened"))
+        {
+            menu.removeClass("p-0");
+        } else {
+            menu.addClass("p-0");
+            menu.removeAttr('style');
+        }
+    });
+
+    // when clicked on workspace, remove right click menu
     $(".workspace").on("click", () => {
         $(".context-menu-wrapper").remove();
     });
 
+    // disable right click
     document.addEventListener('contextmenu', event => event.preventDefault());
 });

@@ -128,7 +128,9 @@ def get_project():
 
                 resp.status_code = msg.DEFAULT_OK['code']
                 # print(project.to_json())
-                resp.data = json.dumps({"json": project, "project" : position, "session": session.get("project")})
+                ses = session.get("project")
+                ses['is_iso'] = project['is_iso19650']
+                resp.data = json.dumps({"json": project, "project" : position, "session": ses})
                 return resp
             else:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))
@@ -206,7 +208,7 @@ def get_root_project():
                     "name": "Projects",
                     "history": [],
                     "path": ".",
-                    "overlay_type": "project",
+                    "overlay_type": "project_root",
                     "is_directory": True,
                     "sub_folders": []
                 }
@@ -215,13 +217,13 @@ def get_root_project():
             # if result:
             for project in result:
                 if project and Project.project_access(session['user'], project['root_ic']):
-                    
                     proj_obj = {
                         "ic_id": "",
                         "name": project["project_name"],
                         "parent": "Projects",
-                        "history": [],
-                        "path": "Projects/"+project["project_name"],
+                        "history": project['root_ic']['history'],
+                        "path": "Projects/" + project["project_name"],
+                        "overlay_type": "project",
                         "is_directory": False,
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
@@ -358,6 +360,7 @@ def get_trash():
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = []
                     proj_obj['overlay_type'] = "trash_planet"
+                    proj_obj["color"] = trashed_project["color"]
 
                     if 'project_name' in trashed_project.keys():
                         proj_obj['name'] =          trashed_project['project_name']
@@ -652,6 +655,47 @@ def get_shared_ic(ic_data):
     if main.IsLogin():
         if db.connect(db_adapter):
             request_json = json.loads(request_data)
+
+            project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
+
+            if project_json:
+                project = Project.json_to_obj(project_json)
+
+                ic = project.find_ic_by_id(request_json['project']['position'],
+                                           request_json['project']['position']['ic_id'],
+                                           project.root_ic)
+
+                success = False
+                for access in ic.access:
+                    if session['user']['id'] == access.user['user_id']:
+                        success = True
+                        break
+
+                if success:
+                    dirs.set_project_data(request_json)
+                    return redirect('/')
+                else:
+                    resp = Response()
+                    resp.status_code = msg.NO_ACCESS['code']
+                    resp.data = str(msg.NO_ACCESS['message'])
+                    return resp
+            else:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
+
+    return redirect(url_for('login', data=ic_data), code=307)
+
+
+@app.route('/go_to', methods=['POST', 'GET'])
+def go_to():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    request_json = json.loads(request.get_data())
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
+    resp = Response()
+    if main.IsLogin():
+        if db.connect(db_adapter):
 
             project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
 

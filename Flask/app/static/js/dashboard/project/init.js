@@ -18,7 +18,7 @@ const ORBIT_SPEED_SCALE = 10;
 const ORBIT_SCROLL_COEF = 1.6;
 
 const SUN_MIN_SIZE = 100;
-const SUN_SIZE_COEF = 4; //g_SunRadius = frame/SUN_SIZE_COEF;
+const SUN_SIZE_COEF = 4.5; //g_SunRadius = frame/SUN_SIZE_COEF;
 const SUN_SCROLL_X_COEF = 0;
 const SUN_SCROLL_X_SUN_OFFS = 0;
 const SUN_SCROLL_Y_COEF = -4;
@@ -39,6 +39,12 @@ const PLANET_ORBIT_COEF = 1.8;
 const PLANET_SCROLL_COEF = 1.3;
 const PLANET_SCROLL_TEXT = 1.1;
 const PLANET_SCROLL_ZOOM = 1;
+const PLANET_SCROLL_DEG_OFF = 90;
+
+const SCROLL_LOOP_X = 100;
+const SCROLL_LOOP_H = 15;
+const SCROLL_LOOP_SIZE_FIX = 3.5;
+const SCROLL_LOOP_POS_FIX = 1.1;
 
 const PATH_SUN_RATIO = 4;
 const PATH_ORBIT_COEF = 1.1;
@@ -64,7 +70,7 @@ const CHECKED_ALLGROUP_OFFSET = 2.5; //offset of Select All/Clear All in the Y d
 const TEXT_SPACING = 20;
 const TEXT_PLANET_SUN_RATIO = 2;
 const TEXT_MOVE_COEF = 4;
-const TEXT_MAX_LENGHT = 12;
+const TEXT_MAX_LINE_CHARS = 12;
 const TEXT_MAX_SCROLL_LENGHT = 60;
 const TEXT_MAX_TEXT = 30;
 const TEXT_MAX_SCROLL_TEXT = 60;
@@ -80,6 +86,8 @@ const $SVG = $("#PROJECT");
 const SVG = d3.select("#PROJECT");
 
 // ----------------------------------------------------
+const VIEW_PL = 0;
+const VIEW_GR = 1;
 
 var g_project = {
         width : 0,
@@ -109,8 +117,11 @@ var g_project = {
         history : null,
         paths : null,
         warp : 0,
-        start : Date.now()
+        start : Date.now(),
+        data : null
     };
+
+var g_view = VIEW_PL;
 var g_project_per = {...g_project};
 
 var g_TouchRadius = 0;
@@ -157,11 +168,13 @@ var g_root = {
     obj : null,
     zoom : false,
     slider : false,
-    universe : null
+    universe : null,
+    looper : null,
 }
 
 function ClearProject(hard=false){
     if(g_root.universe) g_root.universe.remove();
+    if(g_root.looper) g_root.looper.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.paths_path) g_project.paths_path.remove();
     if(g_project.overlay) g_project.overlay.remove();

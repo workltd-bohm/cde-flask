@@ -1,6 +1,7 @@
 .tj_container *{
 	position: relative;
 	box-sizing: border-box;
+    white-space: nowrap;
 }
 
 .tj_container ul{
@@ -28,6 +29,10 @@
 	text-align: left;
 }
 
+span.tj_description > * {
+    vertical-align: middle;
+}
+
 .tj_container li span.tj_description:hover{
 	background-color: #ccc;
 }
@@ -35,6 +40,14 @@
 .tj_container li span.tj_mod_icon, .tj_container li span.tj_icon{
 	margin-right: 0.5em;
 	display: inline-block;
+}
+
+span.tj_icon > span > * {
+    vertical-align: middle;
+}
+
+span.tj_icon > span > *:first-child {
+    margin-right: 4px;
 }
 
 .tj_container li span.tj_mod_icon, .tj_container li span.tj_mod_icon *{
@@ -55,10 +68,10 @@
 }
 
 .tj_container span.tj_description.selected{
-	background-color: #2b2b2b;
-	color: #fff;
+	background-color: var(--neon-blue);
+	color: var(--text-primary);
 }
 
 .tj_container span.tj_description.selected:hover{
-	background-color: #606060;
+	backdrop-filter: contrast(1.2);
 }

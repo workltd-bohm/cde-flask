@@ -1,29 +1,29 @@
 <div class="sidebar">
     <ul class="list-unstyled">
-        <li class="mt-2" onclick="UserProfile()">
-            <img class="profile-icon " src="/get_profile_image/{{ picture }}"/>
+        <li class="profile-icon-container mt-2" onclick="UserProfile()">
+            <img class="profile-icon" src="/get_profile_image/{{ picture }}"/>
         </li>
 
         <li onclick="SelectProject()">
-            <img src="{{url_for('static', filename='img/side_menu/bauhaus_projects.png')}}"/>
+            <img src="{{url_for('static', filename='img/side_menu/bauhaus_projects_base.png')}}"/>
         </li>
     
         <li onclick="SelectMarket()">
-            <img src="{{url_for('static', filename='img/side_menu/bauhaus_marketplace.png')}}"/>
+            <img src="{{url_for('static', filename='img/side_menu/bauhaus_marketplace_base.png')}}"/>
         </li>
     
         <li onclick="Select3D()">
-            <img src="{{url_for('static', filename='img/side_menu/bauhaus_3d.png')}}"/>
+            <img src="{{url_for('static', filename='img/side_menu/bauhaus_3d_base.png')}}"/>
         </li>
     
         <li>
             <ul class="list-unstyled">
                 <li onclick="SelectTrash()">
-                    <img src="{{url_for('static', filename='img/side_menu/icon_trash.png')}}"/>
+                    <img src="{{url_for('static', filename='img/side_menu/icon_trash_dark.png')}}"/>
                 </li>
             
                 <li onclick="window.location='/logout';">
-                    <img src="{{url_for('static', filename='img/side_menu/icon_exit.png')}}"/>
+                    <img src="{{url_for('static', filename='img/side_menu/icon_exit_dark.png')}}"/>
                 </li>
             </ul>   
         </li>     

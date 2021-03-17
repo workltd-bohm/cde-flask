@@ -93,7 +93,8 @@
     padding: .8em;
     text-transform: uppercase;
     font-weight: bold;
-    border-bottom: 2px solid darkgray;
+    /*border-bottom: 2px solid darkgray;*/
+    border: 1px solid DarkGray;
 
     transition: all .25s ease;
 }
@@ -106,7 +107,7 @@
 
 .activity-collapsible.selected
 {
-    background-color: var(--bg-primary);
+    background-color: LightGray/*var(--yellow)*/;
 }
 
 .activity-collapsible.selected 
@@ -206,23 +207,26 @@
     border-radius: 0;
 }
 
-.form-control:focus, .btn:focus, .btn:visited, .terminal-input
+.form-control:focus, .btn:focus, .btn:visited /*, .terminal-input*/
 { 
     border: 0;
     outline: 1px var(--neon-blue);
-    box-shadow: inset 0 0 4px var(--shadow);
+    /*box-shadow: inset 0 0 4px var(--shadow);*/
+    border: 1px solid #000;
 }
 
 .btn
 {
     background-color: var(--neon-blue);
+    border: 1px dotted gray;
     transition: 0.2s ease all;
 }
 
 .btn:hover
 {
     filter: contrast(0.9);
-    box-shadow: 0px 0px 5px var(--blue);
+    /*box-shadow: 0px 0px 5px var(--yellow);*/
+    border: 1px solid var(--yellow);
 }
 
 
@@ -261,12 +265,20 @@
     height: 80.62vh;
 }
 
-.activity-comments-container,
+.activity-comments-container
+{
+    overflow-y: auto;
+
+    /*box-shadow: inset 0px .25em .5em var(--shadow);*/
+    border: 1px solid darkgray;
+}
+
 .activity-project-conf-container
 {
     overflow-y: auto;
     
-    box-shadow: inset 0px .25em .5em var(--shadow);
+    /*box-shadow: inset 0px .25em .5em var(--shadow);*/
+    /*border: 1px solid darkgray;*/
 }
 
 .activity-comment-box,
@@ -298,6 +310,7 @@
 .activity-access-owner-profile
 {
     width: fit-content;
+    text-align: center;
 }
 
 .activity-comment-box:hover .comment-options-box
@@ -444,7 +457,7 @@ textarea, input, button
 }
 
 .switch-input:checked~.switch-label {
-    background: var(--neon-blue);
+    background: green/*var(--neon-blue)*/;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
@@ -510,7 +523,7 @@ textarea, input, button
 
 @keyframes glow {
     0%   {box-shadow: 0px 0px 0px   var(--neon-blue);}
-    50%  {box-shadow: 0px 0px 10px  var(--blue);}
+    50%  {box-shadow: 0px 0px 10px  var(--yellow);}
     100% {box-shadow: 0px 0px 0px   var(--neon-blue);}
 }
 

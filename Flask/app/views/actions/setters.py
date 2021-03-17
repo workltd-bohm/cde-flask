@@ -413,6 +413,8 @@ def set_color():
         request_data = json.loads(request.get_data())
         dirs.set_project_data(request_data, True)
         project_name = session.get("project")["name"]
+        if not project_name:
+            project_name = request_data['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             color_change = {
@@ -751,7 +753,11 @@ def activate_undo():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         undo = session.get("undo")
-        #print(undo)
+        if not 'user' in undo:
+            resp.status_code = msg.UNAUTHORIZED['code']
+            resp.data = 'Nothing do undo'
+            return resp
+
 
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]

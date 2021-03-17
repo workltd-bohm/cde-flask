@@ -72,7 +72,7 @@ def get_iso_filename(file_ic, project, user):
             com_code = tag_code_list['company_code']
             if pr_code == '':
                 com_code = user['company_code']
-            print('yyyyyyyyyyyyy', tag_code_list['file_number'])
+            # print('yyyyyyyyyyyyy', tag_code_list['file_number'])
             iso_name = pr_code + '-' \
                         + com_code + '-' \
                         + tag_code_list['project_volume_or_system'] + '-' \

@@ -4,52 +4,64 @@ g_OverNone = []
 
 g_OverUser = []
 
-g_OverProject = [
-    { name: "NEW PROJECT", icon: "create_new_folder", link: WrapNewProject },
-    { name: "UPLOAD PROJECT", icon: "cloud_upload", link: WrapUploadProject }
+/* SUNs */
+g_OverProjectRoot = [
+    { name: "NEW PROJECT",      icon: "create_new_folder",  link: WrapNewProject },
+    { name: "UPLOAD PROJECT",   icon: "cloud_upload",       link: WrapUploadProject }
 ]
 
-g_OverSearch = [
-    { name: "GO TO FILE", icon: "open_with", link: SearchOpen },
+g_OverProject = [
+    { name: "UPLOAD",           icon: "arrow_circle_up",            link: WrapCreateFile },
+    { name: "NEW",              icon: "create_new_folder",          link: WrapCreateFolder },
+    { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
 ];
 
 g_OverFolder = [
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    // { name: "DETAILS", icon: "preview", link: WrapOpenFile },
-    // { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "TRASH", icon: "delete", link: WrapTrash },
-    // { name: "COPY", icon: "content_copy", link: WrapCopy },
-    // { name: "MOVE", icon: "open_with", link: WrapMove },
-    // { name: "SHARE PROJECT", icon: "control_point_duplicate", link: WrapShareProject },
-    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "UPLOAD",       icon: "arrow_circle_up",    link: WrapCreateFile },
+    { name: "NEW",          icon: "create_new_folder",  link: WrapCreateFolder },
+    { name: "DOWNLOAD",     icon: "cloud_download",     link: WrapDownload },
+    { name: "SHARE",        icon: "share",              link: WrapShare },
 ];
 
 g_OverFile = [
-    { name: "PREVIEW", icon: "preview", link: WrapOpenFile },
-    { name: "UPLOAD", icon: "arrow_circle_up", link: WrapCreateFile },
-    { name: "SHARE", icon: "share", link: WrapShare },
-    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    // { name: "NEW", icon: "create_new_folder", link: WrapCreateFolder },
-    // { name: "RENAME", icon: "create", link: WrapRename },
-    // { name: "TRASH", icon: "delete", link: WrapTrash },
-    // { name: "COPY", icon: "content_copy", link: WrapCopy },
-    // { name: "MOVE", icon: "open_with", link: WrapMove },
-    // { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "PREVIEW",  icon: "preview",            link: WrapOpenFile },
+    { name: "UPLOAD",   icon: "arrow_circle_up",    link: WrapCreateFile },
+    { name: "SHARE",    icon: "share",              link: WrapShare },
+    { name: "DOWNLOAD", icon: "cloud_download",     link: WrapDownload },
 ];
 
-g_OverPlanet = [
-    { name: "SELECT", icon: "check_circle", link: SelectPlanet },
-    { name: "OPEN", icon: "preview", link: WrapOpenFile },
-    { name: "TRASH", icon: "delete", link: WrapTrash },
-    { name: "RENAME", icon: "create", link: WrapRename },
-    { name: "COPY", icon: "content_copy", link: WrapCopy },
-    { name: "MOVE", icon: "open_with", link: WrapMove },
-    { name: "SHARE", icon: "share", link: WrapShare },
+/* PLANETs */
+g_OverProjectPlanet = [
+    { name: "DOWNLOAD",         icon: "cloud_download",             link: WrapDownload },
+    { name: "RENAME",           icon: "create",                     link: WrapRename },
+    { name: "COLOR",            icon: "color_lens",                 link: ChangeColor },
+    { name: "TRASH",            icon: "delete",                     link: WrapTrash },
+];
+
+g_OverFolderPlanet = [
+    { name: "DETAILS",  icon: "preview",        link: WrapOpenFile },
     { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
-    { name: "COLOR", icon: "color_lens", link: ColorPicker },
+    { name: "RENAME",   icon: "create",         link: WrapRename },
+    { name: "COPY",     icon: "content_copy",   link: WrapCopy },
+    { name: "MOVE",     icon: "open_with",      link: WrapMove },
+    { name: "SHARE",    icon: "share",          link: WrapShare },
+    { name: "COLOR",    icon: "color_lens",     link: ChangeColor },
+    { name: "TRASH",    icon: "delete",         link: WrapTrash },
+];
+
+g_OverFilePlanet = [
+    { name: "PREVIEW",  icon: "preview",        link: WrapOpenFile },
+    { name: "DOWNLOAD", icon: "cloud_download", link: WrapDownload },
+    { name: "RENAME",   icon: "create",         link: WrapRename },
+    { name: "COPY",     icon: "content_copy",   link: WrapCopy },
+    { name: "MOVE",     icon: "open_with",      link: WrapMove },
+    { name: "SHARE",    icon: "share",          link: WrapShare },
+    { name: "COLOR",    icon: "color_lens",     link: ChangeColor },
+    { name: "TRASH",    icon: "delete",         link: WrapTrash },
+];
+
+g_OverSearch = [
+    { name: "GO TO FOLDER", icon: "open_with", link: SearchOpen },
 ];
 
 g_OverTrash = [
@@ -57,15 +69,15 @@ g_OverTrash = [
 ];
 
 g_OverPlanetTrash = [
-    { name: "SELECT", icon: "check_circle", link: SelectPlanet },
-    { name: "RESTORE", icon: "restore_from_trash", link: WrapRestore },
-    { name: "DESTROY", icon: "delete", link: WrapDelete }
+    { name: "SELECT",   icon: "check_circle",       link: SelectPlanet },
+    { name: "RESTORE",  icon: "restore_from_trash", link: WrapRestore },
+    { name: "DESTROY",  icon: "delete",             link: WrapDelete }
 ];
 
 g_OverMarket = [
-    { name: "MY POSTS", icon: "view_headline", link: WrapMarketGetPosts }, //WrapNewPost
-    { name: "MY BIDS", icon: "view_list", link: WrapMarketGetBids },
-    { name: "NEW POST", icon: "addchart", link: WrapNewPost },
+    { name: "MY POSTS", icon: "view_headline",  link: WrapMarketGetPosts }, //WrapNewPost
+    { name: "MY BIDS",  icon: "view_list",      link: WrapMarketGetBids },
+    { name: "NEW POST", icon: "addchart",       link: WrapNewPost },
 ];
 
 g_OverPost = [
@@ -91,11 +103,11 @@ function OverlayCreate(obj, data, parent, planet = false) {
         case "user":
             type = g_OverUser;
             break;
-        case "project":
-            type = g_OverProject;
+        case "project_root":
+            type = g_OverProjectRoot;
             break;
         case "search_target":
-            type = g_OverPlanet;
+            type = g_OverSearch;
             break;
         case "trash":
             type = g_OverTrash;
@@ -190,7 +202,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             if (!data.values.sun) {
                 if (!g_project.selection) {
                     var func = function() {};
-                    switch (g_root.universe.data.overlay_type) {
+                    switch (g_project.data.overlay_type) {
                         case "user":
                             func = GetWarp;
                             break;
@@ -208,7 +220,7 @@ function OverlayCreate(obj, data, parent, planet = false) {
             }
         })
         .on("contextmenu", function(d) {
-            CreateContextMenu(d);
+            CreateContextMenu(d3.event, d);
         });
 
     AddOverText(data, obj = true, name = false);
@@ -231,7 +243,6 @@ function OverlayCreate(obj, data, parent, planet = false) {
         .append("g")
         .attr("class", "item")
         .each(function(d, i) { AddItem(d3.select(this), d, data, i); });
-
 }
 
 function OverlayDestroy() {
@@ -344,11 +355,35 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
-function CreateSortMenu() {
-    $(".hover-menu").empty();
+function CreateUndoMenu(){
+    let undo_menu = document.createElement("div");
+    undo_menu.className = "hover-menu-item px-3 py-2 mt-3";
+    
+    let button = document.createElement("a");
+    button.className = "btn-undo";
 
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "undo";
+
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Undo";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+    undo_menu.appendChild(button);
+
+    undo_menu.addEventListener("click", function() {
+        SubmitUndo(g_project.history);
+    });
+
+    $(".hover-menu").append(undo_menu);
+}
+
+function CreateSortMenu() {
     let sort_menu = document.createElement("div");
-    sort_menu.className = "hover-menu-item px-3 py-2";
+    sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
     let button = document.createElement("a");
     button.className = "btn-sort";
@@ -367,7 +402,7 @@ function CreateSortMenu() {
     button.onclick = function(event) {
         $(event.target
                 .closest(".hover-menu-item")
-                .querySelector(".sort-dropdown"))
+                .querySelector(".hover-dropdown"))
             .toggleClass("d-none");
     }
 
@@ -375,7 +410,7 @@ function CreateSortMenu() {
     sort_menu.appendChild(button);
 
     let dropdown = document.createElement("div");
-    dropdown.className = "sort-dropdown d-none";
+    dropdown.className = "hover-dropdown d-none";
 
     // by alphabet option
     let menu_item = document.createElement("a");
@@ -446,21 +481,55 @@ function SortByName(data) {
         }
     }
 
-    d3.selectAll("g.star").remove();
-    CreateSpace(data);
+    CreateWorkspace(data);
 
     MakeSnackbar("Items sorted alphabetically.");
 }
 
 function SortByDate(data) {
-    if (data.sub_folders.length <= 1) MakeSnackbar("Nothing to sort");
+    if (data.sub_folders.length <= 1) 
+    {
+        MakeSnackbar("Nothing to sort");
+        return;
+    }
 
-    alert('To be implemented');
+    // local function will parse the date from history of creation in data values
+    function parseDate(objdate) 
+    {
+        let date_time = objdate.split("-");
+        let date = date_time[0].split(".");
+        let time = date_time[1].split(":");
+
+        let y = date[2];
+        let m = date[1];
+        let d = date[0];
+
+        let h = time[0];
+        let mn= time[1];
+        let s = time[2];
+        
+        return new Date(y, m, d, h, mn, s);
+    }
+
+    let items = data.sub_folders;
+
+    // for each sub folder, add date object
+    items.forEach((item) => {
+        item.date = parseDate(item.history[0].date);
+    })
+    
+    // use the date object to sort items
+    items.sort((a, b) => a.date - b.date);
+
+    // create the workspace with sorted items
+    CreateWorkspace(data);
+
+    MakeSnackbar("Items sorted by date of creation.");
 }
 
 function CreateSelectMenu() {
     let select_menu = document.createElement("div");
-    select_menu.className = "hover-menu-item px-3 py-2";
+    select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
     let button_select = document.createElement("a");
     button_select.className = "btn-select-all";
@@ -497,7 +566,7 @@ function CreateSelectMenu() {
     $(".hover-menu").append(select_menu);
 }
 
-function CreateContextMenu(data) {
+function CreateContextMenu(event, data) {
     // get the type of context menu (using ic type)
     let type = GetContextType(data);
     // exit if non-applicable
@@ -553,8 +622,8 @@ function CreateContextMenu(data) {
 
     // get position of the mouse
     let mouse = {
-        x: d3.event.clientX - $(".sidebar").outerWidth(),
-        y: d3.event.clientY - $(".topbar").height()
+        x: event.clientX - $(".sidebar").outerWidth(),
+        y: event.clientY - $(".topbar").height()
     };
 
     // set the position of context menu
@@ -583,20 +652,117 @@ function CreateContextMenu(data) {
     }
 }
 
+function CreateViewMenu() {
+    let view_menu = document.createElement("div");
+    view_menu.className = "hover-menu-item px-3 py-2 mt-3";
+
+    // button
+    let button = document.createElement("a");
+    button.className = "btn-view";
+
+    // button icon
+    let icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "remove_red_eye";
+
+    // button text
+    let text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "View";
+
+    button.appendChild(icon);
+    button.appendChild(text);
+
+    button.onclick = function(event) {
+        $(event.target
+                .closest(".hover-menu-item")
+                .querySelector(".hover-dropdown"))
+            .toggleClass("d-none");
+    }
+
+    // add button to view-menu
+    view_menu.appendChild(button);
+
+    // create dropdown
+    let dropdown = document.createElement("div");
+    dropdown.className = "hover-dropdown d-none";
+
+    /* options */
+
+    // > planetary option
+    // create button
+    let menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    // button icon
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "wb_sunny";
+
+    // button text
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Planetary";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function() {
+        g_view = VIEW_PL;
+        CreateWorkspace(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // grid option
+    menu_item = document.createElement("a");
+    menu_item.className = "mt-2";
+
+    // grid icon
+    icon = document.createElement("span");
+    icon.className = "material-icons";
+    icon.textContent = "view_comfy";
+
+    // grid text
+    text = document.createElement("span");
+    text.className = "ms-1"
+    text.textContent = "Grid";
+
+    menu_item.appendChild(icon);
+    menu_item.appendChild(text);
+
+    menu_item.onclick = function() {
+        g_view = VIEW_GR;
+        CreateWorkspace(g_project.current_ic);
+    }
+
+    dropdown.appendChild(menu_item);
+
+    // add dropdown to sort-menu
+    view_menu.appendChild(dropdown);
+
+    $(".hover-menu").append(view_menu);
+}
+
 function GetContextType(data) {
     let type = data.overlay_type;
     switch (type) {
         case "ic":
-            type = data.values.sun ? data.is_directory ? g_OverFolder : g_OverFile : g_OverPlanet;
+            type = data.values.sun ? data.is_directory ? data.parent === '.' ? 
+                g_OverProject : g_OverFolder : g_OverFile : 
+                    data.is_directory ? g_OverFolderPlanet : g_OverFilePlanet;
             break;
         case "user":
             type = g_OverUser;
             break;
+        case "project_root":
+            type = g_OverProjectRoot;
+            break;
         case "project":
-            type = g_OverProject;
+            type = data.values.sun ? g_OverProject : g_OverProjectPlanet;
             break;
         case "search_target":
-            type = g_OverPlanet;
+            type = g_OverSearch;
             break;
         case "trash":
             type = g_OverTrash;
@@ -617,7 +783,44 @@ function GetContextType(data) {
             type = false;
             break;
     }
+    
+    switch(type) {
+        case g_OverFilePlanet:
+        case g_OverFolderPlanet:
+        case g_OverProjectPlanet:
+            let g_OverTemp = type.slice();
+            let deselect = { name: "DESELECT", icon: "check_circle_outline", link: SelectPlanet };
+            g_OverTemp[0] = data.values.data.checked ? deselect : g_OverTemp[0];
+            return g_OverTemp;
+        default:
+            return type;
+    }
+}
 
-    return type;
+function SwitchViewsPlanetary(data) {
+    $("#PROJECT").animate({
+            width: 0,
+            height: 0
+        },
+        () => {
+            // disable floating menu
+            $(".hover-menu")
+                .removeClass("position-absolute");
+
+            // create the grid
+            CreateGrid(data);
+
+            // animate the grid
+            $("#PROJECT-GRID").animate({
+                    width: '100%',
+                    height: '100%',
+                    opacity: 1
+                },
+                () => {
+                    $("#PROJECT-GRID").removeClass("HIDDEN")
+                }
+            );
+        }
+    );
 }
 // -------------------------------------------------------

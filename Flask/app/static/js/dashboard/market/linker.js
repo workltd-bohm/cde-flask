@@ -203,7 +203,7 @@ function GetAllPost() {
                 console.log(data);
                 ClearProject();
                 // MarketOpen("All_posts", data);
-                DashboardCreate([data.json.root_ic]);
+                CreateDashboard(data.json.root_ic);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

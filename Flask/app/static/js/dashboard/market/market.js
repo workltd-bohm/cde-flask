@@ -153,7 +153,7 @@ function MarketGet(choose_market, run = null, run_data = null) {
             data = JSON.parse(data);
             if (data) {
                 // MarketOpen(choose_market, data, run, run_data);
-                DashboardCreate([data.json.root_ic]);
+                CreateDashboard(data.json.root_ic);
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

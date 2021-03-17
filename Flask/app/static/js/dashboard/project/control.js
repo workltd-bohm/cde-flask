@@ -6,10 +6,11 @@ function WindowResize(){
     let offX = $SVG.offset().left;
     let offY = $SVG.offset().top;
 
-    var dash_w = dash.width();
-    var dash_h = dash.height()-offY;
+    var dash_w = dash.width() - offX;
+    var dash_h = dash.height() - offY;
     
     $SVG.height(dash_h);
+    $SVG.width(dash_w);
 
     g_project.width = dash_w;
     g_project.height = dash_h;
@@ -122,6 +123,44 @@ function Zoom(d) {
 
 // -------------------------------------------------------
 
+var loopDrag = d3.behavior.drag()
+    .on("dragstart", LoopDragStart)
+    .on("drag", LoopDrag)
+    .on("dragend", function(d){});
+
+function LoopDragStart(d){
+    var dif_x = -(g_root.x - g_project.width_h/2 - d3.event.sourceEvent.layerX + g_root.looper.size/SCROLL_LOOP_SIZE_FIX);
+    var atc = g_project.spiral_info.spiral_length/g_project.width_h*(dif_x)/SCROLL_LOOP_POS_FIX;
+    g_root.deg = atc;
+    g_root.rad = g_root.deg/180*Math.PI;
+
+    g_root.deg_exp = Math.trunc(g_root.deg/360);
+
+    if(g_root.rad < 0) g_root.rad = (Math.PI*2) + g_root.rad;
+    g_root.rad = ((g_root.rad * ORBIT_ZOOM_PI_QA) % (Math.PI * ORBIT_ZOOM_PI_QA * 2)) / ORBIT_ZOOM_PI_QA;
+    g_root.deg = g_root.rad * 180 / Math.PI;
+
+    //console.log(g_root.deg, g_root.deg_exp)
+}
+function LoopDrag(d){
+    var dif_x = -(g_root.x - g_project.width_h/2 - d3.event.x + g_root.looper.size/SCROLL_LOOP_SIZE_FIX);
+    var atc = (g_project.spiral_info.spiral_length)/g_project.width_h*(dif_x)/SCROLL_LOOP_POS_FIX;
+    g_root.deg = atc;
+    g_root.rad = g_root.deg/180*Math.PI;
+
+    if(g_root.rad < 0) g_root.rad = (Math.PI*2) + g_root.rad;
+    g_root.rad = ((g_root.rad * ORBIT_ZOOM_PI_QA) % (Math.PI * ORBIT_ZOOM_PI_QA * 2)) / ORBIT_ZOOM_PI_QA;
+    g_root.deg = g_root.rad * 180 / Math.PI;
+
+    if(g_root.deg > 270 && temp_deg_old < 90) g_root.deg_exp--;
+    if(g_root.deg < 90 && temp_deg_old > 270) g_root.deg_exp++;
+
+    temp_deg_old = g_root.deg;
+    //console.log(g_root.deg, g_root.deg_exp)
+}
+
+// -------------------------------------------------------
+
 function ClickStart(ToDo, data){
     data.box.position.x = d3.event.x;
     data.box.position.y = d3.event.y;
@@ -157,14 +196,18 @@ function ClickStop(ToDo, data, single=false){
 }
 
 function SelectPlanet(data){
-    if (data.values.data.checked) {
+    if (data.values.data.checked) 
+    {
         data.values.data.checked = false;
-        data.values.data.values.checked.style("opacity", 0);
-        if(data.values.data.ic_id in CHECKED) delete CHECKED[data.values.data.ic_id];
+
+        if (data.values.data.ic_id in CHECKED) 
+        {
+            delete CHECKED[data.values.data.ic_id];
+        }
     }
-    else {
+    else 
+    {
         data.values.data.checked = true;
-        data.values.data.values.checked.style("opacity", 100);
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
     
@@ -172,8 +215,11 @@ function SelectPlanet(data){
     let has_checked = (num_checked > 0);
     if (has_checked) {
         SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
-    } else {
-        data.values.data.values.back.values.text.style("opacity", 100);
+    } 
+    else 
+    {
+        data.values.data.values.back.values.text.style("opacity", 1);
+
         if(g_project.selection){
             g_project.selection.remove();
             g_project.selection = false;
@@ -184,7 +230,7 @@ function SelectPlanet(data){
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
 
-    data.values.data.values.text.style("opacity", 100);
+    data.values.data.values.text.style("opacity", 1);
     OverlayDestroy();
 }
 
@@ -192,10 +238,12 @@ function SelectAllPlanets(data){
     d3.selectAll("g.planet.dom").each(function(d){
         //console.log(d);
         d.checked = true;
-        d.values.checked.style("opacity", 100);
         CHECKED[d.ic_id] = d;
     });
     SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+
+    $(".planet-select").addClass("show");
+    $(".planet-select i").text("check_circle");
 }
 
 function DeselectAllPlanets(data){
@@ -205,18 +253,48 @@ function DeselectAllPlanets(data){
     d3.selectAll("g.planet.dom").each(function(d){
         //console.log(d);
         d.checked = false;
-        d.values.checked.style("opacity", 0);
     });
 
-    data.values.data.values.back.values.text.style("opacity", 100);
+    data.values.data.values.back.values.text.style("opacity", 1);
+    
     if(g_project.selection){
         g_project.selection.remove();
         g_project.selection = false;
     }
+
+    $(".planet-select").removeClass("show");
+    $(".planet-select i").text("check_circle_outline");
 }
 
 function InstanceExists(instance)
 {
     return Boolean(instance);
 }
+
+var handler = document.querySelector(".dragbar");
+var isHandlerDragging = false;
+
+// turn on dragging
+document.addEventListener('mousedown', function(e) {
+    if (e.target === handler) {
+        isHandlerDragging = true;
+        document.getElementsByClassName("tree-view")[0].style.transition = 'none';
+    }
+});
+  
+document.addEventListener('mousemove', function(e) {
+    if (!isHandlerDragging) {
+        return false;
+    }
+
+    // resize
+    let x = $(".tree-view").offset().left;
+    $(".tree-view").width(e.clientX - x);
+});
+
+// flag dragging off
+document.addEventListener('mouseup', function(e) {
+    isHandlerDragging = false;
+    document.getElementsByClassName("tree-view")[0].style.transition = 'all 500ms ease';
+});
 // -------------------------------------------------------

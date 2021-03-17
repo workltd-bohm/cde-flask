@@ -1,6 +1,7 @@
 SEARCH_HISTORY = {};
 
 function OpenFilterActivity(json, open = false) {
+    console.log(json);
     $.ajax({
         url: "/get_filter_activity",
         type: 'POST',
@@ -43,7 +44,7 @@ function FilterOut(obj) {
             data = JSON.parse(data);
             if (data) {
                 data = data.root_ic;
-                g_root.universe.data = data;
+                g_project.data = data;
                 g_project.skip = SEARCH_HISTORY;
                 GetWarp(data);
                 g_project.search = data;
@@ -64,5 +65,7 @@ function SearchOpen(data) {
     if (g_project.search) g_project.search = false;
     //SESSION["position"] = {parent_id: data.values.data.parent_id, ic_id: data.values.data.ic_id};
     SESSION["position"] = { parent_id: data.parent_id, ic_id: data.ic_id };
-    CreateProject();
+    GetProject();
+    searchArr = [];
+    $("#terminal-span").hide();
 }

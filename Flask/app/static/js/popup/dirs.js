@@ -315,6 +315,10 @@ function RenameFile(form, json) {
             form.empty();
             form.append(html);
 
+            let input = document.getElementById("new_name");
+            let split = newOldName.split(".");
+            input.value = split.slice(0, split.length - 1).join(".");
+            input.select();
             document.getElementById('name_div').style.bottom = "120px";
 
             LoadStop();
@@ -378,7 +382,7 @@ function TrashFile(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
             LoadStop();
@@ -498,7 +502,7 @@ function DeleteFile(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
 
@@ -528,7 +532,7 @@ function EmptyTrash(form, json) {
                 form.append(html);
             } catch (e) {
                 MakeSnackbar(data);
-                CreateProject();
+                GetProject();
             }
 
             LoadStop();

@@ -66,7 +66,10 @@ function SunFadeout(data) {
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
         .style("opacity", 0)
-        // if(g_root.slider) 
+    if(g_root.slider) g_root.looper.this.transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_MOVE)
+        .style("opacity", 0)
     data.values.text.transition()
         .ease("linear")
         .duration(ORBIT_ANIM_MOVE)
@@ -103,10 +106,10 @@ function SunFadeout(data) {
 
 function GetWarp(data) {
     if (!g_project.warp) {
-        //console.log(g_root.universe.data)
+        //console.log(g_project.data)
         //console.log(g_project.skip, g_project.search,g_project.paths)
         if (!g_project.search)
-            switch (g_root.universe.data.overlay_type) {
+            switch (g_project.data.overlay_type) {
                 case "search":
                 case "ic":
                     // AddPath(g_project.skip.values.back); remove old path
@@ -125,26 +128,30 @@ function GetWarp(data) {
             // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
             if (data) g_project.skip = g_project.search;
             else g_project.search = g_project.skip;
-            g_root.universe.data = g_project.search;
+            g_project.data = g_project.search;
+            console.log("check")
 
         }
         if (g_project.overlay) {
             g_project.overlay.remove();
             g_project.overlay = false;
         }
+        
+        // remove star dom
+        if (g_project.skip) ClearSpace();
 
-        if (g_project.skip) g_project.skip.values.parent.remove()
         if (data) g_project.skip = data;
 
         // console.log(g_project.skip, g_project.search, g_project.paths)
-        switch (g_root.universe.data.overlay_type) {
+        console.log(g_project.data.overlay_type);
+        switch (g_project.data.overlay_type) {
             case "user":
                 UserActivity(g_project.skip);
                 break;
             case "ic":
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break;
-            case "project":
+            case "project_root":
                 backButtonFlag = false;
                 WrapGetProject(g_project.skip);
                 break;
@@ -152,13 +159,13 @@ function GetWarp(data) {
                 WrapGetMarket(g_project.skip);
                 break;
             case "search":
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break; // TODO 
             case "search_target":
                 SearchOpen(g_project.skip);
                 break; // TODO 
             default:
-                CreateSpace(g_project.skip);
+                CreateWorkspace(g_project.skip);
                 break;
         }
 
@@ -178,7 +185,7 @@ function AnimateScrollSun(data){
             (g_root.deg + Math.abs(g_project.spiral_info.spiral_length + (360 * g_root.deg_exp) % g_project.spiral_info.spiral_length))
             % g_project.spiral_info.spiral_length;
     }
-    g_project.spiral_info.spiral_position += 90;
+    g_project.spiral_info.spiral_position += PLANET_SCROLL_DEG_OFF;
 }
 
 function AnimateScrollPlanet(data){
@@ -194,6 +201,7 @@ function AnimateScrollPlanet(data){
 }
 
 function UpdateUniverse() {
+    if (g_view === VIEW_GR) return;// todo remove
     g_root.universe.select("g.star").each(AnimateStar);
 
     if (ORBIT_PATTERN && ORBIT_PATTERN_ANIM) {
@@ -204,16 +212,35 @@ function UpdateUniverse() {
     }
 
     if (g_project.skip != false || g_project.warp) {
+        g_root.looper.transition()
+            .duration(1)
+            .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         g_root.universe.transition()
             .duration(1)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")
         GetWarp();
     } else {
+        g_root.looper.transition()
+            .ease("linear")
+            .duration(ORBIT_ANIM_MOVE)
+            .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
         g_root.universe.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + "), scale(" + (g_root.scale) + ")") //, rotate("+(g_root.deg)+")")
     }
+
+    g_root.looper.x = g_project.width_h/g_project.spiral_info.spiral_length*(g_project.spiral_info.spiral_position);
+    if(!g_root.looper.x) g_root.looper.x = 0;
+    if (g_root.looper.pos)
+        g_root.looper.pos
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
+    if (g_root.looper.posL)
+        g_root.looper.posL
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
+    if (g_root.looper.posR)
+        g_root.looper.posR
+            .attr("transform", "translate(" + (g_root.looper.x) + ", 0)")
 
     if (g_project.hist_path)
         g_project.hist_path.transition()
@@ -274,7 +301,7 @@ function AnimatePlanet(data) {
                 data.values.checked.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
         });
         //// [SLIDER END]
     } else {
@@ -305,7 +332,7 @@ function AnimatePlanet(data) {
                 data.values.checked.transition()
                 .ease("linear")
                 .duration(ORBIT_ANIM_MOVE)
-                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_OverlayRadius - g_OverlayItemSize - OVERLAY_PLANET_MARGIN)) + ")")
+                .attr("transform", "rotate(" + (-g_root.deg) + "), translate(0," + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
         });
     }
 }

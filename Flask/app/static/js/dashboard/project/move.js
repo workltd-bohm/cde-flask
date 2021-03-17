@@ -125,7 +125,7 @@ function ApllyMove(data) {
         data: JSON.stringify(MULTI),
         timeout: 5000,
         success: function(d) {
-            CreateProject();
+            GetProject();
             LoadStop();
             MakeSnackbar(d);
         },

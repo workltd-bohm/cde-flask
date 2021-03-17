@@ -1,7 +1,7 @@
 function WrapGetProject(data) {
     var tmp = { choose_project: data.name };
     //console.log(tmp)
-    FormSubmit('select_project', tmp, true, CreateProject);
+    FormSubmit('select_project', tmp, true, GetProject);
     //PopupOpen(GetProjects);
 }
 
@@ -49,7 +49,6 @@ function WrapCreateFile(data) {
 }
 
 function WrapRename(data) {
-    console.log(data);
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
     //console.log(tmp);
@@ -97,16 +96,26 @@ function WrapShare(data) {
     //var multi = [];
     //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});
 
-    var tmp = data.values.data;
+    console.log(data);
+    console.log(SESSION);
+    let tmp = data.values.data;
     tmp.project_name = SESSION["name"];
 
     // var dummy = document.createElement('input'),
     //     text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
+    // TODO create a function for session update and use it here
+    let d = {...SESSION};
+    d.position.ic_id =          data.ic_id;
+    d.position.name =           data.name;
+    d.position.parent =         data.parent;
+    d.position.parent_id =      data.parent_id;
+    d.position.path =           data.path;
+    d.position.project_name =   data.project_name;
 
     $.ajax({
         url: "/get_encoded_data",
         type: 'POST',
-        data: JSON.stringify({ project: SESSION }),
+        data: JSON.stringify({ project: d }),
         timeout: 5000,
         success: function(data) {
             var dummy = document.createElement('input'),

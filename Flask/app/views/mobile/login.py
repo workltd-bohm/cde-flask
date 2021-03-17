@@ -3,7 +3,7 @@ from app import *
 @app.route('/login_app', methods=['POST'])
 def login_app():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    print(request.get_data().decode("utf-8") )
+    # print(request.get_data().decode("utf-8") )
     json_data = json.loads(request.get_data())
     # login_ic_data = json_data['login_ic_data']
     # json_data.pop('login_ic_data', None)
@@ -53,14 +53,14 @@ def login_app():
         return resp
 
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/refresh', methods=['POST', 'GET'])
 def refresh():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    print(request.get_data().decode("utf-8") )
-    json_data = json.loads(request.get_data())
+    # print(request.get_data().decode("utf-8") )
+    # json_data = json.loads(request.get_data())
     # login_ic_data = json_data['login_ic_data']
     # json_data.pop('login_ic_data', None)
-    logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
+    # logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
     resp = Response()
 
     if main.IsLogin():

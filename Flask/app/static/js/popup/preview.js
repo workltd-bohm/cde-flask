@@ -1,10 +1,10 @@
 $(document).ready(function() {
     $("div.preview > .cover.back").click(function(d) {
-        $(this).parent().hide();
+        //$(this).parent().hide();
     });
 
     $("div.preview > .content > .zatvori").click(function(d) {
-        $(this).parent().parent().hide();
+        // $(this).parent().parent().hide();
     });
 });
 
@@ -37,5 +37,4 @@ function PreviewOpen(run = null, data = null, file = null, open = false) {
 function PreviewClose() {
     LoadStopPreview();
     $("div.preview").hide();
-    CloseActivity();
 }

@@ -63,7 +63,7 @@ function terminalListen(el) {
                     parent_path: SESSION['position'].path,
                     new_name: terminal.slice(1).join(' ')
                 }
-                FormSubmit('create_dir', args, true, CreateProject);
+                FormSubmit('create_dir', args, true, GetProject);
             } else {
                 PopupOpen(NewFolder, SESSION['position']);
             }
@@ -788,7 +788,7 @@ function terminalAutocomplete(inp, arr) {
                 }
             }
             console.log(currValArray.length);
-            if (currentArr.length > 0) {
+            if (currentArr.length > 0 && currValArray.length > 0) {
                 if (currValArray[0].startsWith('#')) {
                     console.log(currValArray);
                     searchByTag(currValArray);
@@ -832,7 +832,7 @@ function searchByTag(currValArray) {
                 data = JSON.parse(data);
                 if (data) {
                     data = data.root_ic;
-                    g_root.universe.data = data;
+                    g_project.data = data;
                     g_project.skip = SEARCH_HISTORY;
                     GetWarp(data);
                     g_project.search = data;
@@ -870,7 +870,7 @@ function searchByName(currValArray) {
                 data = JSON.parse(data);
                 if (data) {
                     data = data.root_ic;
-                    g_root.universe.data = data;
+                    g_project.data = data;
                     g_project.skip = SEARCH_HISTORY;
                     GetWarp(data);
                     g_project.search = data;

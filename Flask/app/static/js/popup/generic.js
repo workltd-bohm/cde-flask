@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $("div.pero > .cover.back").click(function(d) {
-        $(this).parent().hide();
+        // $(this).parent().hide();
     });
 
     $("div.pero > .content > .zatvori").click(function(d) {
@@ -96,6 +96,7 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
         contentType: false,
         timeout: 5000,
         success: function(data) {
+            treeStruct = null;
             if (!stay) location.reload();
             //            console.log(data);
             if (fill) $("div.content > .form").html(data);

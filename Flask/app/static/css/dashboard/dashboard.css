@@ -1,15 +1,21 @@
 @import url("../common/colors.css");
-
 #PROJECT {
     display: none;
     width: 100%;
     height: 0;
     max-height: 100%;
-    transition: all 0.2s;
-    /*box-shadow: inset 0px 0px 1em var(--shadow);*/
+    transition: all 200ms;
 }
 
-#MARKET{
+#PROJECT-GRID {}
+
+.HIDDEN {
+    height: 0;
+    width: 0;
+    opacity: 0;
+}
+
+#MARKET {
     display: none;
     position: relative;
     width: 100%;
@@ -19,7 +25,7 @@
     overflow-x: auto;
 }
 
-#EDITOR{
+#EDITOR {
     display: none;
     position: relative;
     width: 100%;
@@ -29,7 +35,7 @@
     overflow-x: auto;
 }
 
-#3D_VIEWER{
+#3D_VIEWER {
     display: none;
     position: relative;
     width: 100%;
@@ -40,62 +46,131 @@
 }
 
 #Touch {
-    fill : transparent;
+    fill: transparent;
     stroke-width: 0;
 }
 
-#display_name
-{
+#display_name {
     font-size: 1.5em;
     text-anchor: middle;
 }
 
-.workspace
-{
+.workspace {
+    display: flex;
+    height: 100%;
     background-color: var(--dashboard-bg);
     overflow: hidden;
     position: relative;
+    border: 1px solid var(--shadow);
+    border-bottom: none;
 }
 
-.hover-menu
+.tree-view {
+    height: 100%;
+    display: inline-block;
+    width: 0;
+
+    transition: all 500ms ease;
+}
+
+.tree-view:not(.opened) #tree-view
+{
+    width: 0;
+    overflow: hidden;
+    transition: all 500ms ease;
+}
+
+.tree-view.opened #tree-view
+{
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.tree-view.opened
+{
+    resize: horizontal;
+    max-width: 400px;
+    min-width: 200px;
+    width: 300px;
+}
+
+.tree-view-button
 {
     position: absolute;
-    top: 1em;
-    left: 1em;
+    left: 0;
+    height: 100%;
+    width: 50px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: 0.25s ease all;
+}
+
+.tree-view-button:hover
+{
+    background-color: var(--transparent-light);
+}
+
+.tree-view-arrow
+{
+    position: relative;
+    color: var(--text-primary);
+    font-size: 50px;
+    top: 10vh;
+    text-align: center;
+    transform: translateY(-50%);
+}
+
+.tree-view:not(.opened) .tree-view-arrow:first-of-type,
+.tree-view.opened .tree-view-arrow:last-of-type
+{
+    display: none;
+}
+
+.dragbar {
+    /* transform: translate(50%, 0); */
+    right: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background-color: gray /*var(--bg-primary)*/;
+    opacity: 50%;
+    cursor: col-resize;
+}
+
+.dragbar:hover {
+    background-color: gray /*var(--bg-secondary)*/;
+}
+
+.hover-menu {
     z-index: 5;
 }
 
-.hover-menu-item
-{
+.hover-menu-item {
     display: inline-block;
     vertical-align: top;
-    
     min-height: 40px;
     margin-right: 1em;
-    
     background-color: var(--bg-primary);
     /*box-shadow: .1em .1em 1em var(--shadow);*/
     /*border: 2px solid gray;*/
-    
     cursor: pointer;
+    border-bottom: 1px solid var(--shadow);
 }
 
-.hover-menu span, .hover-menu input, .hover-menu label
-{
+.hover-menu span,
+.hover-menu input,
+.hover-menu label {
     vertical-align: middle;
 }
 
-.hover-menu a
-{
+.hover-menu a {
     text-decoration: none;
 }
 
-.hover-menu a:hover
-{
-    color: var(--neon-blue);
+.hover-menu a:hover {
+    color: var(--link-hover);
 }
 
-.sort-dropdown > *
-{
+.hover-dropdown>* {
     display: block;
 }

@@ -701,6 +701,14 @@ class DBMongoAdapter:
 
         return restored
 
+    def delete_sub_chunks(self, ic, files, file_chunks):
+        if not ic['is_directory']:
+            files.delete_one({'file_id': ic['stored_id']})
+            file_chunks.delete_many({'files_id': ObjectId(ic['stored_id'])})
+        else:
+            for sub_folder in ic['sub_folders']:
+                self.delete_sub_chunks(sub_folder, files, file_chunks)
+
     # deletes projects permanently (from database)
     def delete_ic(self, delete_ic_data):
         '''
@@ -732,6 +740,9 @@ class DBMongoAdapter:
         if project_or_ic_json:
             # delete all project files from trash / delete a file and chunks related / delete just ic
             if 'project_name' in project_or_ic_json.keys():
+                # delete all file chunks in the project
+                for sub_folder in project_or_ic_json['root_ic']['sub_folders']:
+                    self.delete_sub_chunks(sub_folder, files, file_chunks)
                 trash.delete_many({'project_id': delete_ic_data['project_id']})
                 response = msg.PROJECT_SUCCESSFULLY_DELETED
             elif 'stored_id' in project_or_ic_json.keys():
@@ -740,6 +751,8 @@ class DBMongoAdapter:
                 file_chunks.delete_many({'files_id': ObjectId(project_or_ic_json['stored_id'])})
                 response = msg.FILE_SUCCESSFULLY_DELETED
             elif 'ic_id' in project_or_ic_json.keys():
+                # delete all file chunks in the IC
+                self.delete_sub_chunks(project_or_ic_json, files, file_chunks)
                 trash.delete_one(delete_query)
                 response = msg.IC_SUCCESSFULLY_DELETED
 
@@ -884,6 +897,8 @@ class DBMongoAdapter:
         project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
             project = Project.json_to_obj(project_json)
+            if file_obj['ic_id'] == '':
+                file_obj['ic_id'] = project.root_ic.ic_id
             add = project.change_color(file_obj, project.root_ic)
             if add == msg.IC_COLOR_CHANGED:
                 col.update_one({'project_name': project.name}, {'$set': project.to_json()})
