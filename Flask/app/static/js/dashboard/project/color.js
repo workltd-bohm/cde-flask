@@ -27,14 +27,13 @@ function ChangeColor(data) {
     // spawn color wheel group
     let object = data.values.data.values.sun ? d3.select("g.star.dom") : data.values.this; 
     let offY = (g_root.slider && data.values.data.values.sun) ? (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) : 0;
-    console.log(offY);
+    
     let wheel = object.append("g")
         .attr("class", "color_wheel")
         .attr("transform", "translate(0, " + offY + "), scale(0.5), rotate(90)") // animation property
         .attr("opacity", "0"); // animation property
 
     if (g_root.slider && data.values.data.values.sun) {
-        console.log("t")
         wheel.transition().duration(0)
             .attr("y", );
     }
@@ -114,7 +113,6 @@ function SetColor(data, fill) {
 
             if (o.length > 0)
             {
-                console.log('here')
                 Object.values(CHECKED).forEach((d) => {
                     // update background color
                     d.values.background
