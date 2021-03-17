@@ -391,7 +391,7 @@ function AddChildren(obj, data, parent, position = 0) {
         data.values.background
             .style("fill", data.color)
 
-        data.values.this.select(".text_front")
+        data.values.this.selectAll(".text_front")
             .style("fill", FlipColor(data.color))
     }
 

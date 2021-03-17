@@ -89,22 +89,10 @@ function ChangeColor(data) {
             .attr("transform", "translate(0, " + offY + "), scale(0), rotate(270)")
             .attr("opacity", 0)
             .remove()
-            // .each(function(){
-            //     setTimeout(function(){
-            //         wheel.transition()
-            //             .duration(200)
-            //             .attr("transform", "scale(0)")
-            //             .attr("opacity", 0)
-            //             .each(function(){
-            //                 setTimeout(() => {
-            //                     d3.select(this).remove();
-            //                 }, 200);
-            //             });
-            //     }, 100);
-            // });
     });
 };
 
+// applies the new color to the appropriate IC
 function SetColor(data, fill) {
     var o = Object.values(CHECKED);
     var multi = [];
@@ -136,7 +124,7 @@ function SetColor(data, fill) {
                         .style("fill", fill);
 
                     // update text color
-                    d.values.object.select(".text_front")
+                    d.values.object.selectAll(".text_front")
                         .transition()
                         .ease("ease-in-out")
                         .duration(500)
@@ -145,7 +133,6 @@ function SetColor(data, fill) {
             }
             else 
             {
-                console.log("he2re")
                 // update background color
                 data.values.background
                     .transition()
@@ -154,7 +141,7 @@ function SetColor(data, fill) {
                     .style("fill", fill);
 
                 // update text color
-                data.values.object.select(".text_front")
+                data.values.object.selectAll(".text_front")
                     .transition()
                     .ease("ease-in-out")
                     .duration(500)
