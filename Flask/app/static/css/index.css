@@ -37,6 +37,7 @@ td {
 
 #index-dashboard {
     width: 70%;
+    max-height: 100vh;
     vertical-align: top;
     z-index: 0;
 }
