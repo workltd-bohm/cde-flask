@@ -597,8 +597,12 @@ function DownloadICs(json) {
             DownloadMulti("/get_ic_multi/", multi);
         }
     } else {
-        if (json.is_directory) {
-            DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
+        if (json.is_directory || json.parent == 'Projects') {
+            if (json.parent == 'Projects') {
+                DownloadIC("/get_folder/root/" + json.name, json.name + '.zip');
+            } else {
+                DownloadIC("/get_folder/" + json.parent_id + '/' + json.name, json.name + '.zip');
+            }
         } else {
             GetNameAndDownloadIC(json)
                 // DownloadIC("/get_file/" + json.ic_id, json.name + json.type);

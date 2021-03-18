@@ -142,7 +142,10 @@ def get_shared_file(file_id):
 def get_folder(parent_id, folder_name):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
-        project_name = session.get("project")["name"]
+        if parent_id == 'root':
+            project_name = folder_name
+        else:
+            project_name = session.get("project")["name"]
         request_json = {
                         'parent_id': parent_id,
                         'folder_name': folder_name}

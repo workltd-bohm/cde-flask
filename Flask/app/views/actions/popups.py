@@ -400,20 +400,34 @@ def get_rename_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session.get("project")["name"]
+        if request_data['parent_path'] == 'Projects':
+            project_name = request_data['old_name']
+        else:
+            project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
+                if request_data['parent_path'] == 'Projects':
+                    parent_path = result['root_ic']['parent']
+                    parent_id = result['root_ic']['parent_id']
+                    ic_id = result['root_ic']['ic_id']
+                    is_directory = result['root_ic']['is_directory']
+                else:
+                    parent_path=request_data["parent_path"],
+                    parent_id=request_data["parent_id"],
+                    ic_id=request_data["ic_id"],
+                    project_name=project_name,
+                    is_directory=True if request_data["is_directory"] else False,
                 filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
-                                            parent_path=request_data["parent_path"],
-                                            parent_id=request_data["parent_id"],
-                                            ic_id=request_data["ic_id"],
+                                            parent_path=parent_path,
+                                            parent_id=parent_id,
+                                            ic_id=ic_id,
                                             project_name=project_name,
                                             old_name=request_data["old_name"],
-                                            is_directory=True if request_data["is_directory"] else False,
+                                            is_directory=is_directory,
                                             inputs=filter_file
                                             ),
                     'data': []
@@ -441,27 +455,43 @@ def get_rename_ic():
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
+
 @app.route('/get_trash_ic', methods=['POST'])
 def get_trash_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session.get("project")["name"]
+        if request_data['parent_path'] == 'Projects':
+            project_name = request_data['delete_name']
+        else:
+            project_name = session.get("project")["name"]
         is_multi = True if "is_multi" in request_data else False
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
         if db.connect(db_adapter):
-            result = db.get_all_projects(db_adapter)
+            result = db.get_project(db_adapter, project_name, session['user'])
             if result:
+                if request_data['parent_path'] == 'Projects':
+                    request_data["project_id"] = result["project_id"]
+                    parent_path = result['root_ic']['parent']
+                    parent_id = result['root_ic']['parent_id']
+                    ic_id = result['root_ic']['ic_id']
+                    is_directory = result['root_ic']['is_directory']
+                else:
+                    parent_path=request_data["parent_path"],
+                    parent_id=request_data["parent_id"],
+                    ic_id=request_data["ic_id"],
+                    project_name=project_name,
+                    is_directory=True if request_data["is_directory"] else False,
                 response = {
                     'html': render_template("popup/trash_ic_popup.html",
-                                            parent_path=request_data["parent_path"],
-                                            parent_id=request_data["parent_id"],
+                                            parent_path=parent_path,
+                                            parent_id=parent_id,
                                             project_id=request_data["project_id"] if "project_id" in request_data else None,
-                                            ic_id=request_data["ic_id"],
+                                            ic_id=ic_id,
                                             project_name=project_name,
                                             delete_name=request_data["delete_name"],
-                                            is_directory = True if request_data["is_directory"] else False,
+                                            is_directory = is_directory,
                                             multi=is_multi,
                                             )
                     if not is_multi else
