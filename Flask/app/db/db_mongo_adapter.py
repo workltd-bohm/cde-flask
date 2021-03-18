@@ -49,6 +49,19 @@ class DBMongoAdapter:
         # self._close_connection()
         return message, user
 
+    def get_users_dump(self):
+        col = self._db.Users
+        result = col.find()
+        # result = [doc for doc in col.find()]
+        # print(result)
+        response = []
+        if result:
+            for doc in result:
+                doc.pop('_id', None)
+                response.append(doc)
+        self._close_connection()
+        return response
+
     def get_all_users(self):
         col = self._db.Users
         result = col.find()

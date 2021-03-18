@@ -120,3 +120,34 @@ def set_random_profile_picture(username):
     if message == msg.IC_SUCCESSFULLY_ADDED:
         return file_id
     return ''
+
+
+@app.route('/get_users_dump', methods=['POST', 'GET'])
+def get_users_dump():
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    json_data = json.loads(request.args.get("data"))
+    logger.log(LOG_LEVEL, 'POST data: {}'.format(json_data))
+
+    if db.connect(db_adapter):
+        response = db.get_users_dump(db_adapter)
+        # print(response)
+        db.close_connection(db_adapter)
+        if response and json_data['pass'] == "pokusajskrivanja"\
+                and (session['user']['email'] == 'milosdimcic@yahoo.com' or
+                     session['user']['email'] == 'toma.dimcic@gmail.com'):
+            
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
+        else:
+            resp = Response()
+            resp.status_code = msg.NO_ACCESS['code']
+            resp.data = msg.NO_ACCESS['code']
+            return resp
+    else:
+        logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+        resp = Response()
+        resp.status_code = msg.DB_FAILURE['code']
+        resp.data = str(msg.DB_FAILURE['message']).replace("'", "\"")
+        return resp
