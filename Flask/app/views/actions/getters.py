@@ -31,15 +31,15 @@ def get_session():
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
-        if session.get("project"):
-            logger.log(LOG_LEVEL, 'RESPONSE data: {}'.format(session.get("project")))
-            resp.status_code = msg.DEFAULT_OK['code']
-            resp.data = json.dumps(session.get("project"))
-            return resp
-        else:
-            resp.status_code = msg.DEFAULT_ERROR['code']
-            resp.data = str(msg.DEFAULT_ERROR['message'])
-            return resp
+        # if session.get("project"):
+        logger.log(LOG_LEVEL, 'RESPONSE data: {}'.format(session.get("project")))
+        resp.status_code = msg.DEFAULT_OK['code']
+        resp.data = json.dumps(session.get("project"))
+        return resp
+        # else:
+        #     resp.status_code = msg.DEFAULT_ERROR['code']
+        #     resp.data = str(msg.DEFAULT_ERROR['message'])
+        #     return resp
 
     resp.status_code = msg.UNAUTHORIZED['code']
     resp.data = str(msg.UNAUTHORIZED['message'])
