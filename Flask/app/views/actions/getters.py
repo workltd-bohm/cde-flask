@@ -360,7 +360,7 @@ def get_trash():
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = []
                     proj_obj['overlay_type'] = "trash_planet"
-                    proj_obj["color"] = trashed_project["color"]
+                    # proj_obj["color"] = trashed_project["color"]
 
                     if 'project_name' in trashed_project.keys():
                         proj_obj['name'] =          trashed_project['project_name']
