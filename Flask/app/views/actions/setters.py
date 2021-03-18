@@ -753,7 +753,8 @@ def activate_undo():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         undo = session.get("undo")
-        if not 'user' in undo:
+
+        if undo is None:
             resp.status_code = msg.UNAUTHORIZED['code']
             resp.data = 'Nothing do undo'
             return resp
