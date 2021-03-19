@@ -462,7 +462,7 @@ def get_trash_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        if request_data['parent_path'] == 'Projects':
+        if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
             project_name = request_data['delete_name']
         else:
             project_name = session.get("project")["name"]
@@ -472,18 +472,19 @@ def get_trash_ic():
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
-                if request_data['parent_path'] == 'Projects':
+                if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
                     request_data["project_id"] = result["project_id"]
                     parent_path = result['root_ic']['parent']
                     parent_id = result['root_ic']['parent_id']
                     ic_id = result['root_ic']['ic_id']
                     is_directory = result['root_ic']['is_directory']
                 else:
-                    parent_path=request_data["parent_path"]
-                    parent_id=request_data["parent_id"]
-                    ic_id=request_data["ic_id"]
-                    project_name=project_name
-                    is_directory=True if request_data["is_directory"] else False
+                    if not is_multi:
+                        parent_path=request_data["parent_path"]
+                        parent_id=request_data["parent_id"]
+                        ic_id=request_data["ic_id"]
+                        project_name=project_name
+                        is_directory=True if request_data["is_directory"] else False
                 response = {
                     'html': render_template("popup/trash_ic_popup.html",
                                             parent_path=parent_path,
