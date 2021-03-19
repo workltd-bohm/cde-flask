@@ -33,7 +33,8 @@ def send_an_email(username, email):
         for receiver in receiver_email:
             a.append(receiver[0])
         # for receiver in receiver_email:
-        message["To"] = ','.join(a)
+        message["To"] = receiver_email[0][0]
+        message["CC"] = ','.join(a)
         # message["CC"] =
         body = "<p>Hi %s,<br><br>If you want to confirm the account for: <br>" \
                "username: %s <br>" \
