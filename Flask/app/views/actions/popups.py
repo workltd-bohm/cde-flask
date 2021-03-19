@@ -414,11 +414,12 @@ def get_rename_ic():
                     ic_id = result['root_ic']['ic_id']
                     is_directory = result['root_ic']['is_directory']
                 else:
-                    parent_path=request_data["parent_path"],
-                    parent_id=request_data["parent_id"],
-                    ic_id=request_data["ic_id"],
-                    project_name=project_name,
-                    is_directory=True if request_data["is_directory"] else False,
+                    parent_path=request_data["parent_path"]
+                    parent_id=request_data["parent_id"]
+                    ic_id=request_data["ic_id"]
+                    project_name=project_name
+                    is_directory=True if request_data["is_directory"] else False
+                    # print(parent_id)
                 filter_file = gtr.get_input_file_fixed()
                 response = {
                     'html': render_template("popup/rename_ic_popup.html",
@@ -478,11 +479,11 @@ def get_trash_ic():
                     ic_id = result['root_ic']['ic_id']
                     is_directory = result['root_ic']['is_directory']
                 else:
-                    parent_path=request_data["parent_path"],
-                    parent_id=request_data["parent_id"],
-                    ic_id=request_data["ic_id"],
-                    project_name=project_name,
-                    is_directory=True if request_data["is_directory"] else False,
+                    parent_path=request_data["parent_path"]
+                    parent_id=request_data["parent_id"]
+                    ic_id=request_data["ic_id"]
+                    project_name=project_name
+                    is_directory=True if request_data["is_directory"] else False
                 response = {
                     'html': render_template("popup/trash_ic_popup.html",
                                             parent_path=parent_path,

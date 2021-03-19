@@ -84,7 +84,7 @@ function PathCreation() {
 }
 
 function GetDisplayName(ic) {
-    if (ic.overlay_type == 'project') {
+    if (ic.overlay_type == 'project' || ic.overlay_type == 'trash_planet') {
         return ic.name;
     }
     if (ic.overlay_type == 'search_target') {
