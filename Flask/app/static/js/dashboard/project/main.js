@@ -343,12 +343,14 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     // Shaders start
+    let add_class = data.overlay_type === "project" ? " project" : data.is_directory ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
+    add_class = (g_project.current_ic.overlay_type === "user") ? "" : add_class;    // prevent from changing user
     data.values.background = data.values.object.append("circle")
-        .attr("class", "planet background" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
+        .attr("class", "planet background" + add_class)
         .attr("r", g_PlanetRadius);
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "planet pattern" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
+        .attr("class", "planet pattern" + add_class)
         .attr("r", g_PlanetRadius);
 
     // data.values.shader = data.values.object.append("circle")
@@ -426,8 +428,13 @@ function AddChildren(obj, data, parent, position = 0) {
             CreateContextMenu(d3.event, d);
         });
 
-    data.values.data = data;
 
+    data.values.data = data;    // hack - be careful
+
+
+    if (data.overlay_type === "project" || (g_project.current_ic.overlay_type === "user")) return;
+
+    // select checkbox
     g_OverlayItemSize = 24;
     data.values.checked = data.values.this.append("foreignObject")
         .attr("class", "planet-select")
@@ -444,7 +451,7 @@ function AddChildren(obj, data, parent, position = 0) {
 
             this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
             SelectPlanet(data);
-        })
+        });
 
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
@@ -452,7 +459,6 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
         .html("check_circle_outline");
-
 }
 
 // -------------------------------------------------------
@@ -626,8 +632,6 @@ function CreateHoverMenu()
 }
 
 function CreateWorkspace(data) {
-    CreateHoverMenu();
-
     switch (g_view) {
         // planetary
         case 0:
@@ -644,6 +648,8 @@ function CreateWorkspace(data) {
             CreateGrid(data);
             break;
     }
+
+    CreateHoverMenu();
 
     // hide activity when on root path
     $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." &&

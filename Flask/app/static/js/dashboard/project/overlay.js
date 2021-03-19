@@ -528,6 +528,8 @@ function SortByDate(data) {
 }
 
 function CreateSelectMenu() {
+    if (g_project.current_ic.overlay_type === "project_root") return;
+
     let select_menu = document.createElement("div");
     select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 

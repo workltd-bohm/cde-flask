@@ -10,7 +10,7 @@
     stroke-width: 2;
 }
 
-.background.planet.dir {
+.background.planet.folder {
     /* fill : url("#patern_planet_folder"); */
 }
 .background.planet.empty {
@@ -36,11 +36,31 @@
     transition: stroke, 100ms linear;
 }
 
-/*The FILE Planet*/
-.planet.background:not(.dir)
+.planet.pattern {
+    fill: none;
+}
+
+.planet.background.file
 {
     stroke-width: 5;
     /*stroke-dasharray: 3;*/
+}
+
+.planet.pattern.file
+{
+    /* add style */
+}
+
+.planet.pattern.project
+{
+    /* add style */
+}
+
+.planet.background.project
+{
+    /* add style */
+    stroke-width: 10;
+    stroke: green;
 }
 
 .planet:hover .planet.background
@@ -49,12 +69,8 @@
     stroke-width: 3;
 }
 
-.planet.pattern {
-    fill: none;
-}
-
 /*The FOLDER Planet*/
-.planet.pattern.dir {
+.planet.pattern.folder {
     /*stroke: rgba(30, 118, 190, 0.5);*/
     stroke: none;
     /*opacity: 50%;*/
