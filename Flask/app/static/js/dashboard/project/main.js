@@ -343,12 +343,13 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     // Shaders start
+    let add_class = data.overlay_type === "project" ? " project" : data.is_directory ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
     data.values.background = data.values.object.append("circle")
-        .attr("class", "planet background" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
+        .attr("class", "planet background" + add_class)
         .attr("r", g_PlanetRadius);
 
     data.values.picture = data.values.object.append("circle")
-        .attr("class", "planet pattern" + (data.is_directory ? " dir" + (data.sub_folders == 0 ? " empty" : "") : ""))
+        .attr("class", "planet pattern" + add_class)
         .attr("r", g_PlanetRadius);
 
     // data.values.shader = data.values.object.append("circle")
