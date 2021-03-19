@@ -426,33 +426,36 @@ function AddChildren(obj, data, parent, position = 0) {
             CreateContextMenu(d3.event, d);
         });
 
-    data.values.data = data;
 
+    data.values.data = data;    // hack - be careful
     g_OverlayItemSize = 24;
-    data.values.checked = data.values.this.append("foreignObject")
-        .attr("class", "planet-select")
-        .attr("x", -g_OverlayItemSize / 2)
-        .attr("y", -g_OverlayItemSize / 2)
-        .attr("width", g_OverlayItemSize)
-        .attr("height", g_OverlayItemSize)
-        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
-        .attr("title", "SELECT")
-        .on("click", function(data){
-            let isSelected = (data.values.data.ic_id in CHECKED);
-            
-            this.classList.toggle("show");
 
-            this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
-            SelectPlanet(data);
-        })
+    if (data.overlay_type !== "project")
+    {
+        data.values.checked = data.values.this.append("foreignObject")
+            .attr("class", "planet-select")
+            .attr("x", -g_OverlayItemSize / 2)
+            .attr("y", -g_OverlayItemSize / 2)
+            .attr("width", g_OverlayItemSize)
+            .attr("height", g_OverlayItemSize)
+            .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
+            .attr("title", "SELECT")
+            .on("click", function(data){
+                let isSelected = (data.values.data.ic_id in CHECKED);
+                
+                this.classList.toggle("show");
 
-    data.values.checked.append("xhtml:div")
-        .attr("class", "planet foregin select")
-        .append("i")
-        .attr("class", "planet material-icons select")
-        .style("font-size", g_OverlayItemSize + "px")
-        .html("check_circle_outline");
+                this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
+                SelectPlanet(data);
+            });
 
+        data.values.checked.append("xhtml:div")
+            .attr("class", "planet foregin select")
+            .append("i")
+            .attr("class", "planet material-icons select")
+            .style("font-size", g_OverlayItemSize + "px")
+            .html("check_circle_outline");
+    }
 }
 
 // -------------------------------------------------------
