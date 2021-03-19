@@ -344,6 +344,7 @@ function AddChildren(obj, data, parent, position = 0) {
 
     // Shaders start
     let add_class = data.overlay_type === "project" ? " project" : data.is_directory ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
+    add_class = (g_project.current_ic.overlay_type === "user") ? "" : add_class;    // prevent from changing user
     data.values.background = data.values.object.append("circle")
         .attr("class", "planet background" + add_class)
         .attr("r", g_PlanetRadius);
@@ -429,34 +430,35 @@ function AddChildren(obj, data, parent, position = 0) {
 
 
     data.values.data = data;    // hack - be careful
+
+
+    if (data.overlay_type === "project" || (g_project.current_ic.overlay_type === "user")) return;
+
+    // select checkbox
     g_OverlayItemSize = 24;
+    data.values.checked = data.values.this.append("foreignObject")
+        .attr("class", "planet-select")
+        .attr("x", -g_OverlayItemSize / 2)
+        .attr("y", -g_OverlayItemSize / 2)
+        .attr("width", g_OverlayItemSize)
+        .attr("height", g_OverlayItemSize)
+        .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
+        .attr("title", "SELECT")
+        .on("click", function(data){
+            let isSelected = (data.values.data.ic_id in CHECKED);
+            
+            this.classList.toggle("show");
 
-    if (data.overlay_type !== "project")
-    {
-        data.values.checked = data.values.this.append("foreignObject")
-            .attr("class", "planet-select")
-            .attr("x", -g_OverlayItemSize / 2)
-            .attr("y", -g_OverlayItemSize / 2)
-            .attr("width", g_OverlayItemSize)
-            .attr("height", g_OverlayItemSize)
-            .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
-            .attr("title", "SELECT")
-            .on("click", function(data){
-                let isSelected = (data.values.data.ic_id in CHECKED);
-                
-                this.classList.toggle("show");
+            this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
+            SelectPlanet(data);
+        });
 
-                this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
-                SelectPlanet(data);
-            });
-
-        data.values.checked.append("xhtml:div")
-            .attr("class", "planet foregin select")
-            .append("i")
-            .attr("class", "planet material-icons select")
-            .style("font-size", g_OverlayItemSize + "px")
-            .html("check_circle_outline");
-    }
+    data.values.checked.append("xhtml:div")
+        .attr("class", "planet foregin select")
+        .append("i")
+        .attr("class", "planet material-icons select")
+        .style("font-size", g_OverlayItemSize + "px")
+        .html("check_circle_outline");
 }
 
 // -------------------------------------------------------
@@ -630,8 +632,6 @@ function CreateHoverMenu()
 }
 
 function CreateWorkspace(data) {
-    CreateHoverMenu();
-
     switch (g_view) {
         // planetary
         case 0:
@@ -648,6 +648,8 @@ function CreateWorkspace(data) {
             CreateGrid(data);
             break;
     }
+
+    CreateHoverMenu();
 
     // hide activity when on root path
     $(".activity-menu").toggleClass("d-none", (g_project.current_ic.path === "." &&
