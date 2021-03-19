@@ -462,6 +462,7 @@ def rename_ic():
                 "new_name": request_data["new_name"],
                 "is_directory": True if "is_directory" in request_data else False,
             }
+            print(rename)
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
             result, project = db.rename_ic(db_adapter, rename, u)
             if request_data['parent_id'] == 'root':

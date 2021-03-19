@@ -478,14 +478,14 @@ class DBMongoAdapter:
                         file_updated = True
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)
-                        return msg.STORED_FILE_NOT_FOUND
+                        return msg.STORED_FILE_NOT_FOUND, None
                 if file_updated:
                     print(project.to_json())
                     col.update_one({'project_name': request_data['project_name']}, {'$set': project.to_json()})
 
         else:
             print(msg.PROJECT_NOT_FOUND)
-            return msg.PROJECT_NOT_FOUND
+            return msg.PROJECT_NOT_FOUND, None
         self._close_connection()
         return add, project
 
