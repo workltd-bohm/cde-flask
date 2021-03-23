@@ -137,9 +137,11 @@ function WrapShare(data) {
             }
         }
     });
+}
 
-
-
+function GetFileURL(data)
+{
+    return '/get_shared_file/' + data.stored_id;
 }
 
 function WrapDownload(data) {

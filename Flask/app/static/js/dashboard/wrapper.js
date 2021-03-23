@@ -267,8 +267,12 @@ function CreateTreeStructure() {
                 if (SESSION.name == input_json2[i].project_name) {
                     // console.log('kkk', input_json2[i]);
                     color = input_json2[i].root_ic.color;
-                    if (color == '')
-                        color = '#c8bd5d';
+                    if (color === '') {
+                        let css_col = getComputedStyle(document.documentElement)
+                        .getPropertyValue('--sun-bg');
+                        color = css_col;
+                        console.log('sun bg', color)
+                    }
 
                     let icon_name = document.createElement("span");
                     let icon = document.createElement("span");
@@ -336,8 +340,13 @@ function AddTreeSubfolders(node, sub_folder, project) {
     }
 
     let color = sub_folder.color;
-    if (color === '')
-        color = '#14939b'; // default color
+
+    // default color
+    if (color === '') {
+        let css_col = getComputedStyle(document.documentElement)
+            .getPropertyValue('--planet-bg');
+        color = css_col.trim();
+    }
 
     let icon_name = document.createElement("span");
     let icon = document.createElement("span");

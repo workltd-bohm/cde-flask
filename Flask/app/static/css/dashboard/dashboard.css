@@ -7,7 +7,9 @@
     transition: all 200ms;
 }
 
-#PROJECT-GRID {}
+#PROJECT-GRID {
+    overflow-y: scroll;
+}
 
 .HIDDEN {
     height: 0;

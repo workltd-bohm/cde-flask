@@ -632,6 +632,7 @@ function CreateHoverMenu()
 }
 
 function CreateWorkspace(data) {
+
     switch (g_view) {
         // planetary
         case 0:
@@ -684,7 +685,7 @@ function CreateGrid(data) {
     CreatePath();
 
     let grid = document.createElement('div');
-    grid.className = "row mx-3";
+    grid.className = "row m-5";
     grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
     grid.onclick = function(event) {
         // deselect card
@@ -694,6 +695,8 @@ function CreateGrid(data) {
     }
 
     $("#PROJECT-GRID").empty().append(grid);
+    // add "create new folder" button
+    let new_folder_button = document.createElement("div");
 
     // process all grid items 
     g_project.current_ic.sub_folders.forEach(
@@ -705,16 +708,16 @@ function CreateGrid(data) {
             let card = document.createElement("div");
             card.className = "card";
             card.onclick = function(event) {
-                // select cards
                 if (event.ctrlKey) {
+                    // hold ctrl to select
                     $(this).addClass("selected");
                 } else {
-                    $(".card").not(this).fadeOut(() => {
-                        data.overlay_type !== "project" ? CreateGrid(d) : WrapGetProject(d);
-                    });
+                    // load new ic / folder / project
+                    data.overlay_type !== "project_root" ? CreateGrid(d) : WrapGetProject(d);
                 }
             }
 
+            // right click menu
             card.oncontextmenu = (event) => {
                 CreateContextMenu(event, d);
             }
@@ -723,7 +726,7 @@ function CreateGrid(data) {
             let img = document.createElement('img');
             img.className = "card-img-top";
             img.alt = "Preview unavailable";
-            img.src = "https://yuanpaygroup.com/assets/img/ficoin_FIH.png";
+            img.src = d.stored_id ? GetFileURL(d) : '/';
 
             // create body
             let body = document.createElement('div');
