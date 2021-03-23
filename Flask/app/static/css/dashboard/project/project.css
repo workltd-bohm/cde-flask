@@ -347,10 +347,3 @@ g.path.draw > g.text > text {
 .slider.pos{
     fill: rgba(121, 121, 121, 1);
 }
-
-.card-img-top
-{
-    min-height: 200px;
-    max-height: 200px;
-    object-fit: cover;
-}

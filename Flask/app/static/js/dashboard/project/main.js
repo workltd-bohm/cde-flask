@@ -189,7 +189,7 @@ function AddSun(obj, data) {
 
     data.values.overlay.append("circle")
         .attr("r", g_SunRadius)
-        .attr("fill", "transparent");
+        .attr("fill", "rgba(0,0,0,.75)");
 
     let menu_items = data.values.overlay.append("g")
         .attr("class", "overlay-menu-items");
@@ -723,35 +723,51 @@ function CreateGrid(data) {
             }
 
             // create image
+            let img_div = document.createElement("div");
             let img = document.createElement('img');
-            img.className = "card-img-top";
+            img_div.className = "card-img-top";
+            img.className = "card-img";
             img.alt = "Preview unavailable";
             img.src = d.stored_id ? GetFileURL(d) : '/';
+            img_div.appendChild(img);
 
             // create body
             let body = document.createElement('div');
             body.className = 'card-body';
 
             // body title
-            let title = document.createElement('h5');
+            let title = document.createElement('h6');
             title.className = "card-title";
             title.textContent = d.name;
 
             // body info
             let info = document.createElement('p');
-            info.className = "card-text";
-            info.textContent = d.history[0].date.split("-")[0]; // parse date of file creation
+            info.className = "card-text mt-1 d-flex justify-content-between";
+
+            let date = document.createElement("span");
+            date.textContent = GetDate(d)[0]; // parse date of file creation
+
+            let time = document.createElement("span");
+            time.textContent = GetDate(d)[1];
+
+            info.appendChild(date);
+            info.appendChild(time);
 
             body.appendChild(title);
             body.appendChild(info);
 
-            card.appendChild(img);
+            card.appendChild(img_div);
             card.appendChild(body);
 
             card_holder.appendChild(card);
             grid.appendChild(card_holder);
         }
     );
+
+    // .. make cards square shape
+    let card_width = $(".card-body").innerWidth();
+    let card_body_height = $(".card-body").innerHeight();
+    $(".card-img-top").height(card_width - card_body_height);
 }
 
 function CreateSlider() {

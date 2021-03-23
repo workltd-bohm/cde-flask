@@ -177,3 +177,47 @@
 .hover-dropdown>* {
     display: block;
 }
+
+.card, .card *{
+    overflow: hidden;
+    border-radius: 0 !important;
+}
+
+.card-title
+{
+    font-size: 16px;
+    line-height: 1.2em;
+    min-height: 2.4em;
+    max-height: 2.4em;
+    margin: 0;
+    -webkit-line-clamp: 2;
+    position: relative;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+}
+
+.card-img
+{
+    object-fit: cover;
+    object-position: center;
+    transition: transform 500ms ease;
+}
+
+.card-img:hover
+{
+    transform: scale(1.1);
+}
+
+.card-text
+{
+    font-size: 14px;
+}
+
+.card:hover
+{
+    box-shadow: 
+        var(--neon-blue) 1px 1px 0px,
+        var(--neon-blue) -1px -1px 0px;
+}
