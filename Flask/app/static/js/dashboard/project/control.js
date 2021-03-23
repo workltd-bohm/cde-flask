@@ -1,5 +1,8 @@
 
 // -------------------------------------------------------
+window.onresize = function(){
+    ResizeCards();
+}
 
 function WindowResize(){
     var dash = $DASHBOARD;

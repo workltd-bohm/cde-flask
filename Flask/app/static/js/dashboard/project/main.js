@@ -761,6 +761,10 @@ function CreateGrid(data) {
         }
     );
 
+    ResizeCards();
+}
+
+function ResizeCards(){
     // .. make cards square shape
     let card_width = $(".card-body").innerWidth();
     let card_body_height = $(".card-body").innerHeight();
