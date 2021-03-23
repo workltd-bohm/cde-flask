@@ -703,7 +703,7 @@ function CreateGrid(data) {
         (d) => {
             // create a card
             let card_holder = document.createElement("div");
-            card_holder.className = "col-md-2 p-2";
+            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-2 p-2";
 
             let card = document.createElement("div");
             card.className = "card";
@@ -723,13 +723,10 @@ function CreateGrid(data) {
             }
 
             // create image
-            let img_div = document.createElement("div");
             let img = document.createElement('img');
-            img_div.className = "card-img-top";
-            img.className = "card-img";
+            img.className = "card-img-top";
             img.alt = "Preview unavailable";
             img.src = d.stored_id ? GetFileURL(d) : '/';
-            img_div.appendChild(img);
 
             // create body
             let body = document.createElement('div');
@@ -756,7 +753,7 @@ function CreateGrid(data) {
             body.appendChild(title);
             body.appendChild(info);
 
-            card.appendChild(img_div);
+            card.appendChild(img);
             card.appendChild(body);
 
             card_holder.appendChild(card);
