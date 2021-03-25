@@ -187,9 +187,11 @@ function AddSun(obj, data) {
             CreateContextMenu(d3.event, data);
         });
 
+    // get color from the sun and make overlay same color
+    let color_default = getComputedStyle(document.documentElement).getPropertyValue("--sun-bg").trim();
     data.values.overlay.append("circle")
         .attr("r", g_SunRadius)
-        .attr("fill", "rgba(0,0,0,.75)");
+        .attr("fill", hexToRGB(data.color ? data.color : color_default, .75));
 
     let menu_items = data.values.overlay.append("g")
         .attr("class", "overlay-menu-items");
@@ -458,6 +460,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .append("i")
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
+        .style("color", data.color ? FlipColor(data.color) : "#303030")
         .html("check_circle_outline");
 }
 
@@ -658,6 +661,7 @@ function CreateWorkspace(data) {
 }
 
 function CreateGrid(data) {
+    // hacking "sun" data
     data.values = {};
     data.values.back = data;
     data.values.data = data;
@@ -701,6 +705,12 @@ function CreateGrid(data) {
     // process all grid items 
     g_project.current_ic.sub_folders.forEach(
         (d) => {
+            // config (hack) data
+            d.values = {};
+            d.values.sun = false;
+            d.values.data = d;
+            d.values.data.checked = false;
+
             // create a card
             let card_holder = document.createElement("div");
             card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-2 p-2";

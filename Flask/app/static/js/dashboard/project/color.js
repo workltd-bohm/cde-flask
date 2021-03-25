@@ -14,6 +14,7 @@ const colorScale = [
 ];
 
 function ChangeColor(data) {
+    if (g_view !== VIEW_PL) { alert("to be implemented"); return; }
     let defaultColor = $(".foregin .material-icons").css("color");
 
     let _radius = g_OverlayRadius;
@@ -35,7 +36,7 @@ function ChangeColor(data) {
 
     if (g_root.slider && data.values.data.values.sun) {
         wheel.transition().duration(0)
-            .attr("y", );
+            .attr("y", 0);
     }
 
     let circle = wheel.append("circle")
