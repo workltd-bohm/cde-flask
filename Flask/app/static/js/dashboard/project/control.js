@@ -1,5 +1,8 @@
 
 // -------------------------------------------------------
+window.onresize = function(){
+    ResizeCards();
+}
 
 function WindowResize(){
     var dash = $DASHBOARD;
@@ -28,7 +31,7 @@ function WindowResize(){
     if(g_SunRadius < SUN_MIN_SIZE) g_SunRadius = SUN_MIN_SIZE;
 
     g_PlanetRadius = g_SunRadius/PLANET_SUN_RATIO;
-    //g_PlanetRadius_old = g_PlanetRadius;
+    // g_PlanetRadius_old = g_PlanetRadius;
 
     g_PathRadius = g_SunRadius/PATH_SUN_RATIO;
     g_HistRadius = g_SunRadius/HISTORY_SUN_RATIO;

@@ -187,9 +187,11 @@ function AddSun(obj, data) {
             CreateContextMenu(d3.event, data);
         });
 
+    // get color from the sun and make overlay same color
+    let color_default = getComputedStyle(document.documentElement).getPropertyValue("--sun-bg").trim();
     data.values.overlay.append("circle")
         .attr("r", g_SunRadius)
-        .attr("fill", "transparent");
+        .attr("fill", hexToRGB(data.color ? data.color : color_default, .75));
 
     let menu_items = data.values.overlay.append("g")
         .attr("class", "overlay-menu-items");
@@ -458,6 +460,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .append("i")
         .attr("class", "planet material-icons select")
         .style("font-size", g_OverlayItemSize + "px")
+        .style("color", data.color ? FlipColor(data.color) : "#303030")
         .html("check_circle_outline");
 }
 
@@ -632,6 +635,7 @@ function CreateHoverMenu()
 }
 
 function CreateWorkspace(data) {
+
     switch (g_view) {
         // planetary
         case 0:
@@ -657,6 +661,7 @@ function CreateWorkspace(data) {
 }
 
 function CreateGrid(data) {
+    // hacking "sun" data
     data.values = {};
     data.values.back = data;
     data.values.data = data;
@@ -684,7 +689,7 @@ function CreateGrid(data) {
     CreatePath();
 
     let grid = document.createElement('div');
-    grid.className = "row mx-3";
+    grid.className = "row m-5";
     grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
     grid.onclick = function(event) {
         // deselect card
@@ -694,27 +699,35 @@ function CreateGrid(data) {
     }
 
     $("#PROJECT-GRID").empty().append(grid);
+    // add "create new folder" button
+    let new_folder_button = document.createElement("div");
 
     // process all grid items 
     g_project.current_ic.sub_folders.forEach(
         (d) => {
+            // config (hack) data
+            d.values = {};
+            d.values.sun = false;
+            d.values.data = d;
+            d.values.data.checked = false;
+
             // create a card
             let card_holder = document.createElement("div");
-            card_holder.className = "col-md-2 p-2";
+            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-2 p-2";
 
             let card = document.createElement("div");
             card.className = "card";
             card.onclick = function(event) {
-                // select cards
                 if (event.ctrlKey) {
+                    // hold ctrl to select
                     $(this).addClass("selected");
                 } else {
-                    $(".card").not(this).fadeOut(() => {
-                        data.overlay_type !== "project" ? CreateGrid(d) : WrapGetProject(d);
-                    });
+                    // load new ic / folder / project
+                    data.overlay_type !== "project_root" ? CreateGrid(d) : WrapGetProject(d);
                 }
             }
 
+            // right click menu
             card.oncontextmenu = (event) => {
                 CreateContextMenu(event, d);
             }
@@ -723,21 +736,29 @@ function CreateGrid(data) {
             let img = document.createElement('img');
             img.className = "card-img-top";
             img.alt = "Preview unavailable";
-            img.src = "https://yuanpaygroup.com/assets/img/ficoin_FIH.png";
+            img.src = d.stored_id ? GetFileURL(d) : '/';
 
             // create body
             let body = document.createElement('div');
             body.className = 'card-body';
 
             // body title
-            let title = document.createElement('h5');
+            let title = document.createElement('h6');
             title.className = "card-title";
             title.textContent = d.name;
 
             // body info
             let info = document.createElement('p');
-            info.className = "card-text";
-            info.textContent = d.history[0].date.split("-")[0]; // parse date of file creation
+            info.className = "card-text mt-1 d-flex justify-content-between";
+
+            let date = document.createElement("span");
+            date.textContent = GetDate(d)[0]; // parse date of file creation
+
+            let time = document.createElement("span");
+            time.textContent = GetDate(d)[1];
+
+            info.appendChild(date);
+            info.appendChild(time);
 
             body.appendChild(title);
             body.appendChild(info);
@@ -749,6 +770,15 @@ function CreateGrid(data) {
             grid.appendChild(card_holder);
         }
     );
+
+    ResizeCards();
+}
+
+function ResizeCards(){
+    // .. make cards square shape
+    let card_width = $(".card-body").innerWidth();
+    let card_body_height = $(".card-body").innerHeight();
+    $(".card-img-top").height(card_width - card_body_height);
 }
 
 function CreateSlider() {

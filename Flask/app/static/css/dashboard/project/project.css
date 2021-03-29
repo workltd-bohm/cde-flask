@@ -264,6 +264,16 @@ g.path.draw > g.text > text {
     /* add rules overlay item hover */
 }
 
+.overlay-dark
+{
+    color: var(--text-light);
+}
+
+.overlay-light
+{
+    color: var(--text-dark);
+}
+
 .context-menu-wrapper
 {
     position: absolute;
