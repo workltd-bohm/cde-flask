@@ -306,10 +306,14 @@ function thumb(files) {
         var reader = new FileReader();
 
         if (reader != null) {
-            reader.onload = GetThumbnail;
+            reader.onload = function(e) {
+                console.log(GetThumbnail(e));
+            };
             reader.readAsDataURL(file);
         }
     }
+
+    console.log(files);
 }
  
 function GetThumbnail(e) {
@@ -318,7 +322,7 @@ function GetThumbnail(e) {
     img.src = e.target.result;
     img.onload = function () {
         myCan.id = "myTempCanvas";
-        var tsize = document.getElementById("txtThumbSize").value;
+        var tsize = 128;
         myCan.width = Number(tsize);
         myCan.height = Number(tsize);
         if (myCan.getContext) {
@@ -326,20 +330,18 @@ function GetThumbnail(e) {
             cntxt.drawImage(img, 0, 0, myCan.width, myCan.height);
             var dataURL = myCan.toDataURL();
 
-
             if (dataURL != null && dataURL != undefined) {
-                var nImg = document.createElement('img');
-                nImg.src = dataURL;
-                document.body.appendChild(nImg);
-
+                // var nImg = document.createElement('img');
+                // nImg.src = dataURL;
+                // document.body.appendChild(nImg);
+                return (dataURL);
             }
             else
                 alert('unable to get context');
-
+        } else {
+            alert('no context')
         }
-
     }
-
 }
 
 
