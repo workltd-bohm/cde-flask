@@ -40,7 +40,7 @@ def send_an_email(username, email):
                "username: %s <br>" \
                "email: %s <br><br>" \
                "please click the following link: <br>" \
-               "<br><a href=\"http://localhost/confirm_account?username=%s&email=%s\">Confirm</a> " \
+               "<br><a href=\"https://localhost/confirm_account?username=%s&email=%s\">Confirm</a> " \
                "</p>" % ('admin', username, email, username, email)
         m = MIMEText(html1 + body + html2, "html")
         message.attach(m)

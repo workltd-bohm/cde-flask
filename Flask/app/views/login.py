@@ -19,7 +19,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('login', _external=True, _scheme='http'))
 
 
 @app.route('/login_data', methods=['POST'])
@@ -50,7 +50,7 @@ def login_data():
             if login_ic_data != '':
                 request_data = base64.b64decode(login_ic_data).decode('utf-8')
                 dirs.set_project_data(json.loads(request_data))
-            return redirect(url_for('index'))
+            return redirect(url_for('index', _external=True, _scheme='http'))
         else:
             resp = Response()
             resp.status_code = response['code']
