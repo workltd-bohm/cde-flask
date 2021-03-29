@@ -80,7 +80,7 @@ def get_project():
 
         if 'project' in request_data:
             if request_data['project'] == {'position': None, 'section': 'project'}:
-                return redirect(url_for('get_root_project', data={}, _external=True, _scheme='http'))
+                return redirect(url_for('get_root_project', data={}, _external=True, _scheme='https'))
 
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
@@ -685,7 +685,7 @@ def get_shared_ic(ic_data):
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
                 return resp
 
-    return redirect(url_for('login', data=ic_data, _external=True, _scheme='http'), code=307)
+    return redirect(url_for('login', data=ic_data, _external=True, _scheme='https'), code=307)
 
 
 @app.route('/go_to', methods=['POST', 'GET'])
@@ -726,7 +726,7 @@ def go_to():
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
                 return resp
 
-    return redirect(url_for('login', data=ic_data, _external=True, _scheme='http'), code=307)
+    return redirect(url_for('login', data=ic_data, _external=True, _scheme='https'), code=307)
 
 
 @app.route('/get_input_json', methods=['GET'])
