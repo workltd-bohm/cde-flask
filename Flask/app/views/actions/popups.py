@@ -279,7 +279,6 @@ def get_new_folder():
 
 @app.route('/get_new_file', methods=['POST'])
 def get_new_file():
-    print('\n\n\n\n we are trying to upload a file \n\n')
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())

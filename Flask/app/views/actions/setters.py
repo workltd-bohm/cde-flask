@@ -138,12 +138,16 @@ def upload_existing_project():
                     counter = request.form['counter']
                     total = request.form['total']
                     original_path = path
+
                     logger.log(LOG_LEVEL, 'Path: {}'.format(path))
                     logger.log(LOG_LEVEL, 'Percentage: {}'.format(str((int(counter) / int(total)) * 100) + '%'))
+
                     current_file_path_old = path.split('/')
                     file_name = current_file_path_old[-1]
+
                     current_file_path_backup = current_file_path_old[:]
                     current_file_path = current_file_path_old[1:-1]
+
                     parent_id = project.root_ic.ic_id
                     parent_ic = project.root_ic
 
@@ -324,7 +328,7 @@ def upload_existing_project():
                                 #             temp_upload_list[session['user']['id']] = {}
                                 #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
                                 # print('ovde', ic_new.to_json())
-                                print(message)
+                                # print(message)
                                 # message, ic = db.create_folder(db_adapter, project.name, ic_new)
                                 parent_ic = ic_new
                                 logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))

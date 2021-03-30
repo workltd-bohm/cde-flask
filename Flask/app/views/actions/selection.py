@@ -101,7 +101,9 @@ def move_multi():
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
 
-                old_parent_ic = project.find_ic_by_id({"parent_id": request_data_array["from_parent_id"]}, request_data_array["from_ic_id"], project.root_ic)
+                old_parent_ic = project.find_ic_by_id(
+                    {"parent_id": request_data_array["from_parent_id"]}, 
+                    request_data_array["from_ic_id"], project.root_ic)
                 project.current_ic = None
                 project.added = False
                 new_parent_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], project.root_ic)

@@ -289,61 +289,54 @@ function NewFile(form, json, file) {
 }
 
 // ------------------------------------------
-function thumb(files) {
-    if (files == null || files == undefined) {
+
+/* 
+    changes Files -> if it is an image, adds thumb64
+    to the image file object remove data: 64 to read
+*/
+function imgToThumb64(file) {
+    if (file == null || file == undefined) {
         document.write("This Browser has no support for HTML5 FileReader yet!");
         return false;
+    }    
+    var imageType = /image.*/;
+
+    if (!file.type.match(imageType)) {
+        return;
     }
 
-    for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        var imageType = /image.*/;
-
-        if (!file.type.match(imageType)) {
-            continue;
-        }
-
-        var reader = new FileReader();
-
-        if (reader != null) {
-            reader.onload = function(e) {
-                console.log(GetThumbnail(e));
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    console.log(files);
-}
- 
-function GetThumbnail(e) {
     var myCan = document.createElement('canvas');
     var img = new Image();
-    img.src = e.target.result;
+    img.src = URL.createObjectURL(file);
+    
+    console.log('before image loaded')
     img.onload = function () {
+        console.log('image has been loaded')
         myCan.id = "myTempCanvas";
+
         var tsize = 128;
         myCan.width = Number(tsize);
         myCan.height = Number(tsize);
+
         if (myCan.getContext) {
             var cntxt = myCan.getContext("2d");
             cntxt.drawImage(img, 0, 0, myCan.width, myCan.height);
             var dataURL = myCan.toDataURL();
 
+            console.log('have dataurl')
             if (dataURL != null && dataURL != undefined) {
-                // var nImg = document.createElement('img');
-                // nImg.src = dataURL;
-                // document.body.appendChild(nImg);
-                return (dataURL);
+                console.log('pushed dataURL')
+                file.thumb64 = dataURL;
             }
-            else
-                alert('unable to get context');
-        } else {
-            alert('no context')
+
+            else alert('Unable to get context.');
+        } 
+        else 
+        {
+            alert('No context.')
         }
     }
 }
-
 
 function RenameFile(form, json) {
     //    console.log(json);

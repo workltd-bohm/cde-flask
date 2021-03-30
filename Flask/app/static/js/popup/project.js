@@ -156,6 +156,7 @@ function UploadProject(form) {
 }
 
 function sendFilesHelper(files, folders) {
+    console.log('what')
     if (!folders_only || (folders_only && !$("#is_iso19650_checkbox").is(':checked'))) {
         if (folders_only) {
             $("#is_iso19650_checkbox").hide();
@@ -194,6 +195,8 @@ function createProject(files, folders) {
         let data = { project_name: project_name, is_iso: is_iso };
         // console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
+        
+        console.log('create project');
         $.ajax({
             url: 'create_project',
             type: 'POST',
@@ -267,10 +270,11 @@ function sendFile(files, folders, current, fileData = {}) {
         }
         listing.innerHTML = "Uploading file<br>" + path.split('/').slice(-1)[0] + " (" + counter + " of " + total + " ) ";
         box.innerHTML = Math.min((counter) / total * 100, 100).toFixed(2) + "%";
-        formData.set('file', file.file); // One object file
-        formData.set('path', path); // String of local file's path
+        formData.set('file', file.file);    // One object file
+        formData.set('path', path);         // String of local file's path
         formData.set('is_dir', false);
     }
+
     formData.set('counter', counter);
     formData.set('total', total);
 
@@ -493,6 +497,7 @@ function filesDroped(event) {
 
     function processFiles(files) {
         Promise.all([].map.call(files, function(file, index) {
+                imgToThumb64(file);
                 return handleEntries(file, index).then(handleFile)
             }))
             .then(function() {
