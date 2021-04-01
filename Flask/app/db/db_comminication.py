@@ -70,6 +70,10 @@ def upload_file(db_adapter, project, file_obj, file=None):
     return db_adapter.upload_file(project, file_obj, file)
 
 
+def upload_thumb(db_adapter, project, file_obj, thumb):
+    return db_adapter.upload_thumb(project, file_obj, thumb)
+
+
 def update_file(db_adapter, project, file_obj, file=None):
     return db_adapter.update_file(project, file_obj, file)
 
