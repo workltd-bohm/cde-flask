@@ -1,26 +1,18 @@
 function MoveCreate(obj, data) {
-    // Todo make only for planetary
-    g_project.move_ic = data;
-    
     if (g_project.selection) {
         g_project.selection.remove();
         g_project.selection = false;
     }
-    
-    return;
-    
+
     data.move = {};
     data.move.this = obj;
-    
+
     //data.values.text.style("opacity", 0);
 
-    // create move group
     data.move.object = data.values.this.append("g")
         .attr("class", "star move")
 
     g_project.move = data.move.object;
-
-    // config overlay
     g_OverlayRadius = g_SunRadius;
     g_OverlayItemSize = g_OverlayRadius / OVERLAY_SUN_RATIO;
 
@@ -31,7 +23,6 @@ function MoveCreate(obj, data) {
     }
     //// [SLIDER END]
 
-    // circles
     data.move.object.append("circle")
         .attr("class", "move pattern " + (MULTI.to_copy ? "copy" : "move"))
         .attr("cx", 0)
@@ -44,7 +35,6 @@ function MoveCreate(obj, data) {
         .attr("cy", 0)
         .attr("r", g_OverlayRadius * CHECKED_SELECT_RATIO)
 
-    // move text
     AddMoveText(data, data.name, MULTI.to_copy ? "Copy to" : "Move to");
 
     data.move.children = data.move.object.append("g")
@@ -61,7 +51,6 @@ function MoveCreate(obj, data) {
         .attr("width", 2)
         .attr("height", 40)
 
-    // accept button
     data.move.allgroup.append("text")
         .attr("class", "move text_back")
         .attr("x", -10)
@@ -76,10 +65,9 @@ function MoveCreate(obj, data) {
         .style("text-anchor", "end")
         .html("Accept")
         .on("mouseup", function(d) {
-            ApplyMove(data);
+            ApllyMove(data);
         });
 
-    // cancel button
     data.move.allgroup.append("text")
         .attr("class", "move text_back")
         .attr("x", 10)
@@ -127,12 +115,10 @@ function AddMoveText(data, name, text) {
         .html(name)
 }
 
-function ApplyMove(data) {
-    MULTI.to_parent_id = data.parent_id;
-    MULTI.to_ic_id = data.ic_id;
-    LoadStart();
-    
-    console.log(MULTI)
+function ApllyMove(data) {
+    MULTI.to_parent_id = data.parent_id,
+        MULTI.to_ic_id = data.ic_id,
+        LoadStart();
     $.ajax({
         url: "/move_ic_multi",
         type: 'POST',
@@ -154,11 +140,8 @@ function ApplyMove(data) {
     });
 
     DeselectAllPlanets(data);
-
-    if (g_project.move) {
-        g_project.move.remove();
-        g_project.move = false;
-    }
+    g_project.move.remove();
+    g_project.move = false;
 }
 
 function MoveObject(data, copy = false) {

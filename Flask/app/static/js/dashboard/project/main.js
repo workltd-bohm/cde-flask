@@ -341,6 +341,7 @@ function AddChildren(obj, data, parent, position = 0) {
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
 
+
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     // Shaders start
@@ -429,7 +430,9 @@ function AddChildren(obj, data, parent, position = 0) {
             CreateContextMenu(d3.event, d);
         });
 
+
     data.values.data = data;    // hack - be careful
+
 
     if (data.overlay_type === "project" || (g_project.current_ic.overlay_type === "user")) return;
 
@@ -629,7 +632,6 @@ function CreateHoverMenu()
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
-    if (Object.keys(MULTI).length) CreatePromptMenu();
 }
 
 function CreateWorkspace(data) {
@@ -697,7 +699,6 @@ function CreateGrid(data) {
     }
 
     $("#PROJECT-GRID").empty().append(grid);
-
     // add "create new folder" button
     let new_folder_button = document.createElement("div");
 
@@ -707,7 +708,6 @@ function CreateGrid(data) {
             // config (hack) data
             d.values = {};
             d.values.sun = false;
-            d.values.back = data;
             d.values.data = d;
             d.values.data.checked = false;
 
@@ -736,7 +736,7 @@ function CreateGrid(data) {
             let img = document.createElement('img');
             img.className = "card-img-top";
             img.alt = "Preview unavailable";
-            img.src = d.thumb_id ? GetFileURL(d) : '/';
+            img.src = d.stored_id ? GetFileURL(d) : '/';
 
             // create body
             let body = document.createElement('div');

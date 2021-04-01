@@ -527,43 +527,6 @@ function SortByDate(data) {
     MakeSnackbar("Items sorted by date of creation.");
 }
 
-function CreatePromptMenu()
-{
-    let menu = document.createElement("div");
-    menu.className = "";
-
-    // accept button
-    let menu_item = document.createElement("div");
-    menu_item.className = "hover-menu-item px-3 py-2 mt-3";
-
-    let accept = document.createElement("a");
-    accept.textContent = "Accept"
-    accept.onclick = function() {
-        ApplyMove(g_project.move_ic);
-    }
-
-    menu_item.appendChild(accept);
-    menu.appendChild(menu_item);
-
-    // cancel button
-    menu_item = document.createElement('div');
-    menu_item.className = "hover-menu-item px-3 py-2 mt-3";
-    
-    let cancel = document.createElement("a");
-    cancel.textContent = "Cancel"
-    cancel.onclick = function(){
-        // cancels selection
-        DeselectAllPlanets(g_project.move_ic);
-        g_project.move.remove();
-        g_project.move = false;
-    }
-
-    menu_item.appendChild(cancel);
-    menu.appendChild(menu_item);
-    
-    $(".hover-menu").append(menu);
-}
-
 function CreateSelectMenu() {
     if (g_project.current_ic.overlay_type === "project_root") return;
 
