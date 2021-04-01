@@ -363,13 +363,13 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
-        file_query = {'thumb_file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id} 
+        file_query = {'file_name': file_obj.name + '_thumb' + file_obj.type, "parent_id": file_obj.parent_id} 
         file_json = self._fs.find_one(file_query)
         thumb_id = ''
         if file_json is None:
             thumb_id = str(self._fs.put(thumb,
                                             file_id='default',
-                                            thumb_file_name=file_obj.name+file_obj.type, 
+                                            file_name=file_obj.name + '_thumb' + file_obj.type, 
                                             parent=file_obj.parent,
                                             parent_id=file_obj.parent_id
                                             ))

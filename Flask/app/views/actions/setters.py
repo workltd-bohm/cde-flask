@@ -255,11 +255,15 @@ def upload_existing_project():
                                 file_type.lower() == 'bmp' or \
                                 file_type.lower() == 'psd' or \
                                 file_type.lower() == 'webp' or \
+                                file_type.lower() == 'jfif' or \
                                 file_type.lower() == 'tiff':
                                 
                             thumb = Image.open(io.BytesIO(file))
                             MAX_SIZE = (100, 100)
                             thumb.thumbnail(MAX_SIZE)
+
+                            thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, thumb.tobytes())
+                            ic_new_file.thumb_id = thumb_id
                             # thumb.save('pythonthumb.png')
                         # else:
                         #     script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
@@ -270,8 +274,6 @@ def upload_existing_project():
                         #     thumb = Image.open(abs_file_path)
                         #     MAX_SIZE = (100, 100)
                         #     thumb.thumbnail(MAX_SIZE)
-                        thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, thumb.tobytes())
-                        ic_new_file.thumb_id = thumb_id
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
                         # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded

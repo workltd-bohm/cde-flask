@@ -141,7 +141,7 @@ function WrapShare(data) {
 
 function GetFileURL(data)
 {
-    return '/get_shared_file/' + data.stored_id;
+    return '/get_shared_file/' + data.thumb_id;
 }
 
 function WrapDownload(data) {
