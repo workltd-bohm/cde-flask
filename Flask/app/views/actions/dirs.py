@@ -139,7 +139,7 @@ def get_shared_file(file_id):
 
 
 @app.route('/get_thumb/<path:file_id>', methods=['POST', 'GET'])
-def get_shared_file(file_id):
+def get_thumb(file_id):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {
