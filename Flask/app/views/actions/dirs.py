@@ -156,16 +156,16 @@ def get_folder(parent_id, folder_name):
             project = Project.json_to_obj(response)
             ic = project.find_ic(request_json, folder_name, project.root_ic)
 
-            path = os.getcwd() + '\\'
+            path = os.getcwd() + '/'
             millis = int(round(time.time() * 1000))
             try:
-                if not os.path.exists(path + 'tmp\\'):
-                    os.mkdir(path + 'tmp\\')
-                if not os.path.exists(path + 'tmp\\' + u['id'] + '_' + str(millis)):
-                    os.mkdir(path + 'tmp\\' + u['id'] + '_' + str(millis))
+                if not os.path.exists(path + 'tmp/'):
+                    os.mkdir(path + 'tmp/')
+                if not os.path.exists(path + 'tmp/' + u['id'] + '_' + str(millis)):
+                    os.mkdir(path + 'tmp/' + u['id'] + '_' + str(millis))
             except OSError as err:
                 logger.log(LOG_LEVEL, 'Creation of the directory {} failed'.format(path + '\n' + err))
-            path = os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\'
+            path = os.getcwd() + '/tmp/' + u['id'] + '_' + str(millis) + '/'
             json_to_temp_folder_struct(path, ic, response)
 
             zipf = zipfile.ZipFile('tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip', 'w', zipfile.ZIP_DEFLATED)
@@ -175,13 +175,15 @@ def get_folder(parent_id, folder_name):
             zipf.close()
             # print(ic.name + '.zip')
 
-            resp = send_file(os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis) + '\\' + ic.name + '.zip',
+            resp = send_file(os.getcwd() + '/tmp/' + u['id'] + '_' + str(millis) + '/' + ic.name + '.zip',
                              mimetype='zip',
                              attachment_filename=ic.name + '.zip',
                              as_attachment=True)
 
-            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '\\tmp\\' + u['id'] + '_' + str(millis)})
+            thread = Thread(target=remove_folder, kwargs={'path': os.getcwd() + '/tmp/' + u['id'] + '_' + str(millis)})
             thread.start()
+
+            logger.log(LOG_LEVEL, 'Response: {}'.format(ic.name + '.zip'))
 
             return resp
 
@@ -719,7 +721,7 @@ def json_to_temp_folder_struct(path, ic, project):
         except OSError:
             print("Creation of the directory %s failed" % path)
         for sub_folder in ic.sub_folders:
-            json_to_temp_folder_struct(path + ic.name + '\\', sub_folder, project)
+            json_to_temp_folder_struct(path + ic.name + '/', sub_folder, project)
     else:
         if db.connect(db_adapter):
             result = db.get_file(db_adapter, {'ic_id': ic.ic_id})
