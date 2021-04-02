@@ -261,10 +261,19 @@ def upload_existing_project():
                             thumb = Image.open(io.BytesIO(file))
                             MAX_SIZE = (100, 100)
                             thumb.thumbnail(MAX_SIZE)
+                            output = io.BytesIO()
+                            thumb.save(output, format=file_type)
+                            
+                            contents = output.getvalue()
 
-                            thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, thumb.tobytes())
-                            ic_new_file.thumb_id = thumb_id
+                            output.close()
+
+                            thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
+                            # ic_new_file.thumb_id = thumb_id
                             # thumb.save('pythonthumb.png')
+                            # test = thumb.tobytes()
+                            # t = Image.frombytes('RGB', MAX_SIZE, test, 'raw')
+                            # t.save('ovde.png')
                         # else:
                         #     script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
                         #     print(script_dir)

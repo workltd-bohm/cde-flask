@@ -7,6 +7,7 @@ import zipfile
 import shutil
 from threading import Thread
 import time
+from PIL import Image
 
 from app import *
 
