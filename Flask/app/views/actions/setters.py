@@ -259,7 +259,7 @@ def upload_existing_project():
                                 file_type.lower() == 'tiff':
                                 
                             thumb = Image.open(io.BytesIO(file))
-                            MAX_SIZE = (100, 100)
+                            MAX_SIZE = (256, 256)
                             thumb.thumbnail(MAX_SIZE)
                             output = io.BytesIO()
                             thumb.save(output, format=file_type)
@@ -269,6 +269,7 @@ def upload_existing_project():
                             output.close()
 
                             thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
+                            ic_new_file.thumb_id = thumb_id
                             # ic_new_file.thumb_id = thumb_id
                             # thumb.save('pythonthumb.png')
                             # test = thumb.tobytes()
