@@ -262,7 +262,7 @@ def upload_existing_project():
                             MAX_SIZE = (256, 256)
                             thumb.thumbnail(MAX_SIZE)
                             output = io.BytesIO()
-                            thumb.save(output, format=file_type)
+                            thumb.save(output, format='png')
                             
                             contents = output.getvalue()
 
