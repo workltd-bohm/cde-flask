@@ -250,12 +250,13 @@ def upload_existing_project():
                         file_type = file_name.split('.')[-1]
                         if file_type.lower() == 'jpg' or \
                                 file_type.lower() == 'jpeg' or \
+                                file_type.lower() == 'jpe' or \
+                                file_type.lower() == 'jfif' or \
                                 file_type.lower() == 'png' or \
                                 file_type.lower() == 'gif' or \
                                 file_type.lower() == 'bmp' or \
-                                file_type.lower() == 'psd' or \
                                 file_type.lower() == 'webp' or \
-                                file_type.lower() == 'jfif' or \
+                                file_type.lower() == 'tif' or \
                                 file_type.lower() == 'tiff':
                                 
                             thumb = Image.open(io.BytesIO(file))
