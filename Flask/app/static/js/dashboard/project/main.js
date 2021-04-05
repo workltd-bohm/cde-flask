@@ -633,6 +633,8 @@ function CreateHoverMenu()
     CreateSelectMenu();
     CreateViewMenu();
     if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
+
+    $(".btn-view").children().first().text(g_view === VIEW_PL ? "grid_view" : "public");
 }
 
 function CreateWorkspace(data) {

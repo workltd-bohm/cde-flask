@@ -676,72 +676,72 @@ function CreateViewMenu() {
     button.appendChild(text);
 
     button.onclick = function(event) {
-        $(event.target
-                .closest(".hover-menu-item")
-                .querySelector(".hover-dropdown"))
-            .toggleClass("d-none");
+        // $(event.target
+        //         .closest(".hover-menu-item")
+        //         .querySelector(".hover-dropdown"))
+        //     .toggleClass("d-none");
+        ToggleViewMode();
     }
 
     // add button to view-menu
     view_menu.appendChild(button);
 
     // create dropdown
-    let dropdown = document.createElement("div");
-    dropdown.className = "hover-dropdown d-none";
+    // let dropdown = document.createElement("div");
+    // dropdown.className = "hover-dropdown d-none";
 
     /* options */
 
     // > planetary option
     // create button
-    let menu_item = document.createElement("a");
-    menu_item.className = "mt-2";
+    // let menu_item = document.createElement("a");
+    // menu_item.className = "mt-2";
 
-    // button icon
-    icon = document.createElement("span");
-    icon.className = "material-icons";
-    icon.textContent = "wb_sunny";
+    // // button icon
+    // icon = document.createElement("span");
+    // icon.className = "material-icons";
+    // icon.textContent = "wb_sunny";
 
-    // button text
-    text = document.createElement("span");
-    text.className = "ms-1"
-    text.textContent = "Planetary";
+    // // button text
+    // text = document.createElement("span");
+    // text.className = "ms-1"
+    // text.textContent = "Planetary";
 
-    menu_item.appendChild(icon);
-    menu_item.appendChild(text);
+    // menu_item.appendChild(icon);
+    // menu_item.appendChild(text);
 
-    menu_item.onclick = function() {
-        g_view = VIEW_PL;
-        CreateWorkspace(g_project.current_ic);
-    }
+    // menu_item.onclick = function() {
+    //     ToggleViewMode();
+    // }
 
-    dropdown.appendChild(menu_item);
+    // dropdown.appendChild(menu_item);
 
-    // grid option
-    menu_item = document.createElement("a");
-    menu_item.className = "mt-2";
+    // // grid option
+    // menu_item = document.createElement("a");
+    // menu_item.className = "mt-2";
 
-    // grid icon
-    icon = document.createElement("span");
-    icon.className = "material-icons";
-    icon.textContent = "view_comfy";
+    // // grid icon
+    // icon = document.createElement("span");
+    // icon.className = "material-icons";
+    // icon.textContent = "view_comfy";
 
-    // grid text
-    text = document.createElement("span");
-    text.className = "ms-1"
-    text.textContent = "Grid";
+    // // grid text
+    // text = document.createElement("span");
+    // text.className = "ms-1"
+    // text.textContent = "Grid";
 
-    menu_item.appendChild(icon);
-    menu_item.appendChild(text);
+    // menu_item.appendChild(icon);
+    // menu_item.appendChild(text);
 
-    menu_item.onclick = function() {
-        g_view = VIEW_GR;
-        CreateWorkspace(g_project.current_ic);
-    }
+    // menu_item.onclick = function() {
+    //     g_view = VIEW_GR;
+    //     CreateWorkspace(g_project.current_ic);
+    // }
 
-    dropdown.appendChild(menu_item);
+    // dropdown.appendChild(menu_item);
 
-    // add dropdown to sort-menu
-    view_menu.appendChild(dropdown);
+    // // add dropdown to sort-menu
+    // view_menu.appendChild(dropdown);
 
     $(".hover-menu").append(view_menu);
 }
@@ -797,6 +797,11 @@ function GetContextType(data) {
         default:
             return type;
     }
+}
+
+function ToggleViewMode(){
+    g_view = g_view === VIEW_PL ? VIEW_GR : VIEW_PL;
+    CreateWorkspace(g_project.current_ic);
 }
 
 function SwitchViewsPlanetary(data) {
