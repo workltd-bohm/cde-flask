@@ -632,6 +632,7 @@ function CreateHoverMenu()
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
+    if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
 }
 
 function CreateWorkspace(data) {
@@ -660,14 +661,39 @@ function CreateWorkspace(data) {
         g_project.current_ic.overlay_type !== "user"));
 }
 
+function CreatePromptMenu()
+{
+    let menu = document.createElement("div");
+    menu.className = "prompt-menu";
+
+    let button_accept = document.createElement("a");
+    button_accept.className = "hover-menu-item px-3 py-2 mt-3 glow";
+    button_accept.textContent = "Accept";
+    button_accept.onclick = function() {
+        ApplyMove(g_project.move);
+    }
+    
+    let button_cancel = document.createElement("a");
+    button_cancel.className = "hover-menu-item px-3 py-2 mt-3 glow";
+    button_cancel.textContent = "Cancel";
+    button_cancel.onclick = function() {
+        ClearMove();
+    }
+
+    menu.appendChild(button_accept);
+    menu.appendChild(button_cancel);
+    console.log('downtown')
+    $(".hover-menu").prepend(menu);
+}
+
 function CreateGrid(data) {
     // hacking "sun" data
     data.values = {};
     data.values.back = data;
     data.values.data = data;
-    g_project.current_ic = data;
     data.id = data.ic_id;
-
+    g_project.current_ic = data;    // set current ic (global)
+    
     switch (data.overlay_type) {
         case "ic":
             WrapOpenFile(data, false);
@@ -709,6 +735,7 @@ function CreateGrid(data) {
             d.values = {};
             d.values.sun = false;
             d.values.data = d;
+            d.values.back = data;
             d.values.data.checked = false;
 
             // create a card
@@ -723,7 +750,7 @@ function CreateGrid(data) {
                     $(this).addClass("selected");
                 } else {
                     // load new ic / folder / project
-                    data.overlay_type !== "project_root" ? CreateGrid(d) : WrapGetProject(d);
+                    data.overlay_type !== "project_root" ? CreateWorkspace(d) : WrapGetProject(d);
                 }
             }
 
@@ -771,6 +798,7 @@ function CreateGrid(data) {
         }
     );
 
+    if (g_project.move) MoveCreate(null, data.values.back);
     ResizeCards();
 }
 

@@ -3,12 +3,18 @@ function MoveCreate(obj, data) {
         g_project.selection.remove();
         g_project.selection = false;
     }
-    
+
+    if (g_view === VIEW_GR) 
+    {
+        g_project.move = data;
+        return;
+    }
+
     data.move = {};
     data.move.this = obj;
     
     //data.values.text.style("opacity", 0);
-    
+
     data.move.object = data.values.this.append("g")
     .attr("class", "star move")
     
@@ -141,11 +147,12 @@ function MoveCreate(obj, data) {
 function ClearMove(data)
 {
     DeselectAllPlanets(data);
-    g_project.move.remove();
     g_project.move = false;
 
     d3.selectAll("g.move-menu")
         .remove();
+
+    $(".prompt-menu").remove();
 }
 
 function AddMoveText(data, name, text) {
@@ -176,8 +183,9 @@ function AddMoveText(data, name, text) {
 
 function ApplyMove(data) {
     MULTI.to_parent_id = data.parent_id,
-        MULTI.to_ic_id = data.ic_id,
-        LoadStart();
+    MULTI.to_ic_id = data.ic_id,
+    LoadStart();
+    
     $.ajax({
         url: "/move_ic_multi",
         type: 'POST',
