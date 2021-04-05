@@ -151,10 +151,10 @@
 }
 
 .move.pattern.move {
-    fill: rgba(192, 84, 41, 1);
+    fill: rgb(70, 178, 245);
 }
 .move.pattern.copy {
-    fill: rgba(192, 41, 41, 1);
+    fill: rgb(45, 240, 100);
 }
 .move.select {
     fill: rgba(0, 0, 0, 0.0);

@@ -178,6 +178,11 @@
     display: block;
 }
 
+.prompt-menu
+{
+    display: inline-block;
+}
+
 .card, .card *{
     overflow: hidden;
     border-radius: 0 !important;
