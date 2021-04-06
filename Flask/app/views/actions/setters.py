@@ -271,20 +271,7 @@ def upload_existing_project():
 
                             thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
                             ic_new_file.thumb_id = thumb_id
-                            # ic_new_file.thumb_id = thumb_id
-                            # thumb.save('pythonthumb.png')
-                            # test = thumb.tobytes()
-                            # t = Image.frombytes('RGB', MAX_SIZE, test, 'raw')
-                            # t.save('ovde.png')
-                        # else:
-                        #     script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-                        #     print(script_dir)
-                        #     rel_path = "static/img/thumbs/pdf_thumb.png"
-                        #     abs_file_path = os.path.join(script_dir, rel_path)
-                        #     print(abs_file_path)
-                        #     thumb = Image.open(abs_file_path)
-                        #     MAX_SIZE = (100, 100)
-                        #     thumb.thumbnail(MAX_SIZE)
+                            
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
                         # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
