@@ -750,6 +750,7 @@ function CreateGrid(data) {
                 if (event.ctrlKey) {
                     // hold ctrl to select
                     $(this).addClass("selected");
+                    SelectPlanet(d);
                 } else {
                     // load new ic / folder / project
                     data.overlay_type !== "project_root" ? CreateWorkspace(d) : WrapGetProject(d);
