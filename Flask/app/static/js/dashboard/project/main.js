@@ -765,7 +765,7 @@ function CreateGrid(data) {
             let img = document.createElement('img');
             img.className = "card-img-top";
             img.alt = "Preview unavailable";
-            img.src = d.thumb_id ? GetFileURL(d) : '/img/thumbs/folder.png';
+            img.src = d.thumb_id ? GetFileURL(d) : GetDefaultImg(d);
 
             // create body
             let body = document.createElement('div');

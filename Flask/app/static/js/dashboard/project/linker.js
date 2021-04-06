@@ -149,6 +149,7 @@ function GetDefaultImg(data)
     var path; 
 
     $.ajax({
+        async: false,
         url: '/get_static_img/folder',
         type: 'POST',
         success: function(result){
@@ -156,7 +157,6 @@ function GetDefaultImg(data)
         }
     });
 
-    console.log(path)
     return path;
 }
 
