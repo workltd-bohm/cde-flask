@@ -15,7 +15,7 @@ import json
 from datetime import datetime
 
 from bson.objectid import ObjectId
-from app import logger
+# from app import logger
 
 class DBMongoAdapter:
 
