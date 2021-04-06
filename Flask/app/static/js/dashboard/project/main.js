@@ -742,7 +742,7 @@ function CreateGrid(data) {
 
             // create a card
             let card_holder = document.createElement("div");
-            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-2 p-2";
+            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2 p-2";
 
             let card = document.createElement("div");
             card.className = "card";
@@ -770,7 +770,7 @@ function CreateGrid(data) {
 
             // create body
             let body = document.createElement('div');
-            body.className = 'card-body';
+            body.className = 'card-body p-2';
 
             // body title
             let title = document.createElement('h6');
@@ -802,14 +802,20 @@ function CreateGrid(data) {
     );
 
     if (g_project.move) MoveCreate(null, data.values.back);
-    ResizeCards();
+    
+    cardsResizeObserver.observe(document.getElementById("PROJECT-GRID"));
 }
 
-function ResizeCards(){
-    // .. make cards square shape
+const cardsResizeObserver = new ResizeObserver(entries => {
     let card_width = $(".card-body").innerWidth();
     let card_body_height = $(".card-body").innerHeight();
     $(".card-img-top").height(card_width - card_body_height);
+    
+    console.log('size changed')
+});
+
+function ResizeCards(){
+    // .. make cards square shape
 }
 
 function CreateSlider() {

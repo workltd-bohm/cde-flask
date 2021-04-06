@@ -190,7 +190,7 @@
 
 .card-title
 {
-    font-size: 16px;
+    font-size: 90%;
     line-height: 1.2em;
     line-break: anywhere;
     min-height: 2.4em;
@@ -212,7 +212,9 @@
 
 .card-text
 {
-    font-size: 14px;
+    word-break: keep-all;
+    font-size: 65%;
+    overflow-x: hidden;
 }
 
 .card:hover
