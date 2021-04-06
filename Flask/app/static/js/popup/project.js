@@ -156,7 +156,6 @@ function UploadProject(form) {
 }
 
 function sendFilesHelper(files, folders) {
-    console.log('what')
     if (!folders_only || (folders_only && !$("#is_iso19650_checkbox").is(':checked'))) {
         if (folders_only) {
             $("#is_iso19650_checkbox").hide();
@@ -497,7 +496,6 @@ function filesDroped(event) {
 
     function processFiles(files) {
         Promise.all([].map.call(files, function(file, index) {
-                imgToThumb64(file);
                 return handleEntries(file, index).then(handleFile)
             }))
             .then(function() {

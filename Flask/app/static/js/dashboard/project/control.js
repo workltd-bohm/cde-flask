@@ -217,6 +217,7 @@ function SelectPlanet(data){
     let num_checked   = Object.keys(CHECKED).length;
     let has_checked = (num_checked > 0);
     if (has_checked) {
+        if (g_view === VIEW_PL)
         SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
     } 
     else 
@@ -233,6 +234,7 @@ function SelectPlanet(data){
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
     document.getElementById("select-all-label").textContent = "Deselect";
 
+    if (data.values.data.values.text)
     data.values.data.values.text.style("opacity", 1);
     OverlayDestroy();
 }

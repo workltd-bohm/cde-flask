@@ -290,54 +290,6 @@ function NewFile(form, json, file) {
 
 // ------------------------------------------
 
-/* 
-    changes Files -> if it is an image, adds thumb64
-    to the image file object remove data: 64 to read
-*/
-function imgToThumb64(file) {
-    if (file == null || file == undefined) {
-        document.write("This Browser has no support for HTML5 FileReader yet!");
-        return false;
-    }    
-    var imageType = /image.*/;
-
-    if (!file.type.match(imageType)) {
-        return;
-    }
-
-    var myCan = document.createElement('canvas');
-    var img = new Image();
-    img.src = URL.createObjectURL(file);
-    
-    console.log('before image loaded')
-    img.onload = function () {
-        console.log('image has been loaded')
-        myCan.id = "myTempCanvas";
-
-        var tsize = 128;
-        myCan.width = Number(tsize);
-        myCan.height = Number(tsize);
-
-        if (myCan.getContext) {
-            var cntxt = myCan.getContext("2d");
-            cntxt.drawImage(img, 0, 0, myCan.width, myCan.height);
-            var dataURL = myCan.toDataURL();
-
-            console.log('have dataurl')
-            if (dataURL != null && dataURL != undefined) {
-                console.log('pushed dataURL')
-                file.thumb64 = dataURL;
-            }
-
-            else alert('Unable to get context.');
-        } 
-        else 
-        {
-            alert('No context.')
-        }
-    }
-}
-
 function RenameFile(form, json) {
     //    console.log(json);
     LoadStart();
