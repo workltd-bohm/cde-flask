@@ -746,6 +746,13 @@ def get_input_json():
     resp.data = str(msg.DEFAULT_ERROR['message'])
     return resp
 
+@app.route('/get_static_img/<name>', methods=['POST', 'GET'])
+def get_static_img(name):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    resp = Response()
+    if main.IsLogin():
+        return url_for('static', filename='img/thumbs/'+name+'.png')
+
 @app.route('/get_comments', methods=['POST'])
 def get_comments():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))

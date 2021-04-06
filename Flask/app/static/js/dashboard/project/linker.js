@@ -144,6 +144,22 @@ function GetFileURL(data)
     return '/get_thumb/' + data.thumb_id;
 }
 
+function GetDefaultImg(data)
+{
+    var path; 
+
+    $.ajax({
+        async: false,
+        url: '/get_static_img/folder',
+        type: 'POST',
+        success: function(result){
+            path = result;
+        }
+    });
+
+    return path;
+}
+
 function WrapDownload(data) {
     var tmp = data.values.data;
 
