@@ -7,6 +7,7 @@ import zipfile
 import shutil
 from threading import Thread
 import time
+from PIL import Image
 
 from app import *
 
@@ -101,6 +102,45 @@ def get_file(ic_id):
 
 @app.route('/get_shared_file/<path:file_id>', methods=['POST', 'GET'])
 def get_shared_file(file_id):
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    if main.IsLogin():
+        request_json = {
+                        # 'file_id':request.args.get('file_id'),
+                        'file_id': file_id}
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
+        if db.connect(db_adapter):
+            result = db.get_file(db_adapter, request_json)
+            if result:
+                # logger.log(LOG_LEVEL, result.file_name)
+                resp = Response(result.file_name)
+                # response.headers.set('Content-Type', 'mime/jpeg')
+                resp.headers.set(
+                    'Content-Disposition', 'attachment', filename='%s' % result.file_name)
+                resp.status_code = msg.DEFAULT_OK['code']
+                return send_file(
+                     io.BytesIO(result.read()),
+                     attachment_filename=result.file_name)
+            else:
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.STORED_FILE_NOT_FOUND)))
+                resp = Response()
+                resp.status_code = msg.STORED_FILE_NOT_FOUND['code']
+                resp.data = str(msg.STORED_FILE_NOT_FOUND['message'])
+                return resp
+        else:
+            logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+            resp = Response()
+            resp.status_code = msg.DB_FAILURE['code']
+            resp.data = str(msg.DB_FAILURE['message'])
+            return resp
+
+    resp = Response()
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
+
+@app.route('/get_thumb/<path:file_id>', methods=['POST', 'GET'])
+def get_thumb(file_id):
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_json = {

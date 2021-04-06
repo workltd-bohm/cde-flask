@@ -725,6 +725,8 @@ class Project:
             root.file_number = json_file['file_number']
             root.status = json_file['status']
             root.revision = json_file['revision']
+            if 'thumb_id' in json_file:
+                root.thumb_id = json_file['thumb_id']
         return root
 
     @staticmethod

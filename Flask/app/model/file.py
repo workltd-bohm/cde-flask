@@ -4,12 +4,13 @@ from .information_container import IC
 class File(IC):
 
     def __init__(self, file_id, name, original_name, directory, file_history, path, type, parent_id, color,
-                 comments, tags, sub_folders, access, stored_id="", description=''):
+                 comments, tags, sub_folders, access, stored_id="", description='', thumb_id=''):
         super().__init__(file_id, name, directory, file_history, path, parent_id, color, comments, tags, sub_folders, access)
         self._original_name = original_name
         self._type = type
         self._stored_id = stored_id
         self._description = description
+        self._thumb_id = thumb_id
         self._is_directory = False
         self._project_code = ""
         self._company_code = ""
@@ -130,6 +131,14 @@ class File(IC):
     def overlay_type(self):
         return self._overlay_type
 
+    @property
+    def thumb_id(self):
+        return self._thumb_id
+
+    @thumb_id.setter
+    def thumb_id(self, value):
+        self._thumb_id = value
+
     def to_json(self):
         return {
             'ic_id': self._ic_id,
@@ -158,6 +167,7 @@ class File(IC):
             'file_number': self._file_number,
             'status': self._status,
             'revision': self._revision,
+            'thumb_id': self._thumb_id
         }
 
     @staticmethod
@@ -187,6 +197,8 @@ class File(IC):
         file.file_number = json_file['file_number']
         file.status = json_file['status']
         file.revision = json_file['revision']
+        if 'thumb_id' in json_file:
+            file.thumb_id = json_file['thumb_id']
         return file
 
 

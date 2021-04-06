@@ -2,6 +2,9 @@ import os
 import json
 import uuid
 from datetime import datetime
+from PIL import Image
+import binascii
+import io
 
 from app import *
 import app.views.actions.getters as gtr
@@ -138,12 +141,16 @@ def upload_existing_project():
                     counter = request.form['counter']
                     total = request.form['total']
                     original_path = path
+
                     logger.log(LOG_LEVEL, 'Path: {}'.format(path))
                     logger.log(LOG_LEVEL, 'Percentage: {}'.format(str((int(counter) / int(total)) * 100) + '%'))
+
                     current_file_path_old = path.split('/')
                     file_name = current_file_path_old[-1]
+
                     current_file_path_backup = current_file_path_old[:]
                     current_file_path = current_file_path_old[1:-1]
+
                     parent_id = project.root_ic.ic_id
                     parent_ic = project.root_ic
 
@@ -239,6 +246,45 @@ def upload_existing_project():
                         if len(file) == 0:
                             logger.log(LOG_LEVEL, 'File has 0kb - not uploaded')
                             return request.form['path']
+
+                        file_type = file_name.split('.')[-1]
+                        if file_type.lower() == 'jpg' or \
+                                file_type.lower() == 'jpeg' or \
+                                file_type.lower() == 'jpe' or \
+                                file_type.lower() == 'jfif' or \
+                                file_type.lower() == 'png' or \
+                                file_type.lower() == 'gif' or \
+                                file_type.lower() == 'bmp' or \
+                                file_type.lower() == 'webp' or \
+                                file_type.lower() == 'tif' or \
+                                file_type.lower() == 'tiff':
+                                
+                            thumb = Image.open(io.BytesIO(file))
+                            MAX_SIZE = (256, 256)
+                            thumb.thumbnail(MAX_SIZE)
+                            output = io.BytesIO()
+                            thumb.save(output, format='png')
+                            
+                            contents = output.getvalue()
+
+                            output.close()
+
+                            thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
+                            ic_new_file.thumb_id = thumb_id
+                            # ic_new_file.thumb_id = thumb_id
+                            # thumb.save('pythonthumb.png')
+                            # test = thumb.tobytes()
+                            # t = Image.frombytes('RGB', MAX_SIZE, test, 'raw')
+                            # t.save('ovde.png')
+                        # else:
+                        #     script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+                        #     print(script_dir)
+                        #     rel_path = "static/img/thumbs/pdf_thumb.png"
+                        #     abs_file_path = os.path.join(script_dir, rel_path)
+                        #     print(abs_file_path)
+                        #     thumb = Image.open(abs_file_path)
+                        #     MAX_SIZE = (100, 100)
+                        #     thumb.thumbnail(MAX_SIZE)
                         result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
                         # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
@@ -324,7 +370,7 @@ def upload_existing_project():
                                 #             temp_upload_list[session['user']['id']] = {}
                                 #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
                                 # print('ovde', ic_new.to_json())
-                                print(message)
+                                # print(message)
                                 # message, ic = db.create_folder(db_adapter, project.name, ic_new)
                                 parent_ic = ic_new
                                 logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))

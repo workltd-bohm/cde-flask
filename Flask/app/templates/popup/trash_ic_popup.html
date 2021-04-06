@@ -9,14 +9,29 @@
   <input type="hidden" name="delete_name" value="{{ delete_name }}" required />
   <input type="hidden" name="is_directory" value="{{ is_directory }}" required />
   {% endif %}
-  <div class="form__group field" style="height: 100px;">
-    <label for="rename_new_name" class="form__label" >Are you sure?</label>
-  </div>
+  
+{% if parent_id == 'root' %}
+<div class="form__group field" style="height: 100px;">
+    <label for="confirm_delete" class="form__label" >Type "delete" to trash project</label>
+    <br/>
+    <input type="text" id="confirm_delete" name="confirm_delete"/>
 </div>
-<input type="button" value="Confirm" 
-onclick="FormSubmit({% if not multi %}'trash_ic', null{% else %}'get_trash_ic_multi', MULTI{% endif %}, true, 
-  {% if parent_id == 'root' %} 
-    SelectProject
-  {% else %} 
-    GetProject 
-  {% endif %})"/>
+
+<script>
+    $("#confirm_delete").on("input", function(){
+        $("#confirm_button").prop("disabled", !($(this).val().toLowerCase() === "delete"));
+    });
+</script>
+{% else %}
+<div class="form__group field" style="height: 100px;">
+    <label for="confirm_delete" class="form__label" >Are you sure?</label>
+</div>
+{% endif %}
+
+<input type="button" value="Confirm" id="confirm_button" {{ 'disabled' if parent_id == 'root' }}
+    onclick="FormSubmit({% if not multi %}'trash_ic', null{% else %}'get_trash_ic_multi', MULTI{% endif %}, true, 
+    {% if parent_id == 'root' %} 
+        SelectProject
+    {% else %} 
+        GetProject 
+    {% endif %})"/>

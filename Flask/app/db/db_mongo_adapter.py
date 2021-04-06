@@ -360,6 +360,28 @@ class DBMongoAdapter:
         self._close_connection()
         return annotations
 
+    def upload_thumb(self, project_name, file_obj, thumb):
+        col = self._db.Projects
+        # col_file = self._db.Projects.Files
+        col_file = self._db.fs.files
+        file_query = {'file_name': file_obj.name + '_thumb' + file_obj.type, "parent_id": file_obj.parent_id} 
+        file_json = self._fs.find_one(file_query)
+        thumb_id = ''
+        if file_json is None:
+            thumb_id = str(self._fs.put(thumb,
+                                            file_id='default',
+                                            file_name=file_obj.name + '_thumb' + file_obj.type, 
+                                            parent=file_obj.parent,
+                                            parent_id=file_obj.parent_id
+                                            ))
+            col_file.update_one({'file_id': 'default'},
+                                {'$set': {'file_id': str(thumb_id)}})
+
+        else:
+            print("upload_file", msg.IC_ALREADY_EXISTS)
+            return thumb_id
+        self._close_connection()
+        return thumb_id
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects

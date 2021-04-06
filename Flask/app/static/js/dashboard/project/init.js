@@ -121,7 +121,7 @@ var g_project = {
         data : null
     };
 
-var g_view = VIEW_PL;
+var g_view = VIEW_GR;
 var g_project_per = {...g_project};
 
 var g_TouchRadius = 0;
