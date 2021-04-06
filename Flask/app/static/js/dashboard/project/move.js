@@ -149,6 +149,9 @@ function ClearMove(data)
     DeselectAllPlanets(data);
     g_project.move = false;
 
+    d3.selectAll("g.star.move")
+        .remove();
+
     d3.selectAll("g.move-menu")
         .remove();
 
