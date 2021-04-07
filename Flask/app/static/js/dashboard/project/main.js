@@ -742,7 +742,7 @@ function CreateGrid(data) {
 
             // create a card
             let card_holder = document.createElement("div");
-            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-2 p-2";
+            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2 p-2";
 
             let card = document.createElement("div");
             card.className = "card";
@@ -770,7 +770,7 @@ function CreateGrid(data) {
 
             // create body
             let body = document.createElement('div');
-            body.className = 'card-body';
+            body.className = 'card-body p-2';
 
             // body title
             let title = document.createElement('h6');
@@ -802,8 +802,16 @@ function CreateGrid(data) {
     );
 
     if (g_project.move) MoveCreate(null, data.values.back);
+    
+    // resize cards & tell broswer to observe change in size of the element for resizing
     ResizeCards();
+    cardsResizeObserver.observe(document.getElementById("PROJECT-GRID"));
 }
+
+const cardsResizeObserver = new ResizeObserver(entries => {
+    ResizeCards();    
+    console.log('Testing resize feature: Size changed.')
+});
 
 function ResizeCards(){
     // .. make cards square shape
