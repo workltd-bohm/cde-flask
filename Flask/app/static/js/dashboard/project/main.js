@@ -803,19 +803,21 @@ function CreateGrid(data) {
 
     if (g_project.move) MoveCreate(null, data.values.back);
     
+    // resize cards & tell broswer to observe change in size of the element for resizing
+    ResizeCards();
     cardsResizeObserver.observe(document.getElementById("PROJECT-GRID"));
 }
 
 const cardsResizeObserver = new ResizeObserver(entries => {
-    let card_width = $(".card-body").innerWidth();
-    let card_body_height = $(".card-body").innerHeight();
-    $(".card-img-top").height(card_width - card_body_height);
-    
-    console.log('size changed')
+    ResizeCards();    
+    console.log('Testing resize feature: Size changed.')
 });
 
 function ResizeCards(){
     // .. make cards square shape
+    let card_width = $(".card-body").innerWidth();
+    let card_body_height = $(".card-body").innerHeight();
+    $(".card-img-top").height(card_width - card_body_height);
 }
 
 function CreateSlider() {
