@@ -470,13 +470,47 @@ function SortByName(data) {
     let item_tmp;
     for (let i = 0; i < items.length - 1; i++) {
         for (let j = i + 1; j < items.length; j++) {
-            let sorted = items[j].name.localeCompare(items[i].name);
+            let parsed = parseInt(items[j].name);
+            let str1 = items[j].name.toLowerCase();
+            let str2 = items[i].name.toLowerCase();
+            let sorted;
 
-            if (sorted === -1) { // -1 = str1 is sorted before str2
-                item_tmp = items[j]; // store
-                items.splice(j, 1); // remove j'th element
-                items.splice(i, 0, item_tmp); // replace element
-                i = 0; // reset loop
+            // if it's not a number - if it's a string...
+            if (isNaN(parsed)) 
+            {
+                sorted = str1.localeCompare(str2);
+                
+                if (sorted === -1) { // -1 = str1 is sorted before str2
+                    item_tmp = items[j]; // store
+                    items.splice(j, 1); // remove j'th element
+                    items.splice(i, 0, item_tmp); // replace element
+                    i = 0; // reset loop
+                    continue;
+                }
+            } 
+            // if parsed a number
+            else {
+                sorted = parsed < parseInt(items[i].name)
+                
+                if (sorted) {
+                    item_tmp = items[j]; // store
+                    items.splice(j, 1); // remove j'th element
+                    items.splice(i, 0, item_tmp); // replace element
+                    i = 0; // reset loop
+                    continue;
+                }
+                // if parsed numbers are the same, compare them alphabetically
+                else if (parsed === parseInt(items[i].name)){
+                    sorted = str1.localeCompare(str2);
+                
+                    if (sorted === -1) { // -1 = str1 is sorted before str2
+                        item_tmp = items[j]; // store
+                        items.splice(j, 1); // remove j'th element
+                        items.splice(i, 0, item_tmp); // replace element
+                        i = 0; // reset loop
+                        continue;
+                    }
+                }
             }
         }
     }
