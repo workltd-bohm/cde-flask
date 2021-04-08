@@ -687,6 +687,7 @@ function CreateGrid(data) {
     data.values.data = data;
     data.id = data.ic_id;
     g_project.current_ic = data;    // set current ic (global)
+    CHECKED = {};
     
     switch (data.overlay_type) {
         case "ic":

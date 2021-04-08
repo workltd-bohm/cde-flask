@@ -210,10 +210,10 @@ function ClearDisplayName() {
 
 function CreatePath() {
     // Topbar path
+    $(".info-path-text").empty();
     if (SESSION.position) {
         found = RecursiveFileSearch(g_project.data, g_project.data);
         if (found) {
-            $(".info-path-text").empty();
             var path = found[0].reverse();
 
             // Add current ic to the list
