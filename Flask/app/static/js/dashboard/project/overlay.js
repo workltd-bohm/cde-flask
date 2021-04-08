@@ -602,9 +602,98 @@ function CreateSelectMenu() {
     $(".hover-menu").append(select_menu);
 }
 
+function CreateMenu(event, data)
+{
+    type = g_OverFolder;
+
+    // create the new create wrapper
+    let wrap = document.createElement("div");
+    wrap.className = "create-menu-wrapper";
+
+    let menu = document.createElement("div");
+    menu.className = "create-menu";
+
+    // fill the menu with items
+    for (let item of type) {
+        // create new item on the menu
+        let new_item = document.createElement("div");
+        new_item.className = "create-menu-item";
+
+        // create icon for the new item
+        let icon = document.createElement("span");
+        icon.className = "create-menu-item-icon material-icons";
+        icon.textContent = item.icon;
+
+        // create name of the new item
+        let name = document.createElement("span");
+        name.className = "create-menu-item-name ms-2 me-5";
+        name.textContent = item.name.toLowerCase();
+
+        /* used for animated background on hover */
+        let bg = document.createElement("div");
+        bg.className = "create-menu-item-bg";
+        bg.innerHTML = "&nbsp;";
+
+        // attach icon, name, bg and event to menu-item 
+        new_item.appendChild(icon);
+        new_item.appendChild(name);
+        new_item.appendChild(bg);
+
+        // hack the data for the function to work
+        data.values.data = data;
+
+        // attach the item's function to this item
+        new_item.addEventListener("click", () => {
+            item.link(data);
+        });
+
+        // finally, add the item we've generated to the context-menu list
+        menu.appendChild(new_item);
+    }
+
+    // add the menu to the wrapper
+    wrap.appendChild(menu);
+
+    // get position of the mouse
+    let mouse = {
+        x: event.clientX - $(".sidebar").outerWidth(),
+        y: event.clientY - $(".topbar").height()
+    };
+
+    // set the position of context menu
+    wrap.style.left = mouse.x + "px";
+    wrap.style.top = mouse.y + "px";
+
+    // destroy
+    wrap.onmouseleave = function () {
+        $(".create-menu-wrapper").remove();
+    }
+
+    // remove existing and add new context menu to the screen
+    $(".workspace").append(wrap);
+
+    // prevent from going off screen
+    // element must be rendered first
+    let width = $(wrap).outerWidth();
+    let height = $(wrap).outerHeight();
+    let offX = parseInt(wrap.style.left);
+    let offY = parseInt(wrap.style.top);
+    let wsWidth = parseInt($WS.outerWidth());
+    let wsHeight = parseInt($WS.outerHeight());
+
+    if (offY + height > wsHeight) {
+        wrap.style.top = (wsHeight - height) + "px";
+    }
+
+    if (offX + width > wsWidth) {
+        wrap.style.left = (wsWidth - width) + "px";
+    }
+}
+
 function CreateContextMenu(event, data) {
     // get the type of context menu (using ic type)
     let type = GetContextType(data);
+
     // exit if non-applicable
     if (!type) { return; }
 
@@ -670,6 +759,7 @@ function CreateContextMenu(event, data) {
     $(".context-menu-wrapper").remove();
     $(".workspace").append(wrap);
 
+    console.log($(".context-menu-wrapper"))
     // prevent from going off screen
     // element must be rendered first
     let width = $(wrap).outerWidth();

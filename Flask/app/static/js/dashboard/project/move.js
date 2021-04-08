@@ -1,8 +1,5 @@
 function MoveCreate(obj, data) {
-    if (g_project.selection) {
-        g_project.selection.remove();
-        g_project.selection = false;
-    }
+    ClearSelection();
 
     if (g_view === VIEW_GR) 
     {

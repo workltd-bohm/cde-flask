@@ -18,16 +18,8 @@ function CreateSpace(data) {
     g_project.current_ic = data;
 
     // clear instances
-    if (g_project.overlay) {
-        g_project.overlay.remove();
-        g_project.overlay = false;
-    }
-
-    if (g_project.selection) {
-        g_project.selection.remove();
-        g_project.selection = false;
-    }
-
+    OverlayDestroy();
+    ClearSelection();
     ClearDisplayName();
 
     switch (data.overlay_type) {
@@ -719,12 +711,18 @@ function CreateGrid(data) {
     let grid = document.createElement('div');
     grid.className = "row m-5";
     grid.style.marginTop = $(".hover-menu").outerHeight() + "px";
+
     grid.onclick = function(event) {
         // deselect card
         if (!event.target.closest(".card")) {
             $(".card").removeClass("selected");
         }
     }
+
+    // Right Click menu
+    // grid.oncontextmenu = function(event) {
+    //     CreateContextMenu(event, data);
+    // }
 
     $("#PROJECT-GRID").empty().append(grid);
     // add "create new folder" button
@@ -747,6 +745,8 @@ function CreateGrid(data) {
             let card = document.createElement("div");
             card.className = "card";
             card.onclick = function(event) {
+                if (event.target.type === 'checkbox') return;
+
                 if (event.ctrlKey) {
                     // hold ctrl to select
                     $(this).addClass("selected");
@@ -760,6 +760,17 @@ function CreateGrid(data) {
             // right click menu
             card.oncontextmenu = (event) => {
                 CreateContextMenu(event, d);
+            }
+
+            card.onmouseover = () => {
+                card.querySelector("input").style.opacity = 1;
+            }
+
+            card.onmouseout = () => {
+                let check = card.querySelector("input");
+                if (!check.checked) {
+                    check.style.opacity = 0;
+                }
             }
 
             // create image
@@ -787,6 +798,29 @@ function CreateGrid(data) {
             let time = document.createElement("span");
             time.textContent = GetDate(d)[1];
 
+            // checkbox
+            let checkbox = document.createElement("input");
+            checkbox.className = "position-absolute m-2";
+            checkbox.type = 'checkbox';
+            checkbox.style.width = '20px';
+            checkbox.style.height = '20px';
+            checkbox.style.opacity = 0;
+
+            checkbox.onclick = function(){
+                SelectPlanet(d);
+
+                // set the HTML prop (otherwise only browser will know it's checked)
+                $(this).prop("checked", checkbox.checked);
+            }
+
+            card.appendChild(checkbox);
+
+            // colored border for cards
+            if (d.color)
+            {
+                card.style.boxShadow = "inset 0 -4px 0 " + d.color; 
+            }
+
             info.appendChild(date);
             info.appendChild(time);
 
@@ -800,6 +834,23 @@ function CreateGrid(data) {
             grid.appendChild(card_holder);
         }
     );
+
+    // If there aren't any subfolders
+    if (g_project.current_ic.sub_folders.length <= 0)
+    {
+        let nothing_text = document.createElement("span");
+        nothing_text.textContent = "Nothing to show."
+
+        let button_create = document.createElement("a");
+        button_create.className = "path-link";
+        button_create.textContent = "Create";
+        button_create.onclick = function(event) {
+            CreateMenu(event, data);
+        }
+        
+        grid.appendChild(nothing_text);
+        grid.appendChild(button_create);
+    }
 
     if (g_project.move) MoveCreate(null, data.values.back);
     

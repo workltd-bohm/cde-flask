@@ -274,7 +274,7 @@ g.path.draw > g.text > text {
     color: var(--text-dark);
 }
 
-.context-menu-wrapper
+.context-menu-wrapper, .create-menu-wrapper
 {
     position: absolute;
     height: auto;
@@ -284,14 +284,14 @@ g.path.draw > g.text > text {
     box-shadow: 0 0 1em var(--shadow);
 }
 
-.context-menu
+.context-menu, .create-menu
 {
     width: 10em;
     min-width: 200px;
     height: fit-content;
 }
 
-.context-menu-item
+.context-menu-item, .create-menu-item
 {
     position: relative;
     display: block;
@@ -302,7 +302,8 @@ g.path.draw > g.text > text {
     cursor: pointer;
 }
 
-.context-menu-item > *
+.context-menu-item > *, 
+.create-menu-item > *
 {
     position: relative;
     display: inline-block;
@@ -310,18 +311,21 @@ g.path.draw > g.text > text {
     z-index: 7;
 }
 
-.context-menu-item-icon
+.context-menu-item-icon,
+.create-menu-item-icon
 {
     width: fit-content;
 }
 
-.context-menu-item-name
+.context-menu-item-name,
+.create-menu-item-name
 {
     text-transform: capitalize;
     width: fit-content;
 }
 
-.context-menu-item-bg
+.context-menu-item-bg,
+.create-menu-item-bg
 {
     position: absolute;
     top: 0;
@@ -338,7 +342,8 @@ g.path.draw > g.text > text {
     transition: width .5s ease;
 }
 
-.context-menu-item:hover .context-menu-item-bg
+.context-menu-item:hover .context-menu-item-bg,
+.create-menu-item:hover .create-menu-item-bg
 {
     width: 100%;
     border-left: 4px solid var(--neon-blue);

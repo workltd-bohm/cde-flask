@@ -216,6 +216,9 @@ function CreatePath() {
             $(".info-path-text").empty();
             var path = found[0].reverse();
 
+            // Add current ic to the list
+            path.push(g_project.current_ic);
+
             for (let add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };
@@ -223,6 +226,13 @@ function CreatePath() {
                 let span = document.createElement("span");
                 span.className = "path-link";
                 span.textContent = add.name;
+
+                $(".info-path-text").append(span);
+
+                if (add === g_project.current_ic) { 
+                    span.classList.remove("path-link");
+                    continue; 
+                }
 
                 span.onclick = function() {
                     if (g_project.search /*&& g_project.search.overlay_type == "ic"*/ ) g_project.search = false;
@@ -232,8 +242,6 @@ function CreatePath() {
                     g_project.hist_path_len = add.paths_path.start;
                     CreateWorkspace(add);
                 }
-
-                $(".info-path-text").append(span);
 
                 let slash = document.createElement("span");
                 slash.className = "mx-2";
