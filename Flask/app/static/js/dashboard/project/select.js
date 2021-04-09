@@ -29,11 +29,7 @@ function SelectionCreate(obj, data) {
     //     g_project.overlay = false;
     // }
 
-    console.log(SESSION);
-    if(g_project.selection){
-        g_project.selection.remove();
-        g_project.selection = false;
-    }
+    ClearSelection();
 
     data.selection = {};
     data.selection.this = obj;
@@ -169,6 +165,14 @@ function SelectionCreate(obj, data) {
     //         DeselectAllPlanets(data);
     //     });
 
+}
+
+function ClearSelection()
+{
+    if(g_project.selection){
+        g_project.selection.remove();
+        g_project.selection = false;
+    }
 }
 
 function AddSelection(obj, data, parent, position=0) {

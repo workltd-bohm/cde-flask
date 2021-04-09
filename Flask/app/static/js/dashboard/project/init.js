@@ -83,6 +83,7 @@ const $DASHBOARD = $("#index-dashboard");
 const $WS = $(".workspace");
 
 const $SVG = $("#PROJECT");
+const $GRID = $("#PROJECT-GRID");
 const SVG = d3.select("#PROJECT");
 
 // ----------------------------------------------------

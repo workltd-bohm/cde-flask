@@ -199,8 +199,10 @@ function ClickStop(ToDo, data, single=false){
 }
 
 function SelectPlanet(data){
+    // modify CHECKED dictionary
     if (data.values.data.checked) 
     {
+        // deselect planet
         data.values.data.checked = false;
 
         if (data.values.data.ic_id in CHECKED) 
@@ -210,65 +212,113 @@ function SelectPlanet(data){
     }
     else 
     {
+        // select planet
         data.values.data.checked = true;
         CHECKED[data.values.data.ic_id] = data.values.data;
     }
     
     let num_checked   = Object.keys(CHECKED).length;
     let has_checked = (num_checked > 0);
+    
     if (has_checked) {
         if (g_view === VIEW_PL)
         SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
     } 
     else 
     {
-        data.values.data.values.back.values.text.style("opacity", 1);
-
-        if(g_project.selection){
-            g_project.selection.remove();
-            g_project.selection = false;
+        // bring back planet text
+        if (data.values.data.values.back.values.text) {
+            data.values.data.values.back.values.text.style("opacity", 1);
         }
+
+        // clear selection
+        ClearSelection();
     }
 
-    document.getElementById("select-all").checked = true;
+    // Adjust Select-All Button In Hover Menu
+    document.getElementById("select-all").checked = has_checked;
     document.getElementById("select-all").indeterminate = (has_checked) && (num_checked < g_project.current_ic.sub_folders.length);
-    document.getElementById("select-all-label").textContent = "Deselect";
+    document.getElementById("select-all-label").textContent = has_checked ? "Deselect" : "Select all";
 
-    if (data.values.data.values.text)
-    data.values.data.values.text.style("opacity", 1);
+    if (data.values.data.values.text) {
+        data.values.data.values.text.style("opacity", 1);
+    }
+
     OverlayDestroy();
 }
 
 function SelectAllPlanets(data){
-    d3.selectAll("g.planet.dom").each(function(d){
-        //console.log(d);
-        d.checked = true;
-        CHECKED[d.ic_id] = d;
-    });
-    SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+    switch(g_view)
+    {
+        case VIEW_PL:
+            d3.selectAll("g.planet.dom").each(function(d){
+                d.checked = true;
+                CHECKED[d.ic_id] = d;
+            });
+            
+            SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+            
+            $(".planet-select").addClass("show");
+            $(".planet-select i").text("check_circle");
+            break;
 
-    $(".planet-select").addClass("show");
-    $(".planet-select i").text("check_circle");
+        case VIEW_GR:
+            g_project.current_ic.sub_folders.forEach((d) => {
+                d.checked = true;
+                CHECKED[d.ic_id] = d;
+            });
+
+            // set cards to be checked and checkmarks visible
+            $(".card").find("input").prop("checked", true)
+                .css("opacity", 1);
+            break;
+
+        default: break;
+    }
 }
 
 function DeselectAllPlanets(data){
     CHECKED = {};
     MULTI = {};
 
-    d3.selectAll("g.planet.dom").each(function(d){
-        //console.log(d);
-        d.checked = false;
-    });
+    switch(g_view)
+    {
+        case VIEW_PL:
+            d3.selectAll("g.planet.dom").each(function(d){
+                //console.log(d);
+                d.checked = false;
+            });
+        
+            if (data.values.data.values.back.values.text) {
+                data.values.data.values.back.values.text.style("opacity", 1);
+            }
+            
+            ClearSelection();
+        
+            $(".planet-select").removeClass("show");
+            $(".planet-select i").text("check_circle_outline");
+            break;
+        
+        case VIEW_GR:
+            g_project.current_ic.sub_folders.forEach((d) => {
+                d.checked = false;
+            });
 
-    // data.values.data.values.back.values.text.style("opacity", 1);
-    
-    if(g_project.selection){
-        g_project.selection.remove();
-        g_project.selection = false;
+            // set cards to be unchecked and checkmarks invisible
+            $(".card").find("input").prop("checked", false)
+                .css("opacity", 0);
+            break;
     }
+}
 
-    $(".planet-select").removeClass("show");
-    $(".planet-select i").text("check_circle_outline");
+function PreserveSelection()
+{
+    if (CHECKED["SAVE"])
+    {
+        delete CHECKED["SAVE"];
+    } else {
+        CHECKED = {};
+    }
 }
 
 function InstanceExists(instance)
@@ -303,3 +353,30 @@ document.addEventListener('mouseup', function(e) {
     document.getElementsByClassName("tree-view")[0].style.transition = 'all 500ms ease';
 });
 // -------------------------------------------------------
+// Select area
+// let grid = document.getElementById("PROJECT-GRID");
+// var div = document.getElementById('select-area'), x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+// function reCalc() { //This will restyle the div
+//     var x3 = Math.min(x1,x2); //Smaller X
+//     var x4 = Math.max(x1,x2); //Larger X
+//     var y3 = Math.min(y1,y2); //Smaller Y
+//     var y4 = Math.max(y1,y2); //Larger Y
+//     div.style.left = x3 + 'px';
+//     div.style.top = y3 + 'px';
+//     div.style.width = x4 - x3 + 'px';
+//     div.style.height = y4 - y3 + 'px';
+// }
+// grid.onmousedown = function(e) {
+//     div.hidden = 0; //Unhide the div
+//     x1 = e.clientX; //Set the initial X
+//     y1 = e.clientY; //Set the initial Y
+//     reCalc();
+// };
+// grid.onmousemove = function(e) {
+//     x2 = e.clientX; //Update the current position X
+//     y2 = e.clientY; //Update the current position Y
+//     reCalc();
+// };
+// onmouseup = function() {
+//     div.hidden = 1; //Hide the div
+// };

@@ -51,9 +51,9 @@
     --file-preview-text: #ffffff;
 
     /* constants */
-    --shadow: gray;
-    --link-hover: darkgray;
-    --neon-blue: #00d5ff;
+    --shadow: rgb(128, 128, 128);
+    --link-hover: rgb(169, 169, 169);
+    --neon-blue: rgb(0, 213, 255);
     --blue: blue;
     --yellow: #ecd256;
     --transparent-light: #ffffffAA;
@@ -68,12 +68,12 @@
     
     --bg-primary:               var(--bg-lighter);                  /* new */
     --sidebar-bg:               var(--sidebar-bg-light);
-    --bg-secondary:             var(--bg-lighter);                    /* new */
+    --bg-secondary:             var(--bg-lighter);                  /* new */
 
     --sun-bg:                   var(--sun-bg-light);                /* new */
     --sun-text:                 var(--sun-text-dark);               /* new */
     
     --planet-bg:                var(--planet-bg-light);             /* new */
-    --planet-stroke:            var(--planet-stroke-dark);         /* new */
+    --planet-stroke:            var(--planet-stroke-dark);          /* new */
     --planet-text:              var(--planet-text-dark);            /* new */
 }
