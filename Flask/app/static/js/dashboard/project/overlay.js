@@ -912,17 +912,17 @@ function GetContextType(data) {
             break;
     }
     
-    switch(type) {
-        case g_OverFilePlanet:
-        case g_OverFolderPlanet:
-        case g_OverProjectPlanet:
-            let g_OverTemp = type.slice();
-            let deselect = { name: "DESELECT", icon: "check_circle_outline", link: SelectPlanet };
-            g_OverTemp[0] = data.values.data.checked ? deselect : g_OverTemp[0];
-            return g_OverTemp;
-        default:
-            return type;
-    }
+    // switch(type) {
+    //     case g_OverFilePlanet:
+    //     case g_OverFolderPlanet:
+    //     case g_OverProjectPlanet:
+    //         let g_OverTemp = type.slice();
+    //         let deselect = { name: "DESELECT", icon: "check_circle_outline", link: SelectPlanet };
+    //         g_OverTemp[0] = data.values.data.checked ? deselect : g_OverTemp[0];
+    //         return g_OverTemp;
+    //     default:
+    //     }
+    return type;
 }
 
 function ToggleViewMode(){
