@@ -661,7 +661,8 @@ function CreateMenu(event, data)
     };
 
     // set the position of context menu
-    wrap.style.left = mouse.x + "px";
+    let offset = 24;
+    wrap.style.left = mouse.x + offset + "px";
     wrap.style.top = mouse.y + "px";
 
     // destroy
@@ -670,6 +671,7 @@ function CreateMenu(event, data)
     }
 
     // remove existing and add new context menu to the screen
+    $(".create-menu-wrapper").remove();
     $(".workspace").append(wrap);
 
     // prevent from going off screen
@@ -924,7 +926,18 @@ function GetContextType(data) {
 }
 
 function ToggleViewMode(){
+    // Toggle Between Views
     g_view = g_view === VIEW_PL ? VIEW_GR : VIEW_PL;
+
+    // Store View Mode In Session
+    SESSION.view = g_view;
+
+    // Preserve Checked Ics
+    if (Object.keys(CHECKED).length) {
+        CHECKED["SAVE"] = true;
+    }
+
+    // Create Workspace With New View
     CreateWorkspace(g_project.current_ic);
 }
 

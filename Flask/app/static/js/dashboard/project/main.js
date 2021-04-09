@@ -40,7 +40,9 @@ function CreateSpace(data) {
     }
 
     // g_project.data.overlay_type == "ic" ? SendProject(data) : 1;
-    CHECKED = {};
+
+    // Preserve Selection When Switching Views
+    PreserveSelection();
 
     // create sun
     g_root.universe.selectAll("g")
@@ -281,6 +283,7 @@ function AddSun(obj, data) {
 }
 
 function AddChildren(obj, data, parent, position = 0) {
+    // Planet Data Configuration
     data.box = {...g_box };
     data.values = {};
     data.values.this = obj;
@@ -291,7 +294,7 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.parent = (parent != null) ? d3.select("#obj-" + data.par_id) : null;
     data.values.sun = false;
     data.values.data = parent;
-    data.values.data.checked = false;
+    data.values.data.checked = (data.ic_id in CHECKED) ? true : false;
 
     //// [SLIDER START]
     // data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
@@ -422,13 +425,12 @@ function AddChildren(obj, data, parent, position = 0) {
             CreateContextMenu(d3.event, d);
         });
 
+    data.values.data = data;    // Reference Hack - Be Careful
 
-    data.values.data = data;    // hack - be careful
-
-
+    // Don't Create Checkboxes For Project Or User
     if (data.overlay_type === "project" || (g_project.current_ic.overlay_type === "user")) return;
-
-    // select checkbox
+    
+    // Create The Select Checkbox ForeignObject (container)
     g_OverlayItemSize = 24;
     data.values.checked = data.values.this.append("foreignObject")
         .attr("class", "planet-select")
@@ -438,15 +440,21 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("height", g_OverlayItemSize)
         .attr("transform", "translate(0, " + (-(g_PlanetRadius - g_OverlayItemSize / 1.5)) + ")")
         .attr("title", "SELECT")
-        .on("click", function(data){
-            let isSelected = (data.values.data.ic_id in CHECKED);
-            
-            this.classList.toggle("show");
-
-            this.querySelector("i").textContent = isSelected ? "check_circle_outline" : "check_circle";
+        .on("click", function(data){            
             SelectPlanet(data);
+            
+            // Change Visual Representation Of Checkbox
+            if (data.values.data.ic_id in CHECKED) {
+                console.log(this)
+                this.querySelector("i").textContent = "check_circle";
+                this.classList.add("show");
+            } else {
+                this.querySelector("i").textContent = "check_circle_outline";
+                this.classList.remove("show");
+            }
         });
-
+    
+    // Create The Icon Checkmark
     data.values.checked.append("xhtml:div")
         .attr("class", "planet foregin select")
         .append("i")
@@ -454,8 +462,19 @@ function AddChildren(obj, data, parent, position = 0) {
         .style("font-size", g_OverlayItemSize + "px")
         .style("color", data.color ? FlipColor(data.color) : "#303030")
         .html("check_circle_outline");
-}
 
+    // Preserve Selected Ics Throught Changing Views
+    if (data.values.data.checked) {
+        // Fake False Checked So It Gets Triggered
+        data.values.data.checked = false;
+        // Set Id So Element Can Be Get By Id
+        data.values.checked.attr("id", "select-me");
+        // Trigger Click
+        document.getElementById("select-me").dispatchEvent(new Event('click'));
+        // Remove Id
+        document.getElementById("select-me").removeAttribute("id");
+    }
+}
 // -------------------------------------------------------
 
 function AddTspan(target, text, x, y, suffix = null, size = 1) {
@@ -603,7 +622,7 @@ function CreateDashboard(data, project_position = null) {
 
     ProjectPosiotionSet(g_project.data);
 
-    // 143 times per second
+    // Polls x times, per refresh rate of monitor
     d3.timer(function(elapsed) {
         if (InstanceExists(g_root.universe)) UpdateUniverse();
         else return;
@@ -620,16 +639,24 @@ function CreateDashboard(data, project_position = null) {
 function CreateHoverMenu()
 {
     $(".hover-menu").empty();
+
     CreateUndoMenu();
     CreateSortMenu();
     CreateSelectMenu();
     CreateViewMenu();
+    
+    // accept / decline menu for grid view
     if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
 
+    // Change Toggle View Icon
     $(".btn-view").children().first().text(g_view === VIEW_PL ? "grid_view" : "public");
 }
 
 function CreateWorkspace(data) {
+    // Get the session view
+    if (SESSION.view) {
+        g_view = SESSION.view;
+    }
 
     switch (g_view) {
         // planetary
@@ -687,7 +714,8 @@ function CreateGrid(data) {
     data.values.data = data;
     data.id = data.ic_id;
     g_project.current_ic = data;    // set current ic (global)
-    CHECKED = {};
+    
+    PreserveSelection();
     
     switch (data.overlay_type) {
         case "ic":
@@ -737,7 +765,7 @@ function CreateGrid(data) {
             d.values.sun = false;
             d.values.data = d;
             d.values.back = data;
-            d.values.data.checked = false;
+            d.values.data.checked = d.ic_id in CHECKED ? true : false;
 
             // create a card
             let card_holder = document.createElement("div");
@@ -763,6 +791,7 @@ function CreateGrid(data) {
                 CreateContextMenu(event, d);
             }
 
+            // show checkbox on mouseover
             card.onmouseover = () => {
                 card.querySelector("input").style.opacity = 1;
             }
@@ -799,7 +828,7 @@ function CreateGrid(data) {
             let time = document.createElement("span");
             time.textContent = GetDate(d)[1];
 
-            // checkbox
+            // Create Checkbox For Cards
             let checkbox = document.createElement("input");
             checkbox.className = "position-absolute m-2";
             checkbox.type = 'checkbox';
@@ -807,6 +836,7 @@ function CreateGrid(data) {
             checkbox.style.height = '20px';
             checkbox.style.opacity = 0;
 
+            // Cards Selection
             checkbox.onclick = function(){
                 SelectPlanet(d);
 
@@ -815,6 +845,13 @@ function CreateGrid(data) {
             }
 
             card.appendChild(checkbox);
+
+            // Preserve Checked Cards Through Changing Views
+            if (d.checked) {
+                d.checked = false;
+                checkbox.click();
+                checkbox.style.opacity = 1;
+            }
 
             // colored border for cards
             if (d.color)

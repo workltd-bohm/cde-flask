@@ -106,6 +106,8 @@ function SendProject(data) {
         revision: data.revision
     };
 
+    SESSION.view = g_view;
+
     SEARCH_HISTORY = data;
 
     if (!backButtonFlag) {

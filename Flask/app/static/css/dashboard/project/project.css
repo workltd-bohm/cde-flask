@@ -362,3 +362,10 @@ g.path.draw > g.text > text {
 .slider.pos{
     fill: rgba(121, 121, 121, 1);
 }
+
+#select-area
+{
+    border: 1px solid var(--planet-stroke);
+    position: absolute;
+    background-color: rgba(var(--neon-blue), 0.25);
+}
