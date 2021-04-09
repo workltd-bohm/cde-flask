@@ -289,7 +289,9 @@ function DeselectAllPlanets(data){
                 d.checked = false;
             });
         
-            // data.values.data.values.back.values.text.style("opacity", 1);
+            if (data.values.data.values.back.values.text) {
+                data.values.data.values.back.values.text.style("opacity", 1);
+            }
             
             ClearSelection();
         
