@@ -530,7 +530,6 @@ def get_restore_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        project_name = session.get("project")["name"]
         is_multi = True if "is_multi" in request_data else False
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
@@ -543,7 +542,6 @@ def get_restore_ic():
                                             parent_path =   request_data["parent_path"],
                                             parent_id =     request_data["parent_id"],
                                             ic_id =         request_data["ic_id"],
-                                            project_name =  project_name,
                                             restore_name =  request_data["restore_name"],
                                             is_directory =  True if request_data["is_directory"] else False,
                                             multi =         is_multi,

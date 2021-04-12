@@ -445,7 +445,6 @@ function AddChildren(obj, data, parent, position = 0) {
             
             // Change Visual Representation Of Checkbox
             if (data.values.data.ic_id in CHECKED) {
-                console.log(this)
                 this.querySelector("i").textContent = "check_circle";
                 this.classList.add("show");
             } else {
@@ -703,7 +702,6 @@ function CreatePromptMenu()
 
     menu.appendChild(button_accept);
     menu.appendChild(button_cancel);
-    console.log('downtown')
     $(".hover-menu").prepend(menu);
 }
 
@@ -712,6 +710,7 @@ function CreateGrid(data) {
     data.values = {};
     data.values.back = data;
     data.values.data = data;
+    data.values.sun = true;
     data.id = data.ic_id;
     g_project.current_ic = data;    // set current ic (global)
     
@@ -777,6 +776,9 @@ function CreateGrid(data) {
                 if (event.target.type === 'checkbox') return;
 
                 if (event.ctrlKey) {
+                    // Disable Select For Projects
+                    if (InProjectList()) return;
+
                     // hold ctrl to select
                     $(this).addClass("selected");
                     SelectPlanet(d);
@@ -791,18 +793,39 @@ function CreateGrid(data) {
                 CreateContextMenu(event, d);
             }
 
-            // show checkbox on mouseover
-            card.onmouseover = () => {
-                card.querySelector("input").style.opacity = 1;
-            }
-
-            card.onmouseout = () => {
-                let check = card.querySelector("input");
-                if (!check.checked) {
-                    check.style.opacity = 0;
+            // Checkboxes For Cards
+            if (!InProjectList()) {
+                // show checkbox on mouseover
+                card.onmouseover = () => {
+                    card.querySelector("input").style.opacity = 1;
                 }
-            }
+                
+                card.onmouseout = () => {
+                    let check = card.querySelector("input");
+                    if (!check.checked) {
+                        check.style.opacity = 0;
+                    }
+                }
 
+                // Create Checkbox
+                let checkbox = document.createElement("input");
+                checkbox.className = "position-absolute m-2";
+                checkbox.type = 'checkbox';
+                checkbox.style.width = '20px';
+                checkbox.style.height = '20px';
+                checkbox.style.opacity = 0;
+    
+                // Cards Selection
+                checkbox.onclick = function(){
+                    SelectPlanet(d);
+    
+                    // set the HTML prop (otherwise only browser will know it's checked)
+                    $(this).prop("checked", checkbox.checked);
+                }
+    
+                card.appendChild(checkbox);
+            }
+                
             // create image
             let img = document.createElement('img');
             img.className = "card-img-top";
@@ -828,23 +851,6 @@ function CreateGrid(data) {
             let time = document.createElement("span");
             time.textContent = GetDate(d)[1];
 
-            // Create Checkbox For Cards
-            let checkbox = document.createElement("input");
-            checkbox.className = "position-absolute m-2";
-            checkbox.type = 'checkbox';
-            checkbox.style.width = '20px';
-            checkbox.style.height = '20px';
-            checkbox.style.opacity = 0;
-
-            // Cards Selection
-            checkbox.onclick = function(){
-                SelectPlanet(d);
-
-                // set the HTML prop (otherwise only browser will know it's checked)
-                $(this).prop("checked", checkbox.checked);
-            }
-
-            card.appendChild(checkbox);
 
             // Preserve Checked Cards Through Changing Views
             if (d.checked) {
@@ -874,11 +880,29 @@ function CreateGrid(data) {
     );
 
     // If there aren't any subfolders
-    if (g_project.current_ic.sub_folders.length <= 0)
+    if (data.sub_folders.length <= 0)
     {
         let nothing_text = document.createElement("span");
-        nothing_text.textContent = "Nothing to show."
+        let empty_text = "";
+        switch(data.overlay_type) {
+            case "project_root":
+                empty_text = "You don't have any projects.";
+                break;
+            case "ic":
+                empty_text = "Nothing to show.";
+                break;
+            case "trash":
+                empty_text = "Trash is empty.";
+                break;
+        }
 
+        nothing_text.textContent = empty_text;
+        grid.appendChild(nothing_text);
+
+        // return
+        if (data.overlay_type !== "ic" && data.overlay_type !== "project_root") return;
+
+        // Add Create Buttons
         let button_create = document.createElement("a");
         button_create.className = "path-link";
         button_create.textContent = "Create";
@@ -886,7 +910,6 @@ function CreateGrid(data) {
             CreateMenu(event, data);
         }
         
-        grid.appendChild(nothing_text);
         grid.appendChild(button_create);
     }
 
@@ -899,7 +922,6 @@ function CreateGrid(data) {
 
 const cardsResizeObserver = new ResizeObserver(entries => {
     ResizeCards();    
-    console.log('Testing resize feature: Size changed.')
 });
 
 function ResizeCards(){

@@ -29,7 +29,6 @@ $(document).on('keypress', function(e) {
     if (e.which == 13) {
         $("input[type=button]").each(function(i) {
             if ($(this).hasClass("keypress")) {
-                // console.log("onclick activate", this);
                 $(this).trigger("click");
             }
         });
@@ -44,7 +43,6 @@ function CheckSession() {
         timeout: 5000,
         success: function(data) {
             SESSION = JSON.parse(data);
-            // console.log(SESSION);
             switch (SESSION["section"]) {
                 case "user":
                     {
@@ -84,8 +82,6 @@ function CheckSession() {
 }
 
 function SendProject(data) {
-    // console.log(data);
-    // console.log(SESSION);
     SESSION["position"] = {
         project_name: data.path.split('/')[0],
         parent_id: data.parent_id,
@@ -122,15 +118,12 @@ function SendProject(data) {
         timeout: 5000,
         success: function(data) {
             if (treeStruct == null) {
-                // console.log('jjj');
                 $('.tree-view').show();
                 CreateTreeStructure();
             } else {
 
                 // let node = findTheNode(treeStruct.getRoot().getChildren()[0]);
-                // // console.log('jjjjjjjj', node);
                 // if (typeof node != 'undefined') {
-                //     console.log('jjjjjjjj11111', node.getOptions().name);
                 //     node.setExpanded(true);
                 //     // node.setSelected(true);
                 // }
@@ -197,7 +190,6 @@ function UserProfile() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION)
                 }
                 CreateDashboard(data.json.root_ic, data.project);
             }
@@ -227,7 +219,6 @@ function SelectProject() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    // console.log(SESSION);
                 }
                 if (!backButtonFlag) {
                     history.pushState(SESSION, null, '');
@@ -258,7 +249,6 @@ function CreateTreeStructure() {
         success: function(data) {
             input_json1 = JSON.parse(data);
             input_json2 = input_json1['data'];
-            // console.log(post_id);
             html = input_json1['html'];
             // form.empty();
             // div = document.getElementById('container');
@@ -267,13 +257,11 @@ function CreateTreeStructure() {
 
             for (var i = 0; i < input_json2.length; i++) {
                 if (SESSION.name == input_json2[i].project_name) {
-                    // console.log('kkk', input_json2[i]);
                     color = input_json2[i].root_ic.color;
                     if (color === '') {
                         let css_col = getComputedStyle(document.documentElement)
                         .getPropertyValue('--sun-bg');
                         color = css_col;
-                        console.log('sun bg', color)
                     }
 
                     let icon_name = document.createElement("span");
@@ -291,7 +279,6 @@ function CreateTreeStructure() {
                     input_json2[i].root_ic.color = color;
 
                     root = new TreeNode('', input_json2[i].root_ic);
-                    // console.log(input_json2[i]);
                     for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
                         AddTreeSubfolders(root, input_json2[i].root_ic.sub_folders[j], input_json2[i].root_ic);
                     }
@@ -366,10 +353,8 @@ function AddTreeSubfolders(node, sub_folder, project) {
     var child = new TreeNode('', sub_folder);
 
     for (var k = 0; k < sub_folder.sub_folders.length; k++) {
-        // console.log(sub_folder.sub_folders[k].name);
         AddTreeSubfolders(child, sub_folder.sub_folders[k], project);
     }
-    // console.log(sub_folder);
     // node.setOptions({ ic_id: sub_folder.ic_id, name: sub_folder.name, parent_id: sub_folder.parent_id, parent: sub_folder.parent });
     if (sub_folder.is_directory) {
         if (SESSION.position.ic_id == sub_folder.ic_id) {
@@ -388,8 +373,6 @@ function AddTreeSubfolders(node, sub_folder, project) {
 }
 
 function nodeSelected(node) {
-    // console.log("The selected node's id: " + JSON.stringify(node.getOptions())); // To alert the selected node's id.
-    // console.log(node.isExpanded());
     if (node.isLeaf()) {
         setSession(node.getOptions());
         CreateWorkspace(node.getOptions());
@@ -397,8 +380,6 @@ function nodeSelected(node) {
         // CreatePath();
     } else {
         if (!node.isExpanded()) {
-            // console.log(SESSION);
-            // console.log(node.getOptions());
             if (SESSION['position'].ic_id == node.getOptions().ic_id) {
                 node.setExpanded(false);
             } else {
@@ -464,7 +445,7 @@ function GetProject(position = null) {
             pos = SESSION['position'];
         }
     }
-    // console.log(SESSION['position'])
+
     $.ajax({
         url: "/get_project",
         type: 'POST',
@@ -478,7 +459,6 @@ function GetProject(position = null) {
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
-                //                console.log(data);
                 if (data.session) {
                     SESSION = data.session;
                 }
@@ -510,7 +490,6 @@ function SelectMarket() {
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
-                    console.log(SESSION)
                 }
                 history.pushState(SESSION, null, '');
                 CreateDashboard(data.json.root_ic, data.project);

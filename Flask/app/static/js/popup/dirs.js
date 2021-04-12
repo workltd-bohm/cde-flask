@@ -1,6 +1,5 @@
 function OpenFile(form, json, file, open) {
     LoadStartPreview();
-    // console.log(json);
     $.ajax({
         url: "/get_open_file",
         type: 'POST',
@@ -122,7 +121,6 @@ function FileDataInit() {
 };
 
 function updateName(position, el) {
-    //    console.log(el.value);
     text = el.value.split(',')[0];
     if (position == 3 || position == 6) {
         text = el.value.split(',')[0].split('.')[0];
@@ -136,17 +134,11 @@ function updateNewName() {
 }
 
 function changeValues(element) {
-    // console.log(element);
-    // console.log(element.name);
     if ($(element).is("input")) {
-        // console.log('element.name');
-        // console.log($("input[name='" + element.name + "']"));
         $("input[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("input[name='" + element.name + "']");
     }
     if ($(element).is("select")) {
-        // console.log($("select[name='" + element.name + "']"));
-        // console.log($(element).val());
         $("select[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("select[name='" + element.name + "']");
     }
@@ -174,7 +166,6 @@ function OnFileUpload(files, folders = []) {
     // name1.value = files.name;
     fileList = files;
     foldereList = folders;
-    //        console.log(file);
     // updated_name[9] = files.name;
     //updated_name[10] = '.' + fileName[1];
     // originalName = fileName[0] + '.' + fileName[1]
@@ -186,7 +177,6 @@ function OnFileUpload(files, folders = []) {
 function GetFile() {
     var fd = new FormData();
     var d = {};
-    console.log(GetForm().serializeArray());
     var form = GetForm().serializeArray()
     for (var i = 0; i < form.length; i++) {
         if (form[i].name == 'parent_id')
@@ -291,11 +281,9 @@ function NewFile(form, json, file) {
 // ------------------------------------------
 
 function RenameFile(form, json) {
-    //    console.log(json);
     LoadStart();
     var newOldName = json.name;
     if (json.hasOwnProperty("type") && json.type != null) {
-        //        console.log(data.name);
         newOldName = json.name + json.type
     }
     $.ajax({
@@ -358,8 +346,6 @@ function TrashFile(form, json) {
 
     LoadStart();
 
-    console.log(json);
-
     $.ajax({
         url: "/get_trash_ic",
         type: 'POST',
@@ -421,8 +407,6 @@ function RestoreFile(form, json) {
     }
 
     LoadStart();
-
-    console.log(json);
 
     $.ajax({
         url: "/get_restore_ic",
@@ -552,7 +536,6 @@ function DownloadMulti(path, multi) {
     LoadStart();
     var link = document.createElement('a');
     link.href = path + JSON.stringify(multi);
-    console.log(link.href);
     link.download = 'BOHM_download.zip';
     link.dispatchEvent(new MouseEvent('click'));
 
@@ -561,7 +544,6 @@ function DownloadMulti(path, multi) {
 }
 
 function DownloadIC(path, name) {
-    console.log(path);
     LoadStart();
     var link = document.createElement('a');
     link.href = path;
@@ -581,13 +563,8 @@ function DownloadICs(json) {
         ic_name: (!o[i].is_directory) ? o[i].name + o[i].type : o[i].name
     });
 
-    console.log(multi);
-    console.log(o);
-    console.log(json);
-
     if (o.length > 0) {
         if (o.length == 1) {
-            console.log(o[0]);
             if (o[0].is_directory) {
                 DownloadIC("/get_folder/" + o[0].parent_id + '/' + o[0].name, o[0].name + '.zip');
             } else {
@@ -623,7 +600,6 @@ function GetNameAndDownloadIC(o) {
         }),
         timeout: 5000,
         success: function(data) {
-            console.log(data);
             input_json2 = JSON.parse(data);
             name = input_json2['name'];
             is_iso19650 = input_json2['is_iso19650']
@@ -656,7 +632,6 @@ function GetShareLink() {
         data: JSON.stringify({ project: SESSION }),
         timeout: 5000,
         success: function(data) {
-            // console.log(data);
             $('#share-link').val(window.location.href + 'get_shared_ic/' + data);
             LoadStop();
         },

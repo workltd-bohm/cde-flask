@@ -80,8 +80,6 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
     var d = { parent_id: '', ic_id: '' };
     form.serializeArray().map(function(x) { d[x.name] = x.value; });
     if (!args) args = d;
-    //    console.log(args);
-    //    console.log(d);
 
     if (job == 'create_project') {
         args.is_iso = $("#is_iso19650_checkbox").is(':checked');
@@ -98,12 +96,10 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
         success: function(data) {
             treeStruct = null;
             if (!stay) location.reload();
-            //            console.log(data);
             if (fill) $("div.content > .form").html(data);
             else PopupClose();
             pom = (args instanceof FormData) ? d : args;
             //            for (var value of args.values()) {
-            console.log(pom);
             //            }
             SESSION["position"] = { parent_id: pom["parent_id"], ic_id: pom["ic_id"], path: pom["path"] };
             if (job != 'select_project') SESSION["undo"] = true;

@@ -69,7 +69,6 @@ g_OverTrash = [
 ];
 
 g_OverPlanetTrash = [
-    { name: "SELECT",   icon: "check_circle",       link: SelectPlanet },
     { name: "RESTORE",  icon: "restore_from_trash", link: WrapRestore },
     { name: "DESTROY",  icon: "delete",             link: WrapDelete }
 ];
@@ -604,7 +603,7 @@ function CreateSelectMenu() {
 
 function CreateMenu(event, data)
 {
-    type = g_OverFolder;
+    type = GetContextType(data);
 
     // create the new create wrapper
     let wrap = document.createElement("div");

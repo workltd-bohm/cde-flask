@@ -195,7 +195,6 @@ function createProject(files, folders) {
         // console.log(data);
         listing.innerHTML = 'Crating ' + project_name;
         
-        console.log('create project');
         $.ajax({
             url: 'create_project',
             type: 'POST',
