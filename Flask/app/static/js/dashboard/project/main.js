@@ -248,7 +248,7 @@ function AddSun(obj, data) {
     //// [SLIDER END]
 
     // create children
-    if (data.sub_folders) {
+    if (data.sub_folders.length) {
         data.values.children.selectAll("g")
             .data(data.sub_folders)
             .enter()
@@ -311,6 +311,7 @@ function AddChildren(obj, data, parent, position = 0) {
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
     // position planet
+    let g_orbit;
     if (g_root.slider) {
         //// [SLIDER START]
         // let distance = {
@@ -322,20 +323,29 @@ function AddChildren(obj, data, parent, position = 0) {
         //     .duration(ORBIT_ANIM_MOVE)
         //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
         //// [SLIDER OLD/NEW]
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF; // distance from the center
+        g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF; // distance from the center
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
         //// [SLIDER END]
     } else {
-        let g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center 
+        g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center 
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
 
+    // create orbit
+    if (position === 0) {
+        d3.select("g.star.dom").insert("circle", "g.star.child")
+            .attr("r", g_orbit)
+            .attr("fill", "transparent")
+            .attr("stroke-width", 1)
+            .attr("stroke", getComputedStyle(document.documentElement).getPropertyValue("--planet-bg").trim())
+            .attr("id", "planet-orbit");
+    }
 
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
