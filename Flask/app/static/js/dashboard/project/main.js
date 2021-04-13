@@ -892,30 +892,44 @@ function CreateGrid(data) {
     // If there aren't any subfolders
     if (data.sub_folders.length <= 0)
     {
-        let nothing_text = document.createElement("span");
-        let empty_text = "";
-        switch(data.overlay_type) {
-            case "project_root":
-                empty_text = "You don't have any projects.";
-                break;
-            case "ic":
-                empty_text = "Nothing to show.";
-                break;
-            case "trash":
-                empty_text = "Trash is empty.";
-                break;
+        // Preview option for files
+        if (!data.is_directory) {
+            let preview_button = document.createElement("a");
+            preview_button.textContent = "Preview";
+            preview_button.className = "grid-link";
+            preview_button.style.display = "inline-block";
+            preview_button.onclick = function () {
+                WrapOpenFile(data);
+            }
+            grid.appendChild(preview_button);
+        } else {
+        // Display "Empty" Text
+            let empty_text = "";
+            switch(data.overlay_type) {
+                case "project_root":
+                    empty_text = "You don't have any projects.";
+                    break;
+                case "ic":
+                    empty_text = "Nothing to show.";
+                    break;
+                case "trash":
+                    empty_text = "Trash is empty.";
+                    break;
+            }
+
+            let nothing_text = document.createElement("span");
+            nothing_text.textContent = empty_text;
+            grid.appendChild(nothing_text);
         }
 
-        nothing_text.textContent = empty_text;
-        grid.appendChild(nothing_text);
-
-        // return
-        if (data.overlay_type !== "ic" && data.overlay_type !== "project_root") return;
+        // No Create Button If It's Not An Ic Or Project Root (etc Trash)
+        if (data.overlay_type !== "ic" && InProjectList()) return;
 
         // Add Create Buttons
         let button_create = document.createElement("a");
-        button_create.className = "path-link";
-        button_create.textContent = "Create";
+        button_create.style.display = "inline-block";
+        button_create.className = "grid-link";
+        button_create.innerHTML = "Create&#9656;";
         button_create.onclick = function(event) {
             CreateMenu(event, data);
         }

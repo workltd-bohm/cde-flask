@@ -514,7 +514,6 @@ function SortByName(data) {
                     continue;
                 }
             } 
-            
         }
     }
 
@@ -608,6 +607,11 @@ function CreateSelectMenu() {
 function CreateMenu(event, data)
 {
     type = GetContextType(data);
+
+    if (type === g_OverFile) {
+        type = g_OverFile.slice();
+        type.shift();
+    }
 
     // create the new create wrapper
     let wrap = document.createElement("div");

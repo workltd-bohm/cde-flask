@@ -369,3 +369,15 @@ g.path.draw > g.text > text {
     position: absolute;
     background-color: rgba(var(--neon-blue), 0.25);
 }
+
+.grid-link
+{
+    display: inline-block !important;
+    width: fit-content;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+a:hover {
+    color: var(--link-hover)
+}
