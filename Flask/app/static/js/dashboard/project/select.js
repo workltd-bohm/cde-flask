@@ -1,11 +1,7 @@
 
 g_OverSelect = [
-    { name : "DETAILS",     icon : "preview",           link : WrapOpenFile},
-    { name : "PREVIEW",     icon : "preview",           link : WrapOpenFile},
-    { name : "RENAME",      icon : "create",            link : WrapRename},
     { name : "TRASH",       icon : "delete",            link : WrapTrash},
     { name : "MOVE",        icon : "open_with",         link : WrapMove},
-    { name : "SHARE",       icon : "share",             link : WrapShare},
     { name : "DOWNLOAD",    icon : "cloud_download",    link : WrapDownload},
     { name : "COLOR",       icon : "color_lens",        link : ChangeColor},
     { name : "COPY",        icon : "content_copy",      link : WrapCopy},

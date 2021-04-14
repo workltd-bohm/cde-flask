@@ -684,8 +684,8 @@ class DBMongoAdapter:
 
                 for trashed_ic in my_trash['trash']:
                     # if item in trash matches our query
-                    if trashed_ic['project_id'] == restore_ic_data['project_id'] \
-                    and trashed_ic['project_name'] == restore_ic_data['restore_name']:
+                    print(trashed_ic)
+                    if trashed_ic['project_id'] == restore_ic_data['project_id']:
                         my_projects['projects'].append({'project_id': trashed_ic['project_id'], 'role': 0})
                         my_trash['trash'].remove(trashed_ic)
 

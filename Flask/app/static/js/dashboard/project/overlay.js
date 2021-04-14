@@ -69,7 +69,6 @@ g_OverTrash = [
 ];
 
 g_OverPlanetTrash = [
-    { name: "SELECT",   icon: "check_circle",       link: SelectPlanet },
     { name: "RESTORE",  icon: "restore_from_trash", link: WrapRestore },
     { name: "DESTROY",  icon: "delete",             link: WrapDelete }
 ];
@@ -470,13 +469,40 @@ function SortByName(data) {
     let item_tmp;
     for (let i = 0; i < items.length - 1; i++) {
         for (let j = i + 1; j < items.length; j++) {
-            let parsed = parseInt(items[j].name);
             let str1 = items[j].name.toLowerCase();
             let str2 = items[i].name.toLowerCase();
+            
+            let parsed1 = parseInt(items[j].name);
+            let parsed2 = parseInt(items[i].name);
+            
             let sorted;
 
-            // if it's not a number - if it's a string...
-            if (isNaN(parsed)) 
+            // if both are numbers
+            if (!isNaN(parsed1) && !isNaN(parsed2)) {
+                sorted = (parsed1 < parsed2)
+
+                if (sorted) {
+                    item_tmp = items[j]; // store
+                    items.splice(j, 1); // remove j'th element
+                    items.splice(i, 0, item_tmp); // replace element
+                    i = 0; // reset loop
+                    continue;
+                }
+                // if parsed numbers are the same, compare them alphabetically
+                else if (parsed1 === parsed2) {
+                    sorted = str1.localeCompare(str2);
+                
+                    if (sorted === -1) { // -1 = str1 is sorted before str2
+                        item_tmp = items[j]; // store
+                        items.splice(j, 1); // remove j'th element
+                        items.splice(i, 0, item_tmp); // replace element
+                        i = 0; // reset loop
+                        continue;
+                    }
+                }
+            } 
+            // if both are strings or one of them is a number
+            else if ((isNaN(parsed1) && isNaN(parsed2)) || (isNaN(parsed1) && !isNaN(parsed2)) || (!isNaN(parsed1) && isNaN(parsed2))) 
             {
                 sorted = str1.localeCompare(str2);
                 
@@ -488,30 +514,6 @@ function SortByName(data) {
                     continue;
                 }
             } 
-            // if parsed a number
-            else {
-                sorted = parsed < parseInt(items[i].name)
-                
-                if (sorted) {
-                    item_tmp = items[j]; // store
-                    items.splice(j, 1); // remove j'th element
-                    items.splice(i, 0, item_tmp); // replace element
-                    i = 0; // reset loop
-                    continue;
-                }
-                // if parsed numbers are the same, compare them alphabetically
-                else if (parsed === parseInt(items[i].name)){
-                    sorted = str1.localeCompare(str2);
-                
-                    if (sorted === -1) { // -1 = str1 is sorted before str2
-                        item_tmp = items[j]; // store
-                        items.splice(j, 1); // remove j'th element
-                        items.splice(i, 0, item_tmp); // replace element
-                        i = 0; // reset loop
-                        continue;
-                    }
-                }
-            }
         }
     }
 
@@ -604,7 +606,12 @@ function CreateSelectMenu() {
 
 function CreateMenu(event, data)
 {
-    type = g_OverFolder;
+    type = GetContextType(data);
+
+    if (type === g_OverFile) {
+        type = g_OverFile.slice();
+        type.shift();
+    }
 
     // create the new create wrapper
     let wrap = document.createElement("div");

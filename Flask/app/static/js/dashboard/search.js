@@ -1,7 +1,6 @@
 SEARCH_HISTORY = {};
 
 function OpenFilterActivity(json, open = false) {
-    console.log(json);
     $.ajax({
         url: "/get_filter_activity",
         type: 'POST',
@@ -13,7 +12,6 @@ function OpenFilterActivity(json, open = false) {
         }),
         timeout: 5000,
         success: function(data) {
-            //console.log(data);
             if (data == 'Success') {
                 return true;
             }
@@ -33,7 +31,6 @@ function OpenFilterActivity(json, open = false) {
 function FilterOut(obj) {
     var data = {};
     $(obj).serializeArray().map(function(x) { data[x.name] = x.value; });
-    //console.log({path_id:SEARCH_HISTORY.ic_id, data: data});
 
     $.ajax({
         url: "/get_filtered_files",
@@ -61,7 +58,6 @@ function FilterOut(obj) {
 }
 
 function SearchOpen(data) {
-    console.log(data);
     if (g_project.search) g_project.search = false;
     //SESSION["position"] = {parent_id: data.values.data.parent_id, ic_id: data.values.data.ic_id};
     SESSION["position"] = { parent_id: data.parent_id, ic_id: data.ic_id };

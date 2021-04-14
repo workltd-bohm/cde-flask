@@ -203,6 +203,10 @@ function hexToRGB(hex, alpha) {
         return "rgb(" + r + ", " + g + ", " + b + ")";
     }
 }
+
+function InProjectList(){
+    return (g_project.current_ic.overlay_type === "project_root");
+}
 /* * * *  helper  * * * */
 
 function createTempTag(name, color = 'white') {

@@ -90,6 +90,12 @@ function SunFadeout(data) {
                 })
         }
     });
+
+    d3.select("#planet-orbit").transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_MOVE)
+        .style("opacity", 0)
+
     if (g_project.overlay) {
         g_project.overlay.transition()
             .ease("linear")
@@ -202,6 +208,7 @@ function AnimateScrollPlanet(data){
 
 function UpdateUniverse() {
     if (g_view === VIEW_GR) return;// todo remove
+    
     g_root.universe.select("g.star").each(AnimateStar);
 
     if (ORBIT_PATTERN && ORBIT_PATTERN_ANIM) {
