@@ -90,6 +90,12 @@ function SunFadeout(data) {
                 })
         }
     });
+
+    d3.select("#planet-orbit").transition()
+        .ease("linear")
+        .duration(ORBIT_ANIM_MOVE)
+        .style("opacity", 0)
+
     if (g_project.overlay) {
         g_project.overlay.transition()
             .ease("linear")

@@ -303,47 +303,34 @@ function AddChildren(obj, data, parent, position = 0) {
         data.values.rotation = position * g_project.spiral_info.planet_distance;
         //data.values.rotation = position * 360 / PLANET_MAX_NUMBER_MAX;
     } else {
-        data.values.rotation = data.values.back.sub_folders.length > 1 ? position * 360 / data.values.back.sub_folders.length : 1;
+        data.values.rotation = (data.values.back.sub_folders.length > 1) ? -position * (360 / data.values.back.sub_folders.length) : 1;
     }
     //// [SLIDER END]
 
     data.values.this.attr("id", "obj-" + data.id);
     // data.values.this.attr("parent", (parent != null) ? "obj-"+data.par_id : "null");
 
-    // position planet
+    // Position Planet(s)
     let g_orbit;
     if (g_root.slider) {
-        //// [SLIDER START]
-        // let distance = {
-        //     x:  (g_SunRadius + g_PlanetRadius * PLANET_ORBIT_COEF),
-        //     y:  (data.values.position * (g_PlanetRadius * 2) * PLANET_SCROLL_COEF)
-        // };
-        // data.values.this.transition()
-        //     .ease("linear")
-        //     .duration(ORBIT_ANIM_MOVE)
-        //     .attr("transform", "translate(" + distance.x + ", " + distance.y + ")");
-        //// [SLIDER OLD/NEW]
         g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2) * ORBIT_SCROLL_COEF; // distance from the center
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
-        //// [SLIDER END]
     } else {
-        g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center 
+        g_orbit = (g_SunRadius + (g_project.height_h - g_SunRadius) / 2.5); // distance from the center
         data.values.this.transition()
             .ease("linear")
             .duration(ORBIT_ANIM_MOVE)
             .attr("transform", "rotate(" + (-data.values.rotation) + "), translate(" + g_orbit + ", 0), rotate(" + (data.values.rotation) + ")");
     }
 
-    // create orbit
+    // Create Planet Orbit
     if (position === 0) {
-        d3.select("g.star.dom").insert("circle", "g.star.child")
+        d3.select("g.star.dom")
+            .insert("circle", "g.star.child") // Inserts A Circle Before "g.star.child"
             .attr("r", g_orbit)
-            .attr("fill", "transparent")
-            .attr("stroke-width", 1)
-            .attr("stroke", getComputedStyle(document.documentElement).getPropertyValue("--planet-bg").trim())
             .attr("id", "planet-orbit");
     }
 
@@ -351,7 +338,9 @@ function AddChildren(obj, data, parent, position = 0) {
 
     // Shaders start
     let add_class = data.overlay_type === "project" ? " project" : data.is_directory ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
-    add_class = (g_project.current_ic.overlay_type === "user") ? "" : add_class;    // prevent from changing user
+    add_class = (g_project.current_ic.overlay_type === "user") ? "" : add_class;    // Don't Add Style (Class) When On User Profile
+
+    // Background Color
     data.values.background = data.values.object.append("circle")
         .attr("class", "planet background" + add_class)
         .attr("r", g_PlanetRadius);
@@ -360,6 +349,7 @@ function AddChildren(obj, data, parent, position = 0) {
         .attr("class", "planet pattern" + add_class)
         .attr("r", g_PlanetRadius);
 
+    // These Must Also Be Included In / Removed From Animation
     // data.values.shader = data.values.object.append("circle")
     //     .attr("class", "planet shader")
     //     .attr("r", g_PlanetRadius)
@@ -376,21 +366,15 @@ function AddChildren(obj, data, parent, position = 0) {
 
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
-    //  exclude user profile   exclude folders       exclude projects
+    // Add File Dates To Planet(s)
+    // |exclude user profile   |exclude folders      |exclude projects
     if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
     {
         AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .8, "planet-date");
         AddText2(data, GetDate(data)[1].split(":").slice(0, 2).join(":"), null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .8, "planet-time");
     }
-    //// [SLIDER START]
-    // if (g_root.slider) {
-    //     data.values.text.selectAll("text")
-    //         .style("text-anchor", "start")
-    //         .attr("transform", "translate(" + (g_SunRadius / PLANET_SCROLL_TEXT) + ")");
-    // }
-    //// [SLIDER END]
 
-    // set color of a planet
+    // Planet(s) Color
     if (data.color) {
         data.values.background
             .style("fill", data.color)
@@ -399,7 +383,7 @@ function AddChildren(obj, data, parent, position = 0) {
             .style("fill", FlipColor(data.color))
     }
 
-    // planet select = mouse over overlay for planets
+    // Planet(s) Mouse Events
     data.values.select = data.values.this.append("circle")
         .attr("class", "planet select")
         .attr("cx", 0)
@@ -438,7 +422,7 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.data = data;    // Reference Hack - Be Careful
 
     // Don't Create Checkboxes For Project Or User
-    if (data.overlay_type === "project" || (g_project.current_ic.overlay_type === "user")) return;
+    if (InProjectList() || (g_project.current_ic.overlay_type === "user")) return;
     
     // Create The Select Checkbox ForeignObject (container)
     g_OverlayItemSize = 24;
@@ -517,6 +501,7 @@ function AddTspan(target, text, x, y, suffix = null, size = 1) {
     }
 }
 
+// Note: Rename This To AddText After AddText Is No Longer Used
 function AddText2(data, text, suffix = null, x, y, size = 1, cls = "") {
     let values = data.values;
 
@@ -532,6 +517,7 @@ function AddText2(data, text, suffix = null, x, y, size = 1, cls = "") {
     AddTspan(tmp, text, x, y, suffix, size);
 }
 
+// Add Text To SVG (will not be used soon)
 function AddText(data, cls = "", fix = false) {
     var newobj = data.values;
     var newName = data.name;
@@ -1012,10 +998,12 @@ function ClearSpace() {
 
 function GetRadius(data)
 {
+    // Returns Radius Of A Planet Body
     return data.values.object.selectAll("circle").attr("r");
 }
 
 function GetDate(data)
 {
+    // Returns date in format ['dd.mm.yyyy', 'hh:mm:ss']
     return data.history[0].date.split("-");
 }

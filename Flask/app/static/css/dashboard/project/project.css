@@ -381,3 +381,10 @@ g.path.draw > g.text > text {
 a:hover {
     color: var(--link-hover)
 }
+
+#planet-orbit
+{
+    stroke: var(--planet-bg);
+    stroke-width: 1;
+    fill: transparent;
+}
