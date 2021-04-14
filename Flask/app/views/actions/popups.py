@@ -112,10 +112,11 @@ def get_open_file():
                 project_code = project['code']
                 company_code = user['company_code']
                 for t in file_tags:
-                    if t['key'] == 'project_code' and t['tag'] != '':
-                        project_code = t['tag'][1:]
-                    if t['key'] == 'company_code' and t['tag'] != '':
-                        company_code = t['tag'][1:]
+                    if 'key' in t:
+                        if t['key'] == 'project_code' and t['tag'] != '':
+                            project_code = t['tag'][1:]
+                        if t['key'] == 'company_code' and t['tag'] != '':
+                            company_code = t['tag'][1:]
 
                 response = {
                     'html': html,
