@@ -59,9 +59,11 @@ def get_iso_filename(file_ic, project, user):
             tag['tag'] = tag['tag'][1:]
 
         if ',' in tag['tag']:
-            tag_code_list[tag['key']] = tag['tag'].split(',')[0]
+            if 'key' in tag:
+                tag_code_list[tag['key']] = tag['tag'].split(',')[0]
         else:
-            tag_code_list[tag['key']] = tag['tag']
+            if 'key' in tag:
+                tag_code_list[tag['key']] = tag['tag']
     file_name = file_ic.name + file_ic.type
     # iso_name = '-'.join(tag_code_list) + '_' + file_name
     if project['is_iso19650']:
