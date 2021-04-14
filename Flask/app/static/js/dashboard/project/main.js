@@ -635,16 +635,22 @@ function CreateHoverMenu()
 {
     $(".hover-menu").empty();
 
+    // Appended - Each Comes After
     CreateUndoMenu();
     CreateSortMenu();
-    CreateSelectMenu();
+    if (g_project.current_ic.sub_folders.length && !InProjectList()) CreateSelectMenu();
     CreateViewMenu();
+
+    // Prepended - Each Comes Before
+    if (g_view === VIEW_GR) CreateNewMenu();
+    if (!g_project.current_ic.is_directory && g_view === VIEW_GR) CreatePreviewMenu();
     
     // accept / decline menu for grid view
     if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
 
-    // Change Toggle View Icon
-    $(".btn-view").children().first().text(g_view === VIEW_PL ? "grid_view" : "public");
+    // Change Toggle View Icon 
+    let view_button_text = (g_view === VIEW_PL) ? "grid_view" : "public";
+    $(".btn-view").children().last().text(view_button_text);
 }
 
 function CreateWorkspace(data) {
@@ -917,7 +923,15 @@ function CreateGrid(data) {
         button_create.className = "grid-link";
         button_create.innerHTML = "Create&#9656;";
         button_create.onclick = function(event) {
-            CreateMenu(event, data);
+            type = GetContextType(g_project.current_ic);
+
+            // Make A Copy Of OverFile Object, To Remove First Option
+            if (type === g_OverFile) {
+                type = g_OverFile.slice();
+                type.shift();
+            }
+
+            CreateMenu(event, data, type);
         }
         
         grid.appendChild(button_create);

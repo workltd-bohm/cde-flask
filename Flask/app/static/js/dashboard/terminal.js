@@ -318,7 +318,7 @@ function addTag(terminal, buffer = false) {
             post_id: post_id,
             tags: terminal
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             LoadTag(terminal);
@@ -379,7 +379,7 @@ function refreshTags() {
             tag: tagName,
             color: tagColor
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             $(".tag-container").remove();
@@ -426,7 +426,7 @@ function removeTag(tagName, tagColor) {
             tag: tagName,
             color: tagColor
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             LoadStop();
@@ -575,7 +575,7 @@ function updateComplexTags(element) {
             iso: 'ISO19650',
             tags: args
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             LoadStop();
@@ -843,7 +843,7 @@ function searchByTag(currValArray) {
                 project_name: SESSION['position'].project_name,
                 search_tags: searchArr
             }),
-            timeout: 5000,
+            timeout: 10000,
             success: function(data) {
                 data = JSON.parse(data);
                 if (data) {
@@ -881,7 +881,7 @@ function searchByName(currValArray) {
                 project_name: SESSION['position'].project_name,
                 search_names: searchArr
             }),
-            timeout: 5000,
+            timeout: 10000,
             success: function(data) {
                 data = JSON.parse(data);
                 if (data) {

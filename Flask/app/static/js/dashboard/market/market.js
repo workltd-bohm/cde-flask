@@ -54,7 +54,7 @@ function MarketOpen(type, data, run = null, run_data = null) { // type depricate
 //     $.ajax({
 //         url: url,
 //         type: 'POST',
-//         timeout: 5000,
+//         timeout: 10000,
 //         success: function(template){
 //             if(template){
 //                 for (var obj of JSON.parse(d)){
@@ -148,7 +148,7 @@ function MarketGet(choose_market, run = null, run_data = null) {
         url: choose_market == "Bids" ? "/get_my_bids_planetary" : "/get_my_posts_planetary",
         type: 'POST',
         data: JSON.stringify({ project: { market: choose_market } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {

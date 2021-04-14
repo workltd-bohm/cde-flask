@@ -9,7 +9,7 @@ function OpenFile(form, json, file, open) {
             parent_id: json.parent_id,
             ic_id: json.ic_id
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
@@ -47,7 +47,7 @@ function NewFolder(form, json) {
             ic_id: json.ic_id,
             parent_path: json.path,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];
@@ -245,7 +245,7 @@ function NewFile(form, json, file) {
             project_path: json.path,
             is_file: !json.is_directory,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
@@ -296,7 +296,7 @@ function RenameFile(form, json) {
             old_name: newOldName,
             is_directory: json.is_directory,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
@@ -359,7 +359,7 @@ function TrashFile(form, json) {
             parent_path: json.parent,
             project_id: json.project_id
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
@@ -421,7 +421,7 @@ function RestoreFile(form, json) {
             parent_id: json.parent_id,
             parent_path: json.parent,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
@@ -477,7 +477,7 @@ function DeleteFile(form, json) {
             delete_name: json.name + ((json.type) ? json.type : ""),
             is_directory: json.is_directory,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
@@ -507,7 +507,7 @@ function EmptyTrash(form, json) {
     $.ajax({
         url: "/get_empty_trash",
         type: 'POST',
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             try {
                 input_json2 = JSON.parse(data);
@@ -598,7 +598,7 @@ function GetNameAndDownloadIC(o) {
             file_name: o.name,
             type: o.type
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json2 = JSON.parse(data);
             name = input_json2['name'];
@@ -630,7 +630,7 @@ function GetShareLink() {
         url: "/get_encoded_data",
         type: 'POST',
         data: JSON.stringify({ project: SESSION }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             $('#share-link').val(window.location.href + 'get_shared_ic/' + data);
             LoadStop();

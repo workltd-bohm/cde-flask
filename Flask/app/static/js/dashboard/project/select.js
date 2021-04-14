@@ -1,10 +1,10 @@
 
 g_OverSelect = [
-    { name : "TRASH",       icon : "delete",            link : WrapTrash},
-    { name : "MOVE",        icon : "open_with",         link : WrapMove},
-    { name : "DOWNLOAD",    icon : "cloud_download",    link : WrapDownload},
     { name : "COLOR",       icon : "color_lens",        link : ChangeColor},
+    { name : "DOWNLOAD",    icon : "cloud_download",    link : WrapDownload},
     { name : "COPY",        icon : "content_copy",      link : WrapCopy},
+    { name : "MOVE",        icon : "open_with",         link : WrapMove},
+    { name : "TRASH",       icon : "delete",            link : WrapTrash},
 ]
 
 // TODO 

@@ -33,7 +33,7 @@ function NewPost(obj, request_data = '') {
         url: "/make_new_post",
         type: 'POST',
         data: JSON.stringify({ data: request_data }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             json_data = JSON.parse(data);
             if (json_data) {
@@ -93,7 +93,7 @@ function AddPost(obj) {
         url: "/create_post",
         type: 'POST',
         data: JSON.stringify(args),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             MarketGet('Posts');
@@ -124,7 +124,7 @@ function UpdatePost(obj, data) {
         url: "/edit_post",
         type: 'POST',
         data: JSON.stringify(args),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             MarketGet('Posts');
@@ -150,7 +150,7 @@ function UpdateBid(obj, data) {
         url: "/edit_bid",
         type: 'POST',
         data: JSON.stringify(args),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             MarketGet('Bids');
@@ -176,7 +176,7 @@ function Bid(obj, data, t, s) {
         url: "/create_bid",
         type: 'POST',
         data: JSON.stringify(args),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             MarketGet('Bids');
@@ -196,7 +196,7 @@ function GetAllPost() {
     $.ajax({
         url: "/get_all_posts_planetary",
         type: 'POST',
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -225,7 +225,7 @@ function OpenActivityBid(obj, data) {
         url: "/make_activity_bid",
         type: 'POST',
         data: JSON.stringify({ bid_id: data }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -253,7 +253,7 @@ function ViewPost(obj, post_id, json = '') {
         url: "/make_view_post",
         type: 'POST',
         data: JSON.stringify({ post_id: post_id }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             json_data = JSON.parse(data);
             // console.log(json_data);
@@ -286,7 +286,7 @@ function EditPost(obj, post_id, json = '') {
         url: "/make_edit_post",
         type: 'POST',
         data: JSON.stringify({ post_id: post_id }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             json_data = JSON.parse(data);
             if (json_data) {
@@ -375,7 +375,7 @@ function OpenActivityEditPost(obj, url, post_id) {
         url: url,
         type: 'POST',
         data: JSON.stringify(data),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -403,7 +403,7 @@ function EditBid(obj, data) {
         url: "/make_edit_bid",
         type: 'POST',
         data: JSON.stringify({ bid_id: data }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             json_data = JSON.parse(data);
             if (json_data) {
@@ -433,7 +433,7 @@ function OpenActivityEditBid(obj) {
         url: "/make_post_view_activity",
         type: 'POST',
         data: JSON.stringify({ post_id: obj.ic_id }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {

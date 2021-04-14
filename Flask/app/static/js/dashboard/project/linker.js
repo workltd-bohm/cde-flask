@@ -116,7 +116,7 @@ function WrapShare(data) {
         url: "/get_encoded_data",
         type: 'POST',
         data: JSON.stringify({ project: d }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             var dummy = document.createElement('input'),
                 text = window.location.href + 'get_shared_ic/' + data;

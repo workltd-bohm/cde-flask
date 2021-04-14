@@ -223,6 +223,10 @@ function SelectPlanet(data){
     if (has_checked) {
         if (g_view === VIEW_PL)
         SelectionCreate(data.values.data.values.back.values.this, data.values.data.values.back);
+
+        // Create Action Menu For Selected Items
+        if (g_view === VIEW_GR)
+        CreateActionMenu();
     } 
     else 
     {
@@ -233,6 +237,7 @@ function SelectPlanet(data){
 
         // clear selection
         ClearSelection();
+        RemoveActionMenu();
     }
 
     // Adjust Select-All Button In Hover Menu
@@ -267,6 +272,9 @@ function SelectAllPlanets(data){
                 d.checked = true;
                 CHECKED[d.ic_id] = d;
             });
+
+            // Create Action Menu
+            CreateActionMenu();
 
             // set cards to be checked and checkmarks visible
             $(".card").find("input").prop("checked", true)
@@ -303,6 +311,8 @@ function DeselectAllPlanets(data){
             g_project.current_ic.sub_folders.forEach((d) => {
                 d.checked = false;
             });
+
+            RemoveActionMenu();
 
             // set cards to be unchecked and checkmarks invisible
             $(".card").find("input").prop("checked", false)

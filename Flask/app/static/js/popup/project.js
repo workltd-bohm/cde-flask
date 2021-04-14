@@ -69,7 +69,7 @@ function ShareProject(data) {
             user_name: document.getElementById('user_name_share').value,
             role: $("#role_share option:selected").text()
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             PopupClose();
@@ -104,7 +104,7 @@ function ProjectConfigSubmit() {
         //dataType: "json",
         processData: false,
         contentType: false,
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
         },

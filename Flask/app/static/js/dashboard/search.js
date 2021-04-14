@@ -10,7 +10,7 @@ function OpenFilterActivity(json, open = false) {
             ic_id: json.ic_id,
             project_name: SESSION['name']
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             if (data == 'Success') {
                 return true;
@@ -36,7 +36,7 @@ function FilterOut(obj) {
         url: "/get_filtered_files",
         type: 'POST',
         data: JSON.stringify({ path_id: SEARCH_HISTORY.ic_id, data: data }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {

@@ -100,7 +100,7 @@ function getComments() {
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
 
@@ -146,7 +146,7 @@ function sendCommentPress() {
             comment: comment,
             post_id: post_id
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             //            input_json = JSON.parse(data);
             //console.log(data);
@@ -195,7 +195,7 @@ function sendComment(el) {
             comment: comment,
             post_id: post_id
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             //            input_json = JSON.parse(data);
             //console.log(data);
@@ -302,7 +302,7 @@ function updateComment(el, elem) {
             comment_id: dataset.id,
             comment: comment_text,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             updateCommentSearchBuffer();
@@ -351,7 +351,7 @@ function deleteComment(elem) {
             post_id: post_id,
             comment_id: comment_id
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             elem.remove();
             MakeSnackbar(data);
@@ -415,7 +415,7 @@ function AddAccess() {
             role: add_role,
             exp_date: add_exp_date
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             getAccess();
             MakeSnackbar(data);
@@ -448,7 +448,7 @@ function getAccess() {
         success: function(data) {
             document.getElementById("activity-access").outerHTML = data;
         },
-        timeout: 5000,
+        timeout: 10000,
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar($jqXHR.responseText);
@@ -472,7 +472,7 @@ function updateAccessRole(access, role, date) {
             exp_date: date,
             user: access.user
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             getAccess();
             MakeSnackbar(data);
@@ -505,7 +505,7 @@ function removeAccess(access) {
             exp_date: access.exp_date,
             user: access.user
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             getAccess();
             MakeSnackbar(data);
@@ -537,7 +537,7 @@ function addLink(el) {
         data: JSON.stringify({
             link: link
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json = JSON.parse(data);
             console.log(input_json);
@@ -566,7 +566,7 @@ function PostList(form, json) {
         url: "/get_my_posts_popup",
         type: 'POST',
         data: JSON.stringify(json),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json = JSON.parse(data);
             html = input_json['html'];

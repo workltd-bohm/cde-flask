@@ -53,7 +53,7 @@ function SubmitUndo(data) {
     $.ajax({
         url: "/activate_undo",
         type: 'POST',
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
             CheckSession(); //GetProject();
