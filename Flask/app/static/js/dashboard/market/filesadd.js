@@ -261,9 +261,6 @@ function UploadFiles() {
         fileList[i].path = changedPath.join('/');
     }
 
-    thumb(fileList[i].file);
-    console.log('yes we here making thumbs')
-
     total = fileList.length;
     counter = 1;
     listing = document.getElementById('listing');
