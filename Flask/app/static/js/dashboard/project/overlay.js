@@ -599,6 +599,12 @@ function CreateSelectMenu() {
         }
     }
 
+    // When Preserving Selection - Change The Looks Of The Checkbox
+    let num_checked = Object.keys(CHECKED).length;
+    checkbox.checked = Boolean(num_checked);
+    checkbox.indeterminate = Boolean(num_checked > 0 && num_checked < g_project.current_ic.sub_folders.length);
+    label.textContent = (num_checked > 0) ? "Deselect" : "Select all";
+
     $(".hover-menu").append(select_menu);
 }
 
@@ -643,6 +649,9 @@ function CreateMenu(event, data, type)
         // attach the item's function to this item
         new_item.addEventListener("click", () => {
             item.link(data);
+
+            // Destroy The Menu
+            $(".create-menu-wrapper").remove();
         });
 
         // finally, add the item we've generated to the context-menu list
@@ -1017,32 +1026,5 @@ function ToggleViewMode(){
 
     // Create Workspace With New View
     CreateWorkspace(g_project.current_ic);
-}
-
-function SwitchViewsPlanetary(data) {
-    $("#PROJECT").animate({
-            width: 0,
-            height: 0
-        },
-        () => {
-            // disable floating menu
-            $(".hover-menu")
-                .removeClass("position-absolute");
-
-            // create the grid
-            CreateGrid(data);
-
-            // animate the grid
-            $("#PROJECT-GRID").animate({
-                    width: '100%',
-                    height: '100%',
-                    opacity: 1
-                },
-                () => {
-                    $("#PROJECT-GRID").removeClass("HIDDEN")
-                }
-            );
-        }
-    );
 }
 // -------------------------------------------------------

@@ -136,9 +136,6 @@ function MoveCreate(obj, data) {
     //     .on("mouseup", function(d) {
     //         ClearMove(data);
     //     });
-
-
-
 }
 
 function ClearMove(data)

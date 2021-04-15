@@ -644,9 +644,15 @@ function CreateHoverMenu()
     // Prepended - Each Comes Before
     if (g_view === VIEW_GR) CreateNewMenu();
     if (!g_project.current_ic.is_directory && g_view === VIEW_GR) CreatePreviewMenu();
-    
-    // accept / decline menu for grid view
+
+    // Action Menu For Grid (if selected)
+    if (Object.keys(CHECKED).length && g_view === VIEW_GR) {
+        CreateActionMenu();
+    }
+
+    // Accept / Decline Buttons for grid view
     if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
+
 
     // Change Toggle View Icon 
     let view_button_text = (g_view === VIEW_PL) ? "grid_view" : "public";
@@ -676,6 +682,7 @@ function CreateWorkspace(data) {
             break;
     }
 
+    // Creates Action ("Hover") Menu
     CreateHoverMenu();
 
     // hide activity when on root path
@@ -825,6 +832,13 @@ function CreateGrid(data) {
                     $(this).prop("checked", checkbox.checked);
                 }
     
+                // Preserve Checked Cards Through Changing Views
+                if (d.checked) {
+                    d.checked = false;
+                    checkbox.click();
+                    checkbox.style.opacity = 1;
+                }
+
                 card.appendChild(checkbox);
             }
                 
@@ -852,14 +866,6 @@ function CreateGrid(data) {
 
             let time = document.createElement("span");
             time.textContent = GetDate(d)[1];
-
-
-            // Preserve Checked Cards Through Changing Views
-            if (d.checked) {
-                d.checked = false;
-                checkbox.click();
-                checkbox.style.opacity = 1;
-            }
 
             // colored border for cards
             if (d.color)
@@ -937,6 +943,7 @@ function CreateGrid(data) {
         grid.appendChild(button_create);
     }
 
+    // Persist Move Data
     if (g_project.move) MoveCreate(null, data.values.back);
     
     // resize cards & tell broswer to observe change in size of the element for resizing
