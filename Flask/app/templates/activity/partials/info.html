@@ -78,7 +78,7 @@
             <div class="activity-history-container">
                 {% for detail in details|reverse %}
                 <div class="activity-history-box p-2">
-                    <img class="history-img" src="/get_profile_image/{{ user['picture'] }}" />
+                    <img class="history-img" src="/get_profile_image/{{ detail['user']['picture'] }}" />
                     <div class="history-info ms-2">
                         <div class="history-info-user fw-bold">{{ detail['user']['username'] }}</div>
                         <div class="history-info-event">{{ detail['event_name'] }} {{ detail['event_value'] }}</div>
