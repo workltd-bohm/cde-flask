@@ -476,8 +476,6 @@ def get_filter_activity():
                     c['user']['picture'] = user['picture']
                     c['user']['username'] = user['username']
 
-                print(">>>>>>", details[0])
-
                 for d in details:
                     m, user = db.get_user(db_adapter, {'id': d['user']['user_id']})
                     d['user']['picture'] = user['picture']
