@@ -107,7 +107,7 @@ function SetColor(data, fill) {
         url: (o.length > 0) ? "/set_color_multi" : "/set_color",
         type: 'POST',
         data: JSON.stringify((o.length > 0) ? multi : { ic_id: data.ic_id, color: data.color, name: data.name }),
-        timeout: 5000,
+        timeout: 30000,
         success: function(response) {
             MakeSnackbar(response);
             SESSION["undo"] = true;

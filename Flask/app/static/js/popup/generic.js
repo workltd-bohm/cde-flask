@@ -92,7 +92,7 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
         //dataType: "json",
         processData: false,
         contentType: false,
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             treeStruct = null;
             if (!stay) location.reload();

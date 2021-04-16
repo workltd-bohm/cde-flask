@@ -136,7 +136,7 @@ var HelloWorldPlugin = function(args) {
             url: url,
             type: 'POST',
             data: JSON.stringify(annotation),
-            timeout: 5000,
+            timeout: 10000,
             success: function(data) {
                 console.log(data);
                 MakeSnackbar(data);

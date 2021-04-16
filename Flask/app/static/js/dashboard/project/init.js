@@ -180,7 +180,7 @@ function ClearProject(hard=false){
     if(g_project.paths_path) g_project.paths_path.remove();
     if(g_project.overlay) g_project.overlay.remove();
     if(g_project.selection) g_project.selection.remove();
-    if(g_project.move) g_project.move.remove();
+    if(g_project.move) ClearMove();
     g_project = {...g_project_per};
     if(hard)SESSION = {};
 }

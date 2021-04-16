@@ -40,7 +40,7 @@ function CheckSession() {
     $.ajax({
         url: "/get_session",
         type: 'POST',
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             SESSION = JSON.parse(data);
             switch (SESSION["section"]) {
@@ -115,7 +115,7 @@ function SendProject(data) {
         url: "/set_project",
         type: 'POST',
         data: JSON.stringify({ project: SESSION }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             if (treeStruct == null) {
                 $('.tree-view').show();
@@ -160,7 +160,7 @@ function SendProjectBackButton() {
         url: "/set_project",
         type: 'POST',
         data: JSON.stringify({ project: SESSION }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             backButtonFlag = true;
             GetProject(history.state);
@@ -184,7 +184,7 @@ function UserProfile() {
         url: "/get_user_profile",
         type: 'POST',
         data: JSON.stringify({ project: { section: "user" } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -211,7 +211,7 @@ function SelectProject() {
         url: "/get_root_project",
         type: 'POST',
         data: JSON.stringify({ project: { section: "project" } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             $('.tree-view').hide();
@@ -245,7 +245,7 @@ function CreateTreeStructure() {
         url: "/get_my_projects",
         type: 'POST',
         data: JSON.stringify({}),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json1 = JSON.parse(data);
             input_json2 = input_json1['data'];
@@ -411,7 +411,7 @@ function SelectProjectNew(request, ic_data) {
         url: "/select_project",
         type: 'POST',
         data: JSON.stringify(request),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             // GetProject(ic_data);
             CreatePath();
@@ -455,7 +455,7 @@ function GetProject(position = null) {
                 section: "project",
             }
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -484,7 +484,7 @@ function SelectMarket() {
         url: "/get_root_market",
         type: 'POST',
         data: JSON.stringify({ project: { section: "market" } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {
@@ -512,7 +512,7 @@ function Select3D() {
         url: "/get_viewer",
         type: 'POST',
         data: JSON.stringify({ project: { section: "3d" } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             response = JSON.parse(data);
             if (response) {
@@ -537,7 +537,7 @@ function SelectTrash() {
         url: "/get_trash",
         type: 'POST',
         data: JSON.stringify({ project: { section: "project" } }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {

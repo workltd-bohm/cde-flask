@@ -136,9 +136,6 @@ function MoveCreate(obj, data) {
     //     .on("mouseup", function(d) {
     //         ClearMove(data);
     //     });
-
-
-
 }
 
 function ClearMove(data)
@@ -190,7 +187,7 @@ function ApplyMove(data) {
         url: "/move_ic_multi",
         type: 'POST',
         data: JSON.stringify(MULTI),
-        timeout: 5000,
+        timeout: 10000,
         success: function(d) {
             GetProject();
             LoadStop();

@@ -366,11 +366,11 @@ function CreateUndoMenu(){
     icon.textContent = "undo";
 
     let text = document.createElement("span");
-    text.className = "ms-1"
+    text.className = "me-1"
     text.textContent = "Undo";
 
-    button.appendChild(icon);
     button.appendChild(text);
+    button.appendChild(icon);
     undo_menu.appendChild(button);
 
     undo_menu.addEventListener("click", function() {
@@ -392,11 +392,11 @@ function CreateSortMenu() {
     icon.textContent = "sort";
 
     let text = document.createElement("span");
-    text.className = "ms-1"
+    text.className = "me-1"
     text.textContent = "Sort";
 
-    button.appendChild(icon);
     button.appendChild(text);
+    button.appendChild(icon);
 
     button.onclick = function(event) {
         $(event.target
@@ -564,8 +564,6 @@ function SortByDate(data) {
 }
 
 function CreateSelectMenu() {
-    if (g_project.current_ic.overlay_type === "project_root") return;
-
     let select_menu = document.createElement("div");
     select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
@@ -578,13 +576,13 @@ function CreateSelectMenu() {
     checkbox.type = "checkbox";
 
     let label = document.createElement("label");
-    label.className = "ms-2";
+    label.className = "me-2";
     label.id = "select-all-label";
     label.htmlFor = "select-all";
     label.textContent = "Select all";
 
-    button_select.appendChild(checkbox);
     button_select.appendChild(label);
+    button_select.appendChild(checkbox);
 
     select_menu.appendChild(button_select);
 
@@ -601,18 +599,17 @@ function CreateSelectMenu() {
         }
     }
 
+    // When Preserving Selection - Change The Looks Of The Checkbox
+    let num_checked = Object.keys(CHECKED).length;
+    checkbox.checked = Boolean(num_checked);
+    checkbox.indeterminate = Boolean(num_checked > 0 && num_checked < g_project.current_ic.sub_folders.length);
+    label.textContent = (num_checked > 0) ? "Deselect" : "Select all";
+
     $(".hover-menu").append(select_menu);
 }
 
-function CreateMenu(event, data)
+function CreateMenu(event, data, type)
 {
-    type = GetContextType(data);
-
-    if (type === g_OverFile) {
-        type = g_OverFile.slice();
-        type.shift();
-    }
-
     // create the new create wrapper
     let wrap = document.createElement("div");
     wrap.className = "create-menu-wrapper";
@@ -652,6 +649,9 @@ function CreateMenu(event, data)
         // attach the item's function to this item
         new_item.addEventListener("click", () => {
             item.link(data);
+
+            // Destroy The Menu
+            $(".create-menu-wrapper").remove();
         });
 
         // finally, add the item we've generated to the context-menu list
@@ -802,11 +802,11 @@ function CreateViewMenu() {
 
     // button text
     let text = document.createElement("span");
-    text.className = "ms-1"
+    text.className = "me-1"
     text.textContent = "View";
 
-    button.appendChild(icon);
     button.appendChild(text);
+    button.appendChild(icon);
 
     button.onclick = function(event) {
         // $(event.target
@@ -879,6 +879,86 @@ function CreateViewMenu() {
     $(".hover-menu").append(view_menu);
 }
 
+function CreateNewMenu() {
+    let button_create = document.createElement("a");
+    button_create.className = "hover-menu-item px-3 py-2 mt-3";
+    let span = document.createElement("span");
+    span.className = "material-icons";
+    span.textContent = "add_circle_outline";
+    button_create.innerHTML = "Create &#9654;";
+    button_create.onclick = function (e) {
+        type = GetContextType(g_project.current_ic);
+
+        // Make A Copy Of OverFile Object, To Remove First Option
+        if (type === g_OverFile) {
+            type = g_OverFile.slice();
+            type.shift();
+        }
+
+        CreateMenu(e, g_project.current_ic, type);
+    }
+
+    $(".hover-menu").prepend(button_create);
+}
+
+function CreatePreviewMenu() {
+    let button_preview = document.createElement("a");
+    button_preview.className = "hover-menu-item px-3 py-2 mt-3";
+    
+    // text
+    let span = document.createElement("span");
+    span.textContent = "Preview";
+    span.className = "me-1";
+
+    button_preview.appendChild(span);
+
+    // icon
+    span = document.createElement("span");
+    span.className = "material-icons";
+    span.textContent = "preview";
+
+    button_preview.appendChild(span);
+
+    button_preview.onclick = function (e) {
+        WrapOpenFile(g_project.current_ic);
+    }
+
+    $(".hover-menu").prepend(button_preview);
+}
+
+function CreateActionMenu()
+{
+    RemoveActionMenu();
+
+    let button_preview = document.createElement("a");
+    button_preview.className = "hover-menu-item btn-action px-3 py-2 mt-3";
+    
+    // text
+    let span = document.createElement("span");
+    span.textContent = "Action";
+    span.className = "me-1";
+
+    button_preview.appendChild(span);
+
+    // icon
+    span = document.createElement("span");
+    span.className = "material-icons";
+    span.textContent = "category";
+
+    button_preview.appendChild(span);
+
+    button_preview.onclick = function (e) {
+        CreateMenu(e, g_project.current_ic, g_OverSelect);
+    }
+
+    $(".hover-menu").prepend(button_preview);
+}
+
+function RemoveActionMenu()
+{
+    $(".btn-action").remove();
+}
+
 function GetContextType(data) {
     let type = data.overlay_type;
     switch (type) {
@@ -946,32 +1026,5 @@ function ToggleViewMode(){
 
     // Create Workspace With New View
     CreateWorkspace(g_project.current_ic);
-}
-
-function SwitchViewsPlanetary(data) {
-    $("#PROJECT").animate({
-            width: 0,
-            height: 0
-        },
-        () => {
-            // disable floating menu
-            $(".hover-menu")
-                .removeClass("position-absolute");
-
-            // create the grid
-            CreateGrid(data);
-
-            // animate the grid
-            $("#PROJECT-GRID").animate({
-                    width: '100%',
-                    height: '100%',
-                    opacity: 1
-                },
-                () => {
-                    $("#PROJECT-GRID").removeClass("HIDDEN")
-                }
-            );
-        }
-    );
 }
 // -------------------------------------------------------

@@ -93,7 +93,7 @@ function createISORenamingPopup(files, folders) {
             project_path: position.path,
             is_file: !position.is_directory,
         }),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json2 = JSON.parse(data);
             html = input_json2['html'];
@@ -261,9 +261,6 @@ function UploadFiles() {
         fileList[i].path = changedPath.join('/');
     }
 
-    thumb(fileList[i].file);
-    console.log('yes we here making thumbs')
-
     total = fileList.length;
     counter = 1;
     listing = document.getElementById('listing');
@@ -290,7 +287,7 @@ function uploadPostFile(file, fileType) {
         //dataType: "json",
         processData: false,
         contentType: false,
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             LoadStop();
             input_json = JSON.parse(data);
@@ -446,7 +443,7 @@ function removeFile(file) {
             //dataType: "json",
             processData: false,
             contentType: false,
-            timeout: 5000,
+            timeout: 10000,
             success: function(data) {
                 LoadStop();
                 //MakeSnackbar(data);
@@ -496,7 +493,7 @@ function OpenFolderStructurePopup(form, post_id) {
         url: "/get_my_projects",
         type: 'POST',
         data: JSON.stringify({}),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             input_json1 = JSON.parse(data);
             input_json2 = input_json1['data'];

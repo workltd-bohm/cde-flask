@@ -43,7 +43,7 @@ function UserProfileActivity() {
         url: "/make_user_profile_activity",
         type: 'POST',
         //data: JSON.stringify({ic_id: data.ic_id, color: data.color}),
-        timeout: 5000,
+        timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
             if (data) {

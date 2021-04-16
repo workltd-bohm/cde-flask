@@ -635,16 +635,28 @@ function CreateHoverMenu()
 {
     $(".hover-menu").empty();
 
+    // Appended - Each Comes After
     CreateUndoMenu();
     CreateSortMenu();
-    CreateSelectMenu();
+    if (g_project.current_ic.sub_folders.length && !InProjectList()) CreateSelectMenu();
     CreateViewMenu();
-    
-    // accept / decline menu for grid view
+
+    // Prepended - Each Comes Before
+    if (g_view === VIEW_GR) CreateNewMenu();
+    if (!g_project.current_ic.is_directory && g_view === VIEW_GR) CreatePreviewMenu();
+
+    // Action Menu For Grid (if selected)
+    if (Object.keys(CHECKED).length && g_view === VIEW_GR) {
+        CreateActionMenu();
+    }
+
+    // Accept / Decline Buttons for grid view
     if (g_project.move && g_view === VIEW_GR) CreatePromptMenu();
 
-    // Change Toggle View Icon
-    $(".btn-view").children().first().text(g_view === VIEW_PL ? "grid_view" : "public");
+
+    // Change Toggle View Icon 
+    let view_button_text = (g_view === VIEW_PL) ? "grid_view" : "public";
+    $(".btn-view").children().last().text(view_button_text);
 }
 
 function CreateWorkspace(data) {
@@ -670,6 +682,7 @@ function CreateWorkspace(data) {
             break;
     }
 
+    // Creates Action ("Hover") Menu
     CreateHoverMenu();
 
     // hide activity when on root path
@@ -819,6 +832,13 @@ function CreateGrid(data) {
                     $(this).prop("checked", checkbox.checked);
                 }
     
+                // Preserve Checked Cards Through Changing Views
+                if (d.checked) {
+                    d.checked = false;
+                    checkbox.click();
+                    checkbox.style.opacity = 1;
+                }
+
                 card.appendChild(checkbox);
             }
                 
@@ -846,14 +866,6 @@ function CreateGrid(data) {
 
             let time = document.createElement("span");
             time.textContent = GetDate(d)[1];
-
-
-            // Preserve Checked Cards Through Changing Views
-            if (d.checked) {
-                d.checked = false;
-                checkbox.click();
-                checkbox.style.opacity = 1;
-            }
 
             // colored border for cards
             if (d.color)
@@ -917,12 +929,21 @@ function CreateGrid(data) {
         button_create.className = "grid-link";
         button_create.innerHTML = "Create&#9656;";
         button_create.onclick = function(event) {
-            CreateMenu(event, data);
+            type = GetContextType(g_project.current_ic);
+
+            // Make A Copy Of OverFile Object, To Remove First Option
+            if (type === g_OverFile) {
+                type = g_OverFile.slice();
+                type.shift();
+            }
+
+            CreateMenu(event, data, type);
         }
         
         grid.appendChild(button_create);
     }
 
+    // Persist Move Data
     if (g_project.move) MoveCreate(null, data.values.back);
     
     // resize cards & tell broswer to observe change in size of the element for resizing
