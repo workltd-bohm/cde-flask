@@ -31,10 +31,10 @@
             <input type="text" class="form__field" name="company_name" id="company_name" value='{{ company_name }}'/>
             <label for="company_name" class="form__label">Company Name</label>
         </div>
-        <div class="form__group field">
+        <!-- <div class="form__group field">
             <input type="text" class="form__field" name="company_role" id="company_role" value='{{ company_role }}'/>
             <label for="company_role" class="form__label">Company Role</label>
-        </div>
+        </div> -->
         {% for key, value in complex_tag_list.items() %}
             {% if key == 'role_code' %}
                 <div class="form__group field">
@@ -51,7 +51,7 @@
             {% endif %}
         {% endfor %}
         <div class="form__group field">
-            <input type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), false);"/>
+            <input class="btn py-2 w-100 btn-update" type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), false);"/>
         </div>
     </div>
 </div>

@@ -28,7 +28,7 @@ def make_user_profile_activity():
                                         email =             user_data["email"],
                                         company_code =      user_data["company_code"],
                                         company_name =      user_data["company_name"],
-                                        company_role =      user_data["company_role"],
+                                        # company_role =      user_data["company_role"],
                                         complex_tag_list =  gtr.get_input_file_fixed(),
                                         role_code =         role_code
                                         ),

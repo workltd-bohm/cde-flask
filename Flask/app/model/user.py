@@ -24,7 +24,7 @@ class User:
         if "picture" in json_data and len(json_data['picture']) > 0: self._picture = json_data['picture']
         if "company_code" in json_data and len(json_data['company_code']) > 0: self._company_code = json_data['company_code']
         if "company_name" in json_data and len(json_data['company_name']) > 0: self._company_name = json_data['company_name']
-        if "company_role" in json_data and len(json_data['company_role']) > 0: self._company_role = json_data['company_role']
+        # if "company_role" in json_data and len(json_data['company_role']) > 0: self._company_role = json_data['company_role']
         if "role_code" in json_data and len(json_data['role_code']) > 0: self._role_code = json_data['role_code']
 
     @property
