@@ -247,6 +247,7 @@ def upload_existing_project():
                             logger.log(LOG_LEVEL, 'File has 0kb - not uploaded')
                             return request.form['path']
 
+                        # Create A Thumbnail For These File Types
                         file_type = file_name.split('.')[-1]
                         if file_type.lower() == 'jpg' or \
                                 file_type.lower() == 'jpeg' or \

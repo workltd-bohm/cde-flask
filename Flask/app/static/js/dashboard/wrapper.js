@@ -310,6 +310,9 @@ function CreateTreeStructure() {
             // tree.collapseAllNodes();
             root.setExpanded(true);
 
+            // Open Tree View
+            $(".tree-view").addClass("opened");
+
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

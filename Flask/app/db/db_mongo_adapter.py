@@ -392,6 +392,8 @@ class DBMongoAdapter:
             project = Project.json_to_obj(project_json)
             file_query = {'file_name': file_obj.name+file_obj.type, "parent_id": file_obj.parent_id} 
             file_json = self._fs.find_one(file_query)
+
+            # If No File Is Matching This Query - Create It
             if file_json is None:
                 if file:
                     file_obj.stored_id = str(self._fs.put(file,
@@ -445,6 +447,11 @@ class DBMongoAdapter:
                     # print(project.to_json())
                     col.update_one({'project_name': project.name}, {'$set': project.to_json()})
             else:
+                # Create A Copy Of A File
+                copy_of_a_file = file_obj
+                copy_of_a_file.name = copy_of_a_file.name + " copy"
+                self.upload_file(project_name, copy_of_a_file, file)
+
                 print("upload_file", msg.IC_ALREADY_EXISTS)
                 return msg.IC_ALREADY_EXISTS
         else:
