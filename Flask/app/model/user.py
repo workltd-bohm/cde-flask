@@ -9,7 +9,7 @@ class User:
         self._picture = ""
         self._company_code = ""
         self._company_name = ""
-        self._company_role = ""
+        # self._company_role = ""
         self._role_code = ""
 
     def create_user(self, json_data):
@@ -91,13 +91,13 @@ class User:
     def company_name(self, value):
         self._company_name = value
 
-    @property
-    def company_role(self):
-        return self._company_role
+    # @property
+    # def company_role(self):
+    #     return self._company_role
 
-    @company_role.setter
-    def company_role(self, value):
-        self._company_role = value
+    # @company_role.setter
+    # def company_role(self, value):
+    #     self._company_role = value
 
     @property
     def role_code(self):
@@ -116,7 +116,7 @@ class User:
                     'picture': self._picture,
                     'company_code': self._company_code,
                     'company_name': self._company_name,
-                    'company_role': self._company_role,
+                    # 'company_role': self._company_role,
                     'confirmed': self._confirmed,
                     'role_code': self._role_code
                 }
