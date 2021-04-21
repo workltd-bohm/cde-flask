@@ -1187,6 +1187,7 @@ class DBMongoAdapter:
                     if pr['role'] != Role.WATCHER.value:
                         no_rights = False
                     break
+
         if no_rights:
             return msg.USER_NO_RIGHTS
 
@@ -1201,16 +1202,23 @@ class DBMongoAdapter:
                 u['projects'] = []
                 u['user_id'] = user_id
                 col_users.insert_one(u)
+
+            # Check If User Already Has Access To The Project
+            p = self.get_my_project(request_data['project_id'])
+            for a in p['root_ic']['access']:
+                if a['user']['user_id'] == user_id:
+                    return msg.ACCESS_ALREADY_EXISTS
+
             if not request_data['role']:
                 request_data['role'] = 'ADMIN'
+                
             role = getattr(Role, request_data['role']).value
             u['projects'].append({'project_id': request_data['project_id'],
                                   'role': role,
                                   'exp_date': request_data['exp_date']})
-            print('+-+-', u)
-            col_users.update_one(user_query,
-                                 {'$set': u})
-            p = self.get_my_project(request_data['project_id'])
+
+            col_users.update_one(user_query, {'$set': u})
+
             project = Project.json_to_obj(p)
             project.set_access_for_all_ics(request_data, new_user, role, project.root_ic)
             self.update_project(project, new_user)

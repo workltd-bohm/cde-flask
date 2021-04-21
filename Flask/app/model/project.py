@@ -535,7 +535,7 @@ class Project:
                 self.add_access_to_ic(request, user, ic)
                 self._message = msg.ACCESS_SUCCESSFULLY_ADDED
             else:
-                self._message = msg.ACCESS_NOT_SUCCESSFULLY_ADDED
+                self._message = msg.ACCESS_ALREADY_EXISTS
             self._added = True
         else:
             for x in ic.sub_folders:

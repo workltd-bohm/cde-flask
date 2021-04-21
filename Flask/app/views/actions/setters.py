@@ -687,11 +687,15 @@ def add_access():
                 resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
                 resp.data = msg.ACCESS_TO_YOURSELF['message']
                 return resp
+
+            # If Project Root Is Shared - Share Whole Project
             if request_data['parent_id'] == 'root':
                 result = db.share_project(db_adapter, request_data, session['user'])
                 # result = db.add_access(db_adapter, request_data, session['user'])
+            # Share Just This IC And Subsequent Folders
             else:
                 result = db.add_access(db_adapter, request_data, session['user'])
+
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
