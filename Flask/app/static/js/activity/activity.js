@@ -977,5 +977,6 @@ function GetUsers(element) {
     function ClearInput() {
         // Remove Any Existing
         $("#autocomplete-dropdown").remove();
+        users = [];
     }
 }
