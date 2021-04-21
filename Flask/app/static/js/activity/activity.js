@@ -904,6 +904,7 @@ function GetUsers(element) {
 
     // Clear Input And Return If Length Is Zero
     if (!input.length) { 
+        users = [];
         ClearInput();
         return;
     }
@@ -960,6 +961,7 @@ function GetUsers(element) {
             // Autocomplete
             item.onclick = function() {
                 element.value = user;
+                users = [];
                 ClearInput();
             }
             
@@ -977,6 +979,5 @@ function GetUsers(element) {
     function ClearInput() {
         // Remove Any Existing
         $("#autocomplete-dropdown").remove();
-        users = [];
     }
 }
