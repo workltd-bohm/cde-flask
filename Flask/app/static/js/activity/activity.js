@@ -896,3 +896,86 @@ function openDate() {
         i.style.left = "";
     }
 }
+
+var users = [];
+function GetUsers(element) {
+    // Get The Input Box Text
+    let input = element.value;
+
+    // Clear Input And Return If Length Is Zero
+    if (!input.length) { 
+        ClearInput();
+        return;
+    }
+
+    // Make A Request If Array Is Empty
+    if (!users.length) {
+        $.ajax({
+            url: '/get_all_users',
+            method: 'GET',
+            timeout: 10000,
+            success: function(data) {
+                users = JSON.parse(data)['users'];
+                CreateSuggestionDropdown();
+            },
+            error: function($jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown + ": " + $jqXHR.responseText);
+                MakeSnackbar($jqXHR.responseText);
+                if ($jqXHR.status == 401) {
+                    // Handle Failure
+                }
+            }
+        });
+    // If Users Are Fetched - Make A Dropdown
+    } else {
+        CreateSuggestionDropdown();
+    }
+
+    function CreateSuggestionDropdown() {
+        let user_list = [];
+        for (user of users) {
+            // Add User To "The List"
+            if (user.startsWith(input)) {
+                user_list.push(user);
+            }
+        }
+        
+        // Remove Any Existing
+        ClearInput();
+
+        // Create & Style Dropdown Element
+        let dropdown = document.createElement("DIV");
+        dropdown.id = "autocomplete-dropdown";
+
+        // Iterate Through Results And Create Item For Each
+        user_list.forEach((user) => {
+            let item = document.createElement("DIV");
+            item.className = "autocomplete-result";
+
+            // Add Text To The Item
+            let name = document.createElement("SPAN");
+            name.textContent = user;
+            item.appendChild(name);
+
+            // Autocomplete
+            item.onclick = function() {
+                element.value = user;
+                ClearInput();
+            }
+            
+            // Navigate Through Options
+                // ... 
+
+            // Add Item To Dropdown
+            dropdown.appendChild(item);
+        });
+
+        // Add Dropdown To The Input Group
+        element.parentElement.appendChild(dropdown);
+    }
+
+    function ClearInput() {
+        // Remove Any Existing
+        $("#autocomplete-dropdown").remove();
+    }
+}

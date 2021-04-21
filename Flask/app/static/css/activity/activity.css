@@ -365,6 +365,30 @@ textarea, input, button
     opacity: 1;
 }
 
+#access-add-user
+{
+    position: relative;
+}
+
+#autocomplete-dropdown
+{
+    background-color: var(--bg-primary);
+    position: absolute;
+    top: 100%;
+    z-index: 10;
+}
+
+.autocomplete-result
+{
+    padding: .375em .75em;
+}
+
+.autocomplete-result:hover
+{
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
 /* width */
 ::-webkit-scrollbar {
     width: 3px;

@@ -16,7 +16,7 @@
                 <div class="activity-add-user-container row">
                     <label for="user_name" class="form-label ms-1">Add people</label>
                     <div class="input-group">
-                        <input type="text" class="form-control me-2" id="access-add-username" 
+                        <input type="text" class="form-control me-2" id="access-add-username" oninput="GetUsers(this);"
                             name="user_name" placeholder="Type a username" required />
                         <input type="text" id="access-exp-date" class="form-control" name="access_date_expired" placeholder="indefinitely" value="indefinitely" onfocus="(this.type='datetime-local')" onblur="(this.type='text')">
                         <select required class="form-select me-2" id="access-add-role">
