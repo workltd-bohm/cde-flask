@@ -936,7 +936,7 @@ function GetUsers(element) {
         let user_list = [];
         for (user of users) {
             // Add User To "The List"
-            if (user.startsWith(input)) {
+            if (user.toLowerCase().startsWith(input.toLowerCase())) {
                 user_list.push(user);
             }
         }
