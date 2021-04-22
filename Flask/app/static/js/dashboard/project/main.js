@@ -409,6 +409,10 @@ function AddChildren(obj, data, parent, position = 0) {
                 case "user":
                     func = GetWarp;
                     break;
+                case "project_root":
+                    func = SunFadeout;
+                    break;
+                case "ic":
                 default:
                     func = data.is_directory ? SunFadeout : WrapOpenFile;
                     break;
