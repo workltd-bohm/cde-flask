@@ -410,7 +410,7 @@ function AddChildren(obj, data, parent, position = 0) {
                     func = GetWarp;
                     break;
                 default:
-                    func = SunFadeout;
+                    func = data.is_directory ? SunFadeout : WrapOpenFile;
                     break;
             }
             ClickStop(func, data, true);
@@ -792,8 +792,8 @@ function CreateGrid(data) {
                     $(this).addClass("selected");
                     SelectPlanet(d);
                 } else {
-                    // load new ic / folder / project
-                    data.overlay_type !== "project_root" ? CreateWorkspace(d) : WrapGetProject(d);
+                    // load new ic / folder / project / open file
+                    data.overlay_type === "project_root" ? WrapGetProject(d) : d.is_directory ? CreateWorkspace(d) : WrapOpenFile(d);
                 }
             }
 
