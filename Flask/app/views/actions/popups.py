@@ -43,14 +43,20 @@ def get_open_file():
 
         if db.connect(db_adapter):
             project_name = session['project']['name']
-            result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
+            shared = bool(project_name == "Shared")
+            if shared:
+                result = db.get_ic_object_from_shared(db_adapter, request_data, session['user'])
+            else:
+                result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
+
             if result:
-                project = db.get_project(db_adapter, project_name, session['user'])
+                if not shared:
+                    project = db.get_project(db_adapter, project_name, session['user']) #shared
                 access = [x.to_json() for x in result.access]
 
                 is_owner = False
                 for a in access:
-                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
+                    if a['user']['user_id'] == session['user']['id'] and a['role'] == Role.OWNER.value:
                         is_owner = True
                     a['role'] = Role(a['role']).name
                     m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
@@ -67,7 +73,7 @@ def get_open_file():
                 db.close_connection(db_adapter)
 
                 file_name =         result.name + result.type
-                file_iso_name =     helper.get_iso_filename(result, project, session['user'])
+                file_iso_name =     helper.get_iso_filename(result, project, session['user']) if not shared else file_name # hot fix
                 file_details =      [x.to_json() for x in result.history]
                 file_tags =         [x.to_json() for x in result.tags]
                 file_size =         db.get_file_size(db_adapter, result.stored_id, True)
@@ -109,14 +115,19 @@ def get_open_file():
                                             preview = '/get_shared_file/' + result.stored_id
                                             )
                 
-                project_code = project['code']
-                company_code = user['company_code']
-                for t in file_tags:
-                    if 'key' in t:
-                        if t['key'] == 'project_code' and t['tag'] != '':
-                            project_code = t['tag'][1:]
-                        if t['key'] == 'company_code' and t['tag'] != '':
-                            company_code = t['tag'][1:]
+                # shared hot fix
+                if not shared:
+                    project_code = project['code'] 
+                    company_code = user['company_code']
+                    for t in file_tags:
+                        if 'key' in t:
+                            if t['key'] == 'project_code' and t['tag'] != '':
+                                project_code = t['tag'][1:]
+                            if t['key'] == 'company_code' and t['tag'] != '':
+                                company_code = t['tag'][1:]
+                else:
+                    project_code = ""
+                    company_code = ""
 
                 response = {
                     'html': html,
@@ -128,7 +139,7 @@ def get_open_file():
                                                 tags =              file_tags,
                                                 file_name =         file_name,
                                                 name =              name+type,
-                                                full_name =         file_iso_name,
+                                                full_name =         file_iso_name, #shared
                                                 path =              file_path,
                                                 share_link =        file_share_link,
                                                 comments =          comments,
@@ -139,8 +150,8 @@ def get_open_file():
                                                 access =            access,
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
                                                 size =              file_size,
-                                                project_code =      project_code,
-                                                company_code =      company_code
+                                                project_code =      project_code,   # shared hot fix
+                                                company_code =      company_code    # shared hot fix
                                                 ),
                     'data': []
                 }
