@@ -902,6 +902,28 @@ class DBMongoAdapter:
                 project_json = None
         return project_json
 
+    def get_project_from_shared_by_parent_id(self, request_data, user):
+        # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
+        col = self._db.Projects
+        ics, ic_shares = self.get_my_shares(user)
+        shared_ic = None
+        project_json = None
+        for i in ic_shares:
+            if request_data['parent_id'] == i['parent_id']:
+                shared_ic = i
+                project_json = self.get_project(i['project_name'], user)
+                break
+        if not shared_ic:
+            for i in ic_shares:
+                project_json = self.get_project(i['project_name'], user)
+                project = Project.json_to_obj(project_json)
+                project.current_ic = None
+                shared_ic_obj = project.find_parent_by_id(request_data['parent_id'], project.root_ic)
+                if shared_ic_obj:
+                    break
+                project_json = None
+        return project_json
+
     def get_ic_object_from_shared(self, request_data, user):
         # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
         col = self._db.Projects
