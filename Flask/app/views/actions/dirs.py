@@ -23,7 +23,11 @@ def get_file_name():
     if main.IsLogin():
         if db.connect(db_adapter):
             project_name = session.get("project")["name"]
-            result = db.get_project(db_adapter, project_name, session['user'])
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_json, session['user'])
+                print(result)
+            else:
+                result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 project = Project.json_to_obj(result)
                 name = request_json['file_name'] + request_json['type']

@@ -42,6 +42,7 @@ def get_open_file():
         parent_id = request_data['parent_id']
 
         if db.connect(db_adapter):
+            print('hererer111')
             project_name = session['project']['name']
             shared = bool(project_name == "Shared")
             if shared:
