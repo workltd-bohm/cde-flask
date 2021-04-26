@@ -255,6 +255,9 @@ def get_new_folder():
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                project_name = result['project_name']
             result = db.get_project(db_adapter, project_name, session.get('user'))
             if result:
                 response = {
@@ -298,6 +301,9 @@ def get_new_file():
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                project_name = result['project_name']
             user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             if result:
