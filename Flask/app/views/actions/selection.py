@@ -96,11 +96,18 @@ def move_multi():
     if main.IsLogin():
         request_data_array = json.loads(request.get_data())
         dirs.set_project_data(request_data_array, True)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data_array))
         #print("array", request_data_array)
         if db.connect(db_adapter):
             if "targets" and "to_copy" in request_data_array:
                 user = session['user']
                 project_name = session.get("project")["name"]
+                if project_name == 'Shared':
+                    request_json = {}
+                    request_json['ic_id'] = request_data_array['from_ic_id']
+                    request_json['parent_id'] = request_data_array['from_parent_id']
+                    result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, session['user'])
+                    project_name = result['project_name']
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
 
