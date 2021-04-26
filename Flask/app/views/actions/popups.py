@@ -412,12 +412,16 @@ def get_rename_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
-        if request_data['parent_path'] == 'Projects':
-            project_name = request_data['old_name']
-        else:
-            project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if request_data['parent_path'] == 'Projects':
+                project_name = request_data['old_name']
+            else:
+                if session.get("project")["name"] == 'Shared':
+                    result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                    project_name = result['project_name']
+                else:
+                    project_name = session.get("project")["name"]
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 if request_data['parent_path'] == 'Projects':
@@ -482,6 +486,9 @@ def get_trash_ic():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                project_name = result['project_name']
             result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':

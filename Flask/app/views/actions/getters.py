@@ -658,7 +658,11 @@ def get_shared_ic(ic_data):
         if db.connect(db_adapter):
             request_json = json.loads(request_data)
 
-            project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
+            if request_json['project']['name'] == 'Shared':
+                request_data = request_json['project']['position']
+                project_json = db.get_project_from_shared(db_adapter, request_data, session['user'])
+            else:
+                project_json = db.get_project(db_adapter, request_json['project']['name'], session['user'])
 
             if project_json:
                 project = Project.json_to_obj(project_json)

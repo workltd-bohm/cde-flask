@@ -451,6 +451,9 @@ def set_color():
             project_name = request_data['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                project_name = result['project_name']
             color_change = {
                 "project_name": project_name,
                 "ic_id": request_data["ic_id"],

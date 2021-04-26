@@ -25,7 +25,6 @@ def get_file_name():
             project_name = session.get("project")["name"]
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_json, session['user'])
-                print(result)
             else:
                 result = db.get_project(db_adapter, project_name, session['user'])
             if result:
