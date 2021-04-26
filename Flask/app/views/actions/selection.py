@@ -18,6 +18,9 @@ def set_color_multi():
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data[0], session['user'])
+                project_name = result['project_name']
             result = ''
             for req in request_data:
                 color_change = {
@@ -200,11 +203,18 @@ def get_trash_ic_multi():
     if main.IsLogin():
         delete_ic_array = json.loads(request.get_data())
         dirs.set_project_data(delete_ic_array, True)
+        logger.log(LOG_LEVEL, 'POST data: {}'.format(delete_ic_array))
         #print(delete_ic_array)
         if db.connect(db_adapter):
             if "targets" in delete_ic_array:
                 user_id = session['user']['id']
                 project_name = session.get("project")["name"]
+                project_id = ''
+                if project_name == 'Shared':
+                    result = db.get_project_from_shared(db_adapter, delete_ic_array, session['user'])
+                    project_name = result['project_name']
+                    for delete_ic_data in delete_ic_array["targets"]:
+                        delete_ic_data['project_id'] = project_id
                 final = ''
                 for delete_ic_data in delete_ic_array["targets"]:
                     delete_ic_data['user_id'] = user_id
@@ -329,6 +339,9 @@ def get_ic_multi(json_obj):
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared_by_parent_id(db_adapter, request_data[0], session['user'])
+                project_name = result['project_name']
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
             project = Project.json_to_obj(response)

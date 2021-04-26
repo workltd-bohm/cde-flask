@@ -355,6 +355,9 @@ def get_iso_rename_popup():
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                project_name = result['project_name']
             user = session.get('user')
 
             message, us = db.get_user(db_adapter, {'id': user['id']})
@@ -492,11 +495,11 @@ def get_trash_ic():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
         if db.connect(db_adapter):
-            if project_name == 'Shared':
+            if project_name == 'Shared' and not is_multi:
                 result = db.get_project_from_shared(db_adapter, request_data, session['user'])
                 project_name = result['project_name']
             result = db.get_project(db_adapter, project_name, session['user'])
-            if result:
+            if result or is_multi:
                 if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
                     request_data["project_id"] = result["project_id"]
                     parent_path = result['root_ic']['parent']

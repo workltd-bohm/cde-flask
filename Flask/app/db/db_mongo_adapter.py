@@ -527,6 +527,7 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash        # user's trash info
         shared =        self._db.Projects.Shared
 
+        print('tetetet', ic_data)
         if ic_data['project_name'] != 'Shared':
             project_query = {'project_name': ic_data['project_name']}
         else:
@@ -624,7 +625,7 @@ class DBMongoAdapter:
                     for key in this_user_shared.keys():
                         if key == '_id':
                             continue
-
+                        print(ic_data)
                         for i, obj in enumerate(this_user_shared[key]):
                             if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
                                 del this_user_shared[key][i]
