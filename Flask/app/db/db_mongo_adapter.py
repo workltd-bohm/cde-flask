@@ -528,6 +528,7 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash        # user's trash info
         shared =        self._db.Projects.Shared
 
+        print('tetetet', ic_data)
         if ic_data['project_name'] != 'Shared':
             project_query = {'project_name': ic_data['project_name']}
         else:
@@ -625,7 +626,7 @@ class DBMongoAdapter:
                     for key in this_user_shared.keys():
                         if key == '_id':
                             continue
-
+                        print(ic_data)
                         for i, obj in enumerate(this_user_shared[key]):
                             if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
                                 del this_user_shared[key][i]
@@ -881,6 +882,50 @@ class DBMongoAdapter:
             ic = project.find_ic(request_data, file_name, project.root_ic)
         return ic
 
+    def get_project_from_shared(self, request_data, user):
+        # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
+        col = self._db.Projects
+        ics, ic_shares = self.get_my_shares(user)
+        shared_ic = None
+        project_json = None
+        for i in ic_shares:
+            if request_data['ic_id'] == i['ic_id']:
+                shared_ic = i
+                project_json = self.get_project(i['project_name'], user)
+                break
+        if not shared_ic:
+            for i in ic_shares:
+                project_json = self.get_project(i['project_name'], user)
+                project = Project.json_to_obj(project_json)
+                project.current_ic = None
+                shared_ic_obj = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+                if shared_ic_obj:
+                    break
+                project_json = None
+        return project_json
+
+    def get_project_from_shared_by_parent_id(self, request_data, user):
+        # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
+        col = self._db.Projects
+        ics, ic_shares = self.get_my_shares(user)
+        shared_ic = None
+        project_json = None
+        for i in ic_shares:
+            if request_data['parent_id'] == i['parent_id']:
+                shared_ic = i
+                project_json = self.get_project(i['project_name'], user)
+                break
+        if not shared_ic:
+            for i in ic_shares:
+                project_json = self.get_project(i['project_name'], user)
+                project = Project.json_to_obj(project_json)
+                project.current_ic = None
+                shared_ic_obj = project.find_parent_by_id(request_data['parent_id'], project.root_ic)
+                if shared_ic_obj:
+                    break
+                project_json = None
+        return project_json
+
     def get_ic_object_from_shared(self, request_data, user):
         # {'name': 'Shared', 'parent_id': 'root', 'ic_id': '208cd13a-36ec-11eb-9b62-50e085759744'}
         col = self._db.Projects
@@ -891,6 +936,16 @@ class DBMongoAdapter:
             if request_data['ic_id'] == i['ic_id']:
                 shared_ic = i
                 break
+        if not shared_ic:
+            for i in ic_shares:
+                project_json = self.get_project(i['project_name'], user)
+                project = Project.json_to_obj(project_json)
+                project.current_ic = None
+                shared_ic_obj = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+                if shared_ic_obj:
+                    shared_ic = shared_ic_obj.to_json()
+                    shared_ic['project_name'] = i['project_name']
+                    break
         if shared_ic:
             project_query = {'project_name': shared_ic['project_name']}
             project_json = col.find_one(project_query, {'_id': 0})

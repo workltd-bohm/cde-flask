@@ -23,7 +23,10 @@ def get_file_name():
     if main.IsLogin():
         if db.connect(db_adapter):
             project_name = session.get("project")["name"]
-            result = db.get_project(db_adapter, project_name, session['user'])
+            if project_name == 'Shared':
+                result = db.get_project_from_shared(db_adapter, request_json, session['user'])
+            else:
+                result = db.get_project(db_adapter, project_name, session['user'])
             if result:
                 project = Project.json_to_obj(result)
                 name = request_json['file_name'] + request_json['type']
@@ -191,6 +194,9 @@ def get_folder(parent_id, folder_name):
                         'folder_name': folder_name}
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_json))
         if db.connect(db_adapter):
+            if project_name == 'Shared':
+                result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, session['user'])
+                project_name = result['project_name']
             u = session['user']
             response = db.get_project(db_adapter, project_name, u)
             project = Project.json_to_obj(response)

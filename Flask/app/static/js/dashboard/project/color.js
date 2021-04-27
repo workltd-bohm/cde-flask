@@ -26,9 +26,9 @@ function ChangeColor(data) {
     let arc = d3.svg.arc().innerRadius(_radius * .5).outerRadius(_radius);
 
     // spawn color wheel group
-    let object = data.values.data.values.sun ? d3.select("g.star.dom") : data.values.this; 
+    let object = data.values.data.values.sun ? d3.select("g.star.dom") : data.values.this;
     let offY = (g_root.slider && data.values.data.values.sun) ? (-g_SunRadius * SUN_SCROLL_Y_SUN_OFFS) : 0;
-    
+
     let wheel = object.append("g")
         .attr("class", "color_wheel")
         .attr("transform", "translate(0, " + offY + "), scale(0.5), rotate(90)") // animation property
@@ -94,26 +94,27 @@ function ChangeColor(data) {
 
 // applies the new color to the appropriate IC
 function SetColor(data, fill) {
+    console.log(data);
     var o = Object.values(CHECKED);
     var multi = [];
     for (var i = 0; i < o.length; i++) {
-        multi.push({   
-            ic_id: o[i].ic_id, 
-            color: data.color 
+        multi.push({
+            ic_id: o[i].ic_id,
+            parent_id: o[i].parent_id,
+            color: data.color
         });
     }
     LoadStart();
     $.ajax({
         url: (o.length > 0) ? "/set_color_multi" : "/set_color",
         type: 'POST',
-        data: JSON.stringify((o.length > 0) ? multi : { ic_id: data.ic_id, color: data.color, name: data.name }),
+        data: JSON.stringify((o.length > 0) ? multi : { ic_id: data.ic_id, parent_id: data.parent_id, color: data.color, name: data.name }),
         timeout: 30000,
         success: function(response) {
             MakeSnackbar(response);
             SESSION["undo"] = true;
 
-            if (o.length > 0)
-            {
+            if (o.length > 0) {
                 Object.values(CHECKED).forEach((d) => {
                     // update background color
                     d.values.background
@@ -128,10 +129,8 @@ function SetColor(data, fill) {
                         .ease("ease-in-out")
                         .duration(500)
                         .style("fill", FlipColor(fill));
-                        });
-            }
-            else 
-            {
+                });
+            } else {
                 // update background color
                 data.values.background
                     .transition()

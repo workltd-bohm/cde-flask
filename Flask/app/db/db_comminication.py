@@ -122,6 +122,14 @@ def get_ic_object(db_adapter, project_name, request_data, file_name):
     return db_adapter.get_ic_object(project_name, request_data, file_name)
 
 
+def get_project_from_shared_by_parent_id(db_adapter, request_data, user):
+    return db_adapter.get_project_from_shared_by_parent_id(request_data, user)
+
+
+def get_project_from_shared(db_adapter, request_data, user):
+    return db_adapter.get_project_from_shared(request_data, user)
+
+
 def get_ic_object_from_shared(db_adapter, request_data, user):
     return db_adapter.get_ic_object_from_shared(request_data, user)
 
