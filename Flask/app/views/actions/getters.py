@@ -223,28 +223,28 @@ def get_root_project():
                         "parent": "Projects",
                         "history": project['root_ic']['history'],
                         "path": "Projects/" + project["project_name"],
-                        "overlay_type": "project",
+                        "overlay_type": project["overlay_type"],
                         "is_directory": False,
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
 
-            result, ic_shares = db.get_my_shares(db_adapter, user)
-            # print('shares', result)
-            if result:
-            # for share in result:
-            #     if share:
-                # pr = db.get_my_project(db_adapter, share["project_id"])
-                # pr.current_ic = None
-                # ic = pr.find_ic_by_id(share, share['ic_id'], pr.root)
-                shared_obj = {
-                    "ic_id": "",
-                    "name": 'Shared',
-                    "parent": "Projects",
-                    "history": [],
-                    "path": "Projects/shared",
-                    "is_directory": False,
-                }
-                response['root_ic']["sub_folders"].append(shared_obj)
+            # result, ic_shares = db.get_my_shares(db_adapter, user)
+            # # print('shares', result)
+            # if result:
+            # # for share in result:
+            # #     if share:
+            #     # pr = db.get_my_project(db_adapter, share["project_id"])
+            #     # pr.current_ic = None
+            #     # ic = pr.find_ic_by_id(share, share['ic_id'], pr.root)
+            #     shared_obj = {
+            #         "ic_id": "",
+            #         "name": 'Shared',
+            #         "parent": "Projects",
+            #         "history": [],
+            #         "path": "Projects/shared",
+            #         "is_directory": False,
+            #     }
+            #     response['root_ic']["sub_folders"].append(shared_obj)
 
             resp.status_code = msg.DEFAULT_OK['code']
             resp.data = json.dumps({"json": response, "project" : False, "session": session.get("project")})

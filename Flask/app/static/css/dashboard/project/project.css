@@ -63,6 +63,11 @@
     stroke: green;
 }
 
+.planet.background.shared {
+    stroke-width: 10;
+    stroke: var(--neon-blue);
+}
+
 .planet:hover .planet.background
 {
     stroke: var(--neon-blue);

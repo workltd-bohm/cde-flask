@@ -274,7 +274,6 @@ function CreateTreeStructure() {
                     icon_name.appendChild(icon);
                     icon_name.appendChild(_name);
 
-
                     input_json2[i].root_ic.icon = icon_name.outerHTML;
                     input_json2[i].root_ic.color = color;
 
@@ -383,7 +382,7 @@ function nodeSelected(node) {
         // CreatePath();
     } else {
         if (!node.isExpanded()) {
-            if (SESSION['position'].ic_id == node.getOptions().ic_id) {
+            if (SESSION['position'].ic_id === node.getOptions().ic_id) {
                 node.setExpanded(false);
             } else {
                 setSession(node.getOptions());
