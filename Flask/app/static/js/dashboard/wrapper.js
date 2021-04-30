@@ -275,7 +275,7 @@ function CreateTreeStructure() {
                     icon_name.appendChild(_name);
 
                     input_json2[i].root_ic.icon = icon_name.outerHTML;
-                    input_json2[i].root_ic.color = color;
+                    // input_json2[i].root_ic.color = color;
 
                     root = new TreeNode('', input_json2[i].root_ic);
                     for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
