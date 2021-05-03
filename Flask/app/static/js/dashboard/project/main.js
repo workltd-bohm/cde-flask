@@ -88,6 +88,8 @@ function AddSun(obj, data) {
         }
     }
 
+    console.log(data)
+
     //// [SLIDER START]
     if (g_root.slider) {
         var deg_min = (360 / PLANET_MAX_NUMBER_MAX);
@@ -337,8 +339,22 @@ function AddChildren(obj, data, parent, position = 0) {
     data.values.object = data.values.this.append("g").attr("class", "planet object");
 
     // Shaders start
-    let add_class = data.overlay_type === "project" ? " project" : data.is_directory ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
-    add_class = (g_project.current_ic.overlay_type === "user") ? "" : add_class;    // Don't Add Style (Class) When On User Profile
+    let add_class = "";
+    switch(data.overlay_type) {
+        case "project":
+            add_class = " project";
+            break;
+        case "ic":
+            add_class = (data.is_directory) ? " folder" + (data.sub_folders == 0 ? " empty" : "") : " file";
+            break;
+        case "shared":
+            add_class = " shared";
+            break;
+        case "user":
+        case "search":
+        default:
+            break;
+    }
 
     // Background Color
     data.values.background = data.values.object.append("circle")
@@ -366,15 +382,15 @@ function AddChildren(obj, data, parent, position = 0) {
 
     AddText2(data, data.name, data.type ? data.type : null, 0, 0);
 
-    // Add File Dates To Planet(s)
-    // |exclude user profile   |exclude folders      |exclude projects
-    if (data.history.length && !data.is_directory && !(data.overlay_type === "project"))
+    // Planet Dates
+    // |exclude user profile   |exclude folders      |exclude projects                     |exclude shared
+    if (data.history.length && !data.is_directory && !(data.overlay_type === "project") && !(data.overlay_type === "shared"))
     {
         AddText2(data, GetDate(data)[0], null, 0, GetRadius(data) * 2/3, .8, "planet-date");
         AddText2(data, GetDate(data)[1].split(":").slice(0, 2).join(":"), null, 0, GetRadius(data) * 2/3 + parseInt($(".planet-date").css("font-size")), .8, "planet-time");
     }
 
-    // Planet(s) Color
+    // Planet Color
     if (data.color) {
         data.values.background
             .style("fill", data.color)

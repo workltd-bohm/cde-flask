@@ -149,7 +149,6 @@ function GetWarp(data) {
         if (data) g_project.skip = data;
 
         // console.log(g_project.skip, g_project.search, g_project.paths)
-        console.log(g_project.data.overlay_type);
         switch (g_project.data.overlay_type) {
             case "user":
                 UserActivity(g_project.skip);

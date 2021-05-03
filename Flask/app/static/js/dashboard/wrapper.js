@@ -274,9 +274,8 @@ function CreateTreeStructure() {
                     icon_name.appendChild(icon);
                     icon_name.appendChild(_name);
 
-
                     input_json2[i].root_ic.icon = icon_name.outerHTML;
-                    input_json2[i].root_ic.color = color;
+                    // input_json2[i].root_ic.color = color;
 
                     root = new TreeNode('', input_json2[i].root_ic);
                     for (var j = 0; j < input_json2[i].root_ic.sub_folders.length; j++) {
@@ -383,7 +382,7 @@ function nodeSelected(node) {
         // CreatePath();
     } else {
         if (!node.isExpanded()) {
-            if (SESSION['position'].ic_id == node.getOptions().ic_id) {
+            if (SESSION['position'].ic_id === node.getOptions().ic_id) {
                 node.setExpanded(false);
             } else {
                 setSession(node.getOptions());

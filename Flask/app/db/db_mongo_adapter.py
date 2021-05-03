@@ -8,6 +8,9 @@ from app.model.project import Project
 from app.model.marketplace.post import Post
 from app.model.marketplace.bid import Bid
 from app.model.role import Role
+from app.model.access import Access
+from app.model.details import Details
+from app.model.information_container import IC
 from app.model.tag import SimpleTag, ISO19650
 import app.model.messages as msg
 from app.model.helper import get_iso_tags
@@ -201,13 +204,56 @@ class DBMongoAdapter:
 
     def get_my_projects(self, user):
         col_users = self._db.Users.Roles
+        col = self._db.Users
+        
         user_query = {'user_id': user['id']}
         result = col_users.find_one(user_query, {'_id': 0})
         projects = []
         if result:
             for pr in result['projects']:
-                projects.append(self.get_my_project(pr['project_id']))
+                project = self.get_my_project(pr['project_id'])
+                project['overlay_type'] = "project"
+                projects.append(project)
         self._close_connection()
+
+        # get shares
+        result, ic_shares = self.get_my_shares(user)
+        name_id = str(uuid.uuid1())
+        us = {
+            'user_id':    user['id'],
+            'username': user['username'],
+            'picture':  user['picture']
+        }
+
+        access = Access(us, '', '', Role.ADMIN.value, 'indefinitely')
+        
+        u = {
+            'user_id': user['id'], 
+            'username': user['username']
+        
+        }
+        details = Details(u, 'Created project', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), 'Shared')
+
+        root_obj = IC(name_id,
+            'Shared',
+            ".",
+            [details],
+            'Shared',
+            'root',
+            '',
+            [],
+            [],
+            [],
+            [access])
+
+        project = Project("default", 'Shared', root_obj)
+        for ic in result:
+            project.root_ic.sub_folders.append(ic)
+        result = project.to_json()
+        result['overlay_type'] = "shared"
+
+        projects.append(result)
+        
         return projects
 
     def get_my_shares(self, user):
