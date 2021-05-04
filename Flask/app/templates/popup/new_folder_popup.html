@@ -9,11 +9,30 @@
         <input type="hidden" name="ic_id" value="{{ ic_id }}" required />
         <input type="hidden" name="project_name" value="{{ project_name }}" required />
         <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
+        <input type="hidden" name="color" value="" id="color"/>
         <br>
         <div class="form__group field">
           <input type="text" class="form__field" id="new_name" name="new_name" required />
           <label for="new_name" class="form__label">Folder name</label>
         </div>
+
+        <div id="my_colors" class="mt-3"></div>
+        <script>
+            colorScale.forEach(color => {
+                let clickable = document.createElement("I");
+                clickable.className = "card-color";
+                clickable.style.backgroundColor = color;
+
+                clickable.onclick = function() {
+                    $(".card-color").removeClass("selected");
+                    clickable.classList.add("selected");
+                    document.getElementById("color").value = color;
+                }
+
+                document.getElementById("my_colors").appendChild(clickable);
+            });
+        </script>
+
         <br>
         <input type="button" class="keypress" value="Create" onclick="FormSubmit('create_dir', null, true, GetProject)" />
 
