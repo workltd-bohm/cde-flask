@@ -14,14 +14,44 @@ const colorScale = [
 ];
 
 function ChangeColor(data) {
-    if (g_view !== VIEW_PL) { alert("to be implemented"); return; }
+    if (g_view !== VIEW_PL) { 
+        let card_body = data.values.object.querySelector(".card-body");
+        let card_body_copy = card_body.cloneNode(true);
+
+        $(card_body).empty();
+        let card_body_colors = document.createElement("DIV");
+        colorScale.forEach(color => {
+            let clickable = document.createElement("I");
+            clickable.className = "card-color";
+            clickable.style.backgroundColor = color;
+            clickable.onclick = function() {
+                data.values.data.color = color;
+                SetColor(data, color);
+                $(card_body).empty();
+                card_body.outerHTML = card_body_copy.outerHTML;
+            }
+
+            card_body_colors.appendChild(clickable);
+        });
+        
+        let text = document.createElement("SPAN");
+        text.style.display = "block";
+        text.textContent = "Choose a color:";
+        card_body.appendChild(text);
+        card_body.appendChild(card_body_colors);
+        return; 
+    }
+
+    // Set Default Color
     let defaultColor = $(".foregin .material-icons").css("color");
 
+    // Set Radius
     let _radius = g_OverlayRadius;
     if (!data.values.data.values.sun) {
         _radius = g_PlanetRadius;
     }
 
+    // Create Pie
     let pie = d3.layout.pie().sort(null);
     let arc = d3.svg.arc().innerRadius(_radius * .5).outerRadius(_radius);
 
@@ -108,42 +138,57 @@ function SetColor(data, fill) {
     $.ajax({
         url: (o.length > 0) ? "/set_color_multi" : "/set_color",
         type: 'POST',
-        data: JSON.stringify((o.length > 0) ? multi : { ic_id: data.ic_id, parent_id: data.parent_id, color: data.color, name: data.name }),
+        data: JSON.stringify((o.length > 0) ? multi : 
+            { 
+                ic_id: data.ic_id, 
+                parent_id: data.parent_id, 
+                color: data.color, 
+                name: data.name 
+            }),
         timeout: 30000,
         success: function(response) {
             MakeSnackbar(response);
             SESSION["undo"] = true;
 
+            // Multi
             if (o.length > 0) {
                 Object.values(CHECKED).forEach((d) => {
+                    if (g_view === VIEW_PL) {
+                        // update background color
+                        d.values.background
+                            .transition()
+                            .ease("ease")
+                            .duration(500)
+                            .style("fill", fill);
+
+                        // update text color
+                        d.values.object.selectAll(".text_front")
+                            .transition()
+                            .ease("ease-in-out")
+                            .duration(500)
+                            .style("fill", FlipColor(fill));
+                    } else if (g_view === VIEW_GR) {
+                        d.values.object.style.boxShadow = fill + " 0px -4px 0px inset";
+                    }
+                });
+            } else {
+                if (g_view === VIEW_PL) {
                     // update background color
-                    d.values.background
+                    data.values.background
                         .transition()
                         .ease("ease")
                         .duration(500)
                         .style("fill", fill);
-
+    
                     // update text color
-                    d.values.object.selectAll(".text_front")
+                    data.values.object.selectAll(".text_front")
                         .transition()
                         .ease("ease-in-out")
                         .duration(500)
                         .style("fill", FlipColor(fill));
-                });
-            } else {
-                // update background color
-                data.values.background
-                    .transition()
-                    .ease("ease")
-                    .duration(500)
-                    .style("fill", fill);
-
-                // update text color
-                data.values.object.selectAll(".text_front")
-                    .transition()
-                    .ease("ease-in-out")
-                    .duration(500)
-                    .style("fill", FlipColor(fill));
+                } else if (g_view === VIEW_GR) {
+                    data.values.object.style.boxShadow = fill + " 0px -4px 0px inset";
+                }
             }
 
             DeselectAllPlanets(g_project.current_ic);
