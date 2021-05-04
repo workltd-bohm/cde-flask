@@ -220,17 +220,40 @@ function FlipColor(color) {
     }
 }
 
-/* Light . Dark Theme */
-function SwitchColorMode() {
-    // get theme
-    let theme = window.localStorage.getItem('theme') || 'light';
+ApplyTheme();
+function ApplyTheme(){
+    let theme_object = GetThemeObject();
 
     let root = document.querySelector(":root");
+
+    // Setting Theme Colors
+    root.style.setProperty("--dashboard-text",  theme_object.dash_text);
+    root.style.setProperty("--dashboard-bg",    theme_object.dash_bg);
+
+    root.style.setProperty("--text-primary",    theme_object.text_primary);
+    root.style.setProperty("--text-secondary",  theme_object.text_secondary);
+
+    root.style.setProperty("--bg-primary",      theme_object.bg_primary);
+    root.style.setProperty("--bg-secondary",    theme_object.bg_secondary);
+
+    root.style.setProperty("--sidebar-bg",      theme_object.sidebar_bg);
+    
+    root.style.setProperty("--sun-bg",          theme_object.sun_bg);
+    root.style.setProperty("--sun-text",        theme_object.sun_text);
+    
+    root.style.setProperty("--planet-bg",       theme_object.planet_bg);
+    root.style.setProperty("--planet-text",     theme_object.planet_stroke);
+    root.style.setProperty("--planet-stroke",   theme_object.planet_text);
+}
+
+// Get Light or Dark Colors Values + Get Stored Theme
+function GetThemeObject() {
+    let root = document.querySelector(":root");
     let docstyle = getComputedStyle(root);
-    
-    let light = {};
-    let dark = {};
-    
+
+    const light = {};
+    const dark = {};
+
     // Light Theme Values
     light.dash_text =       getCol("--text-light");
     light.dash_bg =         getCol("--dashboard-bg-light");
@@ -268,33 +291,18 @@ function SwitchColorMode() {
     dark.planet_bg =        getCol("--planet-bg-dark");
     dark.planet_text =      getCol("--planet-text-dark");
     dark.planet_stroke =    getCol("--planet-stroke-dark");
-    
-    let theme_object = theme === "light" ? dark : light;
-
-    // Setting The Colors
-    root.style.setProperty("--dashboard-text",  theme_object.dash_text);
-    root.style.setProperty("--dashboard-bg",    theme_object.dash_bg);
-
-    root.style.setProperty("--text-primary",    theme_object.text_primary);
-    root.style.setProperty("--text-secondary",  theme_object.text_secondary);
-
-    root.style.setProperty("--bg-primary",      theme_object.bg_primary);
-    root.style.setProperty("--bg-secondary",    theme_object.bg_secondary);
-
-    root.style.setProperty("--sidebar-bg",      theme_object.sidebar_bg);
-    
-    root.style.setProperty("--sun-bg",          theme_object.sun_bg);
-    root.style.setProperty("--sun-text",        theme_object.sun_text);
-    
-    root.style.setProperty("--planet-bg",       theme_object.planet_bg);
-    root.style.setProperty("--planet-text",     theme_object.planet_stroke);
-    root.style.setProperty("--planet-stroke",   theme_object.planet_text);
-    
-
-    // set theme
-    window.localStorage.setItem('theme', theme_object === light ? "light": "dark");
 
     function getCol(v) {
         return docstyle.getPropertyValue(v);
     }
+    
+    let theme = window.localStorage.getItem('theme') || 'light';
+    return (theme === "light") ? light : dark;
+}
+
+// Toggles Between Light and Dark Theme
+function ToggleTheme() {
+    let theme = window.localStorage.getItem('theme') || 'light';
+    window.localStorage.setItem('theme', theme === 'light' ? "dark": "light");
+    ApplyTheme();
 }
