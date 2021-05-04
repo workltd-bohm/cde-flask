@@ -1,4 +1,4 @@
-<div class="topbar d-flex">
+<div class="topbar d-flex justify-content-between">
     <div class="align-self-center">
         <div id="terminal-main" class="terminal d-inline-block" onfocusout="onFocusOut();">
             <input type="text" class="terminal-input ps-2" id="terminal-input" onkeypress="terminalListen(event)" 
@@ -11,5 +11,9 @@
         <div class="info-path ms-2 d-inline-block">
             <span class="info-path-text"></span>
         </div>
+    </div>
+
+    <div class="align-self-end me-5">
+        <span class="material-icons me-3" onclick="SwitchColorMode()">lightbulb</span>
     </div>
 </div>

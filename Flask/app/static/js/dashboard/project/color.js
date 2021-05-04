@@ -168,7 +168,7 @@ function SetColor(data, fill) {
                             .duration(500)
                             .style("fill", FlipColor(fill));
                     } else if (g_view === VIEW_GR) {
-                        d.values.object.style.boxShadow = fill + " 0px -4px 0px inset";
+                        d.values.object.style.boxShadow = fill + " 0px 4px 0px";
                     }
                 });
             } else {
@@ -187,7 +187,7 @@ function SetColor(data, fill) {
                         .duration(500)
                         .style("fill", FlipColor(fill));
                 } else if (g_view === VIEW_GR) {
-                    data.values.object.style.boxShadow = fill + " 0px -4px 0px inset";
+                    data.values.object.style.boxShadow = fill + " 0px 4px 0px";
                 }
             }
 
@@ -217,5 +217,84 @@ function FlipColor(color) {
         return '#e8e8e8';
     } else {
         return '#303030';
+    }
+}
+
+/* Light . Dark Theme */
+function SwitchColorMode() {
+    // get theme
+    let theme = window.localStorage.getItem('theme') || 'light';
+
+    let root = document.querySelector(":root");
+    let docstyle = getComputedStyle(root);
+    
+    let light = {};
+    let dark = {};
+    
+    // Light Theme Values
+    light.dash_text =       getCol("--text-light");
+    light.dash_bg =         getCol("--dashboard-bg-light");
+
+    light.text_primary =    getCol("--text-dark");
+    light.text_secondary =  getCol("--text-darker");
+    
+    light.bg_primary =      getCol("--bg-lighter");
+    light.bg_secondary =    getCol("--bg-light");
+    
+    light.sidebar_bg =      getCol("--sidebar-bg-light");
+
+    light.sun_bg =          getCol("--sun-bg-light");
+    light.sun_text =        getCol("--sun-text-light");
+
+    light.planet_bg =       getCol("--planet-bg-light");
+    light.planet_text =     getCol("--planet-text-light");
+    light.planet_stroke =   getCol("--planet-stroke-light");
+    
+    // Dark Theme Values
+    dark.dash_text =        getCol("--text-dark");
+    dark.dash_bg =          getCol("--dashboard-bg-dark");
+    
+    dark.text_primary =     getCol("--text-light");
+    dark.text_secondary =   getCol("--text-lighter");
+
+    dark.bg_primary =       getCol("--bg-darker");
+    dark.bg_secondary =     getCol("--bg-dark");
+
+    dark.sidebar_bg =       getCol("--sidebar-bg-dark");
+
+    dark.sun_bg =           getCol("--sun-bg-dark");
+    dark.sun_text =         getCol("--sun-text-dark");
+
+    dark.planet_bg =        getCol("--planet-bg-dark");
+    dark.planet_text =      getCol("--planet-text-dark");
+    dark.planet_stroke =    getCol("--planet-stroke-dark");
+    
+    let theme_object = theme === "light" ? dark : light;
+
+    // Setting The Colors
+    root.style.setProperty("--dashboard-text",  theme_object.dash_text);
+    root.style.setProperty("--dashboard-bg",    theme_object.dash_bg);
+
+    root.style.setProperty("--text-primary",    theme_object.text_primary);
+    root.style.setProperty("--text-secondary",  theme_object.text_secondary);
+
+    root.style.setProperty("--bg-primary",      theme_object.bg_primary);
+    root.style.setProperty("--bg-secondary",    theme_object.bg_secondary);
+
+    root.style.setProperty("--sidebar-bg",      theme_object.sidebar_bg);
+    
+    root.style.setProperty("--sun-bg",          theme_object.sun_bg);
+    root.style.setProperty("--sun-text",        theme_object.sun_text);
+    
+    root.style.setProperty("--planet-bg",       theme_object.planet_bg);
+    root.style.setProperty("--planet-text",     theme_object.planet_stroke);
+    root.style.setProperty("--planet-stroke",   theme_object.planet_text);
+    
+
+    // set theme
+    window.localStorage.setItem('theme', theme_object === light ? "light": "dark");
+
+    function getCol(v) {
+        return docstyle.getPropertyValue(v);
     }
 }

@@ -891,7 +891,7 @@ function CreateGrid(data) {
             // colored border for cards
             if (d.color)
             {
-                card.style.boxShadow = "inset 0 -4px 0 " + d.color; 
+                card.style.boxShadow = "0 4px 0 " + d.color; 
             }
 
             info.appendChild(date);
