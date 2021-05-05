@@ -29,9 +29,6 @@ function WrapOpenFile(data, open = true) {
     
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
-    console.log(SESSION);
-    console.log(SESSION['position']);
-    console.log(tmp);
     SESSION["position"] = {
         project_name: tmp.path.split('/')[0],
         parent_id: tmp.parent_id,

@@ -84,7 +84,8 @@ function PathCreation() {
 }
 
 function GetDisplayName(ic) {
-    if (ic.overlay_type == 'project' || ic.overlay_type == 'trash_planet') {
+    console.log(ic);
+    if (ic.overlay_type == 'project' || ic.overlay_type == 'trash_planet' || ic.overlay_type == 'shared') {
         return ic.name;
     }
     if (ic.overlay_type == 'search_target') {
@@ -211,7 +212,7 @@ function ClearDisplayName() {
 function CreatePath() {
     // Topbar path
     $(".info-path-text").empty();
-    
+
     if (SESSION.position) {
         found = RecursiveFileSearch(g_project.data, g_project.data);
         if (found) {
@@ -230,9 +231,9 @@ function CreatePath() {
 
                 $(".info-path-text").append(span);
 
-                if (add === g_project.current_ic) { 
+                if (add === g_project.current_ic) {
                     span.classList.remove("path-link");
-                    continue; 
+                    continue;
                 }
 
                 span.onclick = function() {
