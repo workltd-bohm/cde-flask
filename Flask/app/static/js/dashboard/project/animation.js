@@ -124,14 +124,6 @@ function GetWarp(data) {
                     break;
             }
         else {
-            //console.log(g_project.skip, g_project.search,g_project.paths)
-            // if(g_project.skip.overlay_type == "ic" && g_project.search.overlay_type == "search_target"){
-            //     console.log(1)
-            //     g_project.paths = g_project.skip.paths_path.this;
-            //     g_project.skip.paths_path.child.selectAll("g").remove();
-            // }
-
-            // if (g_project.skip.overlay_type == "search_target") AddPath(g_project.search);
             if (data) g_project.skip = g_project.search;
             else g_project.search = g_project.skip;
             g_project.data = g_project.search;

@@ -465,7 +465,8 @@ function GetProject(position = null) {
                     SESSION = data.session;
                 }
                 CreateDashboard(data.json.root_ic, data.project);
-                //OpenFilterActivity(); // WrapOpenFile(data);  inside ..
+                //OpenFilterActivity(); 
+                // WrapOpenFile(data);  inside ..
             }
         },
         error: function($jqXHR, textStatus, errorThrown) {

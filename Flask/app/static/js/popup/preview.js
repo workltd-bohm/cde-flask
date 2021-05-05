@@ -37,5 +37,13 @@ function PreviewOpen(run = null, data = null, file = null, open = false) {
 function PreviewClose() {
     LoadStopPreview();
     $("div.preview").hide();
-    WrapOpenFile(g_project.current_ic.values.back, false);
+    
+    CloseActivity();
+    $(".activity-menu").toggleClass("d-none", g_project.current_ic.overlay_type === "search");
+
+    if (g_project.current_ic.overlay_type !== "search")
+    {
+        WrapOpenFile(g_project.current_ic.values.back, false);
+    } 
+
 }

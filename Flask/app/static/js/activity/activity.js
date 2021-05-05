@@ -66,7 +66,21 @@ function ExtractActivity(html = null, head = null, open = true) {
 }
 
 function CloseActivity() {
-    $ACTIVITY.parent().removeClass("opened");
+    $(".activity-menu").removeClass("opened");
+}
+
+function HideActivity() {
+    let condition = (
+        g_project.current_ic.path === "." 
+        && g_project.current_ic.overlay_type !== "user" 
+        || g_project.current_ic.overlay_type === "search"
+    );
+
+    $(".activity-menu").toggleClass("d-none", condition);
+}
+
+function ShowActivity() {
+    $(".activity-menu").removeClass("d-none");
 }
 
 function ClearActivity(close = true) {

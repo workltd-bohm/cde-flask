@@ -21,6 +21,8 @@ function WrapCreateFolder(data) {
 }
 
 function WrapOpenFile(data, open = true) {
+    ShowActivity();
+    
     if (g_project.overlay) {
         // data.values.data.values.text.style("opacity", 100);
         g_project.overlay.remove();

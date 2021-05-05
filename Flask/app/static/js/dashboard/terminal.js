@@ -645,12 +645,12 @@ function terminalAutocomplete(inp, arr) {
         //      console.log(e.keyCode);
         var x = document.getElementById(this.id + "autocomplete-list");
         if (x) x = x.getElementsByTagName("div");
+        // If Space Is Pressed
         if (e.keyCode == 32) {
             if ($('#terminal-input').is(":focus")) {
-                // console.log($('#terminal-input').val());
                 if ($('#terminal-input').val().startsWith('#')) {
                     currValArray = $('#terminal-input').val().split('#');
-                    // console.log(currValArray);
+
                     for (i = 0; i < currValArray.length; i++) {
                         if (!currValArray[i].startsWith('#') && currValArray[i] != '') {
                             currValArray[i] = "#" + currValArray[i]
