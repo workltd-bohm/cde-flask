@@ -26,6 +26,7 @@ function WrapOpenFile(data, open = true) {
         g_project.overlay.remove();
         g_project.overlay = false;
     }
+    
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
     console.log(SESSION);
@@ -50,6 +51,7 @@ function WrapOpenFile(data, open = true) {
         status: tmp.status,
         revision: tmp.revision
     };
+
     if (tmp.is_directory) {
         //console.log("dir",tmp);
         //OpenActivity(null, null, open);

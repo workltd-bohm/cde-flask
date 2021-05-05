@@ -1,4 +1,7 @@
 @import url("common/colors.css");
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
 html,
 body,
 table {
@@ -20,7 +23,7 @@ td {
     margin: 0;
     padding: 0;
     background-color: var(--dashboard-bg);
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Lato', sans-serif;
     /*background: linear-gradient(180deg, #97a5bb 5.11%, #425569 150%);*/
     overflow: hidden;
     border-spacing: 0;
@@ -176,6 +179,7 @@ a:visited {
 body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
+    font-family: 'Lato', sans-serif;
 }
 
 .fab {
