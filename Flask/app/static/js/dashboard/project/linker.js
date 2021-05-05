@@ -28,7 +28,28 @@ function WrapOpenFile(data, open = true) {
     }
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
-    //console.log(tmp)
+    console.log(SESSION);
+    console.log(SESSION['position']);
+    console.log(tmp);
+    SESSION["position"] = {
+        project_name: tmp.path.split('/')[0],
+        parent_id: tmp.parent_id,
+        ic_id: tmp.ic_id,
+        path: tmp.path,
+        is_directory: tmp.is_directory,
+        name: tmp.name,
+        type: tmp.type ? tmp.type : null,
+        parent: tmp.parent,
+        project_code: tmp.project_code,
+        company_code: tmp.company_code,
+        project_volume_or_system: tmp.project_volume_or_system,
+        project_level: tmp.project_level,
+        type_of_information: tmp.type_of_information,
+        role_code: tmp.role_code,
+        file_number: tmp.file_number,
+        status: tmp.status,
+        revision: tmp.revision
+    };
     if (tmp.is_directory) {
         //console.log("dir",tmp);
         //OpenActivity(null, null, open);
@@ -104,13 +125,13 @@ function WrapShare(data) {
     // var dummy = document.createElement('input'),
     //     text = window.location.href + 'get_shared_file/' + tmp.name + tmp.type;
     // TODO create a function for session update and use it here
-    let d = {...SESSION};
-    d.position.ic_id =          data.ic_id;
-    d.position.name =           data.name;
-    d.position.parent =         data.parent;
-    d.position.parent_id =      data.parent_id;
-    d.position.path =           data.path;
-    d.position.project_name =   data.project_name;
+    let d = {...SESSION };
+    d.position.ic_id = data.ic_id;
+    d.position.name = data.name;
+    d.position.parent = data.parent;
+    d.position.parent_id = data.parent_id;
+    d.position.path = data.path;
+    d.position.project_name = data.project_name;
 
     $.ajax({
         url: "/get_encoded_data",
@@ -139,20 +160,18 @@ function WrapShare(data) {
     });
 }
 
-function GetFileURL(data)
-{
+function GetFileURL(data) {
     return '/get_thumb/' + data.thumb_id;
 }
 
-function GetDefaultImg(data)
-{
-    var path; 
+function GetDefaultImg(data) {
+    var path;
 
     $.ajax({
         async: false,
         url: '/get_static_img/folder',
         type: 'POST',
-        success: function(result){
+        success: function(result) {
             path = result;
         }
     });
