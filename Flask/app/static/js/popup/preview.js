@@ -37,4 +37,5 @@ function PreviewOpen(run = null, data = null, file = null, open = false) {
 function PreviewClose() {
     LoadStopPreview();
     $("div.preview").hide();
+    WrapOpenFile(g_project.current_ic.values.back, false);
 }

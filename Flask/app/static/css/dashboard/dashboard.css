@@ -204,6 +204,11 @@
 
 }
 
+.card-body
+{
+    background-color: var(--bg-primary);
+}
+
 .card-img-top
 {
     object-fit: cover;

@@ -57,7 +57,7 @@
     --blue: blue;
     --yellow: #ecd256;
     --transparent-light: #ffffffAA;
-    --transparent-dark: #ffffffAA;
+    --transparent-dark: #000000AA;
 
     /* Currently used (when we have dark/light themes JS will simply change the --bg value */
     --dashboard-text:           var(--dashboard-text-dark);         /* new */
@@ -67,13 +67,14 @@
     --text-secondary:           var(--text-darker);                 /* new */
     
     --bg-primary:               var(--bg-lighter);                  /* new */
-    --sidebar-bg:               var(--sidebar-bg-light);
     --bg-secondary:             var(--bg-lighter);                  /* new */
+    
+    --sidebar-bg:               var(--sidebar-bg-light);
 
     --sun-bg:                   var(--sun-bg-light);                /* new */
     --sun-text:                 var(--sun-text-dark);               /* new */
     
     --planet-bg:                var(--planet-bg-light);             /* new */
-    --planet-stroke:            var(--planet-stroke-dark);          /* new */
     --planet-text:              var(--planet-text-dark);            /* new */
+    --planet-stroke:            var(--planet-stroke-dark);          /* new */
 }
