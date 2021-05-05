@@ -782,37 +782,38 @@ function CreateGrid(data) {
     // }
 
     $("#PROJECT-GRID").empty().append(grid);
-    // add "create new folder" button
-    let new_folder_button = document.createElement("div");
 
-    // process all grid items 
+    // Process Grid Items
     g_project.current_ic.sub_folders.forEach(
         (d) => {
+            // Create A Card
+            let card_holder = document.createElement("div");
+            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2 p-2";
+            let card = document.createElement("div");
+            card.className = "card";
+            
             // config (hack) data
             d.values = {};
             d.values.sun = false;
             d.values.data = d;
             d.values.back = data;
             d.values.data.checked = d.ic_id in CHECKED ? true : false;
+            d.values.object = card;
 
-            // create a card
-            let card_holder = document.createElement("div");
-            card_holder.className = "col-xs-6 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2 p-2";
-
-            let card = document.createElement("div");
-            card.className = "card";
             card.onclick = function(event) {
-                if (event.target.type === 'checkbox') return;
+                if (event.target.type === 'checkbox' || event.target.className === "card-color") {
+                    return;
+                }
 
                 if (event.ctrlKey) {
                     // Disable Select For Projects
                     if (InProjectList()) return;
 
-                    // hold ctrl to select
+                    // Hold Ctrl To Select
                     $(this).addClass("selected");
                     SelectPlanet(d);
                 } else {
-                    // load new ic / folder / project / open file
+                    // Load New Ic / Folder / Project / Open File
                     data.overlay_type === "project_root" ? WrapGetProject(d) : d.is_directory ? CreateWorkspace(d) : WrapOpenFile(d);
                 }
             }
@@ -890,7 +891,7 @@ function CreateGrid(data) {
             // colored border for cards
             if (d.color)
             {
-                card.style.boxShadow = "inset 0 -4px 0 " + d.color; 
+                card.style.boxShadow = "0 4px 0 " + d.color; 
             }
 
             info.appendChild(date);

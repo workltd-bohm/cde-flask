@@ -383,6 +383,21 @@ g.path.draw > g.text > text {
     cursor: pointer;
 }
 
+i.card-color
+{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+
+i.card-color:hover {
+    border: 2px solid var(--neon-blue);
+}
+
+i.card-color.selected {
+    border: 3px solid var(--neon-blue);
+}
+
 a:hover {
     color: var(--link-hover)
 }

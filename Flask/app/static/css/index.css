@@ -174,7 +174,8 @@ a:visited {
 }
 
 body {
-    background-color: #ededed;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .fab {
