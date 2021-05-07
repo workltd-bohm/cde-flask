@@ -33,13 +33,13 @@
 
           {% for key, value in inputs.items() %}
             {% if key != 'role_code' %}
-              <th class="file_naming_field">
-                  <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
-                      {% for v in value.elements %}
-                        <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
-                      {% endfor %}
-                  </select>
-              </th>
+                <th class="file_naming_field">
+                    <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
+                        {% for v in value.elements %}
+                            <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </th>
             {% elif key == 'role_code' %}
               <th class="file_naming_field" style="border:none;">
                 <input type="text" class="form__field_popup" style="border:none;" value="" readonly />

@@ -8,13 +8,24 @@
   </th>
 
   {% for key, value in inputs.items() %}
-      <th class="file_naming_field">
-          <select class="form__field_popup shortened-select" name="{{ key }}" onchange="changeColor(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
-              {% for v in value.elements %}
-                <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
-              {% endfor %}
-          </select>
-      </th>
+        {% if key.strip() == 'file_number' %}
+        <th class="file_naming_field">
+            <input list="file_numbers" class="form__field_popup" name="file_number" id="file_number" />  <!-- oninput="changeColor(this)" -->
+            <datalist class="form__field_popup" id="file_numbers" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
+                {% for v in value.elements %}
+                    <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
+                {% endfor %}
+            </datalist>
+        </th>
+        {% elif key != 'file_number' %}
+        <th class="file_naming_field">
+            <select class="form__field_popup shortened-select" name="{{ key }}" onchange="changeColor(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
+                {% for v in value.elements %}
+                    <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
+                {% endfor %}
+            </select>
+        </th>
+        {% endif %}
   {% endfor %}
 
   <th class="file_naming_field">

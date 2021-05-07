@@ -164,7 +164,7 @@ function createISORenamingPopup(files, folders) {
                         changeColorCustom(el, '#FA8072');
                     }
 
-                    el = $(tr).find("select[name='file_number']");
+                    el = $(tr).find("input[name='file_number']");
                     if (tags[6] in input_file.file_number) {
                         el.val(tags[6] + ', ' + input_file.file_number[tags[6]]);
                         changeColorCustom(el, '#3CB371');
