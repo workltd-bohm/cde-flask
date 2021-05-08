@@ -130,6 +130,7 @@ def get_open_file():
                     project_code = ""
                     company_code = ""
 
+                print(">>>>>>", file_tags)
                 response = {
                     'html': html,
                     'activity': render_template("activity/file.html",

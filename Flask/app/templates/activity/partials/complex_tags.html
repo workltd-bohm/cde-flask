@@ -16,6 +16,28 @@
     </div>
 
     {% for key, value in complex_tag_list.items() %}
+        {% if key == 'file_number' %}
+            <div class="form__group field">
+                <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+                <select class="form__field" name="{{ key }}" id='{{ key }}' required >
+                    <option></option>
+                    {% for val in value.elements %}
+                    <option {% for tag in tags %}
+                                {{ 'selected' if tag.tag == ('#' + val) else '' }}
+                            {% endfor %} 
+                        value="{{ val }}">{{ val }}</option>
+                    {% endfor %}
+
+                    {% for tag in tags %}
+                        {% if 'file_number' in tag['key'] %}
+                            {% if tag['tag'] not in value.elements %}
+                            <option selected value="{{ tag['tag'][1:] }}">{{ tag['tag'][1:] }}</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>            
+        {% else %}
             <div class="form__group field">
                 <label for="{{ key }}" class="form__label">{{ value.name }}</label>
                 <select class="form__field" name="{{ key }}" id='{{ key }}' required >
@@ -28,5 +50,6 @@
                     {% endfor %}
                 </select>
             </div>
+        {% endif %}
     {% endfor %}
 </form>
