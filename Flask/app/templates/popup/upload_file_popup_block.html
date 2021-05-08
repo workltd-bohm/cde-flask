@@ -10,10 +10,10 @@
   {% for key, value in inputs.items() %}
         {% if key.strip() == 'file_number' %}
         <th class="file_naming_field">
-            <input list="file_numbers" class="form__field_popup" name="file_number" id="file_number" />  <!-- oninput="changeColor(this)" -->
-            <datalist class="form__field_popup" id="file_numbers" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
+            <input list="file_numbers" class="form__field_popup" name="file_number" id="file_number" onchange="setCodeValue(this);" />  <!-- oninput="changeColor(this)" -->
+            <datalist class="form__field_popup" id="file_numbers" name="file_numbers" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
                 {% for v in value.elements %}
-                    <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
+                    <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}">{{ v.split(',')[0] }}</option>
                 {% endfor %}
             </datalist>
         </th>

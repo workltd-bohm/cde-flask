@@ -145,8 +145,13 @@ function changeValues(element) {
 
     for (var i = 0; i < elements_by_name.length; i++) {
         changeColor(elements_by_name[i]);
+        setCodeValue(elements_by_name[i]);
     }
+}
 
+function setCodeValue(element){
+    element.value = element.value.split(",")[0];
+    return;
 }
 
 function changeColor(element) {
