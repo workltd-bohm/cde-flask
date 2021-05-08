@@ -150,6 +150,7 @@ function changeValues(element) {
 }
 
 function setCodeValue(element){
+    element.dataset.value = element.value;
     element.value = element.value.split(",")[0];
     return;
 }

@@ -247,7 +247,7 @@ function UploadFiles() {
         d1['project_level'] = $('#row_' + i).find("select[name='project_level']").val();
         d1['type_of_information'] = $('#row_' + i).find("select[name='type_of_information']").val();
         d1['role_code'] = $('#row_' + i).find("select[name='role_code']").val();
-        d1['file_number'] = $('#row_' + i).find("select[name='file_number']").val();
+        d1['file_number'] = $('#row_' + i).find("input[name='file_number']").data("value"); // hack value
         d1['status'] = $('#row_' + i).find("select[name='status']").val();
         d1['revision'] = $('#row_' + i).find("select[name='revision']").val();
         d1['uniclass_2015'] = $('#row_' + i).find("select[name='uniclass_2015']").val();
