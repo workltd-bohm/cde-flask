@@ -28,8 +28,8 @@ body{
 .frontbox {
   background-color: var(--login-front-box-bg-color);
   border-radius: 20px;
-  height: 100%;
   width: 50%;
+  height: auto;
   z-index: 10;
   position: absolute;
   right:0;
@@ -116,7 +116,6 @@ body{
   padding:10px;
   border-radius: 10px;
   width: 60px;
-  position: absolute;
   right:30px;
   bottom: 60px;
   cursor: pointer;
@@ -143,7 +142,6 @@ body{
 }
 
 .msg_placeholder{
-  position: absolute;
   margin: auto;
   width: 100%;
   border: 0px solid green;

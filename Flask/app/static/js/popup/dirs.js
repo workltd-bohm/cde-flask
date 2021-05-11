@@ -156,11 +156,11 @@ function setCodeValue(element){
 }
 
 function changeColor(element) {
-    $(element).css('border-color', '#3CB371');
+    $(element).css('background-color', '#7cd17e');
 }
 
 function changeColorCustom(element, color) {
-    $(element).css('border-color', color);
+    $(element).css('background-color', color);
 }
 
 function OnFileUpload(files, folders = []) {

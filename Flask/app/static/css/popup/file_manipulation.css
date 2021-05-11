@@ -84,25 +84,25 @@
     font-family: inherit;
     width: 60px;
     height: 60px;
-    border: 2px solid #FA8072;
+    background-color: #e48b8b;
     outline: 0;
-    font-size: 1.2rem;
-    color: #777;
+    font-size: 1rem;
+    color: white;
     padding: 7px 0;
-    background: transparent;
-    transition: border-color 0.2s;
+    transition: background 0.2s;
     margin-left: 2px;
 }
 
-.form__field_popup_remane {
+.form__field_popup_rename {
     width: 90%;
     border: none;
+    color: white;
     border-bottom: 1px solid #666;
     transition: border-color 0.2s;
     margin-left: 2px;
 }
 
-.form__field_popup_remane:focus {
+.form__field_popup_rename:focus {
     outline: none;
     margin-left: 5px;
     padding-bottom: 6px;
@@ -113,7 +113,7 @@
 }
 
 .ext {
-    border: 2px solid grey;
+    background-color: #cbcbcb;
 }
 
 .form__field_popup::placeholder {
@@ -169,6 +169,11 @@
 .smart-naming-labels {
     position: relative;
     display: flex;
+}
+
+input#file_number
+{
+    width: 100px;
 }
 
 .file_naming_field {
