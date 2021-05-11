@@ -1,6 +1,8 @@
 class User:
 
     def __init__(self):
+        self._fname = ""
+        self._lname = ""
         self._username = ""
         self._email = ""
         self._password = ""
@@ -13,11 +15,15 @@ class User:
         self._role_code = ""
 
     def create_user(self, json_data):
+        self._fname = json_data['fname']
+        self._lname = json_data['lname']
         self._username = json_data['username']
         self._email = json_data['email']
         self._password = json_data['password']
 
     def update_user(self, json_data):
+        if "fname" in json_data and len(json_data['fname']) > 0: self._fname = json_data['fname']
+        if "lname" in json_data and len(json_data['lname']) > 0: self._lname = json_data['lname']
         if "username" in json_data and len(json_data['username']) > 0: self._username = json_data['username']
         if "email" in json_data and len(json_data['email']) > 0: self._email = json_data['email']
         if "password" in json_data and len(json_data['password']) > 0: self._password = json_data['password']
@@ -43,6 +49,25 @@ class User:
     def confirmed(self, value):
         self._confirmed = value
 
+    # First Name
+    @property
+    def fname(self):
+        return self._fname
+
+    @fname.setter
+    def fname(self, value):
+        self._fname = value
+
+    # Last Name
+    @property
+    def lname(self):
+        return self._lname
+
+    @lname.setter
+    def lname(self, value):
+        self._lname = value
+
+    # User name
     @property
     def username(self):
         return self._username
@@ -51,6 +76,7 @@ class User:
     def username(self, value):
         self._username = value
 
+    # Email
     @property
     def email(self):
         return self._email
@@ -110,6 +136,8 @@ class User:
     def to_json(self):
         return {
                     'id': self._id,
+                    'fname': self._fname,
+                    'lname': self.lname,
                     'username': self._username,
                     'email': self._email,
                     'password': self._password,

@@ -25,7 +25,7 @@ body{
   display: inline-flex;
 }
 
-.frontbox{
+.frontbox {
   background-color: var(--login-front-box-bg-color);
   border-radius: 20px;
   height: 100%;

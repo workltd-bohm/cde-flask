@@ -12,7 +12,15 @@
             <input type="File" name="newProfilePictureToUpload" id="newProfilePictureToUpload" onchange="uploadNewProfilePicture(event)" accept=".jpg, .jpeg, .png">
         </div>
         <div class="form__group field">
-            <input type="username" class="form__field" name="username" id="username" value='{{ username }}'/>
+            <input type="text" class="form__field" name="fname" id="fname" value='{{ fname }}'/>
+            <label for="fname" class="form__label">First name</label>
+        </div>
+        <div class="form__group field">
+            <input type="text" class="form__field" name="lname" id="lname" value='{{ lname }}'/>
+            <label for="lname" class="form__label">Last name</label>
+        </div>
+        <div class="form__group field">
+            <input type="text" class="form__field" name="username" id="username" value='{{ username }}'/>
             <label for="username" class="form__label">Username</label>
         </div>
         <div class="form__group field">
@@ -50,7 +58,7 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <div class="form__group field">
+        <div class="form__group field mb-5">
             <input class="btn py-2 w-100 btn-update" type="button" value="Update" onclick="FormSubmit('update_user', UpdateUser(), false);"/>
         </div>
     </div>

@@ -11,7 +11,6 @@ def IsLogin():
         return True
     return False
 
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -26,6 +25,9 @@ def index():
     if not IsLogin(): return redirect('/login')
     
     user = session.get('user')
+    if 'fname' not in user or 'lname' not in user:
+        return render_template("login/fill_user_info.html", user = user)
+
     # user.update({'project_code': 'SV', 'company_code': 'WRK'})
     username = session.get('user')['username']
     picture = session.get('user')['picture']

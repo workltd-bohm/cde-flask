@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Welcome to Super Leggera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	<script src="{{ url_for('static', filename='js/common/jquery-3.5.1.min.js') }}" charset="utf-8"></script>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="row bg-light d-flex justify-content-center">
+            <div class="col-6">
+                <form action="/fill_user_info" method="POST">
+                    <h2 class="h2 mt-5">INFORMATION UPDATE REQUIRED</h2>
+                    <p>Please update the missing profile information to complete your login process.</p>
+                    <div class="my-5">
+                        <input type="hidden" id="login_ic_data" value="{{ login_ic_data }}"/>
+                        
+                        <!-- First name -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control is-invalid" name="fname" id="fname" placeholder="First name" value="{{ fname }}" required>
+                            <label for="fname">First name</label>
+                        </div>
+
+                        <!-- Last name -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control is-invalid" name="lname" id="lname" placeholder="Last name" value="{{ lname }}" required>
+                            <label for="lname">Last name</label>
+                        </div>  
+
+                        <!-- User name -->
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{ user['username'] }}" readonly required>
+                            <label for="username">Username</label>
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            <label for="password">Password</label>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary align-middle">UPDATE AND LOG IN <span class="material-icons fs-6">lock</span></button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col">
+                          <p class="text-danger">{{ message }}</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/login/login.js') }}"></script>
+</body>
+
+</html>
