@@ -138,6 +138,7 @@ function changeValues(element) {
         $("input[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("input[name='" + element.name + "']");
     }
+
     if ($(element).is("select")) {
         $("select[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("select[name='" + element.name + "']");
@@ -145,7 +146,9 @@ function changeValues(element) {
 
     for (var i = 0; i < elements_by_name.length; i++) {
         changeColor(elements_by_name[i]);
-        setCodeValue(elements_by_name[i]);
+        if ($(element).is("input")) {
+            setCodeValue(elements_by_name[i]);
+        }
     }
 }
 

@@ -22,9 +22,9 @@
                 <input class="form__field" list="file_numbers" name="file_number" id="file_number" 
                     {% for tag in tags %}
                         {% if 'file_number' in tag['key'] %}
-                            {{ ('value=' + tag['tag'][1:]) if tag['tag'] not in value.elements else ''}}
+                            value="{{ tag['tag'][1:] if tag['tag'] not in value.elements }}"
                         {% endif %}
-                    {% endfor %}"/>
+                    {% endfor %} />
                 <datalist class="form__field" name="file_numbers" id="file_numbers" required >
                     {% for val in value.elements %}
                     <option {% for tag in tags %}

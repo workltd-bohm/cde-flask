@@ -96,6 +96,7 @@ a:visited {
 /* The snackbar - position it at the bottom and in the middle of the screen */
 
 #snackbar {
+    /* Sit on top of the screen */
     z-index: 5000000000000000;
     display: none;
     min-width: 250px;
@@ -113,8 +114,6 @@ a:visited {
     padding: 16px;
     /* Padding */
     position: fixed;
-    /* Sit on top of the screen */
-    z-index: 1;
     /* Add a z-index if needed */
     left: 50%;
     /* Center the snackbar */
