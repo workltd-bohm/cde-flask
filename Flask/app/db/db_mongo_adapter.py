@@ -601,7 +601,7 @@ class DBMongoAdapter:
                 if this_user:
                     for obj in this_user['projects']:
                         if obj['project_id'] == project_json['project_id']:
-                            if obj['role'] > Role.ADMIN.value:
+                            if obj['role'] > Role.OWNER.value:
                                 return msg.USER_NO_RIGHTS                        
                 else:
                     return msg.USER_NOT_FOUND
@@ -674,9 +674,7 @@ class DBMongoAdapter:
 
                 roles = self._db.Roles
                 owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
-                
-                print('\n\n\n\n owner id: \n\n\n', owner_id)
-                
+                                
                 # update user's shared projects
                 if len(list(shared.find())):
                     this_user_shared = shared.find()[0]

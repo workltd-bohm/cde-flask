@@ -573,19 +573,19 @@ def get_trash_ic():
                         is_directory =          True if request_data["is_directory"] else False
                 response = {
                     'html': render_template("popup/trash_ic_popup.html",
-                                            parent_path=parent_path,
-                                            parent_id=parent_id,
-                                            project_id=request_data["project_id"] if "project_id" in request_data else None,
-                                            ic_id=ic_id,
-                                            project_name=project_name,
-                                            delete_name=request_data["delete_name"],
-                                            is_directory = is_directory,
+                                            parent_path =       parent_path,
+                                            parent_id =         parent_id,
+                                            project_id =        request_data["project_id"] if "project_id" in request_data else None,
+                                            ic_id =             ic_id,
+                                            project_name =      project_name,
+                                            delete_name =       request_data["delete_name"],
+                                            is_directory =      is_directory,
                                             multi=is_multi,
                                             )
                     if not is_multi else
                             render_template("popup/trash_ic_popup.html",
-                                            multi=is_multi,
-                                            delete_name="Selections",
+                                            multi = is_multi,
+                                            delete_name = "Selections",
                                             ),
                     'data': []
                 }
