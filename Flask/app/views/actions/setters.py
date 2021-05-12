@@ -451,15 +451,30 @@ def set_color():
             project_name = request_data['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            user = session.get('user')
             if project_name == 'Shared':
-                result = db.get_project_from_shared(db_adapter, request_data, session['user'])
+                result = db.get_project_from_shared(db_adapter, request_data, user)
                 project_name = result['project_name']
+
+            # Check Roles
+            result = db.get_project(db_adapter, project_name, user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+            
             color_change = {
                 "project_name": project_name,
                 "ic_id": request_data["ic_id"],
                 "color": request_data["color"],
             }
+
             result = db.change_color(db_adapter, color_change)
+
             if result:
                 resp = Response()
                 resp.status_code = result["code"]
@@ -605,6 +620,18 @@ def add_tag():
                 request_data['project_name'] = session['project']['name']
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            # Check Roles
+            user = session.get('user')
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -632,6 +659,18 @@ def remove_tag():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            # Check Roles
+            user = session.get('user')
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             result = db.remove_tag(db_adapter, request_data, request_data['tag'])
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -656,6 +695,19 @@ def update_iso_tags():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
         if db.connect(db_adapter):
+            user = session.get('user')
+            
+            # Check Roles
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             result = db.update_iso_tags(db_adapter, request_data)
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -684,20 +736,33 @@ def add_access():
         if db.connect(db_adapter):
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
-            if request_data['user_name'] == session['user']['username']:
+            user = session.get('user')
+            
+            if request_data['user_name'] == user['username']:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
                 resp = Response()
                 resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
                 resp.data = msg.ACCESS_TO_YOURSELF['message']
                 return resp
 
+            # Check Roles
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             # If Project Root Is Shared - Share Whole Project
             if request_data['parent_id'] == 'root':
-                result = db.share_project(db_adapter, request_data, session['user'])
+                result = db.share_project(db_adapter, request_data, user)
                 # result = db.add_access(db_adapter, request_data, session['user'])
             # Share Just This IC And Subsequent Folders
             else:
-                result = db.add_access(db_adapter, request_data, session['user'])
+                result = db.add_access(db_adapter, request_data, user)
 
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
@@ -725,19 +790,33 @@ def update_access():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            user = session.get('user')
+
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
-            if request_data['user']['username'] == session['user']['username']:
+            if request_data['user']['username'] == user['username']:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
                 resp = Response()
                 resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
                 resp.data = msg.ACCESS_TO_YOURSELF['message']
                 return resp
+
+            # Check Roles
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             if request_data['parent_id'] == 'root':
-                result = db.update_share_project(db_adapter, request_data, session['user'])
-                # result = db.add_access(db_adapter, request_data, session['user'])
+                result = db.update_share_project(db_adapter, request_data, user)
+                # result = db.add_access(db_adapter, request_data, user)
             else:
-                result = db.update_access(db_adapter, request_data, session['user'])
+                result = db.update_access(db_adapter, request_data, user)
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
@@ -764,11 +843,24 @@ def remove_access():
         request_data = json.loads(request.get_data())
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            user = session.get('user')
+
+            # Check Roles
+            result = db.get_project(db_adapter, request_data['project_name'], user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             if request_data['parent_id'] == 'root':
-                # result = db.remove_access(db_adapter, request_data, session['user'])
-                result = db.remove_share_project(db_adapter, request_data, session['user'])
+                # result = db.remove_access(db_adapter, request_data, user)
+                result = db.remove_share_project(db_adapter, request_data, user)
             else:
-                result = db.remove_access(db_adapter, request_data, session['user'])
+                result = db.remove_access(db_adapter, request_data, user)
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()

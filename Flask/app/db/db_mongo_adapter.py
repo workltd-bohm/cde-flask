@@ -255,6 +255,18 @@ class DBMongoAdapter:
         
         return projects
 
+    '''
+    Returns My Roles From The DB
+    That Means The Function Will
+    Return A List Of Projects As
+    Their ID !!! NOT OBJECTS !!! 
+    '''
+    def get_my_roles(self, user):
+        col_roles = self._db.Users.Roles
+        user_query = {"user_id": user['id']}
+        my_roles = col_roles.find_one(user_query, {"_id": 0})
+        return my_roles
+
     def get_my_shares(self, user):
         col_shared = self._db.Projects.Shared
         user_query = {'user_id': user['id']}
@@ -1868,13 +1880,13 @@ class DBMongoAdapter:
                         # break
                     for tag_obj in ic.tags:
                         if tag_obj.iso == "simple":
-                            continue
+                            continue                                    # skip simple tags
                         tag_tmp = tag_obj.tag.replace(".", "_")
                         if tag_tmp in tags_collection:                  # check if tag exists
                             if obj in tags_collection[tag_tmp]:
                                 tags_collection[tag_tmp].remove(obj)    # remove this ic from special tags (file number custom)
                         if tag.replace('_', '.') == tag_obj.tag:
-                            ic.tags.remove(tag_obj)             # remove all tags from this ic
+                            ic.tags.remove(tag_obj)                     # remove all tags from this ic
                         if tag_obj.tag not in value['elements']:
                             ic.tags.remove(tag_obj)
 

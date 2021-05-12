@@ -53,6 +53,9 @@ def get_all_projects(db_adapter):
 def get_my_projects(db_adapter, user):
     return db_adapter.get_my_projects(user)
 
+def get_my_roles(db_adapter, user):
+    return db_adapter.get_my_roles(user)
+
 # TODO TRASH
 def get_my_trash(db_adapter, user):
     return db_adapter.get_my_trash(user)
