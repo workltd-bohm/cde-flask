@@ -1867,8 +1867,10 @@ class DBMongoAdapter:
                         tags_collection[tag].remove(obj)        # remove all occurances of this ic
                         # break
                     for tag_obj in ic.tags:
+                        if tag_obj.iso == "simple":
+                            continue
                         tag_tmp = tag_obj.tag.replace(".", "_")
-                        if tag_tmp in tags_collection:
+                        if tag_tmp in tags_collection:                  # check if tag exists
                             if obj in tags_collection[tag_tmp]:
                                 tags_collection[tag_tmp].remove(obj)    # remove this ic from special tags (file number custom)
                         if tag.replace('_', '.') == tag_obj.tag:
