@@ -1827,17 +1827,19 @@ class DBMongoAdapter:
             del iso_tags[key]['name']
             del iso_tags[key]['order']
 
-        tags_json = tags.find_one(tags_query, {'_id': 0})
-        # create tags if dont exist
-        if not tags_json: 
+        tags_collection = tags.find_one(tags_query, {'_id': 0})
+        
+        # create tags collection if dont exist
+        if not tags_collection: 
             tags.insert_one(tags_query)
-            tags_json = tags.find_one(tags_query, {'_id': 0})
-            # put empty keys in json
+            tags_collection = tags.find_one(tags_query, {'_id': 0})
+        
+        # put missing tags in collection
         for key, value in iso_tags.items():
             for val in value['elements']:
-                if not val in tags_json.keys():
-                    tags_json[val] = []
-        tags.update_one(tags_query, {"$set": tags_json})
+                if not val in tags_collection.keys():
+                    tags_collection[val] = []
+        tags.update_one(tags_query, {"$set": tags_collection})
 
         # convert request tags
         for key, value in data['tags'].items():
@@ -1859,32 +1861,40 @@ class DBMongoAdapter:
         # delete
         for key, value in iso_tags.items():
             for tag in value['elements']:
-                for itag in tags_json.keys():
-                    if itag == tag:    # failsafe check (maybe not necessary)
-                        for i, val in enumerate(tags_json[tag]):
-                            if obj in tags_json[tag]:
-                                tags_json[tag].remove(obj)
-                                # break
-                            for tag_obj in ic.tags:
-                                if tag.replace('_', '.') == tag_obj.tag:
-                                    ic.tags.remove(tag_obj)
+                # for itag in tags_collection.keys():
+                    # if itag == tag:    # failsafe check (maybe not necessary)
+                for i, val in enumerate(tags_collection[tag]):  # iterate through all tags in collection
+                    if obj in tags_collection[tag]:
+                        tags_collection[tag].remove(obj)        # remove all occurances of this ic
+                        # break
+                    for tag_obj in ic.tags:
+                        if tag_obj.iso == "simple":
+                            continue
+                        tag_tmp = tag_obj.tag.replace(".", "_")
+                        if tag_tmp in tags_collection:                  # check if tag exists
+                            if obj in tags_collection[tag_tmp]:
+                                tags_collection[tag_tmp].remove(obj)    # remove this ic from special tags (file number custom)
+                        if tag.replace('_', '.') == tag_obj.tag:
+                            ic.tags.remove(tag_obj)             # remove all tags from this ic
+                        if tag_obj.tag not in value['elements']:
+                            ic.tags.remove(tag_obj)
 
         # write
-        for key, tag in data['tags'].items():
-            for itag in tags_json.keys():
-                # print(itag)
-                if itag == tag:
-                    if not obj in tags_json[tag]:
-                        # print('accepted.')
-                        tags_json[tag].append(obj)
-                        if '_' in tag:
-                            tag = tag.replace("_", ".")
-                        ic.tags.append(ISO19650(key, tag, data['iso'], 'gray'))
-                        break
+        for key, tag in data['tags'].items(): # get key and value from request entries
+            for itag in tags_collection.keys(): # iterate through all tags in the collection
+                # if itag == tag: # COMPLEX TAGS UPDATE
+                if tag not in tags_collection.keys():
+                    tags_collection[tag] = []   # add tag to collection
+                if obj not in tags_collection[tag]:
+                    tags_collection[tag].append(obj) # 'add ic to tag' in tags collection
+                    if '_' in tag:
+                        tag = tag.replace("_", ".")
+                    ic.tags.append(ISO19650(key, tag, data['iso'], 'gray')) # add tag to ic
+                    break
 
         # update
         # project.update_ic(ic, old_ic)
-        tags.update_one(tags_query, {"$set": tags_json})
+        tags.update_one(tags_query, {"$set": tags_collection})
         projects.update_one(project_query, {"$set": project.to_json()})
 
         message = msg.TAG_SUCCESSFULLY_UPDATED

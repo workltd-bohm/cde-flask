@@ -5,6 +5,49 @@ from app import *
 
 import app.views.actions.getters as gtr
 
+@app.route('/fill_user_info', methods=["POST"])
+def fill_user_info():
+    resp = Response()
+    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+    form = request.form
+    my_user = session.get('user')  
+    
+    if db.connect(db_adapter):
+        user_query = {'id': my_user["id"]}
+
+        message, user_json = db.get_user(db_adapter, user_query)
+        db.close_connection(db_adapter)
+
+        # password validation
+        if form['password'] != user_json['password'] or \
+            form['username'] != user_json['username']:
+            resp.status_code = msg.UNAUTHORIZED['code']
+            resp.data = str(msg.UNAUTHORIZED['message'])
+            return render_template("login/fill_user_info.html",
+                                    user = my_user,
+                                    fname = form['fname'],
+                                    lname = form['lname'],
+                                    message = msg.INVALID_USER_PASS['message'])
+
+        user_json['fname'] = form['fname']
+        user_json['lname'] = form['lname']
+
+        if message == msg.LOGGED_IN:
+            user = User()
+            user.create_user(user_json)
+            user.update_user(user_json)
+            user.id = my_user["id"]
+            user.picture = user_json['picture']
+            user.confirmed = True
+            message = db.edit_user(db_adapter, user.to_json())
+        
+        session["user"] = user_json
+        return redirect('/')
+        
+    resp.status_code = msg.UNAUTHORIZED['code']
+    resp.data = str(msg.UNAUTHORIZED['message'])
+    return resp
+
 
 @app.route('/make_user_profile_activity', methods=['POST'])
 def make_user_profile_activity():
@@ -22,6 +65,8 @@ def make_user_profile_activity():
                 role_code = user['role_code']
             response = {
                 'html': render_template("dashboard/user/user_profile_activity.html",
+                                        fname =             user_data["fname"],
+                                        lname =             user_data["lname"],
                                         id =                user_data["id"],
                                         picture =           user_data["picture"],
                                         username =          user_data["username"],
@@ -50,6 +95,7 @@ def make_user_profile_activity():
 
 @app.route('/update_user', methods=['POST'])
 def update_user():
+    print(">>>>>>>>>>>>>>>>>>>", json.loads(request.get_data()))
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():

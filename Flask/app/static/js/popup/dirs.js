@@ -138,6 +138,7 @@ function changeValues(element) {
         $("input[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("input[name='" + element.name + "']");
     }
+
     if ($(element).is("select")) {
         $("select[name='" + element.name + "']").val($(element).val());
         elements_by_name = $("select[name='" + element.name + "']");
@@ -145,16 +146,24 @@ function changeValues(element) {
 
     for (var i = 0; i < elements_by_name.length; i++) {
         changeColor(elements_by_name[i]);
+        if ($(element).is("input")) {
+            setCodeValue(elements_by_name[i]);
+        }
     }
+}
 
+function setCodeValue(element){
+    element.dataset.value = element.value;
+    element.value = element.value.split(",")[0];
+    return;
 }
 
 function changeColor(element) {
-    $(element).css('border-color', '#3CB371');
+    $(element).css('background-color', '#7cd17e');
 }
 
 function changeColorCustom(element, color) {
-    $(element).css('border-color', color);
+    $(element).css('background-color', color);
 }
 
 function OnFileUpload(files, folders = []) {

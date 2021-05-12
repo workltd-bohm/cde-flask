@@ -546,7 +546,7 @@ function checkISOCompliant() {
     return response
 }
 
-function updateComplexTags(element) {
+function updateComplexTags() {
     let form = $("#complex_tags");
     args = {}
     form.serializeArray().map(function(x) { args[x.name] = x.value; });
@@ -554,6 +554,7 @@ function updateComplexTags(element) {
     args['company_code'] = $("#company_code").val();
     args['role_code'] = $("#role_code").val();
 
+    console.log(args)
     if (!SESSION) {
         alert("Error. No active session found.")
         return;

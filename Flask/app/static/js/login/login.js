@@ -26,6 +26,8 @@ $('#switch2').on('click', function() {
 
 var $login_email = $("#email"),
     $login_pass = $("#password"),
+    $signup_fname = $("#fname"),
+    $signup_lname = $("#lname"),
     $signup_username = $("#s_username"),
     $signup_email = $("#s_email"),
     $signup_pass = $("#s_password"),
@@ -44,10 +46,16 @@ $login_btn.click(function() {
 });
 
 $signup_btn.click(function() {
-    isChecked = check_fields_signup($signup_username.val(), $signup_email.val(), $signup_pass.val());
+    isChecked = check_fields_signup($signup_fname.val(), $signup_lname.val(), $signup_username.val(), $signup_email.val(), $signup_pass.val());
     if (isChecked) {
         resetFields();
-        data = { username: $signup_username.val(), email: $signup_email.val(), password: $signup_pass.val() };
+        data = { 
+            fname: $signup_fname.val(),
+            lname: $signup_lname.val(),
+            username: $signup_username.val(), 
+            email: $signup_email.val(), 
+            password: $signup_pass.val() 
+        };
         signup_post(data);
     }
 });
@@ -116,8 +124,26 @@ function check_fields_login(email, pass) {
     return isChecked;
 }
 
-function check_fields_signup(username, email, pass) {
+function check_fields_signup(fname, lname, username, email, pass) {
     isChecked = true;
+    if (fname === "") {
+        $signup_fname.css('border', '1px solid red');
+        $signup_fname.focus();
+        isChecked = false;
+    }
+
+    if (lname === "") {
+        $signup_lname.css('border', '1px solid red');
+        $signup_lname.focus();
+        isChecked = false;
+    }
+
+    if (fname === "") {
+        $signup_username.css('border', '1px solid red');
+        $signup_username.focus();
+        isChecked = false;
+    }
+
     if (username === "") {
         $signup_username.css('border', '1px solid red');
         $signup_username.focus();

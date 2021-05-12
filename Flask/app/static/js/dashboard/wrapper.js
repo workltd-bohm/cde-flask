@@ -187,6 +187,7 @@ function UserProfile() {
         timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
+            $('.tree-view').hide();
             if (data) {
                 if (data.session) {
                     SESSION = data.session;
