@@ -696,7 +696,7 @@ def update_iso_tags():
         
         if db.connect(db_adapter):
             user = session.get('user')
-            
+
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
             my_roles = db.get_my_roles(db_adapter, user)
@@ -750,7 +750,7 @@ def add_access():
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
@@ -806,7 +806,7 @@ def update_access():
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
@@ -850,7 +850,7 @@ def remove_access():
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
