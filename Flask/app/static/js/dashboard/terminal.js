@@ -439,7 +439,7 @@ function removeTag(tagName, tagColor) {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
@@ -589,7 +589,7 @@ function updateComplexTags() {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });

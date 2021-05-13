@@ -71,7 +71,7 @@ function NewFolder(form, json) {
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
@@ -281,7 +281,7 @@ function NewFile(form, json, file) {
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
@@ -325,7 +325,7 @@ function RenameFile(form, json) {
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
@@ -387,7 +387,7 @@ function TrashFile(form, json) {
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
