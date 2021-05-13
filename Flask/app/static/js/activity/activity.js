@@ -530,7 +530,7 @@ function removeAccess(access) {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
