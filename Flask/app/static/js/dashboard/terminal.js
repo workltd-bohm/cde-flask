@@ -329,7 +329,7 @@ function addTag(terminal, buffer = false) {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
