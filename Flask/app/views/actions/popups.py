@@ -1,3 +1,4 @@
+from app.logs.logger import Logger
 import json
 
 from app import *
@@ -49,15 +50,24 @@ def get_open_file():
             else:
                 result = db.get_ic_object(db_adapter, project_name, request_data, name+type)
 
-            if result:
+            if not result:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            else:
                 if not shared:
                     project = db.get_project(db_adapter, project_name, session['user']) #shared
                 access = [x.to_json() for x in result.access]
 
                 is_owner = False
+                can_configure_project = False
                 for a in access:
-                    if a['user']['user_id'] == session['user']['id'] and a['role'] == Role.OWNER.value:
-                        is_owner = True
+                    if a['user']['user_id'] == session['user']['id']:
+                        if a['role'] == Role.OWNER.value:
+                            is_owner = True
+                        if a['role'] <= Role.ADMIN.value:
+                            can_configure_project = True
                     a['role_name'] = Role(a['role']).name
                     m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
                     a['user']['picture'] = user['picture']
@@ -130,7 +140,6 @@ def get_open_file():
                     project_code = ""
                     company_code = ""
 
-                print(">>>>>>", file_tags)
                 response = {
                     'html': html,
                     'activity': render_template("activity/file.html",
@@ -153,10 +162,12 @@ def get_open_file():
                                                 complex_tag_list =  gtr.get_input_file_fixed(),
                                                 size =              file_size,
                                                 project_code =      project_code,   # shared hot fix
-                                                company_code =      company_code    # shared hot fix
+                                                company_code =      company_code,    # shared hot fix,
+                                                can_configure_project = str(can_configure_project)
                                                 ),
                     'data': []
                 }
+
                 resp = Response()
                 resp.status_code = msg.DEFAULT_OK['code']
                 resp.data = json.dumps(response)
@@ -458,6 +469,17 @@ def get_rename_ic():
 
             if request_data['parent_path'] == 'Projects':
                 project_name = request_data['old_name']
+                
+                # Check Roles
+                result = db.get_project(db_adapter, project_name, user)
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] > Role.OWNER.value:          # exit with error if user is not at least admin
+                            resp = Response()
+                            resp.status_code = msg.USER_NO_RIGHTS['code']
+                            resp.data = msg.USER_NO_RIGHTS['message']
+                            return resp
             else:
                 if session.get("project")["name"] == 'Shared':
                     result = db.get_project_from_shared(db_adapter, request_data, user)
@@ -533,6 +555,17 @@ def get_trash_ic():
         request_data = json.loads(request.get_data())
         if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
             project_name = request_data['delete_name']
+                
+            # Check Roles
+            result = db.get_project(db_adapter, project_name, user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.OWNER.value:          # exit with error if user is not at least admin
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
         else:
             project_name = session.get("project")["name"]
         is_multi = True if "is_multi" in request_data else False

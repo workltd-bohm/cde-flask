@@ -10,6 +10,10 @@
 }
 
 /* $("#activity-container").toggleClass("d-none"); */
+.not-allowed
+{
+    cursor: not-allowed !important;
+}
 
 .activity-menu.opened
 {

@@ -16,16 +16,19 @@
                 <div class="activity-add-user-container row">
                     <label for="user_name" class="form-label ms-1">Add people</label>
                     <div class="input-group">
-                        <input type="text" class="form-control me-2" id="access-add-username" oninput="GetUsers(this);"
-                            name="user_name" placeholder="Type a username" required />
-                        <input type="text" id="access-exp-date" class="form-control" name="access_date_expired" placeholder="indefinitely" value="indefinitely" onfocus="(this.type='datetime-local')" onblur="(this.type='text')">
-                        <select required class="form-select me-2" id="access-add-role">
+                        <input type="text" class="form-control me-2 {{'not-allowed' if can_configure_project == 'False'}}" id="access-add-username" oninput="GetUsers(this);" name="user_name" 
+                            placeholder="Type a username" required {{ 'disabled' if can_configure_project == 'False' }} />
+                        <input type="text" id="access-exp-date" class="form-control {{'not-allowed' if can_configure_project == 'False'}}" name="access_date_expired" 
+                            placeholder="indefinitely" value="indefinitely" onfocus="(this.type='datetime-local')" 
+                            onblur="(this.type='text')" {{ 'disabled' if can_configure_project == 'False' }}>
+                        <select required class="form-select me-2 {{'not-allowed' if can_configure_project == 'False'}}" id="access-add-role" {{ 'disabled' if can_configure_project == 'False' }}>
                             <option value="" selected>Choose a role</option>
                             <option value="WATCHER">Watcher</option>
                             <option value="DEVELOPER">Developer</option>
                             <option value="ADMIN">Admin</option>
                         </select>
-                        <button type="button" class="material-icons btn" onclick="AddAccess()">person_add</button>
+                        <button type="button" class="material-icons btn" onclick="AddAccess()"
+                            {{ 'disabled' if can_configure_project == 'False' }}>person_add</button>
                     </div>
                 </div>
 
@@ -42,15 +45,17 @@
                                                 onchange="updateAccessRole({{ a }}, '', this.value);"
                                                 {% if not a['exp_date'] | access %}  
                                                     style="border:2px solid red;"
-                                                {% endif %}>
-                            <select required class="form-select me-2" onchange="updateAccessRole({{ a }}, this.value, '');">
-                                <option value="WATCHER" {{ 'selected' if a['role_name']=='WATCHER' }}>Watcher</option>
-                                <option value="DEVELOPER" {{ 'selected' if a['role_name']=='DEVELOPER' }}>Developer</option>
-                                <option value="ADMIN" {{ 'selected' if a['role_name']=='ADMIN' }}>Admin</option>
+                                                {% endif %}
+                                                {{ 'disabled' if can_configure_project == 'False' }}>
+                            <select required class="form-select me-2" 
+                                onchange="updateAccessRole({{ a }}, this.value, '');"  {{ 'disabled' if can_configure_project == 'False' }}>
+                                <option value="WATCHER" {{ 'selected' if a['role_name'] == 'WATCHER' }}>Watcher</option>
+                                <option value="DEVELOPER" {{ 'selected' if a['role_name'] == 'DEVELOPER' }}>Developer</option>
+                                <option value="ADMIN" {{ 'selected' if a['role_name'] == 'ADMIN' }}>Admin</option>
                             </select>
                         </div>
 
-                        {% if is_owner %}
+                        {% if can_configure_project == 'True' %}
                             <div class="material-icons btn btn-access-remove me-2 mt-2"
                                 onclick="removeAccess({{ a }});">
                                 person_remove

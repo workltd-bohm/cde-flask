@@ -550,7 +550,6 @@ class DBMongoAdapter:
                     project.name = request_data['new_name']
                 file_updated = True
                 if not request_data['is_directory']:
-                    print('shouldnt be here\n\n\n')
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
                     file_json = col_file.find_one(file_query)
