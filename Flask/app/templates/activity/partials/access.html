@@ -39,7 +39,7 @@
                         <img class="access-img" src="/get_profile_image/{{ a['user']['picture'] }}"/>
                         <div class="access-info align-self-center align-middle ms-2">
                             <div class="access-info-username fw-bold">{{ a['user']['username'] }}</div>
-                            <input type="text" class="form-control" name="date_expired" value="{{ a['exp_date'] }}" 
+                            <input type="text" class="form-control mt-2" name="date_expired" value="{{ a['exp_date'] }}" 
                                                 placeholder="" onfocus="(this.type='datetime-local')" 
                                                 onblur="(this.type='text')" 
                                                 onchange="updateAccessRole({{ a }}, '', this.value);"
@@ -47,7 +47,7 @@
                                                     style="border:2px solid red;"
                                                 {% endif %}
                                                 {{ 'disabled' if can_configure_project == 'False' }}>
-                            <select required class="form-select me-2" 
+                            <select required class="form-select me-2 mt-2" 
                                 onchange="updateAccessRole({{ a }}, this.value, '');"  {{ 'disabled' if can_configure_project == 'False' }}>
                                 <option value="WATCHER" {{ 'selected' if a['role_name'] == 'WATCHER' }}>Watcher</option>
                                 <option value="DEVELOPER" {{ 'selected' if a['role_name'] == 'DEVELOPER' }}>Developer</option>
