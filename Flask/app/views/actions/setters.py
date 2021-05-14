@@ -903,7 +903,7 @@ def activate_undo():
     if main.IsLogin():
         undo = session.get("undo")
 
-        if undo is None:
+        if undo is None or 'user' not in undo.keys():
             resp.status_code = msg.UNAUTHORIZED['code']
             resp.data = 'Nothing do undo'
             return resp
@@ -916,12 +916,8 @@ def activate_undo():
             result = db.get_project(db_adapter, project_name, user)
             if result and undo["data"]:
                 project = Project(result['project_id'], result['project_name'], Project.json_folders_to_obj(undo["data"]['root_ic']))
-                # print(project.to_json()['root_ic']["sub_folders"])
-                # print(undo["data"]['root_ic']["sub_folders"])
                 result, id = db.update_project(db_adapter, project, user)
                 if result:
-                    #session.get("project")["position"] = undo["position"]
-
                     session["undo"] = {}
                     session.get("project")["undo"] = False
                     session.modified = True
