@@ -37,8 +37,7 @@
 
 .profile-pic span {
     display: inline-block;
-    padding-top: 4.5em;
-    padding-bottom: 4.5em;
+    transform: translateY(-50%);
 }
 
 .profile-image > input[type="file"] {

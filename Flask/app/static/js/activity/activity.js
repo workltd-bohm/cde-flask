@@ -503,7 +503,6 @@ function updateAccessRole(access, role, date) {
 }
 
 function removeAccess(access) {
-    console.log(access);
     if (access.exp_date == '')
         access.exp_date = 'indefinitely'
     LoadStart();
@@ -515,7 +514,7 @@ function removeAccess(access) {
             ic_id: SESSION['position'].ic_id,
             parent_id: SESSION['position'].parent_id,
             is_directory: SESSION['position'].is_directory,
-            role: access.role,
+            role: access.role_name,
             exp_date: access.exp_date,
             user: access.user
         }),
