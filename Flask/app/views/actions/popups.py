@@ -555,8 +555,9 @@ def get_trash_ic():
         request_data = json.loads(request.get_data())
         if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
             project_name = request_data['delete_name']
-                
+            
             # Check Roles
+            user = session.get('user')
             result = db.get_project(db_adapter, project_name, user)
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:

@@ -225,6 +225,7 @@ def get_root_project():
                         "path": "Projects/" + project["project_name"],
                         "overlay_type": project["overlay_type"],
                         "is_directory": False,
+                        "color": project['root_ic']['color']
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
 
