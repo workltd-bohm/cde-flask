@@ -445,16 +445,32 @@ def set_color():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+
         dirs.set_project_data(request_data, True)
+
         project_name = session.get("project")["name"]
         if not project_name:
             project_name = request_data['name']
+
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
         if db.connect(db_adapter):
             user = session.get('user')
+
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
                 project_name = result['project_name']
+                
+            if request_data['ic_id'] == '':                                 # if changing root ic (Project) color
+                result = db.get_project(db_adapter, project_name, user)
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] > Role.OWNER.value:              # exit with error if user is not owner
+                            resp = Response()
+                            resp.status_code = msg.USER_NO_RIGHTS['code']
+                            resp.data = msg.USER_NO_RIGHTS['message']
+                            return resp
 
             # Check Roles
             result = db.get_project(db_adapter, project_name, user)
