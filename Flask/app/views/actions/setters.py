@@ -892,7 +892,6 @@ def activate_undo():
             resp.data = 'Nothing do undo'
             return resp
 
-
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')

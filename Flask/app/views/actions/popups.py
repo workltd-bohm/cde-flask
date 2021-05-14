@@ -42,7 +42,6 @@ def get_open_file():
         parent_id = request_data['parent_id']
 
         if db.connect(db_adapter):
-            print('hererer111')
             project_name = session['project']['name']
             shared = bool(project_name == "Shared")
             if shared:
@@ -59,7 +58,7 @@ def get_open_file():
                 for a in access:
                     if a['user']['user_id'] == session['user']['id'] and a['role'] == Role.OWNER.value:
                         is_owner = True
-                    a['role'] = Role(a['role']).name
+                    a['role_name'] = Role(a['role']).name
                     m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
                     a['user']['picture'] = user['picture']
                     a['user']['username'] = user['username']
@@ -83,6 +82,7 @@ def get_open_file():
 
                 message, user = db.get_user(db_adapter, {'id': session.get('user')['id']})
                 db.close_connection(db_adapter)
+
                 role_code = ''
                 if 'role_code' in user:
                     role_code = user['role_code']
