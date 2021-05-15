@@ -291,8 +291,7 @@ g.path.draw > g.text > text {
 
 .context-menu, .create-menu
 {
-    width: 10em;
-    min-width: 200px;
+    min-width: 10em;
     height: fit-content;
 }
 

@@ -939,6 +939,15 @@ def set_project_config():
         if db.connect(db_adapter):
             result = db.get_project(db_adapter, request_data['project_name'], session['user'])
             
+            my_roles = db.get_my_roles(db_adapter, session['user'])
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:
+                    if project['role'] > Role.ADMIN.value:
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             if result:
                 project = Project.json_to_obj(result)
 

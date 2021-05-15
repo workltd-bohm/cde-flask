@@ -16,21 +16,16 @@ function WrapUploadProject() {
 
 function WrapCreateFolder(data) {
     var tmp = data.values.data;
-    //console.log(tmp);
     PopupOpen(NewFolder, tmp);
 }
 
 function WrapOpenFile(data, open = true) {
     ShowActivity();
     
-    if (g_project.overlay) {
-        // data.values.data.values.text.style("opacity", 100);
-        g_project.overlay.remove();
-        g_project.overlay = false;
-    }
-    
     var o = Object.values(CHECKED);
     var tmp = (o.length > 0) ? o[0] : data.values.data;
+
+    // Update Session
     SESSION["position"] = {
         project_name: tmp.path.split('/')[0],
         parent_id: tmp.parent_id,
@@ -51,16 +46,13 @@ function WrapOpenFile(data, open = true) {
         revision: tmp.revision
     };
 
+
     if (tmp.is_directory) {
-        //console.log("dir",tmp);
-        //OpenActivity(null, null, open);
         OpenFilterActivity(tmp, open);
     } else {
-        // console.log("tmp",open);
+        g_project.current_ic = data;
         PreviewOpen(OpenFile, tmp, null, open);
     }
-    //    PopupOpen(NewFile, tmp);
-    //    OpenFileDialog(tmp);
 }
 
 function WrapCreateFile(data) {

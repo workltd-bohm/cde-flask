@@ -676,7 +676,7 @@ function CreateHoverMenu()
 
     // Change Toggle View Icon 
     let view_button_text = (g_view === VIEW_PL) ? "grid_view" : "public";
-    $(".btn-view").children().last().text(view_button_text);
+    $("#btn-view").children().last().text(view_button_text);
 }
 
 function CreateWorkspace(data) {
