@@ -382,10 +382,10 @@ function refreshTags() {
         timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
+            console.log(data)
             $(".tag-container").remove();
             for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
-                if (!data[i].tag.includes(",") && data[i].key != 'project_code' && data[i].key != 'company_code') {
+                if (data[i].iso === "simple") {
                     createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
                 }
             }
@@ -564,8 +564,6 @@ function updateComplexTags() {
 
     console.log(SESSION);
 
-    // TODO only pass filled parameters
-
     $.ajax({
         url: "/update_iso_tags",
         type: 'POST',
@@ -581,7 +579,6 @@ function updateComplexTags() {
             MakeSnackbar(data);
             LoadStop();
             refreshTags();
-            // TODO update current tags (append complex tags to normal tags)
             checkISOCompliant();
         },
         error: function($jqXHR, textStatus, errorThrown) {

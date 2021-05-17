@@ -1884,7 +1884,8 @@ class DBMongoAdapter:
                         if tag.replace('_', '.') == tag_obj.tag:
                             ic.tags.remove(tag_obj)                     # remove all tags from this ic
                         if tag_obj.tag not in value['elements']:
-                            ic.tags.remove(tag_obj)
+                            if tag_obj in ic.tags:
+                                ic.tags.remove(tag_obj)
 
         # write
         for key, tag in data['tags'].items(): # get key and value from request entries
