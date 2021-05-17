@@ -594,8 +594,10 @@ function CreateSelectMenu() {
 
     // select_menu.appendChild(button_select);
 
-    select_menu.onclick = function() {
-        label.click();
+    select_menu.onclick = function(e) {
+        if (e.target !== label) {
+            label.click();
+        }
 
         let checked = document.getElementById("select-all").checked;
 
