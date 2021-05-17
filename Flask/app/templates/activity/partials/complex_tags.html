@@ -28,7 +28,7 @@
                 {% endfor %} 
                 {% for a in access %}
                     {% if a['user']['user_id'] == session['user']['id'] %}
-                        {{ 'disabled' if a['role'] > 1 }}
+                        {{ 'disabled' if a['role'] > 2 }}
                     {% endif %}
                 {% endfor %}/>
             <datalist class="form__field" name="file_numbers" id="file_numbers" required >
@@ -54,7 +54,7 @@
             <select class="form__field" name="{{ key }}" id='{{ key }}' required 
                 {% for a in access %}
                     {% if a['user']['user_id'] == session['user']['id'] %}
-                        {{ 'disabled' if a['role'] > 1 }}
+                        {{ 'disabled' if a['role'] > 2 }}
                     {% endif %}
                 {% endfor %} />
                 <option></option>
