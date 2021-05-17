@@ -313,8 +313,12 @@ function RenameFile(form, json) {
             form.append(html);
 
             let input = document.getElementById("new_name");
-            let split = newOldName.split(".");
-            input.value = split.slice(0, split.length - 1).join(".");
+            if (json.hasOwnProperty("type")) {
+                let split = newOldName.split(".");
+                input.value = split.slice(0, split.length - 1).join(".");
+            } else {
+                input.value = newOldName;
+            }
             input.select();
             document.getElementById('name_div').style.bottom = "120px";
 
