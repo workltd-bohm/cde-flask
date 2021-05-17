@@ -55,6 +55,7 @@
 #display_name {
     font-size: 1.5em;
     text-anchor: middle;
+    fill: var(--text-primary);
 }
 
 .workspace {
