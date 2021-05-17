@@ -595,18 +595,16 @@ function CreateSelectMenu() {
     // select_menu.appendChild(button_select);
 
     select_menu.onclick = function() {
-        // simulate label click
-        let lbl = document.getElementById("select-all-label");
-        lbl.click();
+        label.click();
 
         let checked = document.getElementById("select-all").checked;
 
         if (checked) {
             SelectAllPlanets(g_project.current_ic);
-            lbl.textContent = "Deselect";
+            label.textContent = "Deselect";
         } else {
             DeselectAllPlanets(g_project.current_ic);
-            lbl.textContent = "Select all";
+            label.textContent = "Select all";
         }
     }
 

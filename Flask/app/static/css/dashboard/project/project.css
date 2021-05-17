@@ -219,11 +219,11 @@ g.path.draw > g.text > text {
     color: #bcbcbc;
 }
 .foregin .material-icons.planet{
-    color: #ffffff;
+    color: var(--bg-primary);
     /* background-color: black; */
 }
 .foregin .material-icons.planet.select{
-    color: #ffffff;
+    color: var(--bg-primary);
     /* background-color: #00000000; */
 }
 
