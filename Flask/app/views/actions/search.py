@@ -137,9 +137,9 @@ def search_by_tags():
                 for ic in ics:
                     project.current_ic = None
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
-                    ic_json = file.to_json()
                     # print(file)
                     if file:
+                        ic_json = file.to_json()
                         path = file.path if file.is_directory else file.path + file.type
                         ic_type = '' if file.is_directory else file.type
                         proj_obj = {
