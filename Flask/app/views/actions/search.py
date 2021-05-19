@@ -137,6 +137,7 @@ def search_by_tags():
                 for ic in ics:
                     project.current_ic = None
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
+                    ic_json = file.to_json()
                     # print(file)
                     if file:
                         path = file.path if file.is_directory else file.path + file.type
@@ -146,7 +147,7 @@ def search_by_tags():
                             "parent_id": file.parent_id,
                             "name": file.name,
                             "parent": "Search",
-                            "history": [],
+                            "history": ic_json['history'],
                             "path": path,
                             "type": ic_type,
                             "overlay_type": "search_target",
@@ -211,12 +212,13 @@ def search_by_name():
                     # print(ic.name)
                     path = ic.path if ic.is_directory else ic.path + ic.type
                     ic_type = '' if ic.is_directory else ic.type
+                    ic_json = ic.to_json()
                     proj_obj = {
                         "ic_id": ic.ic_id,
                         "parent_id": ic.parent_id,
                         "name": ic.name,
                         "parent": "Search",
-                        "history": [],
+                        "history": ic_json['history'],
                         "path": path,
                         "type": ic_type,
                         "overlay_type": "search_target",

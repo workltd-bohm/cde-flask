@@ -17,7 +17,7 @@ function onFocus() {
 }
 
 function onFocusOut() {
-    $("#terminal-input").val("");
+    // $("#terminal-input").val("");
 
 }
 
