@@ -1059,7 +1059,7 @@ class DBMongoAdapter:
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
-        self._close_connection()
+        # self._close_connection()
         return add
 
     def create_post(self, request_json):
