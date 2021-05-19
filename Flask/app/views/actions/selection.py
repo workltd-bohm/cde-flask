@@ -42,7 +42,7 @@ def set_color_multi():
                     "color": req["color"],
                 }
                 result = db.change_color(db_adapter, color_change)
-            db.close_connection()
+            db.close_connection(db_adapter)
             if result:
                 resp = Response()
                 resp.status_code = result["code"]

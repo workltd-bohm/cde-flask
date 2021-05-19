@@ -472,7 +472,7 @@ def set_color():
                             resp.data = msg.USER_NO_RIGHTS['message']
                             return resp
 
-            # Check Roles
+            # Check RolesF
             result = db.get_project(db_adapter, project_name, user)
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
@@ -490,8 +490,8 @@ def set_color():
             }
 
             result = db.change_color(db_adapter, color_change)
-            db.close_connection()
-            
+            db.close_connection(db_adapter)
+
             if result:
                 resp = Response()
                 resp.status_code = result["code"]
