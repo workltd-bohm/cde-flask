@@ -610,6 +610,8 @@ function ProjectPosiotionSet(data) {
 function CreateDashboard(data, project_position = null) {
     WindowResize();
 
+    $("#Universe").remove();
+
     g_root.universe = SVG.append("g")
         .attr("id", "Universe")
         .attr("transform", "translate(" + (g_root.x) + "," + (g_root.y) + ")," + "scale(" + (g_root.scale) + ")")
@@ -623,6 +625,8 @@ function CreateDashboard(data, project_position = null) {
     g_root.universe.append("circle")
         .attr("id", "Touch")
         .attr("r", g_TouchRadius);
+
+    $("#Slider").remove();
 
     g_root.looper = SVG.append("g")
         .attr("id", "Slider")
@@ -892,7 +896,7 @@ function CreateGrid(data) {
             {
                 card.style.boxShadow = "0 4px 0 " + d.color; 
             }
-
+            
             info.appendChild(date);
             info.appendChild(time);
 

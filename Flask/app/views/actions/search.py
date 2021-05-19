@@ -60,13 +60,14 @@ def get_filtered_files():
                     }
                 }
                 for file in filtered:
+                    print (">>>>>>>>>>", file)
                     path = file.path if file.is_directory else file.path + file.type
                     proj_obj = {
                         "ic_id": file.ic_id,
                         "parent_id": file.parent_id,
                         "name": file.name,
                         "parent": "Search",
-                        "history": [],
+                        "history": file.history,
                         "path": path,
                         "type": file.type,
                         "overlay_type": "search_target",
@@ -149,7 +150,8 @@ def search_by_tags():
                             "path": path,
                             "type": ic_type,
                             "overlay_type": "search_target",
-                            "is_directory": False,
+                            "is_directory": file.is_directory,
+                            "color": file.color
                         }
                         response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)

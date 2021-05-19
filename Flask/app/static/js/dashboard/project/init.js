@@ -174,7 +174,7 @@ var g_root = {
 }
 
 function ClearProject(hard=false){
-    if(g_root.universe) g_root.universe.remove();
+    if(g_root.universe) { g_root.universe.remove(); }
     if(g_root.looper) g_root.looper.remove();
     if(g_project.hist_path) g_project.hist_path.remove();
     if(g_project.paths_path) g_project.paths_path.remove();
@@ -182,7 +182,7 @@ function ClearProject(hard=false){
     if(g_project.selection) g_project.selection.remove();
     if(g_project.move) ClearMove();
     g_project = {...g_project_per};
-    if(hard)SESSION = {};
+    if(hard) SESSION = {};
 }
 
 // -------------------------------------------------------

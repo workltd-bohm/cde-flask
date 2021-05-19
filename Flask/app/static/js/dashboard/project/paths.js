@@ -85,18 +85,31 @@ function PathCreation() {
 
 function GetDisplayName(ic) {
     // console.log(ic);
-    if (ic.overlay_type == 'project' || ic.overlay_type == 'trash_planet' || ic.overlay_type == 'shared') {
-        return ic.name;
-    }
-    if (ic.overlay_type == 'search_target') {
-        return ic.path;
-    }
-    if (!SESSION.is_iso) {
-        if (ic.is_directory)
+    switch(ic.overlay_type)
+    {
+        case "project":
+        case "trash_planet":
+        case "shared":
             return ic.name;
-        else
-            return ic.name + ic.type;
+        
+        case "search_target":
+            return ic.path;
+
+        default: break;
     }
+
+    if (!SESSION.is_iso) {
+        if (ic.is_directory) {
+            return ic.name;
+        }
+        else {
+            if (!ic.type) {
+                return "";
+            }
+            return ic.name + ic.type;
+        }
+    }
+    
     if (ic.is_directory)
         return ic.name;
     else {
