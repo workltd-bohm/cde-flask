@@ -234,6 +234,20 @@ function CreatePath() {
             // Add current ic to the list
             path.push(g_project.current_ic);
 
+            // Add Link For Projects (Root)
+            let projects_link = document.createElement("span");
+            projects_link.className = "path-link";
+            projects_link.textContent = "Projects";
+            projects_link.onclick = function(){
+                SelectProject();
+            }
+            $(".info-path-text").append(projects_link);
+            let slash = document.createElement("span");
+            slash.className = "mx-2";
+            slash.textContent = "/";
+            $(".info-path-text").append(slash);
+
+            // Add Path Links
             for (let add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };
