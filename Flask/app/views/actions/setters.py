@@ -111,8 +111,6 @@ def create_project():
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    # print('>>>>>>>>>>>>>>>>>', request.args)
-    # print('>>>>>>>>>>>>>>>>>', request.form)
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request.form))
 
     if 'user' in session:

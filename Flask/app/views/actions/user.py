@@ -95,7 +95,6 @@ def make_user_profile_activity():
 
 @app.route('/update_user', methods=['POST'])
 def update_user():
-    print(">>>>>>>>>>>>>>>>>>>", json.loads(request.get_data()))
     resp = Response()
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():

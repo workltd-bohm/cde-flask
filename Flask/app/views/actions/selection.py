@@ -190,8 +190,9 @@ def move_multi():
                                 return resp
 
                             details = "Error"
+                            usr = {'user_id': session['user']['id'], 'username': session['user']['username']}
                             if not request_data_array["to_copy"]:
-                                details = Details(user, 'Moved',
+                                details = Details(usr, 'Moved',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Move form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
                                 if old_parent_ic.ic_id == target_ic.ic_id:
@@ -208,7 +209,7 @@ def move_multi():
                                 else:
                                     old_parent_ic.sub_folders.remove(target_ic)
                             else:
-                                details = Details(user, 'Copied',
+                                details = Details(usr, 'Copied',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Copy form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
                             copy_target_ic.history.append(details)

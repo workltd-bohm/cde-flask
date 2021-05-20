@@ -60,7 +60,6 @@ def get_filtered_files():
                     }
                 }
                 for file in filtered:
-                    print (">>>>>>>>>>", file)
                     path = file.path if file.is_directory else file.path + file.type
                     proj_obj = {
                         "ic_id": file.ic_id,
