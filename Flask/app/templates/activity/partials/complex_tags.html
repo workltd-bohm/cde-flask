@@ -1,5 +1,5 @@
 <h6 class="activity-collapsible">ISO 19650</h6>
-<form class="activity-collapsible-body" id="complex_tags" onchange="updateComplexTags();">
+<form class="activity-collapsible-body mb-3" id="complex_tags" onchange="updateComplexTags();">
     <p style="margin-bottom: 0; text-align: right;" id="iso_compliant">ISO 19650</p>
     <div class="form__group field">
         <label for="project_code" class="form__label">Project Code</label>
@@ -14,47 +14,58 @@
             <option>{{ company_code }}</option>
         </select>
     </div>
+    
 
-    {% for key, value in complex_tag_list.items() %}
-        {% if key == 'file_number' %}
-            <div class="form__group field">
-                <label for="file_number" class="form__label">{{ value.name }}</label>
-                <input class="form__field" list="file_numbers" name="file_number" id="file_number" 
-                    {% for tag in tags %}
-                        {% if 'file_number' in tag['key'] %}
-                            value="{{ tag['tag'][1:] if tag['tag'] not in value.elements }}"
-                        {% endif %}
-                    {% endfor %} />
-                <datalist class="form__field" name="file_numbers" id="file_numbers" required >
-                    {% for val in value.elements %}
-                    <option {% for tag in tags %}
-                                {{ 'selected' if tag.tag == ('#' + val) else '' }}
-                            {% endfor %} 
-                        value="{{ val }}">{{ val }}</option>
-                    {% endfor %}
+{% for key, value in complex_tag_list.items() %}
+    {% if key == 'file_number' %}
+        <div class="form__group field">
+            <label for="file_number" class="form__label">{{ value.name }}</label>
+            <input class="form__field" list="file_numbers" name="file_number" id="file_number" 
+                {% for tag in tags %}
+                    {% if 'file_number' in tag['key'] %}
+                        value="{{ tag['tag'][1:] if tag['tag'] not in value.elements }}"
+                    {% endif %}
+                {% endfor %} 
+                {% for a in access %}
+                    {% if a['user']['user_id'] == session['user']['id'] %}
+                        {{ 'disabled' if a['role'] > 2 }}
+                    {% endif %}
+                {% endfor %}/>
+            <datalist class="form__field" name="file_numbers" id="file_numbers" required >
+                {% for val in value.elements %}
+                <option {% for tag in tags %}
+                            {{ 'selected' if tag.tag == ('#' + val) else '' }}
+                        {% endfor %} 
+                    value="{{ val }}">{{ val }}</option>
+                {% endfor %}
 
-                    {% for tag in tags %}
-                        {% if 'file_number' in tag['key'] %}
-                            {% if tag['tag'] not in value.elements %}
-                            <option value="{{ tag['tag'][1:] }}">{{ tag['tag'][1:] }}</option>
-                            {% endif %}
+                {% for tag in tags %}
+                    {% if 'file_number' in tag['key'] %}
+                        {% if tag['tag'] not in value.elements %}
+                        <option value="{{ tag['tag'][1:] }}">{{ tag['tag'][1:] }}</option>
                         {% endif %}
-                    {% endfor %}
-                </datalist>
-            </div>            
-        {% else %}
-            <div class="form__group field">
-                <label for="{{ key }}" class="form__label">{{ value.name }}</label>
-                <select class="form__field" name="{{ key }}" id='{{ key }}' required >
-                    <option></option>
-                    {% for val in value.elements %}
-                    <option {% for tag in tags %}
-                                {{ 'selected' if tag.tag == ('#' + val) else '' }}
-                            {% endfor %} 
-                        value="{{ val }}">{{ val }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        {% endif %}
-    {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </datalist>
+        </div>            
+    {% else %}
+        <div class="form__group field">
+            <label for="{{ key }}" class="form__label">{{ value.name }}</label>
+            <select class="form__field" name="{{ key }}" id='{{ key }}' required 
+                {% for a in access %}
+                    {% if a['user']['user_id'] == session['user']['id'] %}
+                        {{ 'disabled' if a['role'] > 2 }}
+                    {% endif %}
+                {% endfor %} />
+                <option></option>
+                {% for val in value.elements %}
+                <option {% for tag in tags %}
+                            {{ 'selected' if tag.tag == ('#' + val) else '' }}
+                        {% endfor %} 
+                    value="{{ val }}">{{ val }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+{% endfor %}
 </form>

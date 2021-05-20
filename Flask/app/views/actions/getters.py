@@ -225,6 +225,7 @@ def get_root_project():
                         "path": "Projects/" + project["project_name"],
                         "overlay_type": project["overlay_type"],
                         "is_directory": False,
+                        "color": project['root_ic']['color']
                     }
                     response['root_ic']["sub_folders"].append(proj_obj)
 
@@ -306,17 +307,24 @@ def get_access():
 
     # render html
     is_owner = False
+    can_configure_project = False
     for a in access:
-        if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
-            is_owner = True
-        a['role'] = Role(a['role']).name
+        if a['user']['user_id'] == session['user']['id']:
+            if a['role'] == Role.OWNER.value:
+                is_owner = True
+            if a['role'] <= Role.ADMIN.value:
+                can_configure_project = True
+
+        a['role_name'] = Role(a['role']).name
         m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
         a['user']['picture'] = user['picture']
         a['user']['username'] = user['username']
 
     return render_template("activity/partials/access.html",
                             access =    access,
-                            is_owner =  is_owner)
+                            is_owner =  is_owner,
+                            can_configure_project = str(can_configure_project)
+                            )
 
 
 @app.route('/get_trash', methods=['POST'])

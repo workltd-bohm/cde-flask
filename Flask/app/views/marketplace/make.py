@@ -463,10 +463,15 @@ def get_filter_activity():
                 comments = [x.to_json() for x in result.comments]
                 access = [x.to_json() for x in result.access]
                 is_owner = False
+                can_configure_project = False
                 for a in access:
-                    if a['user']['user_id'] == session['user']['id'] and a['role'] == 0:
-                        is_owner = True
-                    a['role'] = Role(a['role']).name
+                    if a['user']['user_id'] == session['user']['id']:
+                        if a['role'] == 0:
+                            is_owner = True
+                        if a['role'] <= Role.ADMIN.value:
+                            can_configure_project = True
+
+                    a['role_name'] = Role(a['role']).name
                     m, user = db.get_user(db_adapter, {'id': a['user']['user_id']})
                     a['user']['picture'] = user['picture']
                     a['user']['username'] = user['username']
@@ -499,7 +504,8 @@ def get_filter_activity():
                                                 share_link =        share_link,
                                                 parent_id =         result.parent_id,
                                                 ic_id =             result.ic_id,
-                                                access =            access
+                                                access =            access,
+                                                can_configure_project = str(can_configure_project)
                                                 ),
                         'data': []
                     }
@@ -518,7 +524,8 @@ def get_filter_activity():
                                                 share_link =        share_link,
                                                 parent_id =         result.parent_id,
                                                 ic_id =             result.ic_id,
-                                                access =            access
+                                                access =            access,
+                                                can_configure_project = str(can_configure_project)
                                                 ),
                         'data': []
                     }

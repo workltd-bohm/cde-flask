@@ -85,18 +85,31 @@ function PathCreation() {
 
 function GetDisplayName(ic) {
     // console.log(ic);
-    if (ic.overlay_type == 'project' || ic.overlay_type == 'trash_planet' || ic.overlay_type == 'shared') {
-        return ic.name;
-    }
-    if (ic.overlay_type == 'search_target') {
-        return ic.path;
-    }
-    if (!SESSION.is_iso) {
-        if (ic.is_directory)
+    switch(ic.overlay_type)
+    {
+        case "project":
+        case "trash_planet":
+        case "shared":
             return ic.name;
-        else
-            return ic.name + ic.type;
+        
+        case "search_target":
+            return ic.path;
+
+        default: break;
     }
+
+    if (!SESSION.is_iso) {
+        if (ic.is_directory) {
+            return ic.name;
+        }
+        else {
+            if (!ic.type) {
+                return "";
+            }
+            return ic.name + ic.type;
+        }
+    }
+    
     if (ic.is_directory)
         return ic.name;
     else {
@@ -221,6 +234,20 @@ function CreatePath() {
             // Add current ic to the list
             path.push(g_project.current_ic);
 
+            // Add Link For Projects (Root)
+            let projects_link = document.createElement("span");
+            projects_link.className = "path-link";
+            projects_link.textContent = "Projects";
+            projects_link.onclick = function(){
+                SelectProject();
+            }
+            $(".info-path-text").append(projects_link);
+            let slash = document.createElement("span");
+            slash.className = "mx-2";
+            slash.textContent = "/";
+            $(".info-path-text").append(slash);
+
+            // Add Path Links
             for (let add of path) {
                 add.box = {...g_box };
                 add.values = {...add.values };

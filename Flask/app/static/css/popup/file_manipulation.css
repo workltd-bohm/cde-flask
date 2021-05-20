@@ -96,7 +96,6 @@
 .form__field_popup_rename {
     width: 90%;
     border: none;
-    color: white;
     border-bottom: 1px solid #666;
     transition: border-color 0.2s;
     margin-left: 2px;

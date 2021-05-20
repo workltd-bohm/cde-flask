@@ -113,7 +113,7 @@ function ProjectConfigSubmit() {
             MakeSnackbar($jqXHR.responseText);
             PopupClose();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });

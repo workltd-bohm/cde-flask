@@ -10,6 +10,10 @@
 }
 
 /* $("#activity-container").toggleClass("d-none"); */
+.not-allowed
+{
+    cursor: not-allowed !important;
+}
 
 .activity-menu.opened
 {
@@ -94,7 +98,7 @@
     text-transform: uppercase;
     font-weight: bold;
     /*border-bottom: 2px solid darkgray;*/
-    border: 1px solid DarkGray;
+    border: 1px solid var(--text-primary);
 
     transition: all .25s ease;
 }
@@ -107,7 +111,7 @@
 
 .activity-collapsible.selected
 {
-    background-color: LightGray/*var(--yellow)*/;
+    background-color: var(--bg-secondary)/*var(--yellow)*/;
 }
 
 .activity-collapsible.selected 
@@ -396,12 +400,12 @@ textarea, input, button
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bg-secondary);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: gray;
+    background: var(--shadow);
 }
 
 /* Handle on hover */

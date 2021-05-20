@@ -256,6 +256,18 @@ class DBMongoAdapter:
         
         return projects
 
+    '''
+    Returns My Roles From The DB
+    That Means The Function Will
+    Return A List Of Projects As
+    Their ID !!! NOT OBJECTS !!! 
+    '''
+    def get_my_roles(self, user):
+        col_roles = self._db.Users.Roles
+        user_query = {"user_id": user['id']}
+        my_roles = col_roles.find_one(user_query, {"_id": 0})
+        return my_roles
+
     def get_my_shares(self, user):
         col_shared = self._db.Projects.Shared
         user_query = {'user_id': user['id']}
@@ -539,7 +551,6 @@ class DBMongoAdapter:
                     project.name = request_data['new_name']
                 file_updated = True
                 if not request_data['is_directory']:
-                    print('shouldnt be here\n\n\n')
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
                     file_json = col_file.find_one(file_query)
@@ -574,7 +585,7 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash        # user's trash info
         shared =        self._db.Projects.Shared
 
-        print('tetetet', ic_data)
+        print("My data >>>>>>>", ic_data)
         if ic_data['project_name'] != 'Shared':
             project_query = {'project_name': ic_data['project_name']}
         else:
@@ -585,12 +596,12 @@ class DBMongoAdapter:
         if project_json:
             # Trashing projects
             if ic_data['parent_id'] == 'root':
-                # Check user rights => if you want jsut owner, you can put != Role.OWNER.value, etc.
+                # Check user rights => if you want jsut owner, you can put > Role.OWNER.value, etc.
                 this_user = users.find_one({'user_id': ic_data['user_id']}, {'_id': 0})
                 if this_user:
                     for obj in this_user['projects']:
                         if obj['project_id'] == project_json['project_id']:
-                            if obj['role'] > Role.ADMIN.value:
+                            if obj['role'] > Role.OWNER.value:
                                 return msg.USER_NO_RIGHTS                        
                 else:
                     return msg.USER_NOT_FOUND
@@ -663,18 +674,15 @@ class DBMongoAdapter:
 
                 roles = self._db.Roles
                 owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
-                
-                print('\n\n\n\n owner id: \n\n\n', owner_id)
-                
+                                
                 # update user's shared projects
                 if len(list(shared.find())):
                     this_user_shared = shared.find()[0]
                     for key in this_user_shared.keys():
                         if key == '_id':
                             continue
-                        print(ic_data)
                         for i, obj in enumerate(this_user_shared[key]):
-                            if obj['project_id'] == ic_data['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                            if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
                                 del this_user_shared[key][i]
 
                     shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
@@ -1052,7 +1060,7 @@ class DBMongoAdapter:
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND
-        self._close_connection()
+        # self._close_connection()
         return add
 
     def create_post(self, request_json):
@@ -1869,15 +1877,16 @@ class DBMongoAdapter:
                         # break
                     for tag_obj in ic.tags:
                         if tag_obj.iso == "simple":
-                            continue
+                            continue                                    # skip simple tags
                         tag_tmp = tag_obj.tag.replace(".", "_")
                         if tag_tmp in tags_collection:                  # check if tag exists
                             if obj in tags_collection[tag_tmp]:
                                 tags_collection[tag_tmp].remove(obj)    # remove this ic from special tags (file number custom)
                         if tag.replace('_', '.') == tag_obj.tag:
-                            ic.tags.remove(tag_obj)             # remove all tags from this ic
+                            ic.tags.remove(tag_obj)                     # remove all tags from this ic
                         if tag_obj.tag not in value['elements']:
-                            ic.tags.remove(tag_obj)
+                            if tag_obj in ic.tags:
+                                ic.tags.remove(tag_obj)
 
         # write
         for key, tag in data['tags'].items(): # get key and value from request entries
@@ -1956,19 +1965,33 @@ class DBMongoAdapter:
 
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
-        no_rights = True
+        has_rights = False
         project_json = None
 
-        if u:
-            for x in u:
-                print('x', x)
-            project_json = self.get_project(request_data['project_name'], session_user)
-            for pr in u['projects']:
-                if project_json['project_id'] == pr['project_id']:
-                    if pr['role'] != Role.WATCHER.value:
-                        no_rights = False
-                    break
-        if no_rights:
+        if not u:
+            return msg.USER_NOT_FOUND
+
+        for x in u:
+            print('x', x)
+        project_json = self.get_project(request_data['project_name'], session_user)
+        if not project_json:
+            return msg.PROJECT_NOT_FOUND
+
+        # iterate through user's projects
+        for pr in u['projects']:
+            if project_json['project_id'] == pr['project_id']:
+                if pr['role'] <= Role.ADMIN.value:
+                    has_rights = True
+                break
+                    
+        # iterate through user's shared
+        ics, ic_shares = self.get_my_shares(session_user)
+        for ic in ic_shares:
+            if ic['ic_id'] == request_data['ic_id']:
+                if ic['role'] <= Role.ADMIN.value:
+                    has_rights = True
+
+        if not has_rights:
             return msg.USER_NO_RIGHTS
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
@@ -2035,18 +2058,27 @@ class DBMongoAdapter:
 
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
-        no_rights = True
+        has_rights = False
         project_json = None
-        if u:
-            for x in u:
-                print('x', x)
-            project_json = self.get_project(request_data['project_name'], session_user)
-            for pr in u['projects']:
-                if project_json['project_id'] == pr['project_id']:
-                    if pr['role'] != Role.WATCHER.value:
-                        no_rights = False
-                    break
-        if no_rights:
+        if not u:
+            return msg.USER_NOT_FOUND
+        
+        # iterate through user's projects
+        project_json = self.get_project(request_data['project_name'], session_user)
+        for pr in u['projects']:
+            if project_json['project_id'] == pr['project_id']:
+                if pr['role'] <= Role.ADMIN.value:
+                    has_rights = True
+                break
+
+        # iterate through user's shared
+        ics, ic_shares = self.get_my_shares(session_user)
+        for ic in ic_shares:
+            if ic['ic_id'] == request_data['ic_id']:
+                if ic['role'] <= Role.ADMIN.value:
+                    has_rights = True
+
+        if not has_rights:
             return msg.USER_NO_RIGHTS
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
@@ -2111,17 +2143,31 @@ class DBMongoAdapter:
         col_shared = self._db.Projects.Shared
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
-        no_rights = True
+
+        has_rights = False
         project_json = None
-        if u:
-            project_json = self.get_project(request_data['project_name'], session_user)
-            for pr in u['projects']:
-                if project_json['project_id'] == pr['project_id']:
-                    if pr['role'] != Role.WATCHER.value:
-                        no_rights = False
-                    break
-        if no_rights:
+
+        if not u:
+            return msg.USER_NOT_FOUND
+        
+        # iterate through user's projects
+        project_json = self.get_project(request_data['project_name'], session_user)
+        for pr in u['projects']:
+            if project_json['project_id'] == pr['project_id']:
+                if pr['role'] != Role.WATCHER.value:
+                    has_rights = True
+                break
+
+        # iterate through user's shared
+        ics, ic_shares = self.get_my_shares(session_user)
+        for ic in ic_shares:
+            if ic['ic_id'] == request_data['ic_id']:
+                if ic['role'] <= Role.ADMIN.value:
+                    has_rights = True
+
+        if not has_rights:
             return msg.USER_NO_RIGHTS
+            
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
         if project_json:

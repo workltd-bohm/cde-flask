@@ -355,11 +355,12 @@ function AddOverText(data, fix = false) {
 }
 
 function CreateUndoMenu(){
-    let undo_menu = document.createElement("div");
+    let undo_menu = document.createElement("a");
     undo_menu.className = "hover-menu-item px-3 py-2 mt-3";
+    undo_menu.id = "btn-undo";
     
-    let button = document.createElement("a");
-    button.className = "btn-undo";
+    // let button = document.createElement("a");
+    // button.className = "btn-undo";
 
     let icon = document.createElement("span");
     icon.className = "material-icons";
@@ -369,9 +370,9 @@ function CreateUndoMenu(){
     text.className = "me-1"
     text.textContent = "Undo";
 
-    button.appendChild(text);
-    button.appendChild(icon);
-    undo_menu.appendChild(button);
+    undo_menu.appendChild(text);
+    undo_menu.appendChild(icon);
+    // undo_menu.appendChild(button);
 
     undo_menu.addEventListener("click", function() {
         SubmitUndo(g_project.history);
@@ -381,11 +382,12 @@ function CreateUndoMenu(){
 }
 
 function CreateSortMenu() {
-    let sort_menu = document.createElement("div");
+    let sort_menu = document.createElement("a");
     sort_menu.className = "hover-menu-item px-3 py-2 mt-3";
+    sort_menu.id = "btn-sort";
 
-    let button = document.createElement("a");
-    button.className = "btn-sort";
+    // let button = document.createElement("a");
+    // button.className = "btn-sort";
 
     let icon = document.createElement("span");
     icon.className = "material-icons";
@@ -395,10 +397,10 @@ function CreateSortMenu() {
     text.className = "me-1"
     text.textContent = "Sort";
 
-    button.appendChild(text);
-    button.appendChild(icon);
+    sort_menu.appendChild(text);
+    sort_menu.appendChild(icon);
 
-    button.onclick = function(event) {
+    sort_menu.onclick = function(event) {
         $(event.target
                 .closest(".hover-menu-item")
                 .querySelector(".hover-dropdown"))
@@ -406,7 +408,7 @@ function CreateSortMenu() {
     }
 
     // add button to sort-menu
-    sort_menu.appendChild(button);
+    // sort_menu.appendChild(button);
 
     let dropdown = document.createElement("div");
     dropdown.className = "hover-dropdown d-none";
@@ -564,11 +566,11 @@ function SortByDate(data) {
 }
 
 function CreateSelectMenu() {
-    let select_menu = document.createElement("div");
+    let select_menu = document.createElement("a");
     select_menu.className = "hover-menu-item px-3 py-2 mt-3";
 
-    let button_select = document.createElement("a");
-    button_select.className = "btn-select-all";
+    // let button_select = document.createElement("a");
+    // button_select.className = "btn-select-all";
 
     let checkbox = document.createElement("input");
     checkbox.id = "select-all";
@@ -580,22 +582,31 @@ function CreateSelectMenu() {
     label.id = "select-all-label";
     label.htmlFor = "select-all";
     label.textContent = "Select all";
+    label.style.cursor = "pointer";
 
-    button_select.appendChild(label);
-    button_select.appendChild(checkbox);
+    // simulate label click
+    checkbox.onclick = function(){
+        label.click();
+    }
 
-    select_menu.appendChild(button_select);
+    select_menu.appendChild(label);
+    select_menu.appendChild(checkbox);
 
-    select_menu.onclick = function() {
+    // select_menu.appendChild(button_select);
+
+    select_menu.onclick = function(e) {
+        if (e.target !== label) {
+            label.click();
+        }
+
         let checked = document.getElementById("select-all").checked;
-        let lbl = document.getElementById("select-all-label");
 
         if (checked) {
             SelectAllPlanets(g_project.current_ic);
-            lbl.textContent = "Deselect";
+            label.textContent = "Deselect";
         } else {
             DeselectAllPlanets(g_project.current_ic);
-            lbl.textContent = "Select all";
+            label.textContent = "Select all";
         }
     }
 
@@ -788,12 +799,13 @@ function CreateContextMenu(event, data) {
 }
 
 function CreateViewMenu() {
-    let view_menu = document.createElement("div");
+    let view_menu = document.createElement("a");
     view_menu.className = "hover-menu-item px-3 py-2 mt-3";
+    view_menu.id = "btn-view";
 
     // button
-    let button = document.createElement("a");
-    button.className = "btn-view";
+    // let button = document.createElement("a");
+    // button.className = "btn-view";
 
     // button icon
     let icon = document.createElement("span");
@@ -805,10 +817,10 @@ function CreateViewMenu() {
     text.className = "me-1"
     text.textContent = "View";
 
-    button.appendChild(text);
-    button.appendChild(icon);
+    view_menu.appendChild(text);
+    view_menu.appendChild(icon);
 
-    button.onclick = function(event) {
+    view_menu.onclick = function(event) {
         // $(event.target
         //         .closest(".hover-menu-item")
         //         .querySelector(".hover-dropdown"))
@@ -817,7 +829,7 @@ function CreateViewMenu() {
     }
 
     // add button to view-menu
-    view_menu.appendChild(button);
+    // view_menu.appendChild(button);
 
     // create dropdown
     // let dropdown = document.createElement("div");
@@ -882,10 +894,12 @@ function CreateViewMenu() {
 function CreateNewMenu() {
     let button_create = document.createElement("a");
     button_create.className = "hover-menu-item px-3 py-2 mt-3";
+
     let span = document.createElement("span");
-    span.className = "material-icons";
-    span.textContent = "add_circle_outline";
-    button_create.innerHTML = "Create &#9654;";
+    span.innerHTML = "Create &#9654;";
+
+    button_create.appendChild(span);
+
     button_create.onclick = function (e) {
         type = GetContextType(g_project.current_ic);
 

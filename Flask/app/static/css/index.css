@@ -103,9 +103,9 @@ a:visited {
     /* Set a default minimum width */
     margin-left: -125px;
     /* Divide value of min-width by 2 */
-    background-color: #333;
+    background-color: var(--text-secondary);
     /* Black background color */
-    color: #fff;
+    color: var(--bg-secondary);
     /* White text color */
     text-align: center;
     /* Centered text */
@@ -370,12 +370,12 @@ body {
 
 .terminal-input {
     width: 100%;
-    border: 1px solid gray;
+    border: 1px solid var(--text-secondary);
     outline: none;
     font-family: monospace;
-    background-color: #fff; /*#ecd256;*/
+    background-color: var(--bg-pimary); /*#ecd256;*/
     color: var(--text-primary);
-    caret-color: black; /*var(--neon-blue);*/
+    caret-color: var(--text-primary); /*var(--neon-blue);*/
 }
 
 .terminal-x {

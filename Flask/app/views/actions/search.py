@@ -60,13 +60,14 @@ def get_filtered_files():
                     }
                 }
                 for file in filtered:
+                    print (">>>>>>>>>>", file)
                     path = file.path if file.is_directory else file.path + file.type
                     proj_obj = {
                         "ic_id": file.ic_id,
                         "parent_id": file.parent_id,
                         "name": file.name,
                         "parent": "Search",
-                        "history": [],
+                        "history": file.history,
                         "path": path,
                         "type": file.type,
                         "overlay_type": "search_target",
@@ -138,6 +139,7 @@ def search_by_tags():
                     file = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
                     # print(file)
                     if file:
+                        ic_json = file.to_json()
                         path = file.path if file.is_directory else file.path + file.type
                         ic_type = '' if file.is_directory else file.type
                         proj_obj = {
@@ -145,11 +147,12 @@ def search_by_tags():
                             "parent_id": file.parent_id,
                             "name": file.name,
                             "parent": "Search",
-                            "history": [],
+                            "history": ic_json['history'],
                             "path": path,
                             "type": ic_type,
                             "overlay_type": "search_target",
-                            "is_directory": False,
+                            "is_directory": file.is_directory,
+                            "color": file.color
                         }
                         response['root_ic']["sub_folders"].append(proj_obj)
                 # print(response)
@@ -209,12 +212,13 @@ def search_by_name():
                     # print(ic.name)
                     path = ic.path if ic.is_directory else ic.path + ic.type
                     ic_type = '' if ic.is_directory else ic.type
+                    ic_json = ic.to_json()
                     proj_obj = {
                         "ic_id": ic.ic_id,
                         "parent_id": ic.parent_id,
                         "name": ic.name,
                         "parent": "Search",
-                        "history": [],
+                        "history": ic_json['history'],
                         "path": path,
                         "type": ic_type,
                         "overlay_type": "search_target",

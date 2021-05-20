@@ -17,7 +17,7 @@ function onFocus() {
 }
 
 function onFocusOut() {
-    $("#terminal-input").val("");
+    // $("#terminal-input").val("");
 
 }
 
@@ -214,26 +214,32 @@ function createTempTag(name, color = 'white') {
     let t_inner;
     let tag;
     let all_tags = document.getElementsByClassName('tag-wrapper')[0];
+
     t_container = document.createElement("div");
-    t_container.className = "tag-container";
+    t_container.className = "tag-container mb-1 me-1";
+    t_container.style.backgroundColor = color;
+
     t_inner = document.createElement('div');
     t_inner.className = "tag";
+
     tag = document.createElement('i');
     tag.append(name);
 
-    all_tags.append(t_container);
-    t_container.append(t_inner);
     t_inner.append(tag);
-    t_inner.style.backgroundColor = color;
+    t_container.append(t_inner);
+    all_tags.append(t_container);
+
     tag.style.color = (color == 'white') ? 'black' : 'white';
 
-    let span_name = document.createElement("span");
-    span_name.className = 'tag-x';
-    span_name.onclick = function() {
-        deleteTempTag(t_container);
+    let span_x = document.createElement("span");
+    span_x.className = 'tag-x';
+    span_x.innerText = "✕";
+    span_x.style.backgroundColor = color;
+    span_x.style.color = FlipColor(color);
+    span_x.onclick = function() {
+        removeTag(name, color);
     };
-    span_name.innerText = "✕";
-    t_container.append(span_name);
+    t_container.append(span_x);
 
     // apply changes to container
     all_tags.append(t_container);
@@ -241,8 +247,6 @@ function createTempTag(name, color = 'white') {
 
 function deleteTempTag(elem) {
     let name = elem.getElementsByTagName("i")[0].innerText;
-    alert(name);
-    console.log(tagBuffer);
 
     for (let i = 0; i < tagBuffer.length; i++) {
         if (tagBuffer[i].tag == name) {
@@ -329,7 +333,7 @@ function addTag(terminal, buffer = false) {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
@@ -382,13 +386,14 @@ function refreshTags() {
         timeout: 10000,
         success: function(data) {
             data = JSON.parse(data);
+            console.log(data)
             $(".tag-container").remove();
             for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
-                if (!data[i].tag.includes(",") && data[i].key != 'project_code' && data[i].key != 'company_code') {
-                    createTempTag(data[i].tag.replace(/_/, "."), data[i].color);
+                if (data[i].iso === "simple") {
+                    createTempTag(data[i].tag, data[i].color);
                 }
             }
+            // LoadTag(data);
             LoadStop();
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -439,14 +444,13 @@ function removeTag(tagName, tagColor) {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });
 }
 
 function LoadTag(terminal) {
-    console.log(terminal);
     activityTagContainer = document.getElementsByClassName('tag-wrapper')[0];
     for (i = 1; i < terminal.length; i++) {
         if (terminal[i].startsWith('#')) {
@@ -471,11 +475,10 @@ function LoadTag(terminal) {
             }
 
             if (!alreadyInside) {
-
                 addTagInArrayIfMissing(tag, tagsArr);
 
                 tagContainer = document.createElement("div");
-                tagContainer.className = "tag-container mb-1";
+                tagContainer.className = "tag-container mb-1 me-1";
                 tagContainer.id = tag + ' ' + color;
                 tagContainer.style.backgroundColor = color;
 
@@ -564,8 +567,6 @@ function updateComplexTags() {
 
     console.log(SESSION);
 
-    // TODO only pass filled parameters
-
     $.ajax({
         url: "/update_iso_tags",
         type: 'POST',
@@ -581,7 +582,6 @@ function updateComplexTags() {
             MakeSnackbar(data);
             LoadStop();
             refreshTags();
-            // TODO update current tags (append complex tags to normal tags)
             checkISOCompliant();
         },
         error: function($jqXHR, textStatus, errorThrown) {
@@ -589,7 +589,7 @@ function updateComplexTags() {
             MakeSnackbar($jqXHR.responseText);
             LoadStop();
             if ($jqXHR.status == 401) {
-                location.reload();
+                // location.reload();
             }
         }
     });

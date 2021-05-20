@@ -34,14 +34,14 @@ function PreviewOpen(run = null, data = null, file = null, open = false) {
     if (run) run(form, data, file, open);
 }
 
-function PreviewClose() {
+function ClosePreview() {
     LoadStopPreview();
     $("div.preview").hide();
     
     CloseActivity();
     $(".activity-menu").toggleClass("d-none", g_project.current_ic.overlay_type === "search");
 
-    if (g_project.current_ic.overlay_type !== "search")
+    if (g_project.current_ic.values.back.overlay_type !== "search")
     {
         WrapOpenFile(g_project.current_ic.values.back, false);
     } 

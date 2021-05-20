@@ -94,6 +94,11 @@ body{
 .inputbox{
   margin-top:30px;
 }
+
+.inputbox input {
+    padding-left: 1em;
+}
+
 .login input,
 .signup input {
   display: block;

@@ -18,9 +18,22 @@ def set_color_multi():
         project_name = session.get("project")["name"]
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
+            user = session.get('user')
             if project_name == 'Shared':
-                result = db.get_project_from_shared(db_adapter, request_data[0], session['user'])
+                result = db.get_project_from_shared(db_adapter, request_data[0], user)
                 project_name = result['project_name']
+
+            # Check Roles
+            result = db.get_project(db_adapter, project_name, user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+            
             result = ''
             for req in request_data:
                 color_change = {
@@ -29,6 +42,7 @@ def set_color_multi():
                     "color": req["color"],
                 }
                 result = db.change_color(db_adapter, color_change)
+            db.close_connection(db_adapter)
             if result:
                 resp = Response()
                 resp.status_code = result["code"]
@@ -99,14 +113,26 @@ def move_multi():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data_array))
         #print("array", request_data_array)
         if db.connect(db_adapter):
+            user = session.get('user')
+            project_name = session.get("project")["name"]
+
+            # Check Roles
+            result = db.get_project(db_adapter, project_name, user)
+            my_roles = db.get_my_roles(db_adapter, user)
+            for project in my_roles['projects']:
+                if project['project_id'] == result['project_id']:       # find project matching this one
+                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             if "targets" and "to_copy" in request_data_array:
-                user = session['user']
-                project_name = session.get("project")["name"]
                 if project_name == 'Shared':
                     request_json = {}
                     request_json['ic_id'] = request_data_array['from_ic_id']
                     request_json['parent_id'] = request_data_array['from_parent_id']
-                    result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, session['user'])
+                    result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, user)
                     project_name = result['project_name']
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)

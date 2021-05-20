@@ -28,17 +28,16 @@
 }
 
 .profile-pic:hover {
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(126, 124, 124, 0.5);
     z-index: 10000;
-    color: #fff;
+    color: var(--text-light);
     transition: all .3s ease;
     text-decoration: none;
 }
 
 .profile-pic span {
     display: inline-block;
-    padding-top: 4.5em;
-    padding-bottom: 4.5em;
+    transform: translateY(-50%);
 }
 
 .profile-image > input[type="file"] {

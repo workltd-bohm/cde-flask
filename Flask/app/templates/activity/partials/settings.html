@@ -6,7 +6,7 @@
                 <div class="form__group field">
                     ISO 19650
                     <label class="switch"> 
-                        <input id="iso19650-checkbox" type="checkbox" class="switch-input" {% if is_iso19650 %} checked {% endif %} {% if is_owner == 'False' %} onclick="return false;" {% endif %}>
+                        <input id="iso19650-checkbox" type="checkbox" class="switch-input" {% if is_iso19650 %} checked {% endif %} {% if can_configure_project == 'False' %} onclick="return false;" {% endif %}>
                         <span class="switch-label" data-on="On" data-off="Off"></span>
                         <span class="switch-handle"></span>
                     </label>
@@ -17,39 +17,39 @@
                     <label for="project-name-activity" class="form__label">Project name</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project description" name="project-description-activity" id="project-description-activity" value="{{ project['description'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project description" name="project-description-activity" id="project-description-activity" value="{{ project['description'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-description-activity" class="form__label">Project description</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project code" name="project-code-activity" id="project-code-activity" value="{{ project['code'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project code" name="project-code-activity" id="project-code-activity" value="{{ project['code'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-code-activity" class="form__label">Project code</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project number" name="project-number-activity" id="project-number-activity" value="{{ project['number'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project number" name="project-number-activity" id="project-number-activity" value="{{ project['number'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-number-activity" class="form__label">Project number</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project status" name="project-status-activity" id="project-status-activity" value="{{ project['status'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project status" name="project-status-activity" id="project-status-activity" value="{{ project['status'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-status-activity" class="form__label">Project status</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Notes" name="project-notes-activity" id="project-notes-activity" value="{{ project['notes'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Notes" name="project-notes-activity" id="project-notes-activity" value="{{ project['notes'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-notes-activity" class="form__label">Notes</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project ref" name="project-ref-activity" id="project-ref-activity" value="{{ project['ref'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project ref" name="project-ref-activity" id="project-ref-activity" value="{{ project['ref'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-ref-activity" class="form__label">Project ref</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Originator" name="originator-activity" id="originator-activity" value="{{ project['originator'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Originator" name="originator-activity" id="originator-activity" value="{{ project['originator'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="originator-activity" class="form__label">Originator</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Disclaimer" name="disclaimer-activity" id="disclaimer-activity" value="{{ project['disclaimer'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Disclaimer" name="disclaimer-activity" id="disclaimer-activity" value="{{ project['disclaimer'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="disclaimer-activity" class="form__label">Disclaimer</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Project custom" name="project-custom-activity" id="project-custom-activity" value="{{ project['custom'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Project custom" name="project-custom-activity" id="project-custom-activity" value="{{ project['custom'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="project-custom-activity" class="form__label">Project custom</label>
                 </div>
             </div>
@@ -57,31 +57,31 @@
             <h6 class="activity-collapsible">Site Details</h6>
             <div class="activity-collapsible-body my-3 p-2" id="site-details">
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site name" name="site-name-activity" id="site-name-activity" value="{{ project['site']['name'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site name" name="site-name-activity" id="site-name-activity" value="{{ project['site']['name'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-name-activity" class="form__label">Site name</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site description" name="site-description-activity" id="site-description-activity" value="{{ project['site']['description'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site description" name="site-description-activity" id="site-description-activity" value="{{ project['site']['description'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-description-activity" class="form__label">Site description</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site full address" name="site-full-address-activity" id="site-full-address-activity" value="{{ project['site']['address'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site full address" name="site-full-address-activity" id="site-full-address-activity" value="{{ project['site']['address'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-full-address-activity" class="form__label">Site full address</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site gross perimeter" name="site-gross-perimeter-activity" id="site-gross-perimeter-activity" value="{{ project['site']['gross_perimeter'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site gross perimeter" name="site-gross-perimeter-activity" id="site-gross-perimeter-activity" value="{{ project['site']['gross_perimeter'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-gross-perimeter-activity" class="form__label">Site gross perimeter</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site gross area" name="site-gross-area-activity" id="site-gross-area-activity" value="{{ project['site']['gross_area'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site gross area" name="site-gross-area-activity" id="site-gross-area-activity" value="{{ project['site']['gross_area'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-gross-area-activity" class="form__label">Site gross area</label>
                 </div>
                 <div class="form__group field">
-                  <input type="input" class="form__field" placeholder="Site coordinates" name="site-coordinates-activity" id="site-coordinates-activity" value="{{ project['site']['coordinates'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                  <input type="input" class="form__field" placeholder="Site coordinates" name="site-coordinates-activity" id="site-coordinates-activity" value="{{ project['site']['coordinates'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                   <label for="site-coordinates-activity" class="form__label">Site coordinates</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Site custom" name="site-custom-activity" id="site-custom-activity" value="{{ project['site']['custom'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Site custom" name="site-custom-activity" id="site-custom-activity" value="{{ project['site']['custom'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="site-custom-activity" class="form__label">Site custom</label>
                 </div>
 
@@ -90,21 +90,21 @@
             <h6 class="activity-collapsible">Building Details</h6>
             <div class="activity-collapsible-body my-3 p-2" id="building-details">
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Building name" name="building-name-activity" id="building-name-activity" value="{{ project['building']['name'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Building name" name="building-name-activity" id="building-name-activity" value="{{ project['building']['name'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="building-name-activity" class="form__label">Building name</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Building description" name="building-description-activity" id="building-description-activity" value="{{ project['building']['description'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Building description" name="building-description-activity" id="building-description-activity" value="{{ project['building']['description'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="building-description-activity" class="form__label">Building description</label>
                 </div>
                 <div class="form__group field">
-                    <input type="input" class="form__field" placeholder="Building custom" name="building-custom-activity" id="building-custom-activity" value="{{ project['building']['custom'] }}" {% if is_owner == 'False' %} readonly {% endif %} />
+                    <input type="input" class="form__field" placeholder="Building custom" name="building-custom-activity" id="building-custom-activity" value="{{ project['building']['custom'] }}" {% if can_configure_project == 'False' %} readonly {% endif %} />
                     <label for="building-custom-activity" class="form__label">Building custom</label>
                 </div>
             </div>
         </div>
         
-        {% if is_owner == 'True' %}
+        {% if can_configure_project == 'True' %}
         <div class="form-group mx-auto my-3 w-100">
             <button class="btn py-2 w-100 btn-update" type="button" onclick="ProjectConfigSubmit();">
                 Update
