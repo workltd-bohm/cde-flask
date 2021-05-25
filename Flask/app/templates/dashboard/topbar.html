@@ -1,6 +1,6 @@
-<div class="topbar">
-    <div class="align-self-center align-middle position-relative">
-        <div id="terminal-main" class="terminal d-inline-block" onfocusout="onFocusOut();">
+<div class="topbar d-flex">
+    <div class="align-self-center align-middle d-flex">
+        <div id="terminal-main" class="terminal d-inline-flex" onfocusout="onFocusOut();">
             <input type="text" class="terminal-input ps-2" id="terminal-input" onkeypress="terminalListen(event)" 
                 onfocus="onFocus();" placeholder="TAG, SEARCH, CREATE...">
                 
@@ -8,12 +8,12 @@
             title="Clear Terminal" style="display: none;" onclick="deleteTerminalInput()">✕</span>
         </div>
 
-        <div class="info-path ms-2 d-inline-block align-middle">
+        <div class="info-path ms-2 d-inline-flex">
             <span class="info-path-text"></span>
         </div>
 
-        <div class="align-self-end me-5 d-inline-block position-absolute end-0 mt-1">
-            <span class="material-icons me-3 align-middle" onclick="ToggleTheme();">lightbulb</span>
+        <div class="ms-auto d-inline-flex mt-1 me-5">
+            <span class="material-icons align-middle" onclick="ToggleTheme();">lightbulb</span>
         </div>
     </div>
 
