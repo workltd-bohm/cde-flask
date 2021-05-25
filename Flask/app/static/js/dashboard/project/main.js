@@ -1,5 +1,4 @@
 // -------------------------------------------------------
-
 function CreateSpace(data) {
     // cache
     g_root.x = g_project.width_h;
@@ -990,7 +989,8 @@ function CreateSlider() {
 
     g_root.looper.this = g_root.looper.append("g").attr("class", "looper")
 
-    g_root.looper.this.attr("transform", "translate(0, " + (g_project.height_h - SCROLL_LOOP_X) + ")");
+    let looperY = -g_project.height_h / 2;
+    g_root.looper.this.attr("transform", "translate(0, " + (looperY) + ")");
 
     g_root.looper.box = g_root.looper.this.append("rect")
         .attr("class", "slider rect")

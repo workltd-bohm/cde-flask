@@ -84,6 +84,26 @@
     background-color: var(--bg-primary);
 }
 
+.info-path{
+    width: 50%;
+    max-width: 50%;
+    white-space: nowrap;
+}
+
+.info-path-text
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-path-text > * {
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 25%;
+}
+
 .path-link
 {
     font-weight: bold;

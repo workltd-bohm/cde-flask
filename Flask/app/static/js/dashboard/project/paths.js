@@ -260,6 +260,7 @@ function CreatePath() {
 
                 if (add === g_project.current_ic) {
                     span.classList.remove("path-link");
+                    span.classList.add("path-name")
                     continue;
                 }
 
@@ -276,6 +277,52 @@ function CreatePath() {
                 slash.className = "mx-2";
                 slash.textContent = "/";
                 $(".info-path-text").append(slash);
+            }
+
+            // Clamping Links To Fit
+            if ($(".info-path-text").width() > $(".info-path").width()) {
+                // Display First (Projects) , Last, Second, Second Last, etc.
+                let n_items = $(".path-link").length;
+                let handlerFunction;
+                let removedAtLeastOne = false;
+                for (let i = 2; i < n_items-1; i++)
+                {
+                    if (removedAtLeastOne) {console.log(i)}
+                    // Exit If Removal Is Not Needed
+                    if ($(".info-path-text").width() < $(".info-path").width()) {
+                        break;
+                    }
+
+                    // Change The Text Of Last Item To ...
+                    // So That The User Can Click On It &
+                    // Go To The "Middle" Folder
+                    // if (!removedAtLeastOne) {
+                    //     document.getElementsByClassName("path-link")[i].textContent = "...";
+                    //     i = 1;    // Loop Will Increment After This
+                    //     n_items = $(".path-link").length;
+                    //     continue;
+                    // }
+
+                    // Remove Link
+                    $(".path-link")[i].remove();
+                    $("span.mx-2")[i].remove();
+                    removedAtLeastOne = true;
+
+                    // Reset/Update The Loop
+                    i = 1;    // Loop Will Increment After This
+                    n_items = $(".path-link").length;
+                }
+                
+                // Add ellipsis to indicate there are things in between
+                if (removedAtLeastOne) {
+                    let ellipsis = document.createElement("span");
+                    ellipsis.textContent = "...";
+                    $(ellipsis).click(handlerFunction);
+                    let slash = document.createElement("span");
+                    slash.className = "mx-2";
+                    slash.textContent = "/";
+                    $(".info-path span.mx-2")[1].after(ellipsis, slash);
+                }
             }
         }
     }
