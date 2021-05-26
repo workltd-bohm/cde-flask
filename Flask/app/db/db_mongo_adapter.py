@@ -1964,7 +1964,6 @@ class DBMongoAdapter:
 
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
-        has_rights = False
         project_json = None
 
         if not u:
@@ -1976,22 +1975,6 @@ class DBMongoAdapter:
         if not project_json:
             return msg.PROJECT_NOT_FOUND
 
-        # iterate through user's projects
-        for pr in u['projects']:
-            if project_json['project_id'] == pr['project_id']:
-                if pr['role'] <= Role.ADMIN.value:
-                    has_rights = True
-                break
-                    
-        # iterate through user's shared
-        ics, ic_shares = self.get_my_shares(session_user)
-        for ic in ic_shares:
-            if ic['ic_id'] == request_data['ic_id']:
-                if ic['role'] <= Role.ADMIN.value:
-                    has_rights = True
-
-        if not has_rights:
-            return msg.USER_NO_RIGHTS
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -2143,29 +2126,10 @@ class DBMongoAdapter:
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
 
-        has_rights = False
         project_json = None
 
         if not u:
             return msg.USER_NOT_FOUND
-        
-        # iterate through user's projects
-        project_json = self.get_project(request_data['project_name'], session_user)
-        for pr in u['projects']:
-            if project_json['project_id'] == pr['project_id']:
-                if pr['role'] != Role.WATCHER.value:
-                    has_rights = True
-                break
-
-        # iterate through user's shared
-        ics, ic_shares = self.get_my_shares(session_user)
-        for ic in ic_shares:
-            if ic['ic_id'] == request_data['ic_id']:
-                if ic['role'] <= Role.ADMIN.value:
-                    has_rights = True
-
-        if not has_rights:
-            return msg.USER_NO_RIGHTS
             
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})

@@ -115,13 +115,20 @@ def upload_existing_project():
 
     if 'user' in session:
         user = session['user']
+    else:
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
 
     if main.IsLogin():
         if db.connect(db_adapter):
             path = request.form['path']
             is_dir = request.form['is_dir']
+            
             project = db.get_project(db_adapter, path.split('/')[0], user)
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+
             if not project:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
                 resp = Response()
@@ -130,9 +137,16 @@ def upload_existing_project():
                 return resp
             else:
                 project = Project.json_to_obj(project)
-                us = {'user_id': session['user']['id'],
-                 'username': session['user']['username'],
-                 'picture': session['user']['picture']}
+                us = {
+                    'user_id': session['user']['id'],
+                    'username': session['user']['username'],
+                    'picture': session['user']['picture']
+                }
+
+                # project_object = Project.json_to_obj(project)
+                # this_ic = project_object.find_ic_by_id(request_data, request_data['ic_id'], project_object.root_ic)
+                
+                # ToDo Give Appropriate Role When Developer or Admin is Uploading Files
                 access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
                 if is_dir == 'false':
                     file = request.files['file'].read()
@@ -470,12 +484,39 @@ def set_color():
                             resp.data = msg.USER_NO_RIGHTS['message']
                             return resp
 
-            # Check RolesF
+            # Check Roles
             result = db.get_project(db_adapter, project_name, user)
+            
+            if not result:  # Failsafe
+                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+                resp = Response()
+                resp.status_code = msg.DB_FAILURE['code']
+                resp.data = str(msg.DB_FAILURE['message'])
+                return resp
+
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
                     if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
+            this_project = Project.json_to_obj(result)
+
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] > Role.DEVELOPER.value:
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
@@ -637,15 +678,52 @@ def add_tag():
         if db.connect(db_adapter):
             # Check Roles
             user = session.get('user')
+            
+            # Get Project
             result = db.get_project(db_adapter, request_data['project_name'], user)
+            
+            # Failsafe Get Project
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            # Assume No Access
+            user_has_access = False
+            
+            # Search For The Access On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
                     if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                        user_has_access = True
+
+            # Get Specific IC in the Project
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            # FailSafe Get This IC
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            # Search For The Access On IC level
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                        user_has_access = True
+
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:
@@ -676,15 +754,52 @@ def remove_tag():
         if db.connect(db_adapter):
             # Check Roles
             user = session.get('user')
+            
+            # Get Project
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            # Failsafe Get Project
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            # Assume No Access
+            user_has_access = False
+
+            # Access On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        user_has_access = True
+
+            # Convert Project To Object To Find specific IC
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            # Failsafe This IC
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            # Check Access On Specific IC level
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                        user_has_access = True
+
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             result = db.remove_tag(db_adapter, request_data, request_data['tag'])
             if result:
@@ -753,6 +868,7 @@ def add_access():
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
             user = session.get('user')
             
+            # prevent acces to self
             if request_data['user_name'] == user['username']:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
                 resp = Response()
@@ -762,14 +878,45 @@ def add_access():
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:  # failsafe
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
+
+            # check user's projects shared
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # If user doesn't get access - deny access add
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             # If Project Root Is Shared - Share Whole Project
             if request_data['parent_id'] == 'root':
@@ -807,6 +954,8 @@ def update_access():
         if db.connect(db_adapter):
             user = session.get('user')
 
+            # TODO find project name for SHARED
+
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
             if request_data['user']['username'] == user['username']:
@@ -818,14 +967,45 @@ def update_access():
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:  # failsafe
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
+
+            # check user's projects shared
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Check Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # If user doesn't get access - deny access add
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             if request_data['parent_id'] == 'root':
                 result = db.update_share_project(db_adapter, request_data, user)
@@ -859,17 +1039,49 @@ def remove_access():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            # CHECK IF SHARED TODO
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+            
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # Deny Access Update If No Access
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             if request_data['parent_id'] == 'root':
                 # result = db.remove_access(db_adapter, request_data, user)

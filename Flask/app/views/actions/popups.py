@@ -288,6 +288,16 @@ def get_new_folder():
                         resp.data = msg.USER_NO_RIGHTS['message']
                         return resp
 
+            # check roles for shared projects
+            ics, my_shared_ics = db.get_my_shares(db_adapter, user)
+            for my_share in my_shared_ics:
+                if my_share['ic_id'] == request_data['ic_id']:
+                    if my_share['role'] > Role.DEVELOPER.value:
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
             if result:
                 response = {
                     'html': render_template("popup/new_folder_popup.html",
@@ -343,6 +353,16 @@ def get_new_file():
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
                     if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
+            # Check Roles For Shared Folders
+            ics, my_shared_ics = db.get_my_shares(db_adapter, user)
+            for my_ic in my_shared_ics:
+                if my_ic['ic_id'] == request_data['ic_id']:
+                    if my_ic['role'] > Role.DEVELOPER.value:
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
@@ -486,7 +506,16 @@ def get_rename_ic():
                     project_name = result['project_name']
                 else:
                     project_name = session.get("project")["name"]
+
             result = db.get_project(db_adapter, project_name, user)
+            this_project = Project.json_to_obj(result)
+
+            if not result:
+                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+                return resp
 
             # Check Roles
             my_roles = db.get_my_roles(db_adapter, user)
@@ -498,43 +527,52 @@ def get_rename_ic():
                         resp.data = msg.USER_NO_RIGHTS['message']
                         return resp
 
-            if result:
-                if request_data['parent_path'] == 'Projects':
-                    parent_path = result['root_ic']['parent']
-                    parent_id = result['root_ic']['parent_id']
-                    ic_id = result['root_ic']['ic_id']
-                    is_directory = result['root_ic']['is_directory']
-                else:
-                    parent_path=request_data["parent_path"]
-                    parent_id=request_data["parent_id"]
-                    ic_id=request_data["ic_id"]
-                    project_name=project_name
-                    is_directory=True if request_data["is_directory"] else False
-                    # print(parent_id)
-                filter_file = gtr.get_input_file_fixed()
-                response = {
-                    'html': render_template("popup/rename_ic_popup.html",
-                                            parent_path=parent_path,
-                                            parent_id=parent_id,
-                                            ic_id=ic_id,
-                                            project_name=project_name,
-                                            old_name=request_data["old_name"],
-                                            is_directory=is_directory,
-                                            inputs=filter_file
-                                            ),
-                    'data': []
-                }
-                resp = Response()
-                resp.status_code = msg.DEFAULT_OK['code']
-                resp.data = json.dumps(response)
-                return resp
-            else:
-                logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
-                resp = Response()
-                resp.status_code = msg.PROJECT_NOT_FOUND['code']
-                resp.data = str(msg.PROJECT_NOT_FOUND['message'])
-                return resp
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] > Role.DEVELOPER.value:
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+
+            if request_data['parent_path'] == 'Projects':
+                parent_path = result['root_ic']['parent']
+                parent_id = result['root_ic']['parent_id']
+                ic_id = result['root_ic']['ic_id']
+                is_directory = result['root_ic']['is_directory']
+            else:
+                parent_path=request_data["parent_path"]
+                parent_id=request_data["parent_id"]
+                ic_id=request_data["ic_id"]
+                project_name=project_name
+                is_directory=True if request_data["is_directory"] else False
+                # print(parent_id)
+            filter_file = gtr.get_input_file_fixed()
+            response = {
+                'html': render_template("popup/rename_ic_popup.html",
+                                        parent_path=parent_path,
+                                        parent_id=parent_id,
+                                        ic_id=ic_id,
+                                        project_name=project_name,
+                                        old_name=request_data["old_name"],
+                                        is_directory=is_directory,
+                                        inputs=filter_file
+                                        ),
+                'data': []
+            }
+            resp = Response()
+            resp.status_code = msg.DEFAULT_OK['code']
+            resp.data = json.dumps(response)
+            return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
@@ -553,6 +591,7 @@ def get_trash_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        # Trashing Projects
         if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
             project_name = request_data['delete_name']
             
@@ -567,7 +606,8 @@ def get_trash_ic():
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']
                         return resp
-        else:
+        # Trashing Files/Folders                
+        else:  
             project_name = session.get("project")["name"]
         is_multi = True if "is_multi" in request_data else False
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
@@ -579,13 +619,39 @@ def get_trash_ic():
                 result = db.get_project_from_shared(db_adapter, request_data, user)
                 project_name = result['project_name']
 
+            # Result = PROJECT
             result = db.get_project(db_adapter, project_name, user)
+            this_project = Project.json_to_obj(result) 
+
+            # Failsafe
+            if not result:
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
 
             # Check Roles
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
                     if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        resp = Response()
+                        resp.status_code = msg.USER_NO_RIGHTS['code']
+                        resp.data = msg.USER_NO_RIGHTS['message']
+                        return resp
+            
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] > Role.DEVELOPER.value:
                         resp = Response()
                         resp.status_code = msg.USER_NO_RIGHTS['code']
                         resp.data = msg.USER_NO_RIGHTS['message']

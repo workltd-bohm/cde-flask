@@ -482,7 +482,6 @@ def get_filter_activity():
                     c['user']['username'] = user['username']
 
                 for d in details:
-                    print(">>>>ffas3>>>>", d)
                     m, user = db.get_user(db_adapter, {'id': d['user']['user_id']})
                     d['user']['picture'] = user['picture']
 

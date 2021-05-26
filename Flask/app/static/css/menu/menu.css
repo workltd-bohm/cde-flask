@@ -92,6 +92,7 @@
 
 .info-path-text
 {
+    max-width: 125%;
 }
 
 .info-path-text > * {

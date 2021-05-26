@@ -439,13 +439,60 @@ def delete_file_annotation():
 
 def create_dir_process(request_data):
     logger.log(LOG_LEVEL, "Create Dir Process")
-    u = {'user_id': session['user']['id'], 'username': session['user']['username']}
-    us = {'user_id': session['user']['id'],
-                 'username': session['user']['username'],
-                 'picture': session['user']['picture']}
+
+    user = session.get('user')
+    user_details = {'user_id': user['id'], 'username': user['username']}
+    user_access = {
+        'user_id': user['id'],
+        'username': user['username'],
+        'picture': user['picture']
+    }
+
+    # Check If User Is Developer On A project - Just inherit the role
+    # Owner of the project becomes the owner of the file
+
+    # get the project
+    project_json = db.get_project(db_adapter, request_data['project_name'], user)
+    
+    if not project_json: # Failsafe
+        logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND))
+        resp = Response()
+        resp.status_code = msg.PROJECT_NOT_FOUND['code']
+        resp.data = str(msg.PROJECT_NOT_FOUND['message'])
+        return resp
+
+    # Project as OBJECT
+    project = Project.json_to_obj(project_json)
+
+    # find the ic from which user is making action
+    this_ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic).to_json()
+
+    if not this_ic: #failsafe
+        logger.log(LOG_LEVEL, str(msg.IC_PATH_NOT_FOUND))
+        resp = Response()
+        resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+        resp.data = str(msg.IC_PATH_NOT_FOUND['message'])
+        return resp
+
+    # get the role that he has in this IC
+    my_role = None
+    user_access_owner = None
+    for user_with_access in this_ic['access']:
+        if user_with_access['role'] == Role.OWNER.value: # get owner
+            user_access_owner = user_with_access['user']
+        if user_with_access['user']['user_id'] == user['id']: # get role of this user
+            my_role = user_with_access['role']
+
+    # generate new ic id
     ic_id = str(uuid.uuid1())
-    access = Access(us, request_data['parent_id'], ic_id, Role.OWNER.value, 'indefinitely')
-    details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
+    # create access array
+    access = [Access(user_access_owner, request_data['parent_id'], ic_id, Role.OWNER.value, 'indefinitely')]
+    
+    # if user performing action isn't owner add him to access inheriting a role
+    if user_access_owner != user_access:
+        access.append(Access(user_access, request_data['parent_id'], ic_id, my_role, 'indefinitely'))
+
+    details = Details(user_details, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), request_data['new_name'])
     
     if 'color' in request_data:
         color = request_data['color']
@@ -462,7 +509,7 @@ def create_dir_process(request_data):
                         [],
                         [],
                         [],
-                        [access])
+                        access)
     if db.connect(db_adapter):
         result, ic = db.create_folder(db_adapter, request_data['project_name'], folder)
         if result:
