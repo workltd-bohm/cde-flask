@@ -287,7 +287,6 @@ function CreatePath() {
                 let removedAtLeastOne = false;
                 for (let i = 2; i < n_items-1; i++)
                 {
-                    if (removedAtLeastOne) {console.log(i)}
                     // Exit If Removal Is Not Needed
                     if ($(".info-path-text").width() < $(".info-path").width()) {
                         break;
