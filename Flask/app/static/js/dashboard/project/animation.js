@@ -112,8 +112,7 @@ function SunFadeout(data) {
 
 function GetWarp(data) {
     if (!g_project.warp) {
-        //console.log(g_project.data)
-        //console.log(g_project.skip, g_project.search,g_project.paths)
+        // At animation end
         if (!g_project.search)
             switch (g_project.data.overlay_type) {
                 case "search":
@@ -127,12 +126,6 @@ function GetWarp(data) {
             if (data) g_project.skip = g_project.search;
             else g_project.search = g_project.skip;
             g_project.data = g_project.search;
-            console.log("check")
-
-        }
-        if (g_project.overlay) {
-            g_project.overlay.remove();
-            g_project.overlay = false;
         }
         
         // remove star dom

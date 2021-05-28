@@ -590,7 +590,7 @@ function RecursiveFileSearch(back, data) {
     return found;
 }
 
-function ProjectPosiotionSet(data) {
+function ProjectPositionSet(data) {
     var found = false;
     if (SESSION["position"]) {
         found = RecursiveFileSearch(data, data);
@@ -638,7 +638,7 @@ function CreateDashboard(data, project_position = null) {
 
     CreateDisplayName();
 
-    ProjectPosiotionSet(g_project.data);
+    ProjectPositionSet(g_project.data);
 
     // Polls x times, per refresh rate of monitor
     d3.timer(function(elapsed) {
@@ -665,7 +665,7 @@ function CreateHoverMenu()
     CreateViewMenu();
 
     // Prepended - Each Comes Before
-    if (g_view === VIEW_GR) CreateNewMenu();
+    if (g_view === VIEW_GR && g_project.current_ic.overlay_type !== "trash") CreateNewMenu();
     if (!g_project.current_ic.is_directory && g_view === VIEW_GR) CreatePreviewMenu();
 
     // Action Menu For Grid (if selected)
@@ -786,7 +786,7 @@ function CreateGrid(data) {
     $("#PROJECT-GRID").empty().append(grid);
 
     // Process Grid Items
-    g_project.current_ic.sub_folders.forEach(
+    data.sub_folders.forEach(
         (d) => {
             // Create A Card
             let card_holder = document.createElement("div");
@@ -815,8 +815,28 @@ function CreateGrid(data) {
                     $(this).addClass("selected");
                     SelectPlanet(d);
                 } else {
-                    // Load New Ic / Folder / Project / Open File
-                    data.overlay_type === "project_root" ? WrapGetProject(d) : d.is_directory ? CreateWorkspace(d) : WrapOpenFile(d);
+                    switch(data.overlay_type){
+                        case "user":
+                            UserActivity(d);
+                            break;
+                        case "search":
+                        case "ic":
+                            d.is_directory ? CreateWorkspace(d) : WrapOpenFile(d);
+                            break;
+                        case "project_root":
+                            backButtonFlag = false;
+                            WrapGetProject(d);
+                            break;
+                        case "market":
+                            WrapGetMarket(d);
+                            break;
+                        case "search_target":
+                            SearchOpen(d);
+                            break; // TODO 
+                        default:
+                            CreateWorkspace(d);
+                            break;
+                    }
                 }
             }
 
@@ -924,17 +944,19 @@ function CreateGrid(data) {
             }
             grid.appendChild(preview_button);
         } else {
-        // Display "Empty" Text
+            // Display "Empty" Text
             let empty_text = "";
             switch(data.overlay_type) {
                 case "project_root":
                     empty_text = "You don't have any projects.";
                     break;
-                case "ic":
-                    empty_text = "Nothing to show.";
-                    break;
                 case "trash":
                     empty_text = "Trash is empty.";
+                    break;
+                case "ic":
+                case "search":
+                default:
+                    empty_text = "Nothing to show.";
                     break;
             }
 
@@ -952,7 +974,7 @@ function CreateGrid(data) {
         button_create.className = "grid-link";
         button_create.innerHTML = "Create&#9656;";
         button_create.onclick = function(event) {
-            type = GetContextType(g_project.current_ic);
+            type = GetContextType(data);
 
             // Make A Copy Of OverFile Object, To Remove First Option
             if (type === g_OverFile) {
@@ -963,7 +985,12 @@ function CreateGrid(data) {
             CreateMenu(event, data, type);
         }
         
-        grid.appendChild(button_create);
+        // Add Button Create After "Nothing to show"
+        if ((data.overlay_type !== "search") 
+        && (data.overlay_type !== "trash"))
+        {
+            grid.appendChild(button_create);
+        }
     }
 
     // Persist Move Data
@@ -1050,5 +1077,6 @@ function GetRadius(data)
 function GetDate(data)
 {
     // Returns date in format ['dd.mm.yyyy', 'hh:mm:ss']
+    if (!data.history.length) { return ""; }
     return data.history[0].date.split("-");
 }

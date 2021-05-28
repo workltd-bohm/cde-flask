@@ -872,7 +872,6 @@ function searchByTag(currValArray) {
 function searchByName(currValArray) {
     //    tempArr = currValArray;
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('searchByName');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -919,6 +918,7 @@ function arraysEqual(a, b) {
 }
 
 function deleteTerminalInput() {
+    $("#terminal-input").val("");
     location.reload();
 }
 

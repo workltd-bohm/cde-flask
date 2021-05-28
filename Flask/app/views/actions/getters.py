@@ -85,6 +85,7 @@ def get_project():
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')
+        
         if db.connect(db_adapter):
             if project_name == 'Shared':
                 result, ic_shares = db.get_my_shares(db_adapter, user)

@@ -465,6 +465,7 @@ function GetProject(position = null) {
                 if (data.session) {
                     SESSION = data.session;
                 }
+                console.log(data.json.root_ic);
                 CreateDashboard(data.json.root_ic, data.project);
                 //OpenFilterActivity(); 
                 // WrapOpenFile(data);  inside ..
