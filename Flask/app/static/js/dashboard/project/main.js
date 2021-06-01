@@ -659,17 +659,35 @@ function CreateHoverMenu()
     $(".hover-menu").empty();
 
     // Appended - Each Comes After
+    // Undo menu
     CreateUndoMenu();
+    // Sort menu
     CreateSortMenu();
-    if (g_project.current_ic.sub_folders.length && !InProjectList()) CreateSelectMenu();
+
+    // select all menu
+    if (g_project.current_ic.sub_folders.length 
+        && !InProjectList()
+        && g_project.current_ic.overlay_type !== "user") {
+        CreateSelectMenu();
+    }
     CreateViewMenu();
 
     // Prepended - Each Comes Before
-    if (g_view === VIEW_GR && g_project.current_ic.overlay_type !== "trash") CreateNewMenu();
-    if (!g_project.current_ic.is_directory && g_view === VIEW_GR) CreatePreviewMenu();
+    if (g_view === VIEW_GR 
+        && g_project.current_ic.overlay_type !== "trash" 
+        && g_project.current_ic.overlay_type !== "user") {
+        CreateNewMenu();
+    }
+    
+    // preivew menu
+    if (!g_project.current_ic.is_directory 
+        && g_view === VIEW_GR
+        && g_project.current_ic.overlay_type !== "user") {
+        CreatePreviewMenu();
+    }
 
     // Action Menu For Grid (if selected)
-    if (Object.keys(CHECKED).length && g_view === VIEW_GR) {
+    if (Object.keys(CHECKED).length && g_view === VIEW_GR && g_project.current_ic.overlay_type !== "user") {
         CreateActionMenu();
     }
 
@@ -846,7 +864,7 @@ function CreateGrid(data) {
             }
 
             // Checkboxes For Cards
-            if (!InProjectList()) {
+            if (!InProjectList() && data.overlay_type !== "user") {
                 // show checkbox on mouseover
                 card.onmouseover = () => {
                     card.querySelector("input").style.opacity = 1;

@@ -40,12 +40,15 @@ function terminalListen(el) {
     var key = window.event.keyCode;
     if (key != 13)
         return true;
+        
     if (key === 13 && el.shiftKey) {
         return true;
     }
+
     if ($('#terminal-input').val() == '') {
         return true;
     }
+
     terminal = $('#terminal-input').val().split(' ');
 
     $('#terminal-input').val('');
