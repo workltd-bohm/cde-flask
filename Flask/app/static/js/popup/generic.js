@@ -109,6 +109,10 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
                 func = SelectProject;
             }
 
+            if (job === "create_dir") {
+                CreateTreeStructure();
+            }
+
             if (func) func();
             LoadStop();
             MakeSnackbar(data);
