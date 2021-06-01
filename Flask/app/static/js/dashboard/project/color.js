@@ -192,7 +192,9 @@ function SetColor(data, fill) {
             }
 
             DeselectAllPlanets(g_project.current_ic);
+            CreateTreeStructure();
             LoadStop();
+
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

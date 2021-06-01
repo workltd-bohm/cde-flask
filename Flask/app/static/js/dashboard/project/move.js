@@ -192,6 +192,7 @@ function ApplyMove(data) {
             GetProject();
             LoadStop();
             MakeSnackbar(d);
+            CreateTreeStructure();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

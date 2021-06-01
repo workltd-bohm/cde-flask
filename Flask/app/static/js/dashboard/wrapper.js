@@ -121,11 +121,10 @@ function SendProject(data) {
                 $('.tree-view').show();
                 CreateTreeStructure();
             } else {
-
                 // let node = findTheNode(treeStruct.getRoot().getChildren()[0]);
-                // if (typeof node != 'undefined') {
+                // if ( node ) {
                 //     node.setExpanded(true);
-                //     // node.setSelected(true);
+                //     node.setSelected(true);
                 // }
             }
         },

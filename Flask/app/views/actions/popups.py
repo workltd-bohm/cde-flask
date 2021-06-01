@@ -621,7 +621,6 @@ def get_trash_ic():
 
             # Result = PROJECT
             result = db.get_project(db_adapter, project_name, user)
-            this_project = Project.json_to_obj(result) 
 
             # Failsafe
             if not result:
@@ -629,6 +628,8 @@ def get_trash_ic():
                 resp.status_code = msg.PROJECT_NOT_FOUND['code']
                 resp.data = msg.PROJECT_NOT_FOUND['message']
                 return resp
+                
+            this_project = Project.json_to_obj(result) 
 
             # Check Roles
             my_roles = db.get_my_roles(db_adapter, user)
@@ -640,22 +641,23 @@ def get_trash_ic():
                         resp.data = msg.USER_NO_RIGHTS['message']
                         return resp
             
-            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+            if project_name == 'Shared':
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
-            if not this_ic:
-                resp = Response()
-                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                resp.data = msg.IC_PATH_NOT_FOUND['message']
-                return resp
-            
-            # Checkk Roles For Shared IC/FILE
-            for user_with_access in this_ic['access']:
-                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                    if user_with_access['role'] > Role.DEVELOPER.value:
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] > Role.DEVELOPER.value:
+                            resp = Response()
+                            resp.status_code = msg.USER_NO_RIGHTS['code']
+                            resp.data = msg.USER_NO_RIGHTS['message']
+                            return resp
 
             if result or is_multi:
                 if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
