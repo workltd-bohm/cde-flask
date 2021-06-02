@@ -72,3 +72,22 @@ The bolder font indicates that the part of the path is interactable, and the cur
 When the path becomes too long, interactive path will adapt so that it shows the first few and the last few Folders of the path, everything in between is hidden as **"..."**  
 If the single location within the path is very long, the path will truncate the name and add ellipsis **"..."**  
 
+#### Light/Dark Theme Switch
+A button which the user can click to toggle between the Light and the Dark modes of the interface.
+
+![image](https://user-images.githubusercontent.com/10575726/120473356-3a4cd280-c3a7-11eb-937e-e0f26f10a59a.png)
+
+![image](https://user-images.githubusercontent.com/10575726/120473386-4173e080-c3a7-11eb-8897-a57851f639c9.png)
+
+### Sidebar
+Sidebar consists of elements which take the user to various sections of the application:
+* User profile
+* Projects
+* Marketplace
+* 3D Viewer
+* Trash bin
+* Logout
+
+Clicking on each makes asynchronous request and displays a different section inside the **Dashboard**
+
+![image](https://user-images.githubusercontent.com/10575726/120473783-ae877600-c3a7-11eb-9894-aec5aae22a26.png)
