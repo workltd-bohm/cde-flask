@@ -34,8 +34,6 @@ To complete a Sign Up process user must click **Sign Up** button or **press ente
 
 ![image](https://user-images.githubusercontent.com/10575726/120462420-37e47b80-c39b-11eb-8731-508809773c9a.png)
 
-
-
 ### Top Bar
 Top Bar consists of three main areas:
 * Terminal
@@ -91,3 +89,37 @@ Sidebar consists of elements which take the user to various sections of the appl
 Clicking on each makes asynchronous request and displays a different section inside the **Dashboard**
 
 ![image](https://user-images.githubusercontent.com/10575726/120473783-ae877600-c3a7-11eb-9894-aec5aae22a26.png)
+
+## Sections
+The software consist of various sections that serve a different purpose each:
+* User profile
+* Projects
+* Marketplace
+* 3D Viewer
+* Trash bin
+* Logout
+
+### User profile
+User profile is an area in which the user can edit his profile details as well as credentials: 
+* Profile picture
+* First name [input]
+* Last name [input]
+* Username [input]
+* Email [input]
+* Password [input]
+* Company Code [input]
+* Company Name [input]
+* Role Code [input]
+
+![image](https://user-images.githubusercontent.com/10575726/120476588-096e9c80-c3ab-11eb-8fef-15aef6223c42.png)
+
+By clicking on a profile picture, user can upload an existing photo  
+By changing any of the forementioned input fields, user must click **Update** button to save changes  
+
+#### Changing the email
+In order to change e-mail user must confirm this request via:
+1. The link received in old email mailbox
+2. Confirming the security code received in old email mailbox
+
+#### Changing the password
+In order to change the password user must enter **old password** as well as the **new password** to complete this request  
