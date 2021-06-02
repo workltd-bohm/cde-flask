@@ -176,6 +176,7 @@ def move_multi():
                             same_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], target_ic)
                             project.current_ic = None
                             project.added = False
+                            
                             if same_ic and same_ic != target_ic:
                                 #print("same_ic == target_ic", same_ic.ic_id, target_ic.ic_id)
                                 resp.status_code = msg.DEFAULT_OK['code']

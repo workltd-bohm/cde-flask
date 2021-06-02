@@ -157,20 +157,15 @@ function AddMoveText(data, name, text) {
     newobj.text = newobj.object.append("g")
         .attr("class", "move text")
     var tmp = newobj.text.append("text")
-        .attr("class", "text_back")
-        .attr("x", 0)
-        .attr("y", -10)
-        .html(text)
+
+    // Move to / Copy to
     tmp = newobj.text.append("text")
         .attr("class", "text_front")
         .attr("x", 0)
         .attr("y", -10)
         .html(text)
-    tmp = newobj.text.append("text")
-        .attr("class", "text_back")
-        .attr("x", 0)
-        .attr("y", 10)
-        .html(name)
+
+    // Name of the folder
     tmp = newobj.text.append("text")
         .attr("class", "text_front")
         .attr("x", 0)
@@ -189,6 +184,7 @@ function ApplyMove(data) {
         data: JSON.stringify(MULTI),
         timeout: 10000,
         success: function(d) {
+            ClearMove();
             GetProject();
             LoadStop();
             MakeSnackbar(d);

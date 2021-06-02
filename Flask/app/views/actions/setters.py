@@ -503,24 +503,24 @@ def set_color():
                         resp.data = msg.USER_NO_RIGHTS['message']
                         return resp
 
-            this_project = Project.json_to_obj(result)
+            if project_name == 'Shared':
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
-            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
-
-            if not this_ic:
-                resp = Response()
-                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                resp.data = msg.IC_PATH_NOT_FOUND['message']
-                return resp
-            
-            # Checkk Roles For Shared IC/FILE
-            for user_with_access in this_ic['access']:
-                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                    if user_with_access['role'] > Role.DEVELOPER.value:
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] > Role.DEVELOPER.value:
+                            resp = Response()
+                            resp.status_code = msg.USER_NO_RIGHTS['code']
+                            resp.data = msg.USER_NO_RIGHTS['message']
+                            return resp
             
             color_change = {
                 "project_name": project_name,
@@ -776,23 +776,24 @@ def remove_tag():
                     if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
                         user_has_access = True
 
-            # Convert Project To Object To Find specific IC
-            this_project = Project.json_to_obj(result)
-            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+            if request_data['project_name'] == "Shared":
+                # Convert Project To Object To Find specific IC
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
-            # Failsafe This IC
-            if not this_ic:
-                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
-                resp = Response()
-                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                resp.data = msg.IC_PATH_NOT_FOUND['message']
-                return resp
+                # Failsafe This IC
+                if not this_ic:
+                    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
 
-            # Check Access On Specific IC level
-            for user_with_access in this_ic['access']:
-                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
-                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
-                        user_has_access = True
+                # Check Access On Specific IC level
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                            user_has_access = True
 
             if not user_has_access:
                 logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
