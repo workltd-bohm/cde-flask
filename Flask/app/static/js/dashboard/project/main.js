@@ -411,13 +411,6 @@ function AddChildren(obj, data, parent, position = 0) {
         .on("mouseleave", () => {
             ClearDisplayName();
         })
-        .on("mousedown", function(d) {
-            ClickStart(function(d) {
-                // if(!g_project.overlay && g_root.zoom){
-                //     OverlayCreate(d3.select(this), d, data);
-                // }
-            }, data);
-        })
         .on("click", function(d) {
             var func = function() {};
             switch (g_project.data.overlay_type) {
@@ -432,7 +425,7 @@ function AddChildren(obj, data, parent, position = 0) {
                     func = data.is_directory ? SunFadeout : WrapOpenFile;
                     break;
             }
-            ClickStop(func, data, true);
+            func(data);
         })
         .on("contextmenu", function(d) {
             CreateContextMenu(d3.event, d);
