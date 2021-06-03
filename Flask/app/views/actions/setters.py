@@ -1048,8 +1048,8 @@ def remove_access():
             if not result:
                 logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
                 resp = Response()
-                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
                 return resp
 
             user_has_access = False

@@ -2131,8 +2131,9 @@ class DBMongoAdapter:
         if not u:
             return msg.USER_NOT_FOUND
             
-        # project_query = {'project_name': request_data['project_name']}
-        # project_json = col.find_one(project_query, {'_id': 0})
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        
         if project_json:
             project = Project.json_to_obj(project_json)
             message = project.remove_access(request_data, project.root_ic)

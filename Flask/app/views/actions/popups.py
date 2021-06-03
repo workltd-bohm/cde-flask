@@ -853,11 +853,13 @@ def get_empty_trash():
     resp.data = str(msg.UNAUTHORIZED['message'])
     return resp
 
-@app.route('/get_share', methods=['GET'])
+@app.route('/get_share', methods=['POST'])
 def get_share():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
+
+    request_data = json.loads(request.get_data())
+
     if main.IsLogin():
-        # request_data = json.loads(request.get_data())
         project_name = session.get("project")["name"]
         # print(request_data)
         if db.connect(db_adapter):
@@ -867,7 +869,10 @@ def get_share():
                 usernames = db.get_all_users(db_adapter)
                 response = {
                     'html': render_template("popup/share_project.html",
-                                            project_id=result["project_id"]
+                                            project_id=result["project_id"],
+                                            ic_id = request_data['ic_id'],
+                                            parent_id = request_data['parent_id'],
+                                            is_directory = request_data['is_directory']
                                             ),
                     'data': usernames
                 }

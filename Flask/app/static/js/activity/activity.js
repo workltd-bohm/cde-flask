@@ -413,6 +413,7 @@ function AddAccess() {
         add_exp_date = 'indefinitely'
 
     if (!add_username || !add_role) {
+        console.log(add_username, add_role)
         MakeSnackbar("Please fill all required fields");
         return;
     }
@@ -434,6 +435,58 @@ function AddAccess() {
             getAccess();
             MakeSnackbar(data);
             LoadStop();
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            LoadStop();
+            // if ($jqXHR.status == 401) {
+            //     location.reload();
+            // }
+        }
+    });
+}
+
+function AddAccessPop(form)
+{
+    let add_username = form.querySelector("#access-add-username-pop").value;
+    let add_role = form.querySelector("#access-add-role-pop").value;
+    let add_exp_date = form.querySelector("#access-exp-date-pop").value;
+
+    let project_id = form.querySelector("#project_id").value;
+    let ic_id = form.querySelector("#ic_id").value;
+    let parent_id = form.querySelector("#parent_id").value;
+    let is_directory = form.querySelector("#is_directory").value;
+    
+    // form validation
+    if (add_exp_date == '')
+        add_exp_date = 'indefinitely'
+
+    if (!add_username || !add_role) {
+        MakeSnackbar("Please fill all required fields");
+        return;
+    }
+
+    // request to add access (POST)
+    $.ajax({
+        url: "/add_access",
+        type: 'POST',
+        data: JSON.stringify({
+            project_name: SESSION['position'].project_name,
+            ic_id: ic_id,
+            parent_id: parent_id,
+            is_directory: is_directory,
+
+            user_name: add_username,
+            role: add_role,
+            exp_date: add_exp_date
+        }),
+        timeout: 10000,
+        success: function(data) {
+            getAccess();
+            MakeSnackbar(data);
+            LoadStop();
+            PopupClose();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
