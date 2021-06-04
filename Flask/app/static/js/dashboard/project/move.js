@@ -184,7 +184,6 @@ function ApplyMove(data) {
         data: JSON.stringify(MULTI),
         timeout: 10000,
         success: function(d) {
-            ClearMove();
             GetProject();
             LoadStop();
             MakeSnackbar(d);
