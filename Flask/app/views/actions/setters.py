@@ -511,7 +511,7 @@ def set_color():
                     # Checkk Roles For Shared IC/FILE
                     for user_with_access in this_ic['access']:
                         if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                            if user_with_access['role'] > Role.DEVELOPER.value:
+                            if user_with_access['role'] <= Role.DEVELOPER.value:
                                 user_has_access = True
 
             if not user_has_access:
@@ -669,16 +669,22 @@ def add_tag():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        
         if 'project_name' in request_data.keys():
             if request_data['project_name'] == '':
                 request_data['project_name'] = session['project']['name']
+
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
         if db.connect(db_adapter):
             # Check Roles
             user = session.get('user')
             
             # Get Project
-            result = db.get_project(db_adapter, request_data['project_name'], user)
+            if request_data['project_name'] == "Shared":
+                result = db.get_project_from_shared(db_adapter, request_data, user)
+            else:
+                result = db.get_project(db_adapter, request_data['project_name'], user)
             
             # Failsafe Get Project
             if not result:
@@ -694,8 +700,8 @@ def add_tag():
             # Search For The Access On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                if project['project_id'] == result['project_id']:       
+                    if project['role'] <= Role.DEVELOPER.value:          
                         user_has_access = True
 
             # Get Specific IC in the Project
@@ -774,24 +780,23 @@ def remove_tag():
                     if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
                         user_has_access = True
 
-            if request_data['project_name'] == "Shared":
-                # Convert Project To Object To Find specific IC
-                this_project = Project.json_to_obj(result)
-                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+            # Convert Project To Object To Find specific IC
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
-                # Failsafe This IC
-                if not this_ic:
-                    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
-                    resp = Response()
-                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                    resp.data = msg.IC_PATH_NOT_FOUND['message']
-                    return resp
+            # Failsafe This IC
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
 
-                # Check Access On Specific IC level
-                for user_with_access in this_ic['access']:
-                    if user_with_access['user']['user_id'] == user['id']:           # if this user is found
-                        if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
-                            user_has_access = True
+            # Check Access On Specific IC level
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                        user_has_access = True
 
             if not user_has_access:
                 logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
@@ -1039,6 +1044,13 @@ def remove_access():
         if db.connect(db_adapter):
             user = session.get('user')
             # CHECK IF SHARED TODO
+
+            if request_data['user']['username'] == user['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message'].replace("grant", "remove").replace("to", "from")
+                return resp
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)

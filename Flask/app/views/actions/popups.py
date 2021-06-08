@@ -614,6 +614,7 @@ def get_trash_ic():
         
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False # assume user has no access
 
             if project_name == 'Shared' and not is_multi:
                 result = db.get_project_from_shared(db_adapter, request_data, user)
@@ -632,14 +633,11 @@ def get_trash_ic():
             this_project = Project.json_to_obj(result) 
 
             # Check Roles
-            my_roles = db.get_my_roles(db_adapter, user)
-            for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+            my_roles = db.get_my_roles(db_adapter, user)                    # find projects associated with the user
+            for project in my_roles['projects']:                            # iterate through projects found
+                if project['project_id'] == result['project_id']:           # find project matching this one
+                    if project['role'] <= Role.DEVELOPER.value:             # exit with error if user is not at least developer
+                        user_has_access = True  # grant access to user
             
             if project_name == 'Shared':
                 this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
@@ -653,11 +651,14 @@ def get_trash_ic():
                 # Checkk Roles For Shared IC/FILE
                 for user_with_access in this_ic['access']:
                     if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                        if user_with_access['role'] > Role.DEVELOPER.value:
-                            resp = Response()
-                            resp.status_code = msg.USER_NO_RIGHTS['code']
-                            resp.data = msg.USER_NO_RIGHTS['message']
-                            return resp
+                        if user_with_access['role'] <= Role.DEVELOPER.value:
+                            user_has_access = True
+
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             if result or is_multi:
                 if 'parent_path' in request_data and request_data['parent_path'] == 'Projects':
