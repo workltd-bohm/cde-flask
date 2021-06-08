@@ -468,6 +468,7 @@ def set_color():
 
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
 
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
@@ -477,50 +478,47 @@ def set_color():
                 result = db.get_project(db_adapter, project_name, user)
                 my_roles = db.get_my_roles(db_adapter, user)
                 for project in my_roles['projects']:
-                    if project['project_id'] == result['project_id']:       # find project matching this one
-                        if project['role'] > Role.OWNER.value:              # exit with error if user is not owner
-                            resp = Response()
-                            resp.status_code = msg.USER_NO_RIGHTS['code']
-                            resp.data = msg.USER_NO_RIGHTS['message']
-                            return resp
-
-            # Check Roles
-            result = db.get_project(db_adapter, project_name, user)
-            
-            if not result:  # Failsafe
-                logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
-                resp = Response()
-                resp.status_code = msg.DB_FAILURE['code']
-                resp.data = str(msg.DB_FAILURE['message'])
-                return resp
-
-            my_roles = db.get_my_roles(db_adapter, user)
-            for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
-
-            if project_name == 'Shared':
-                this_project = Project.json_to_obj(result)
-                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
-
-                if not this_ic:
-                    resp = Response()
-                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                    resp.data = msg.IC_PATH_NOT_FOUND['message']
-                    return resp
+                    if project['project_id'] == result['project_id']:      
+                        if project['role'] <= Role.OWNER.value: 
+                            user_has_access = True
+            else:                                                           # if changing ic
+                # Check Roles
+                result = db.get_project(db_adapter, project_name, user)
                 
-                # Checkk Roles For Shared IC/FILE
-                for user_with_access in this_ic['access']:
-                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                        if user_with_access['role'] > Role.DEVELOPER.value:
-                            resp = Response()
-                            resp.status_code = msg.USER_NO_RIGHTS['code']
-                            resp.data = msg.USER_NO_RIGHTS['message']
-                            return resp
+                if not result:  # Failsafe
+                    logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+                    resp = Response()
+                    resp.status_code = msg.DB_FAILURE['code']
+                    resp.data = str(msg.DB_FAILURE['message'])
+                    return resp
+
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] <= Role.DEVELOPER.value:         # exit with error if user is not at least developer
+                            user_has_access = True
+
+                if project_name == 'Shared':
+                    this_project = Project.json_to_obj(result)
+                    this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                    if not this_ic:
+                        resp = Response()
+                        resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                        resp.data = msg.IC_PATH_NOT_FOUND['message']
+                        return resp
+                    
+                    # Checkk Roles For Shared IC/FILE
+                    for user_with_access in this_ic['access']:
+                        if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                            if user_with_access['role'] > Role.DEVELOPER.value:
+                                user_has_access = True
+
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
             
             color_change = {
                 "project_name": project_name,
