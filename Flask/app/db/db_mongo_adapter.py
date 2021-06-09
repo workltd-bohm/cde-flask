@@ -539,16 +539,22 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
+        col_shared = self._db.Projects.Shared
+
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+
         if project_json:
             project = Project.json_to_obj(project_json)
             # print(project.to_json())
             add = project.rename_ic(request_data, user, project.root_ic)
+
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 if request_data['parent_id'] == 'root':
                     project.name = request_data['new_name']
+
                 file_updated = True
+
                 if not request_data['is_directory']:
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
@@ -565,10 +571,24 @@ class DBMongoAdapter:
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND, None
+
                 if file_updated:
                     print(project.to_json())
                     col.update_one({'project_name': request_data['project_name']}, {'$set': project.to_json()})
-
+                    # update shared:
+                    # find collection
+                    # filter through entries
+                    # find matching project id
+                    # change project name
+                    shared_collection = col_shared.find()[0]
+                    for user_id in shared_collection:
+                        if user_id == "_id": continue
+                        for i, ic in enumerate(shared_collection[user_id]):
+                            if ic['project_id'] == project.project_id:
+                                shared_collection[user_id][i]['project_name'] = project.name
+                    col_shared.update_one(
+                        {'_id': shared_collection['_id']}, 
+                        {"$set" : shared_collection})
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND, None

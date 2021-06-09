@@ -549,8 +549,10 @@ def rename_ic():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        
         set_project_data(request_data, True)
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+
         if db.connect(db_adapter):
             rename = {
                 "project_name": request_data["project_name"],
@@ -562,12 +564,15 @@ def rename_ic():
                 "is_directory": True if "is_directory" in request_data else False,
             }
             print(rename)
+
             u = {'user_id': session['user']['id'], 'username': session['user']['username']}
             result, project = db.rename_ic(db_adapter, rename, u)
+
             if request_data['parent_id'] == 'root':
                 # request_data['project_name'] = request_data["new_name"]
                 # set_project_data(request_data, True)
                 session['project']['name'] = request_data["new_name"]
+                
             logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
             resp = Response()
             resp.status_code = result["code"]
