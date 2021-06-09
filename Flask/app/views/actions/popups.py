@@ -609,6 +609,7 @@ def get_trash_ic():
         # Trashing Files/Folders                
         else:  
             project_name = session.get("project")["name"]
+
         is_multi = True if "is_multi" in request_data else False
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         
@@ -639,21 +640,21 @@ def get_trash_ic():
                     if project['role'] <= Role.DEVELOPER.value:             # exit with error if user is not at least developer
                         user_has_access = True  # grant access to user
             
-            if project_name == 'Shared':
-                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+            # find specific IC in project
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
 
-                if not this_ic:
-                    logger.log(LOG_LEVEL, 'POST data: {}'.format(msg.IC_PATH_NOT_FOUND))
-                    resp = Response()
-                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                    resp.data = msg.IC_PATH_NOT_FOUND['message']
-                    return resp
-                
-                # Checkk Roles For Shared IC/FILE
-                for user_with_access in this_ic['access']:
-                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                        if user_with_access['role'] <= Role.DEVELOPER.value:
-                            user_has_access = True
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'POST data: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:
+                        user_has_access = True
 
             if not user_has_access:
                 resp = Response()
