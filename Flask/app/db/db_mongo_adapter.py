@@ -841,7 +841,7 @@ class DBMongoAdapter:
         
         # query config
         delete_query = dict()
-        if delete_ic_data['ic_id'] == '':
+        if delete_ic_data['parent_id'] == 'root':
             delete_query = {
                 'project_id':   delete_ic_data['project_id'], 
                 'project_name': delete_ic_data['delete_name']

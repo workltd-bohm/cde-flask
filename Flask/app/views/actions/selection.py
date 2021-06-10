@@ -1,3 +1,4 @@
+from app.db.db_comminication import delete_ic
 from app import *
 import os
 import zipfile
@@ -325,6 +326,8 @@ def get_delete_ic_multi():
                 user_id = session['user']['id']
                 project_name = session.get("project")["name"]
                 final = ''
+
+                print("><><><", delete_ic_array["targets"])
                 for delete_ic_data in delete_ic_array["targets"]:
                     delete_ic_data['user_id'] = user_id
                     delete_ic_data['project_name'] = project_name

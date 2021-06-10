@@ -374,8 +374,8 @@ def get_trash():
                     if 'project_name' in trashed_project.keys():
                         # set project json
                         proj_obj['name'] =          trashed_project['project_name']
-                        proj_obj['is_directory'] =  "" 
-                        proj_obj['ic_id'] =         ""
+                        proj_obj['is_directory'] =  True 
+                        proj_obj['ic_id'] =         trashed_project['root_ic']['ic_id']
                         proj_obj['parent_id'] =     "root"
                     else:
                         # set ic json
