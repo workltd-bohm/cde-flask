@@ -535,6 +535,7 @@ function Select3D() {
 
 // Get trash and display on screen
 function SelectTrash() {
+    $('.tree-view').hide();
     ClearProject(true);
     SwitchDash(0);
     $.ajax({
