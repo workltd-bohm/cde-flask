@@ -269,24 +269,46 @@ def get_new_folder():
         
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
 
             # get project name if shared
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
+
+                # find specific IC in project
+                this_project = Project.json_to_obj(result) 
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    logger.log(LOG_LEVEL, 'POST data: {}'.format(msg.IC_PATH_NOT_FOUND))
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:
+                            user_has_access = True
+
                 project_name = result['project_name']
 
             # find the project
             result = db.get_project(db_adapter, project_name, user)
 
-            # Check Roles
+            # Check Roles On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if project['project_id'] == result['project_id']:   # find project matching this one
+                    if project['role'] <= Role.DEVELOPER.value:     # exit with error if user is not at least developer
+                        user_has_access = True
+
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             # check roles for shared projects
             ics, my_shared_ics = db.get_my_shares(db_adapter, user)
@@ -341,9 +363,28 @@ def get_new_file():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
 
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
+
+                # find specific IC in project
+                this_project = Project.json_to_obj(result) 
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    logger.log(LOG_LEVEL, 'POST data: {}'.format(msg.IC_PATH_NOT_FOUND))
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:
+                            user_has_access = True
+
                 project_name = result['project_name']
                 
             result = db.get_project(db_adapter, project_name, user)
@@ -352,11 +393,14 @@ def get_new_file():
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        user_has_access = True
+
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             # Check Roles For Shared Folders
             ics, my_shared_ics = db.get_my_shares(db_adapter, user)

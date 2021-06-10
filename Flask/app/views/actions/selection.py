@@ -139,18 +139,9 @@ def move_multi():
         #print("array", request_data_array)
         if db.connect(db_adapter):
             user = session.get('user')
-            project_name = session.get("project")["name"]
+            user_has_access = False # assume no access
 
-            # Check Roles
-            result = db.get_project(db_adapter, project_name, user)
-            my_roles = db.get_my_roles(db_adapter, user)
-            for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+            project_name = session.get("project")["name"]
 
             if "targets" and "to_copy" in request_data_array:
                 if project_name == 'Shared':
@@ -158,9 +149,35 @@ def move_multi():
                     request_json['ic_id'] = request_data_array['from_ic_id']
                     request_json['parent_id'] = request_data_array['from_parent_id']
                     result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, user)
+
+                    this_project = Project.json_to_obj(result)
+                    this_ic = this_project.find_ic_by_id(request_json, request_json['ic_id'], this_project.root_ic).to_json()
+
+                    # Check For Access On IC level
+                    for user_with_access in this_ic['access']:
+                        if user_with_access['user']['user_id'] == user['id']:
+                            if user_with_access['role'] <= Role.DEVELOPER.value:    # if user has access to the ic
+                                user_has_access = True
+
                     project_name = result['project_name']
+
+                # Check Access on Project Level
+                result = db.get_project(db_adapter, project_name, user)
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] <= Role.DEVELOPER.value:         # exit with error if user is not at least developer
+                            user_has_access = True
+
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
+                
+                # Check Access Role
+                if not user_has_access:        
+                    resp = Response()
+                    resp.status_code = msg.USER_NO_RIGHTS['code']
+                    resp.data = msg.USER_NO_RIGHTS['message']
+                    return resp
 
                 old_parent_ic = project.find_ic_by_id(
                     {"parent_id": request_data_array["from_parent_id"]}, 
