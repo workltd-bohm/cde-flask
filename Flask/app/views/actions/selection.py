@@ -20,22 +20,44 @@ def set_color_multi():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
+
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data[0], user)
+
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Check Roles On Shared IC Level
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   
+                        if user_with_access['role'] <= Role.DEVELOPER.value:    # find the user's role on this IC
+                            user_has_access = True
+
+                # Change Project Name From Shared to Actual Project
                 project_name = result['project_name']
 
-            # Check Roles
+            # Check Roles on Project Level
             result = db.get_project(db_adapter, project_name, user)
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if project['project_id'] == result['project_id']:
+                    if project['role'] <= Role.DEVELOPER.value: # find user's role on this project
+                        user_has_access = True
+
+            if not user_has_access:                
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
             
-            result = ''
+            result = None
             for req in request_data:
                 color_change = {
                     "project_name": project_name,
@@ -43,7 +65,9 @@ def set_color_multi():
                     "color": req["color"],
                 }
                 result = db.change_color(db_adapter, color_change)
+
             db.close_connection(db_adapter)
+
             if result:
                 resp = Response()
                 resp.status_code = result["code"]

@@ -1064,6 +1064,10 @@ class DBMongoAdapter:
         return size
 
     def change_color(self, file_obj):
+    # Warning: 
+    # Leaves An Open Connection! 
+    # Should Close Connection After Used
+    # db.close_connection(db_adapter)
         col = self._db.Projects
         project_query = {'project_name': file_obj["project_name"]}
         project_json = col.find_one(project_query, {'_id': 0})
