@@ -472,6 +472,22 @@ def set_color():
 
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
+
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:
+                            user_has_access = True
+
                 project_name = result['project_name']
                 
             if request_data['ic_id'] == '':                                 # if changing root ic (Project) color
@@ -497,22 +513,6 @@ def set_color():
                     if project['project_id'] == result['project_id']:       # find project matching this one
                         if project['role'] <= Role.DEVELOPER.value:         # exit with error if user is not at least developer
                             user_has_access = True
-
-                if project_name == 'Shared':
-                    this_project = Project.json_to_obj(result)
-                    this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
-
-                    if not this_ic:
-                        resp = Response()
-                        resp.status_code = msg.IC_PATH_NOT_FOUND['code']
-                        resp.data = msg.IC_PATH_NOT_FOUND['message']
-                        return resp
-                    
-                    # Checkk Roles For Shared IC/FILE
-                    for user_with_access in this_ic['access']:
-                        if user_with_access['user']['user_id'] == user['id']:   # if this user is found
-                            if user_with_access['role'] <= Role.DEVELOPER.value:
-                                user_has_access = True
 
             if not user_has_access:
                 resp = Response()

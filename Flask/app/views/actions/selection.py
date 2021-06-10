@@ -26,7 +26,7 @@ def set_color_multi():
                 result = db.get_project_from_shared(db_adapter, request_data[0], user)
 
                 this_project = Project.json_to_obj(result)
-                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+                this_ic = this_project.find_ic_by_id(request_data[0], request_data[0]['ic_id'], this_project.root_ic).to_json()
 
                 if not this_ic:
                     resp = Response()
