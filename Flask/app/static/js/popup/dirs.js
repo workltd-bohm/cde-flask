@@ -363,7 +363,9 @@ function TrashFile(form, json) {
         url: "/get_trash_ic",
         type: 'POST',
         data: JSON.stringify((o.length > 0) ? {
-            is_multi: true,
+            is_multi:   true,
+            parent_id:  json.parent_id,
+            ic_id:      json.ic_id,
         } : {
             ic_id: json.ic_id,
             is_directory: json.is_directory,

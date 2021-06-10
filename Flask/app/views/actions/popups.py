@@ -663,7 +663,7 @@ def get_trash_ic():
             user = session.get('user')
             user_has_access = False # assume user has no access
 
-            if project_name == 'Shared' and not is_multi:
+            if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
 
                 # find specific IC in project
@@ -684,7 +684,7 @@ def get_trash_ic():
                             user_has_access = True
 
                 project_name = result['project_name']
-
+            
             # Result = PROJECT
             result = db.get_project(db_adapter, project_name, user)
 
