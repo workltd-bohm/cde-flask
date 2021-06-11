@@ -101,7 +101,7 @@ def copy_multi():
     return resp
 
 
-def deep_new_ids(ic, parent_ic, to_copy=False):
+def deep_new_ids(project_name, ic, parent_ic, to_copy=False):
     delete_ic_data = ic.to_json()
     ic.ic_id = str(uuid.uuid1())
     full_name = ic.name
@@ -112,9 +112,9 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
     ic.parent_id = parent_ic.ic_id
     if not ic.is_directory:
         if to_copy:
-            result = db.upload_file(db_adapter, session.get("project")["name"], ic)
+            result = db.upload_file(db_adapter, project_name, ic)
         else:
-            result = db.update_file(db_adapter, session.get("project")["name"], ic)
+            result = db.update_file(db_adapter, project_name, ic)
         if result["code"] != 200: return result
             # delete_ic_data['user_id'] = session['user']
             # delete_ic_data['project_name'] = session.get("project")["name"]
@@ -123,7 +123,7 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
             # if result["code"] != 200: return result
 
     for x in ic.sub_folders:
-        if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
+        if not deep_new_ids(project_name, x, ic, to_copy): return msg.DEFAULT_OK
 
     return msg.DEFAULT_OK
 
@@ -140,7 +140,7 @@ def move_multi():
         if db.connect(db_adapter):
             user = session.get('user')
             user_has_access = False # assume no access
-
+            
             project_name = session.get("project")["name"]
 
             if "targets" and "to_copy" in request_data_array:
@@ -226,7 +226,7 @@ def move_multi():
                                 return resp
 
                             copy_target_ic = copy.deepcopy(target_ic)
-                            result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
+                            result = deep_new_ids(project_name, copy_target_ic, new_parent_ic, request_data_array["to_copy"])
                             if result != msg.DEFAULT_OK:
                                 resp.status_code = msg.DEFAULT_OK['code']
                                 resp.data = str(result['message'])
