@@ -697,8 +697,10 @@ function CreateWorkspace(data) {
     // Get the session view
     if (SESSION.view) {
         g_view = SESSION.view;
+    } else {
+        SESSION.view = g_view;
     }
-
+    
     switch (g_view) {
         // planetary
         case 0:
