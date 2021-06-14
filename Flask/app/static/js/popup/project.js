@@ -294,7 +294,7 @@ function sendFile(files, folders, current, fileData = {}) {
         //dataType: "json",
         processData: false,
         contentType: false,
-        //        timeout: 20000,
+        // timeout: 0,
         success: function(data) {
             //            console.log(data);
 

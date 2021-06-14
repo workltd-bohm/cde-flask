@@ -696,16 +696,16 @@ class DBMongoAdapter:
                 owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
                                 
                 # update user's shared projects
-                if len(list(shared.find())):
-                    this_user_shared = shared.find()[0]
-                    for key in this_user_shared.keys():
-                        if key == '_id':
-                            continue
-                        for i, obj in enumerate(this_user_shared[key]):
-                            if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
-                                del this_user_shared[key][i]
+                # if len(list(shared.find())):
+                #     this_user_shared = shared.find()[0]
+                #     for key in this_user_shared.keys():
+                #         if key == '_id':
+                #             continue
+                #         for i, obj in enumerate(this_user_shared[key]):
+                #             if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                #                 del this_user_shared[key][i]
 
-                    shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
+                #     shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
 
                 # update owner's trash
                 if owner_id:
@@ -838,6 +838,7 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash
         files =         self._db.fs.files
         file_chunks =   self._db.fs.chunks
+        shared =        self._db.Projects.Shared
         
         # query config
         delete_query = dict()
@@ -873,6 +874,18 @@ class DBMongoAdapter:
                 self.delete_sub_chunks(project_or_ic_json, files, file_chunks)
                 trash.delete_one(delete_query)
                 response = msg.IC_SUCCESSFULLY_DELETED
+            
+            # Todo remove from shared
+            # if len(list(shared.find())):
+            #     this_user_shared = shared.find()[0]
+            #     for key in this_user_shared.keys():
+            #         if key == '_id':
+            #             continue
+            #         for i, obj in enumerate(this_user_shared[key]):
+            #             if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+            #                 del this_user_shared[key][i]
+
+            # shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
 
             # update user's trash TODO trash should store specific ic data, not just project id
             my_trash = users_trash.find_one({'user_id': delete_ic_data['user_id']})
