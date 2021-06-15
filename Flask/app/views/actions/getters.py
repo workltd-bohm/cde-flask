@@ -370,7 +370,8 @@ def get_trash():
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = trashed_project['history'] if 'history' in trashed_project.keys() else trashed_project['root_ic']['history']
                     proj_obj['overlay_type'] = "trash_planet"
-                    proj_obj["color"] = trashed_project["color"]
+                    print(">>>>>>>>>>", trashed_project)
+                    
 
                     if 'project_name' in trashed_project.keys():
                         # set project json
@@ -378,6 +379,7 @@ def get_trash():
                         proj_obj['is_directory'] =  True 
                         proj_obj['ic_id'] =         trashed_project['root_ic']['ic_id']
                         proj_obj['parent_id'] =     "root"
+                        proj_obj["color"] = trashed_project['root_ic']["color"]
                     else:
                         # set ic json
                         proj_obj['name'] =          trashed_project['name']
@@ -386,6 +388,7 @@ def get_trash():
                         proj_obj['is_directory'] =  trashed_project['is_directory']
                         proj_obj['ic_id'] =         trashed_project['ic_id']
                         proj_obj['parent_id'] =     trashed_project['parent_id']
+                        proj_obj["color"] = trashed_project["color"]
 
                     proj_obj['path'] = "Trash/" + proj_obj['name'] # TODO maybe leave path
 
