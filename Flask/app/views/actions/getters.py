@@ -369,9 +369,7 @@ def get_trash():
                     proj_obj['project_id'] = trashed_project['project_id']
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = trashed_project['history'] if 'history' in trashed_project.keys() else trashed_project['root_ic']['history']
-                    proj_obj['overlay_type'] = "trash_planet"
-                    print(">>>>>>>>>>", trashed_project)
-                    
+                    proj_obj['overlay_type'] = "trash_planet"                    
 
                     if 'project_name' in trashed_project.keys():
                         # set project json
