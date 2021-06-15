@@ -125,7 +125,7 @@ def get_project():
                 
                 if project_name == 'Shared':
                     project['root_ic']['overlay_type'] = "shared"
-                    for i, ic in enumerate(project['root_ic']['sub_folders']):
+                    for i, ic in enumerate(project['root_ic']['sub_folders']):  
                         project['root_ic']['sub_folders'][i]['project_id'] = ic_shares[i]['project_id']
 
                 resp.status_code = msg.DEFAULT_OK['code']

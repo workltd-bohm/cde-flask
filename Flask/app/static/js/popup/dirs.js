@@ -422,7 +422,7 @@ function RestoreFile(form, json) {
     }
 
     LoadStart();
-
+    console.log(json)
     $.ajax({
         url: "/get_restore_ic",
         type: 'POST',
