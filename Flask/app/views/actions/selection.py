@@ -1,3 +1,4 @@
+from app.db.db_comminication import delete_ic
 from app import *
 import os
 import zipfile
@@ -19,22 +20,44 @@ def set_color_multi():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
+
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data[0], user)
+
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data[0], request_data[0]['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Check Roles On Shared IC Level
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   
+                        if user_with_access['role'] <= Role.DEVELOPER.value:    # find the user's role on this IC
+                            user_has_access = True
+
+                # Change Project Name From Shared to Actual Project
                 project_name = result['project_name']
 
-            # Check Roles
+            # Check Roles on Project Level
             result = db.get_project(db_adapter, project_name, user)
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if project['project_id'] == result['project_id']:
+                    if project['role'] <= Role.DEVELOPER.value: # find user's role on this project
+                        user_has_access = True
+
+            if not user_has_access:                
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
             
-            result = ''
+            result = None
             for req in request_data:
                 color_change = {
                     "project_name": project_name,
@@ -42,7 +65,9 @@ def set_color_multi():
                     "color": req["color"],
                 }
                 result = db.change_color(db_adapter, color_change)
+
             db.close_connection(db_adapter)
+
             if result:
                 resp = Response()
                 resp.status_code = result["code"]
@@ -76,7 +101,7 @@ def copy_multi():
     return resp
 
 
-def deep_new_ids(ic, parent_ic, to_copy=False):
+def deep_new_ids(project_name, ic, parent_ic, to_copy=False):
     delete_ic_data = ic.to_json()
     ic.ic_id = str(uuid.uuid1())
     full_name = ic.name
@@ -87,9 +112,9 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
     ic.parent_id = parent_ic.ic_id
     if not ic.is_directory:
         if to_copy:
-            result = db.upload_file(db_adapter, session.get("project")["name"], ic)
+            result = db.upload_file(db_adapter, project_name, ic)
         else:
-            result = db.update_file(db_adapter, session.get("project")["name"], ic)
+            result = db.update_file(db_adapter, project_name, ic)
         if result["code"] != 200: return result
             # delete_ic_data['user_id'] = session['user']
             # delete_ic_data['project_name'] = session.get("project")["name"]
@@ -98,7 +123,7 @@ def deep_new_ids(ic, parent_ic, to_copy=False):
             # if result["code"] != 200: return result
 
     for x in ic.sub_folders:
-        if not deep_new_ids(x, ic, to_copy): return msg.DEFAULT_OK
+        if not deep_new_ids(project_name, x, ic, to_copy): return msg.DEFAULT_OK
 
     return msg.DEFAULT_OK
 
@@ -114,18 +139,9 @@ def move_multi():
         #print("array", request_data_array)
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False # assume no access
+            
             project_name = session.get("project")["name"]
-
-            # Check Roles
-            result = db.get_project(db_adapter, project_name, user)
-            my_roles = db.get_my_roles(db_adapter, user)
-            for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
 
             if "targets" and "to_copy" in request_data_array:
                 if project_name == 'Shared':
@@ -133,9 +149,35 @@ def move_multi():
                     request_json['ic_id'] = request_data_array['from_ic_id']
                     request_json['parent_id'] = request_data_array['from_parent_id']
                     result = db.get_project_from_shared_by_parent_id(db_adapter, request_json, user)
+
+                    this_project = Project.json_to_obj(result)
+                    this_ic = this_project.find_ic_by_id(request_json, request_json['ic_id'], this_project.root_ic).to_json()
+
+                    # Check For Access On IC level
+                    for user_with_access in this_ic['access']:
+                        if user_with_access['user']['user_id'] == user['id']:
+                            if user_with_access['role'] <= Role.DEVELOPER.value:    # if user has access to the ic
+                                user_has_access = True
+
                     project_name = result['project_name']
+
+                # Check Access on Project Level
+                result = db.get_project(db_adapter, project_name, user)
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] <= Role.DEVELOPER.value:         # exit with error if user is not at least developer
+                            user_has_access = True
+
                 response = db.get_project(db_adapter, project_name, user)
                 project = Project.json_to_obj(response)
+                
+                # Check Access Role
+                if not user_has_access:        
+                    resp = Response()
+                    resp.status_code = msg.USER_NO_RIGHTS['code']
+                    resp.data = msg.USER_NO_RIGHTS['message']
+                    return resp
 
                 old_parent_ic = project.find_ic_by_id(
                     {"parent_id": request_data_array["from_parent_id"]}, 
@@ -176,6 +218,7 @@ def move_multi():
                             same_ic = project.find_ic_by_id({"parent_id": request_data_array["to_parent_id"]}, request_data_array["to_ic_id"], target_ic)
                             project.current_ic = None
                             project.added = False
+                            
                             if same_ic and same_ic != target_ic:
                                 #print("same_ic == target_ic", same_ic.ic_id, target_ic.ic_id)
                                 resp.status_code = msg.DEFAULT_OK['code']
@@ -183,15 +226,16 @@ def move_multi():
                                 return resp
 
                             copy_target_ic = copy.deepcopy(target_ic)
-                            result = deep_new_ids(copy_target_ic, new_parent_ic, request_data_array["to_copy"])
+                            result = deep_new_ids(project_name, copy_target_ic, new_parent_ic, request_data_array["to_copy"])
                             if result != msg.DEFAULT_OK:
                                 resp.status_code = msg.DEFAULT_OK['code']
                                 resp.data = str(result['message'])
                                 return resp
 
                             details = "Error"
+                            usr = {'user_id': session['user']['id'], 'username': session['user']['username']}
                             if not request_data_array["to_copy"]:
-                                details = Details(user, 'Moved',
+                                details = Details(usr, 'Moved',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Move form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
                                 if old_parent_ic.ic_id == target_ic.ic_id:
@@ -208,7 +252,7 @@ def move_multi():
                                 else:
                                     old_parent_ic.sub_folders.remove(target_ic)
                             else:
-                                details = Details(user, 'Copied',
+                                details = Details(usr, 'Copied',
                                                   datetime.now().strftime("%d.%m.%Y-%H:%M:%S"),
                                                   "Copy form '" + old_parent_ic.path + "' to '" + new_parent_ic.path + "'")
                             copy_target_ic.history.append(details)
@@ -323,6 +367,8 @@ def get_delete_ic_multi():
                 user_id = session['user']['id']
                 project_name = session.get("project")["name"]
                 final = ''
+
+                print("><><><", delete_ic_array["targets"])
                 for delete_ic_data in delete_ic_array["targets"]:
                     delete_ic_data['user_id'] = user_id
                     delete_ic_data['project_name'] = project_name

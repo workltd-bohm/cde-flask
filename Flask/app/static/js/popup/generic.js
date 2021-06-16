@@ -105,8 +105,12 @@ function FormSubmit(job, args = null, stay = false, func = null, fill = false) {
             if (job != 'select_project') SESSION["undo"] = true;
             MULTI = {};
             if (data == 'Project successfully deleted') {
+                func = (SESSION.section == "project") ? SelectProject : SelectTrash;
                 SESSION["position"] = null;
-                func = SelectProject;
+            }
+
+            if (job === "create_dir") {
+                CreateTreeStructure();
             }
 
             if (func) func();

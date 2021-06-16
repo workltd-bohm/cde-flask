@@ -212,6 +212,11 @@ class DBMongoAdapter:
         if result:
             for pr in result['projects']:
                 project = self.get_my_project(pr['project_id'])
+
+                # skip projects that fail to load (such as trashed projects)
+                if not project:
+                    continue
+
                 project['overlay_type'] = "project"
                 projects.append(project)
         self._close_connection()
@@ -286,7 +291,14 @@ class DBMongoAdapter:
                         if project:
                             project = Project.json_to_obj(project)
                             project.current_ic = None
-                            ics.append(project.find_ic_by_id(ic, ic['ic_id'], project.root_ic))
+
+                            # make sure there is an IC, otherwise skip (may be trashed)
+                            single_shared_ic = project.find_ic_by_id(ic, ic['ic_id'], project.root_ic)
+
+                            if not single_shared_ic:
+                                continue
+                            
+                            ics.append(single_shared_ic)
                             ic_shares.append(ic)
         self._close_connection()
         return ics, ic_shares
@@ -540,16 +552,22 @@ class DBMongoAdapter:
         col = self._db.Projects
         # col_file = self._db.Projects.Files
         col_file = self._db.fs.files
+        col_shared = self._db.Projects.Shared
+
         project_query = {'project_name': request_data['project_name']}
         project_json = col.find_one(project_query, {'_id': 0})
+
         if project_json:
             project = Project.json_to_obj(project_json)
             # print(project.to_json())
             add = project.rename_ic(request_data, user, project.root_ic)
+
             if add == msg.IC_SUCCESSFULLY_RENAMED:
                 if request_data['parent_id'] == 'root':
                     project.name = request_data['new_name']
+
                 file_updated = True
+
                 if not request_data['is_directory']:
                     file_updated = False
                     file_query = {'file_name': request_data['old_name']}
@@ -566,10 +584,25 @@ class DBMongoAdapter:
                     else:
                         print(msg.STORED_FILE_NOT_FOUND)
                         return msg.STORED_FILE_NOT_FOUND, None
+
                 if file_updated:
                     print(project.to_json())
                     col.update_one({'project_name': request_data['project_name']}, {'$set': project.to_json()})
-
+                    # update shared:
+                    # find collection
+                    # filter through entries
+                    # find matching project id
+                    # change project name
+                    if len(list(col_shared.find())):
+                        shared_collection = col_shared.find()[0]
+                        for user_id in shared_collection:
+                            if user_id == "_id": continue
+                            for i, ic in enumerate(shared_collection[user_id]):
+                                if ic['project_id'] == project.project_id:
+                                    shared_collection[user_id][i]['project_name'] = project.name
+                        col_shared.update_one(
+                            {'_id': shared_collection['_id']}, 
+                            {"$set" : shared_collection})
         else:
             print(msg.PROJECT_NOT_FOUND)
             return msg.PROJECT_NOT_FOUND, None
@@ -579,13 +612,12 @@ class DBMongoAdapter:
     # TODO update all users that share the project's trash
     def trash_ic(self, ic_data):
         # database tables
-        users =         self._db.Users.Roles
+        users_roles =         self._db.Users.Roles
         projects =      self._db.Projects
         trash =         self._db.Trash              # trashed items
         users_trash =   self._db.Users.Trash        # user's trash info
         shared =        self._db.Projects.Shared
 
-        print("My data >>>>>>>", ic_data)
         if ic_data['project_name'] != 'Shared':
             project_query = {'project_name': ic_data['project_name']}
         else:
@@ -597,7 +629,7 @@ class DBMongoAdapter:
             # Trashing projects
             if ic_data['parent_id'] == 'root':
                 # Check user rights => if you want jsut owner, you can put > Role.OWNER.value, etc.
-                this_user = users.find_one({'user_id': ic_data['user_id']}, {'_id': 0})
+                this_user = users_roles.find_one({'user_id': ic_data['user_id']}, {'_id': 0})
                 if this_user:
                     for obj in this_user['projects']:
                         if obj['project_id'] == project_json['project_id']:
@@ -611,7 +643,7 @@ class DBMongoAdapter:
                 projects.delete_one(project_query)
 
                 # update user's info (projects & trash)
-                all_users = users.find()
+                all_users = users_roles.find()
                 if all_users:
                     for user in all_users:
                         for count, user_project in enumerate(user['projects']):
@@ -642,10 +674,10 @@ class DBMongoAdapter:
                                 delete = msg.PROJECT_SUCCESSFULLY_TRASHED
 
                             # update user's projects
-                            del user['projects'][count]
-                            users.update_one({'user_id': user['user_id']}, 
-                                {'$set': {'projects': user['projects']}})                                        
-                
+                            # del user['projects'][count]
+                            # users_roles.update_one({'user_id': user['user_id']}, 
+                            #     {'$set': {'projects': user['projects']}})                                        
+
             # Trashing ic/sub folders or files
             else:
                 # find the ic in project ...
@@ -676,16 +708,16 @@ class DBMongoAdapter:
                 owner_id = roles.find_one({'project_id': ObjectId(project.project_id)}, {'_id': 0})['user'][0]['id']
                                 
                 # update user's shared projects
-                if len(list(shared.find())):
-                    this_user_shared = shared.find()[0]
-                    for key in this_user_shared.keys():
-                        if key == '_id':
-                            continue
-                        for i, obj in enumerate(this_user_shared[key]):
-                            if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
-                                del this_user_shared[key][i]
+                # if len(list(shared.find())):
+                #     this_user_shared = shared.find()[0]
+                #     for key in this_user_shared.keys():
+                #         if key == '_id':
+                #             continue
+                #         for i, obj in enumerate(this_user_shared[key]):
+                #             if obj['project_id'] == project_json['project_id'] and obj['ic_id'] == ic_data['ic_id']:
+                #                 del this_user_shared[key][i]
 
-                    shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
+                #     shared.update_one({'_id': this_user_shared['_id']}, {'$set': this_user_shared})
 
                 # update owner's trash
                 if owner_id:
@@ -722,8 +754,9 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash    # user trash info
 
         trashed_query = dict()
-        if restore_ic_data['ic_id'] == '':  # if its a project
-            trashed_query = {'project_id': restore_ic_data['project_id'], 'project_name': restore_ic_data['restore_name']} #TODO project name
+
+        if restore_ic_data['parent_id'] == 'root':  # if its a project
+            trashed_query = {'project_id': restore_ic_data['project_id'], 'project_name': restore_ic_data['restore_name']}
         else:  # if its IC
             trashed_query = {'project_id': restore_ic_data['project_id'], 'ic_id': restore_ic_data['ic_id']}
         
@@ -741,21 +774,20 @@ class DBMongoAdapter:
                 ''' restoring projects '''
                 projects.insert_one(project_or_ic_json)
 
-                my_projects =   users_roles.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
+                # my_projects =   users_roles.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
                 my_trash =      users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
 
                 for trashed_ic in my_trash['trash']:
                     # if item in trash matches our query
-                    print(trashed_ic)
                     if trashed_ic['project_id'] == restore_ic_data['project_id']:
-                        my_projects['projects'].append({'project_id': trashed_ic['project_id'], 'role': 0})
+                        # my_projects['projects'].append({'project_id': trashed_ic['project_id'], 'role': 0})
                         my_trash['trash'].remove(trashed_ic)
 
                 # update collections
-                users_roles.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'projects': my_projects['projects']}})
+                # users_roles.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'projects': my_projects['projects']}})
                 users_trash.update_one({'user_id': restore_ic_data['user_id']}, {'$set': {'trash': my_trash['trash']}})
 
-                # remove
+                # remove from trash
                 trash.delete_one(trashed_query)
                 restored = msg.PROJECT_SUCCESSFULLY_RESTORED
             else:
@@ -783,6 +815,7 @@ class DBMongoAdapter:
 
                         # delete from Trash
                         trash.delete_one(trashed_query)
+                        
                         # update trash
                         my_trash = users_trash.find_one({'user_id': restore_ic_data['user_id']}, {'_id': 0})
                         for trashed_item in my_trash['trash']:
@@ -818,10 +851,12 @@ class DBMongoAdapter:
         users_trash =   self._db.Users.Trash
         files =         self._db.fs.files
         file_chunks =   self._db.fs.chunks
+        shared =        self._db.Projects.Shared
+        user_roles =    self._db.Users.Roles
         
         # query config
         delete_query = dict()
-        if delete_ic_data['ic_id'] == '':
+        if delete_ic_data['parent_id'] == 'root':
             delete_query = {
                 'project_id':   delete_ic_data['project_id'], 
                 'project_name': delete_ic_data['delete_name']
@@ -842,19 +877,86 @@ class DBMongoAdapter:
                 for sub_folder in project_or_ic_json['root_ic']['sub_folders']:
                     self.delete_sub_chunks(sub_folder, files, file_chunks)
                 trash.delete_many({'project_id': delete_ic_data['project_id']})
+
+                # remove access from projects
+                all_user_roles = user_roles.find()
+                for user in all_user_roles:
+                    for i, user_project in enumerate(user['projects']):
+                        if user_project['project_id'] == project_or_ic_json['project_id']:
+                            del user['projects'][i] # delete this project object in user's projects array
+                            user_roles.update(
+                                {'user_id': user['user_id']},
+                                {'$set': {'projects': user['projects']}})
+                
+                # remove access from shared ics
+                if len(list(shared.find())):
+                    all_shared = shared.find()[0]
+                    for key in all_shared.keys():
+                        if key == '_id':
+                            continue
+                        
+                        # find project association in all users and remove it
+                        for i, share in enumerate(all_shared[key]):
+                            if share['project_id'] == project_or_ic_json['project_id']:
+                                del all_shared[key][i]
+
+                    shared.update_one(
+                        {'_id': all_shared['_id']},
+                        {'$set': all_shared})
+
                 response = msg.PROJECT_SUCCESSFULLY_DELETED
             elif 'stored_id' in project_or_ic_json.keys():
                 trash.delete_one(delete_query)
                 files.delete_one({'file_id': project_or_ic_json['stored_id']})
                 file_chunks.delete_many({'files_id': ObjectId(project_or_ic_json['stored_id'])})
+
+                if len(list(shared.find())):
+                    all_shared = shared.find()[0]
+                    for key in all_shared.keys():
+                        if key == '_id':
+                            continue
+                        
+                        # find project association in all users and remove it
+                        for i, share in enumerate(all_shared[key]):
+                            if share['project_id'] == project_or_ic_json['project_id']:
+                                if share['ic_id'] != project_or_ic_json['ic_id']:
+                                    continue
+
+                                # delete object from this user's shared matching project_id & ic_id
+                                del all_shared[key][i]
+
+                    shared.update_one(
+                        {'_id': all_shared['_id']},
+                        {'$set': all_shared})
+
                 response = msg.FILE_SUCCESSFULLY_DELETED
             elif 'ic_id' in project_or_ic_json.keys():
                 # delete all file chunks in the IC
                 self.delete_sub_chunks(project_or_ic_json, files, file_chunks)
                 trash.delete_one(delete_query)
-                response = msg.IC_SUCCESSFULLY_DELETED
 
-            # update user's trash TODO trash should store specific ic data, not just project id
+                if len(list(shared.find())):
+                    all_shared = shared.find()[0]
+                    for key in all_shared.keys():
+                        if key == '_id':
+                            continue
+                        
+                        # find project association in all users and remove it
+                        for i, share in enumerate(all_shared[key]):
+                            if share['project_id'] == project_or_ic_json['project_id']:
+                                if share['ic_id'] != project_or_ic_json['ic_id']:
+                                    continue
+
+                                # delete object from this user's shared matching project_id & ic_id
+                                del all_shared[key][i]
+
+                    shared.update_one(
+                        {'_id': all_shared['_id']},
+                        {'$set': all_shared})
+
+                response = msg.IC_SUCCESSFULLY_DELETED
+            
+            # update user's trash
             my_trash = users_trash.find_one({'user_id': delete_ic_data['user_id']})
             for trashed_item in my_trash['trash']:
                 if trashed_item['project_id'] == delete_ic_data['project_id']:
@@ -1044,6 +1146,10 @@ class DBMongoAdapter:
         return size
 
     def change_color(self, file_obj):
+    # Warning: 
+    # Leaves An Open Connection! 
+    # Should Close Connection After Used
+    # db.close_connection(db_adapter)
         col = self._db.Projects
         project_query = {'project_name': file_obj["project_name"]}
         project_json = col.find_one(project_query, {'_id': 0})
@@ -1965,7 +2071,6 @@ class DBMongoAdapter:
 
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
-        has_rights = False
         project_json = None
 
         if not u:
@@ -1977,22 +2082,6 @@ class DBMongoAdapter:
         if not project_json:
             return msg.PROJECT_NOT_FOUND
 
-        # iterate through user's projects
-        for pr in u['projects']:
-            if project_json['project_id'] == pr['project_id']:
-                if pr['role'] <= Role.ADMIN.value:
-                    has_rights = True
-                break
-                    
-        # iterate through user's shared
-        ics, ic_shares = self.get_my_shares(session_user)
-        for ic in ic_shares:
-            if ic['ic_id'] == request_data['ic_id']:
-                if ic['role'] <= Role.ADMIN.value:
-                    has_rights = True
-
-        if not has_rights:
-            return msg.USER_NO_RIGHTS
         # project_query = {'project_name': request_data['project_name']}
         # project_json = col.find_one(project_query, {'_id': 0})
         if project_json:
@@ -2144,32 +2233,14 @@ class DBMongoAdapter:
         user_query = {'user_id': session_user['id']}
         u = col_users.find_one(user_query, {'_id': 0})
 
-        has_rights = False
         project_json = None
 
         if not u:
             return msg.USER_NOT_FOUND
-        
-        # iterate through user's projects
-        project_json = self.get_project(request_data['project_name'], session_user)
-        for pr in u['projects']:
-            if project_json['project_id'] == pr['project_id']:
-                if pr['role'] != Role.WATCHER.value:
-                    has_rights = True
-                break
-
-        # iterate through user's shared
-        ics, ic_shares = self.get_my_shares(session_user)
-        for ic in ic_shares:
-            if ic['ic_id'] == request_data['ic_id']:
-                if ic['role'] <= Role.ADMIN.value:
-                    has_rights = True
-
-        if not has_rights:
-            return msg.USER_NO_RIGHTS
             
-        # project_query = {'project_name': request_data['project_name']}
-        # project_json = col.find_one(project_query, {'_id': 0})
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+        
         if project_json:
             project = Project.json_to_obj(project_json)
             message = project.remove_access(request_data, project.root_ic)

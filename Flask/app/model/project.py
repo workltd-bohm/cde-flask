@@ -184,7 +184,6 @@ class Project:
         else:
             if ic.name == file.name and ic.type == file.type:
                 ic.stored_id = file.stored_id
-                print("ovdeeeeeee", ic.to_json())
                 self._added = True
 
         return self, self._added

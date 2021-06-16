@@ -40,22 +40,32 @@ function NewProject(form) {
         });
 }
 
-function SharePopup(form) {
+function SharePopup(form, tmp) {
     LoadStart();
-    $.get("/get_share")
-        .done(function(data) {
+    console.log(tmp.ic_id)
+    $.ajax({
+        url:        "/get_share",
+        method:     "POST",
+        data: JSON.stringify({
+            ic_id:          tmp.ic_id,
+            parent_id:      tmp.parent_id,
+            is_directory:   tmp.is_directory
+        }),
+        timeout: 30000,
+        success: function(data){
             input_json = JSON.parse(data);
             html = input_json['html'];
             form.empty();
             form.append(html);
-            autocomplete(document.getElementById("user_name_share"), input_json['data']);
+            autocomplete(document.getElementById("access-add-username-pop"), input_json['data']);
             LoadStop();
-        })
-        .fail(function($jqXHR, textStatus, errorThrown) {
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
             MakeSnackbar(textStatus);
             PopupClose();
-        });
+        }
+    });
 }
 
 function ShareProject(data) {
@@ -67,7 +77,8 @@ function ShareProject(data) {
             project_id: data,
             parent_id: SESSION['position'].parent_id,
             user_name: document.getElementById('user_name_share').value,
-            role: $("#role_share option:selected").text()
+            role: $("#role_share option:selected").text(),
+            exp_date: $("#access-exp-date").text()
         }),
         timeout: 10000,
         success: function(data) {
@@ -283,7 +294,7 @@ function sendFile(files, folders, current, fileData = {}) {
         //dataType: "json",
         processData: false,
         contentType: false,
-        //        timeout: 20000,
+        // timeout: 0,
         success: function(data) {
             //            console.log(data);
 

@@ -1,5 +1,5 @@
 USER_ALREADY_IN = {"message": "email already exists in the data base!", "code": 409}
-INVALID_USER_PASS = {"message": "Invalid Username/password combination!", "code": 404}
+INVALID_USER_PASS = {"message": "Invalid email/password combination!", "code": 404}
 SIGNED_IN = {"message": "SIGNED IN", "code": 200}
 LOGGED_IN = {"message": "LOGGED IN", "code": 200}
 USER_NOT_FOUND = {"message": "User not found", "code": 404}

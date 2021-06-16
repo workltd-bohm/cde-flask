@@ -106,6 +106,9 @@ function WrapPaste() {
 }
 
 function WrapShare(data) {
+    PopupOpen(SharePopup, data.values.data);
+    return;
+
     //var o = Object.values(CHECKED);
     //var multi = [];
     //for (var i = 0; i < o.length; i++) multi.push({ic_id: o[i].ic_id, parent_id: o[i].parent_id});

@@ -30,6 +30,7 @@ db_adapter = cfg.config['basic'].DB
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.secret_key = cfg.config['basic'].SECRET_KEY
+app.config['MAX_CONTENT_LENGTH'] = pow(1024, 3) * 3
 
 from app.views import main
 from app.views import login

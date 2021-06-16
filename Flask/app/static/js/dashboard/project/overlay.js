@@ -962,7 +962,9 @@ function CreateActionMenu()
     button_preview.appendChild(span);
 
     button_preview.onclick = function (e) {
-        CreateMenu(e, g_project.current_ic, g_OverSelect);
+        let select_type = g_project.current_ic.overlay_type === "trash" ?
+            g_OverSelectTrash : g_OverSelect;
+        CreateMenu(e, g_project.current_ic, select_type);
     }
 
     $(".hover-menu").prepend(button_preview);

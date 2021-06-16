@@ -40,12 +40,15 @@ function terminalListen(el) {
     var key = window.event.keyCode;
     if (key != 13)
         return true;
+        
     if (key === 13 && el.shiftKey) {
         return true;
     }
+
     if ($('#terminal-input').val() == '') {
         return true;
     }
+
     terminal = $('#terminal-input').val().split(' ');
 
     $('#terminal-input').val('');
@@ -872,7 +875,6 @@ function searchByTag(currValArray) {
 function searchByName(currValArray) {
     //    tempArr = currValArray;
     if (!arraysEqual(searchArr, currValArray)) {
-        console.log('searchByName');
         searchArr = currValArray;
         //        LoadStart();
         $.ajax({
@@ -919,6 +921,7 @@ function arraysEqual(a, b) {
 }
 
 function deleteTerminalInput() {
+    $("#terminal-input").val("");
     location.reload();
 }
 

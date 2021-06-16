@@ -102,8 +102,6 @@ function SendProject(data) {
         revision: data.revision
     };
 
-    SESSION.view = g_view;
-
     SEARCH_HISTORY = data;
 
     if (!backButtonFlag) {
@@ -121,11 +119,10 @@ function SendProject(data) {
                 $('.tree-view').show();
                 CreateTreeStructure();
             } else {
-
                 // let node = findTheNode(treeStruct.getRoot().getChildren()[0]);
-                // if (typeof node != 'undefined') {
+                // if ( node ) {
                 //     node.setExpanded(true);
-                //     // node.setSelected(true);
+                //     node.setSelected(true);
                 // }
             }
         },
@@ -465,6 +462,7 @@ function GetProject(position = null) {
                 if (data.session) {
                     SESSION = data.session;
                 }
+                console.log(data.json.root_ic);
                 CreateDashboard(data.json.root_ic, data.project);
                 //OpenFilterActivity(); 
                 // WrapOpenFile(data);  inside ..
@@ -535,6 +533,7 @@ function Select3D() {
 
 // Get trash and display on screen
 function SelectTrash() {
+    $('.tree-view').hide();
     ClearProject(true);
     SwitchDash(0);
     $.ajax({

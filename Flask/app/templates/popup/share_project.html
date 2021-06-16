@@ -1,20 +1,34 @@
 <h3>Share project</h3>
 <div class="scroll">
-  <div class="form__group field">
-    <input type="text" class="form__field" id="user_name_share" name="user_name_share" placeholder="username" required />
-    <label for="user_name_share" class="form__label">User</label>
-  </div>
+    <form>
+        <!-- Information Container data (backend fills) -->
+        <input type="text" hidden required id="project_id" name="project_id" value="{{ project_id }}" />
+        <input type="text" hidden required id="ic_id" name="ic_id" value="{{ ic_id }}" />
+        <input type="text" hidden required id="parent_id" name="parent_id" value="{{ parent_id }}" />
+        <input type="text" hidden required id="is_directory" name="is_directory" value="{{ is_directory }}" />
 
-  <div class="form__group field">
-      <select class="form__field" name="role_share" id='role_share' required >
-        <option></option>
-        <option>ADMIN</option>
-        <option>WATCHER</option>
-        <option>DEVELOPER</option>
-        <option>OWNER</option>
-      </select>
-      <label for="role_share" class="form__label">Role</label>
-  </div>
-  <br>
+        <div class="form__group field">
+            <input type="text" class="form__field" id="access-add-username-pop" name="user_name_share" placeholder="username" required />
+            <label for="user_name_share" class="form__label">User</label>
+        </div>
+        
+        <div class="form__group field">
+            <select class="form__field" name="role_share" id='access-add-role-pop' required >
+                <option>WATCHER</option>
+                <option>DEVELOPER</option>
+                <option>ADMIN</option>
+            </select>
+            <label for="role_share" class="form__label">Role</label>
+        </div>
+        
+        <div class="form__group field">
+        <input type="text" id="access-exp-date-pop" class="form-control" name="access_date_expired" 
+                placeholder="indefinitely" value="indefinitely" onfocus="(this.type='datetime-local')" 
+                onblur="(this.type='text')">
+        </div>
+
+        <br>
+        <input type="button" class="keypress" value="Share" onclick="AddAccessPop(this.closest('form'))" />
+    </form>
 </div>
-<input type="button" class="keypress" value="Share" onclick="ShareProject('{{ project_id }}')" />
+  

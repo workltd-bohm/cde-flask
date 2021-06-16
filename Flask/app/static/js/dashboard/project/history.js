@@ -57,6 +57,7 @@ function SubmitUndo(data) {
         success: function(data) {
             MakeSnackbar(data);
             CheckSession(); //GetProject();
+            CreateTreeStructure();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);

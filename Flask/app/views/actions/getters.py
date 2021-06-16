@@ -85,6 +85,7 @@ def get_project():
         position = session.get("project")["position"]
         project_name = session.get("project")["name"]
         user = session.get('user')
+        
         if db.connect(db_adapter):
             if project_name == 'Shared':
                 result, ic_shares = db.get_my_shares(db_adapter, user)
@@ -123,7 +124,8 @@ def get_project():
                 project = project.to_json()
                 
                 if project_name == 'Shared':
-                    for i, ic in enumerate(project['root_ic']['sub_folders']):
+                    project['root_ic']['overlay_type'] = "shared"
+                    for i, ic in enumerate(project['root_ic']['sub_folders']):  
                         project['root_ic']['sub_folders'][i]['project_id'] = ic_shares[i]['project_id']
 
                 resp.status_code = msg.DEFAULT_OK['code']
@@ -367,15 +369,15 @@ def get_trash():
                     proj_obj['project_id'] = trashed_project['project_id']
                     proj_obj['parent'] = "Trash"
                     proj_obj['history'] = trashed_project['history'] if 'history' in trashed_project.keys() else trashed_project['root_ic']['history']
-                    proj_obj['overlay_type'] = "trash_planet"
-                    # proj_obj["color"] = trashed_project["color"]
+                    proj_obj['overlay_type'] = "trash_planet"                    
 
                     if 'project_name' in trashed_project.keys():
                         # set project json
                         proj_obj['name'] =          trashed_project['project_name']
-                        proj_obj['is_directory'] =  "" 
-                        proj_obj['ic_id'] =         ""
+                        proj_obj['is_directory'] =  True 
+                        proj_obj['ic_id'] =         trashed_project['root_ic']['ic_id']
                         proj_obj['parent_id'] =     "root"
+                        proj_obj["color"] = trashed_project['root_ic']["color"]
                     else:
                         # set ic json
                         proj_obj['name'] =          trashed_project['name']
@@ -384,6 +386,7 @@ def get_trash():
                         proj_obj['is_directory'] =  trashed_project['is_directory']
                         proj_obj['ic_id'] =         trashed_project['ic_id']
                         proj_obj['parent_id'] =     trashed_project['parent_id']
+                        proj_obj["color"] = trashed_project["color"]
 
                     proj_obj['path'] = "Trash/" + proj_obj['name'] # TODO maybe leave path
 

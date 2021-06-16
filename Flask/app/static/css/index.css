@@ -364,7 +364,8 @@ body {
     /* border-bottom: 2px solid var(--neon-blue); */
     /*margin-left: 1rem;*/
     position: relative;
-    width: max(25vw, 400px);
+    width: 400px;
+    max-width: 25%;
 
 }
 

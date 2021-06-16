@@ -9,7 +9,6 @@ g_OverSelect = [
 
 // TODO 
 g_OverSelectTrash = [
-    { name : "DETAILS", icon : "preview",       link : WrapOpenFile},   // TODO display from which project, etc
     { name : "RESTORE", icon : "delete_sweep",  link : WrapRestore},    // display from which project, etc
     { name : "DESTROY", icon : "delete",        link : WrapDelete},     // display from which project, etc
 ]

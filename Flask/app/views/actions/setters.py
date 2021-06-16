@@ -111,267 +111,307 @@ def create_project():
 @app.route('/upload_existing_project', methods=['POST', 'GET'])
 def upload_existing_project():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
-    # print('>>>>>>>>>>>>>>>>>', request.args)
-    # print('>>>>>>>>>>>>>>>>>', request.form)
     logger.log(LOG_LEVEL, 'POST data: {}'.format(request.form))
 
     if 'user' in session:
         user = session['user']
+    else:
+        resp = Response()
+        resp.status_code = msg.UNAUTHORIZED['code']
+        resp.data = str(msg.UNAUTHORIZED['message'])
+        return resp
 
     if main.IsLogin():
         if db.connect(db_adapter):
             path = request.form['path']
             is_dir = request.form['is_dir']
-            project = db.get_project(db_adapter, path.split('/')[0], user)
-            u = {'user_id': session['user']['id'], 'username': session['user']['username']}
+            
+            project_name = session['project']['name']
+
+            # Cache Request Data
+            request_data = {}
+            request_data['ic_id'] = session['project']['position']['ic_id']
+            request_data['parent_id'] = session['project']['position']['parent_id']
+
+            # Get Project JSON
+            if project_name == "Shared":
+                project = db.get_project_from_shared(db_adapter, request_data, user)
+            else:
+                project = db.get_project(db_adapter, path.split('/')[0], user)
+
+            # Project Failsafe
             if not project:
                 logger.log(LOG_LEVEL, str(msg.PROJECT_NOT_FOUND['message']))
                 resp = Response()
                 resp.status_code = msg.PROJECT_NOT_FOUND['code']
                 resp.data = str(msg.PROJECT_NOT_FOUND['message'])
                 return resp
+
+            user_details = {'user_id': user['id'], 'username': user['username']}
+
+            # Convert To Project Obj & Find Role in IC
+            project = Project.json_to_obj(project)
+            this_ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic).to_json()
+            for usr_ax in this_ic['access']:
+                if usr_ax['role'] == Role.OWNER.value:
+                    user_owner = usr_ax['user']
+                if usr_ax['user']['user_id'] == user['id']:
+                    role = usr_ax['role']
+
+            user_access = {
+                'user_id': user['id'],
+                'username': user['username'],
+                'picture': user['picture']
+            }
+
+            print("OWNER", user_owner)
+            print("ACCESS", user_access)
+            
+            # If this user is OWNER & If he's a dev/admin
+            if role == Role.OWNER.value:
+                access = [Access(user_access, '', '', role, 'indefinitely')]
             else:
-                project = Project.json_to_obj(project)
-                us = {'user_id': session['user']['id'],
-                 'username': session['user']['username'],
-                 'picture': session['user']['picture']}
-                access = Access(us, '', '', Role.OWNER.value, 'indefinitely')
-                if is_dir == 'false':
-                    file = request.files['file'].read()
-                    counter = request.form['counter']
-                    total = request.form['total']
-                    original_path = path
+                access = [
+                    Access(user_owner, '', '', Role.OWNER.value, 'indefinitely'),
+                    Access(user_access, '', '', role, 'indefinitely')
+                    ]
 
-                    logger.log(LOG_LEVEL, 'Path: {}'.format(path))
-                    logger.log(LOG_LEVEL, 'Percentage: {}'.format(str((int(counter) / int(total)) * 100) + '%'))
+            if is_dir == 'false':
+                file = request.files['file'].read()
+                counter = request.form['counter']
+                total = request.form['total']
+                original_path = path
 
-                    current_file_path_old = path.split('/')
-                    file_name = current_file_path_old[-1]
+                logger.log(LOG_LEVEL, 'Path: {}'.format(path))
+                logger.log(LOG_LEVEL, 'Percentage: {}'.format(str((int(counter) / int(total)) * 100) + '%'))
 
-                    current_file_path_backup = current_file_path_old[:]
-                    current_file_path = current_file_path_old[1:-1]
+                current_file_path_old = path.split('/')
+                file_name = current_file_path_old[-1]
 
-                    parent_id = project.root_ic.ic_id
-                    parent_ic = project.root_ic
+                current_file_path_backup = current_file_path_old[:]
+                current_file_path = current_file_path_old[1:-1]
 
-                    for i in range(0, len(current_file_path)):
-                        name = current_file_path[i]
-                        new_id = str(uuid.uuid1())
-                        if i < 1:
-                            parent_directory = ('/').join(current_file_path_backup[0:1])
-                            path = ('/').join(current_file_path_backup[0:1])
+                parent_id = project.root_ic.ic_id
+                parent_ic = project.root_ic
+
+                for i in range(0, len(current_file_path)):
+                    name = current_file_path[i]
+                    new_id = str(uuid.uuid1())
+                    if i < 1:
+                        parent_directory = ('/').join(current_file_path_backup[0:1])
+                        path = ('/').join(current_file_path_backup[0:1])
+                    else:
+                        parent_directory = ('/').join(current_file_path_backup[0:i + 1])
+                        path = ('/').join(current_file_path_backup[0:i + 1])
+                    path = path + '/' + name
+                    details = Details(user_details, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                    
+                    ic_new = Directory(new_id,
+                                        name,
+                                        parent_directory,
+                                        [details],
+                                        path,
+                                        parent_id,
+                                        '',
+                                        [],
+                                        [],
+                                        [],
+                                        access
+                                        )
+
+                    parent_id = new_id
+
+                    project.added = False
+                    message, ic = project.update_ic(ic_new, parent_ic)
+                    # message, ic = db.create_folder(db_adapter, project.name, ic_new)
+
+                    # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                    # if message == msg.IC_SUCCESSFULLY_ADDED:
+                    #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                    #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                    #     else:
+                    #         if session['user']['id'] not in temp_upload_list:
+                    #             temp_upload_list[session['user']['id']] = {}
+                    #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
+
+                    parent_ic = ic_new
+                    if message == msg.IC_ALREADY_EXISTS:
+                        parent_id = ic.ic_id
+                        parent_ic = ic
+
+                message = db.update_project(db_adapter, project, user)
+                if message == msg.PROJECT_SUCCESSFULLY_UPDATED:
+                    new_id = str(uuid.uuid1())
+                    name = ('.').join(file_name.split('.')[:-1])
+                    original_path = ('.').join(original_path.split('.')[:-1])
+
+                    parent_directory = ('/').join(current_file_path_backup[:-1])
+
+                    comments = []
+                    if 'comment' in request.form:
+                        comments.append(Comments(str(uuid.uuid1()), user_access, request.form['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S")))
+                    
+                    details = Details(user_details, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
+                                        ('').join(['.', file_name.split('.')[-1]]))
+
+                    tags = []
+                    # temp_name_array = []
+                    # if project.is_iso19650:
+                    temp_name_array = name.split('-')
+                    if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
+                        if 'file_data' in request.form:
+                            file_data = json.loads(request.form['file_data'])
                         else:
-                            parent_directory = ('/').join(current_file_path_backup[0:i + 1])
-                            path = ('/').join(current_file_path_backup[0:i + 1])
-                        path = path + '/' + name
-                        details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                            name, file_data = iso_auto_naming(temp_name_array, name)
+                            original_path_temp = original_path.split('/')
+                            original_path_temp[len(original_path_temp) - 1] = name
+                            original_path = '/'.join(original_path_temp)
+                        for key in file_data:
+                            # print("key: {} ||||||| value: {}".format(key, file_data[key]))
+                            if key != 'name' and key != 'file_extension': # and key != 'project_code' and key != 'company_code':
+                                tag = '#' + file_data[key]
+                                if file_data[key] == '':
+                                    tag = ''
+                                tags.append(ISO19650(key, tag, 'ISO19650', 'grey'))
+
+                    ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
+                                        ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
+                                        comments, tags, [], access, '', '')
+
+                    project.added = False
+                    encoded = file
+                    # print('+++++++++', encoded)
+                    # print('+++++++++', len(file))
+                    # TODO: fix this mess
+                    if len(file) == 0:
+                        logger.log(LOG_LEVEL, 'File has 0kb - not uploaded')
+                        return request.form['path']
+
+                    # Create A Thumbnail For These File Types
+                    file_type = file_name.split('.')[-1]
+                    if file_type.lower() == 'jpg' or \
+                            file_type.lower() == 'jpeg' or \
+                            file_type.lower() == 'jpe' or \
+                            file_type.lower() == 'jfif' or \
+                            file_type.lower() == 'png' or \
+                            file_type.lower() == 'gif' or \
+                            file_type.lower() == 'bmp' or \
+                            file_type.lower() == 'webp' or \
+                            file_type.lower() == 'tif' or \
+                            file_type.lower() == 'tiff':
+                            
+                        thumb = Image.open(io.BytesIO(file))
+                        MAX_SIZE = (256, 256)
+                        thumb.thumbnail(MAX_SIZE)
+                        output = io.BytesIO()
+                        thumb.save(output, format='png')
                         
-                        ic_new = Directory(new_id,
-                                           name,
-                                           parent_directory,
-                                           [details],
-                                           path,
-                                           parent_id,
-                                           '',
-                                           [],
-                                           [],
-                                           [],
-                                           [access]
-                                           )
+                        contents = output.getvalue()
 
-                        parent_id = new_id
+                        output.close()
 
-                        project.added = False
-                        message, ic = project.update_ic(ic_new, parent_ic)
-                        # message, ic = db.create_folder(db_adapter, project.name, ic_new)
-
-                        # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
-                        # if message == msg.IC_SUCCESSFULLY_ADDED:
-                        #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
-                        #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
-                        #     else:
-                        #         if session['user']['id'] not in temp_upload_list:
-                        #             temp_upload_list[session['user']['id']] = {}
-                        #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
-
-                        parent_ic = ic_new
-                        if message == msg.IC_ALREADY_EXISTS:
-                            parent_id = ic.ic_id
-                            parent_ic = ic
-
-                    message = db.update_project(db_adapter, project, user)
-                    if message == msg.PROJECT_SUCCESSFULLY_UPDATED:
-                        new_id = str(uuid.uuid1())
-                        name = ('.').join(file_name.split('.')[:-1])
-                        original_path = ('.').join(original_path.split('.')[:-1])
-
-                        parent_directory = ('/').join(current_file_path_backup[:-1])
-
-                        comments = []
-                        if 'comment' in request.form:
-                            comments.append(Comments(str(uuid.uuid1()), us, request.form['comment'], datetime.now().strftime("%d.%m.%Y-%H:%M:%S")))
+                        thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
+                        ic_new_file.thumb_id = thumb_id
                         
-                        details = Details(u, 'Created file', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name +
-                                          ('').join(['.', file_name.split('.')[-1]]))
+                    result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
 
-                        tags = []
-                        # temp_name_array = []
-                        # if project.is_iso19650:
-                        temp_name_array = name.split('-')
+                    # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                    # if result == msg.IC_SUCCESSFULLY_ADDED:
+                    #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                    #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                    #     else:
+                    #         if session['user']['id'] not in temp_upload_list:
+                    #             temp_upload_list[session['user']['id']] = {}
+                    #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
+
+                    if result != msg.IC_SUCCESSFULLY_ADDED:
+                        logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
+                        resp = Response()
+                        resp.status_code = result['code']
+                        resp.data = result['message']
+                        return resp
+                    else:
                         if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
                             if 'file_data' in request.form:
                                 file_data = json.loads(request.form['file_data'])
-                            else:
-                                name, file_data = iso_auto_naming(temp_name_array, name)
-                                original_path_temp = original_path.split('/')
-                                original_path_temp[len(original_path_temp) - 1] = name
-                                original_path = '/'.join(original_path_temp)
+                            # else:
+                            #     file_data = json_tags
+                            request_data = {}
+                            request_data['project_name'] = project.name
+                            request_data['ic_id'] = new_id
+                            request_data['parent_id'] = parent_id
+                            request_data['iso'] = 'ISO19650'
+                            request_data['tags'] = {}
                             for key in file_data:
-                                # print("key: {} ||||||| value: {}".format(key, file_data[key]))
-                                if key != 'name' and key != 'file_extension': # and key != 'project_code' and key != 'company_code':
-                                    tag = '#' + file_data[key]
-                                    if file_data[key] == '':
-                                        tag = ''
-                                    tags.append(ISO19650(key, tag, 'ISO19650', 'grey'))
+                                # print("key: {} | value: {}".format(key, file_data[key]))
+                                if key != 'name' and key != 'file_extension': # and key != 'project_code':
+                                    request_data['tags'][key] = file_data[key]
+                            request_data['update'] = False
+                            update_tags = db.update_iso_tags(db_adapter, request_data)
+                            logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
+                        return request.form['path']
+            else:
+                folders = json.loads(request.form['folders'])
+                for folder in folders:
+                    logger.log(LOG_LEVEL, 'Folder: {}'.format(folder))
+                    current_dir_path = folder['path'].split('/')[1:]
+                    current_full_path = folder['path'].split('/')
+                    parent_id = project.root_ic.ic_id
+                    parent_ic = project.root_ic
+                    for i in range(0, len(current_dir_path)):
+                        name = current_dir_path[i]
+                        if name != '':
+                            new_id = str(uuid.uuid1())
+                            if i < 1:
+                                parent_directory = ('/').join(current_full_path[0:1])
+                                path = ('/').join(current_full_path[0:1])
+                            else:
+                                parent_directory = ('/').join(current_full_path[0:i + 1])
+                                path = ('/').join(current_full_path[0:i + 1])
+                            path = path + '/' + name
 
-                        ic_new_file = File(new_id, name, name, parent_directory, [details], original_path,
-                                           ('').join(['.', file_name.split('.')[-1]]), parent_id, '',
-                                           comments, tags, [], [access], '', '')
+                            details = Details(user_details, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
+                            ic_new = Directory(new_id,
+                                            name,
+                                            parent_directory,
+                                            [details],
+                                            path,
+                                            parent_id,
+                                            '',
+                                            [],
+                                            [],
+                                            [],
+                                            access
+                                            )
 
-                        project.added = False
-                        encoded = file
-                        # print('+++++++++', encoded)
-                        # print('+++++++++', len(file))
-                        # TODO: fix this mess
-                        if len(file) == 0:
-                            logger.log(LOG_LEVEL, 'File has 0kb - not uploaded')
-                            return request.form['path']
+                            parent_id = new_id
 
-                        # Create A Thumbnail For These File Types
-                        file_type = file_name.split('.')[-1]
-                        if file_type.lower() == 'jpg' or \
-                                file_type.lower() == 'jpeg' or \
-                                file_type.lower() == 'jpe' or \
-                                file_type.lower() == 'jfif' or \
-                                file_type.lower() == 'png' or \
-                                file_type.lower() == 'gif' or \
-                                file_type.lower() == 'bmp' or \
-                                file_type.lower() == 'webp' or \
-                                file_type.lower() == 'tif' or \
-                                file_type.lower() == 'tiff':
-                                
-                            thumb = Image.open(io.BytesIO(file))
-                            MAX_SIZE = (256, 256)
-                            thumb.thumbnail(MAX_SIZE)
-                            output = io.BytesIO()
-                            thumb.save(output, format='png')
-                            
-                            contents = output.getvalue()
+                            project.added = False
+                            message, ic = project.update_ic(ic_new, parent_ic)
 
-                            output.close()
+                            # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
+                            # if message == msg.IC_SUCCESSFULLY_ADDED:
+                            #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
+                            #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
+                            #     else:
+                            #         if session['user']['id'] not in temp_upload_list:
+                            #             temp_upload_list[session['user']['id']] = {}
+                            #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
+                            # print('ovde', ic_new.to_json())
+                            # print(message)
+                            # message, ic = db.create_folder(db_adapter, project.name, ic_new)
+                            parent_ic = ic_new
+                            logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
+                            if message == msg.IC_ALREADY_EXISTS:
+                                parent_id = ic.ic_id
+                                parent_ic = ic
+                    message = db.update_project(db_adapter, project, user)
+                    logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
 
-                            thumb_id = db.upload_thumb(db_adapter, project.name, ic_new_file, contents)
-                            ic_new_file.thumb_id = thumb_id
-                            
-                        result = db.upload_file(db_adapter, project.name, ic_new_file, encoded)
-
-                        # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
-                        # if result == msg.IC_SUCCESSFULLY_ADDED:
-                        #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
-                        #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
-                        #     else:
-                        #         if session['user']['id'] not in temp_upload_list:
-                        #             temp_upload_list[session['user']['id']] = {}
-                        #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
-
-                        if result != msg.IC_SUCCESSFULLY_ADDED:
-                            logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
-                            resp = Response()
-                            resp.status_code = result['code']
-                            resp.data = result['message']
-                            return resp
-                        else:
-                            if 'file_data' in request.form or (len(temp_name_array) == 9 or len(temp_name_array) == 10):
-                                if 'file_data' in request.form:
-                                    file_data = json.loads(request.form['file_data'])
-                                # else:
-                                #     file_data = json_tags
-                                request_data = {}
-                                request_data['project_name'] = project.name
-                                request_data['ic_id'] = new_id
-                                request_data['parent_id'] = parent_id
-                                request_data['iso'] = 'ISO19650'
-                                request_data['tags'] = {}
-                                for key in file_data:
-                                    # print("key: {} | value: {}".format(key, file_data[key]))
-                                    if key != 'name' and key != 'file_extension': # and key != 'project_code':
-                                        request_data['tags'][key] = file_data[key]
-                                request_data['update'] = False
-                                update_tags = db.update_iso_tags(db_adapter, request_data)
-                                logger.log(LOG_LEVEL, 'DB Response message: {}'.format(update_tags["message"]))
-                            return request.form['path']
-                else:
-                    folders = json.loads(request.form['folders'])
-                    for folder in folders:
-                        logger.log(LOG_LEVEL, 'Folder: {}'.format(folder))
-                        current_dir_path = folder['path'].split('/')[1:]
-                        current_full_path = folder['path'].split('/')
-                        parent_id = project.root_ic.ic_id
-                        parent_ic = project.root_ic
-                        for i in range(0, len(current_dir_path)):
-                            name = current_dir_path[i]
-                            if name != '':
-                                new_id = str(uuid.uuid1())
-                                if i < 1:
-                                    parent_directory = ('/').join(current_full_path[0:1])
-                                    path = ('/').join(current_full_path[0:1])
-                                else:
-                                    parent_directory = ('/').join(current_full_path[0:i + 1])
-                                    path = ('/').join(current_full_path[0:i + 1])
-                                path = path + '/' + name
-
-                                details = Details(u, 'Created folder', datetime.now().strftime("%d.%m.%Y-%H:%M:%S"), name)
-                                ic_new = Directory(new_id,
-                                                name,
-                                                parent_directory,
-                                                [details],
-                                                path,
-                                                parent_id,
-                                                '',
-                                                [],
-                                                [],
-                                                [],
-                                                [access]
-                                                )
-
-                                parent_id = new_id
-
-                                project.added = False
-                                message, ic = project.update_ic(ic_new, parent_ic)
-
-                                # if deletion needs to be performed after pressing the x button on the upload popup, but havin in mind all that has been already uploaded
-                                # if message == msg.IC_SUCCESSFULLY_ADDED:
-                                #     if session['user']['id'] in temp_upload_list and 'ics' in temp_upload_list[session['user']['id']]:
-                                #         temp_upload_list[session['user']['id']]['ics'].append({'ic_id': new_id, 'time': datetime.now()})
-                                #     else:
-                                #         if session['user']['id'] not in temp_upload_list:
-                                #             temp_upload_list[session['user']['id']] = {}
-                                #         temp_upload_list[session['user']['id']]['ics'] = [{'ic_id': new_id, 'time': datetime.now()}]
-                                # print('ovde', ic_new.to_json())
-                                # print(message)
-                                # message, ic = db.create_folder(db_adapter, project.name, ic_new)
-                                parent_ic = ic_new
-                                logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
-                                if message == msg.IC_ALREADY_EXISTS:
-                                    parent_id = ic.ic_id
-                                    parent_ic = ic
-                        message = db.update_project(db_adapter, project, user)
-                        logger.log(LOG_LEVEL, 'Response message: {}'.format(message["message"]))
-
-                    resp = Response()
-                    resp.status_code = msg.PROJECT_SUCCESSFULLY_UPLOADED['code']
-                    resp.data = msg.PROJECT_SUCCESSFULLY_UPLOADED['message']
-                    return resp
+                resp = Response()
+                resp.status_code = msg.PROJECT_SUCCESSFULLY_UPLOADED['code']
+                resp.data = msg.PROJECT_SUCCESSFULLY_UPLOADED['message']
+                return resp
         else:
             logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
             resp = Response()
@@ -456,32 +496,57 @@ def set_color():
 
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False
 
             if project_name == 'Shared':
                 result = db.get_project_from_shared(db_adapter, request_data, user)
+
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                if not this_ic:
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+                
+                # Checkk Roles For Shared IC/FILE
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:
+                            user_has_access = True
+
                 project_name = result['project_name']
                 
             if request_data['ic_id'] == '':                                 # if changing root ic (Project) color
                 result = db.get_project(db_adapter, project_name, user)
                 my_roles = db.get_my_roles(db_adapter, user)
                 for project in my_roles['projects']:
-                    if project['project_id'] == result['project_id']:       # find project matching this one
-                        if project['role'] > Role.OWNER.value:              # exit with error if user is not owner
-                            resp = Response()
-                            resp.status_code = msg.USER_NO_RIGHTS['code']
-                            resp.data = msg.USER_NO_RIGHTS['message']
-                            return resp
+                    if project['project_id'] == result['project_id']:      
+                        if project['role'] <= Role.OWNER.value: 
+                            user_has_access = True
+            else:                                                           # if changing ic
+                # Check Roles
+                result = db.get_project(db_adapter, project_name, user)
+                
+                if not result:  # Failsafe
+                    logger.log(LOG_LEVEL, 'Error: {}'.format(str(msg.DB_FAILURE)))
+                    resp = Response()
+                    resp.status_code = msg.DB_FAILURE['code']
+                    resp.data = str(msg.DB_FAILURE['message'])
+                    return resp
 
-            # Check RolesF
-            result = db.get_project(db_adapter, project_name, user)
-            my_roles = db.get_my_roles(db_adapter, user)
-            for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                my_roles = db.get_my_roles(db_adapter, user)
+                for project in my_roles['projects']:
+                    if project['project_id'] == result['project_id']:       # find project matching this one
+                        if project['role'] <= Role.DEVELOPER.value:         # exit with error if user is not at least developer
+                            user_has_access = True
+
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
             
             color_change = {
                 "project_name": project_name,
@@ -632,22 +697,65 @@ def add_tag():
     logger.log(LOG_LEVEL, 'Data posting path: {}'.format(request.path))
     if main.IsLogin():
         request_data = json.loads(request.get_data())
+        
         if 'project_name' in request_data.keys():
             if request_data['project_name'] == '':
                 request_data['project_name'] = session['project']['name']
+
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
+        
         if db.connect(db_adapter):
             # Check Roles
             user = session.get('user')
-            result = db.get_project(db_adapter, request_data['project_name'], user)
+            
+            # Get Project
+            if request_data['project_name'] == "Shared":
+                result = db.get_project_from_shared(db_adapter, request_data, user)
+            else:
+                result = db.get_project(db_adapter, request_data['project_name'], user)
+            
+            # Failsafe Get Project
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            # Assume No Access
+            user_has_access = False
+            
+            # Search For The Access On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
-                if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                if project['project_id'] == result['project_id']:       
+                    if project['role'] <= Role.DEVELOPER.value:          
+                        user_has_access = True
+
+            # Get Specific IC in the Project
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            # FailSafe Get This IC
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            # Search For The Access On IC level
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                        user_has_access = True
+
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             result = db.add_tag(db_adapter, request_data, request_data['tags'])
             if result:
@@ -678,15 +786,52 @@ def remove_tag():
         if db.connect(db_adapter):
             # Check Roles
             user = session.get('user')
+            
+            # Get Project
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            # Failsafe Get Project
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            # Assume No Access
+            user_has_access = False
+
+            # Access On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        user_has_access = True
+
+            # Convert Project To Object To Find specific IC
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            # Failsafe This IC
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+
+            # Check Access On Specific IC level
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                    if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                        user_has_access = True
+
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             result = db.remove_tag(db_adapter, request_data, request_data['tag'])
             if result:
@@ -713,19 +858,49 @@ def update_iso_tags():
         
         if db.connect(db_adapter):
             user = session.get('user')
+            user_has_access = False # assume no access
 
-            # Check Roles
-            result = db.get_project(db_adapter, request_data['project_name'], user)
+            if request_data['project_name'] == "Shared":
+                result = db.get_project_from_shared(db_adapter, request_data, user)
+
+                # Check roles on IC level
+                this_project = Project.json_to_obj(result)
+                this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+                # Failsafe This IC
+                if not this_ic:
+                    logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                    resp = Response()
+                    resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                    resp.data = msg.IC_PATH_NOT_FOUND['message']
+                    return resp
+
+                # Check Access On Specific IC level
+                for user_with_access in this_ic['access']:
+                    if user_with_access['user']['user_id'] == user['id']:           # if this user is found
+                        if user_with_access['role'] <= Role.DEVELOPER.value:        # if access allows this action
+                            user_has_access = True
+
+                request_data['project_name'] = result['project_name']
+            else:
+                result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            # Check Roles On Project Level
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.DEVELOPER.value:          # exit with error if user is not at least developer
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.DEVELOPER.value:          # exit with error if user is not at least developer
+                        user_has_access = True
+
+            # Filter Out User With No Access
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             result = db.update_iso_tags(db_adapter, request_data)
+
             if result:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(result["message"]))
                 resp = Response()
@@ -755,6 +930,7 @@ def add_access():
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
             user = session.get('user')
             
+            # prevent acces to self
             if request_data['user_name'] == user['username']:
                 logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
                 resp = Response()
@@ -764,14 +940,45 @@ def add_access():
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:  # failsafe
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
+
+            # check user's projects shared
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # If user doesn't get access - deny access add
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             # If Project Root Is Shared - Share Whole Project
             if request_data['parent_id'] == 'root':
@@ -809,6 +1016,8 @@ def update_access():
         if db.connect(db_adapter):
             user = session.get('user')
 
+            # TODO find project name for SHARED
+
             # {'project_id': '5fce1e6b8eee26f4bdc2cfc5', 'parent_id': 'root', 'user_name': '222', 'role': 'ADMIN'}
             # {'project_name': 'CV', 'ic_id': 'cff253cf-3886-11eb-b860-50e085759744', 'parent_id': 'root', 'is_directory': True, 'user_name': '222', 'role': 'ADMIN'}
             if request_data['user']['username'] == user['username']:
@@ -820,14 +1029,45 @@ def update_access():
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:  # failsafe
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
+
+            # check user's projects shared
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Check Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # If user doesn't get access - deny access add
+            if not user_has_access:
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             if request_data['parent_id'] == 'root':
                 result = db.update_share_project(db_adapter, request_data, user)
@@ -861,17 +1101,56 @@ def remove_access():
         logger.log(LOG_LEVEL, 'POST data: {}'.format(request_data))
         if db.connect(db_adapter):
             user = session.get('user')
+            # CHECK IF SHARED TODO
+
+            if request_data['user']['username'] == user['username']:
+                logger.log(LOG_LEVEL, 'Response message: {}'.format(msg.ACCESS_TO_YOURSELF))
+                resp = Response()
+                resp.status_code = msg.ACCESS_TO_YOURSELF["code"]
+                resp.data = msg.ACCESS_TO_YOURSELF['message'].replace("grant", "remove").replace("to", "from")
+                return resp
 
             # Check Roles
             result = db.get_project(db_adapter, request_data['project_name'], user)
+
+            if not result:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.PROJECT_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.PROJECT_NOT_FOUND['code']
+                resp.data = msg.PROJECT_NOT_FOUND['message']
+                return resp
+
+            user_has_access = False
             my_roles = db.get_my_roles(db_adapter, user)
             for project in my_roles['projects']:
                 if project['project_id'] == result['project_id']:       # find project matching this one
-                    if project['role'] > Role.ADMIN.value:              # exit with error if user is not at least admin
-                        resp = Response()
-                        resp.status_code = msg.USER_NO_RIGHTS['code']
-                        resp.data = msg.USER_NO_RIGHTS['message']
-                        return resp
+                    if project['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+            
+            # convert project to object so that we can find specific ic inside it
+            this_project = Project.json_to_obj(result)
+            this_ic = this_project.find_ic_by_id(request_data, request_data['ic_id'], this_project.root_ic).to_json()
+
+            if not this_ic:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.IC_PATH_NOT_FOUND))
+                resp = Response()
+                resp.status_code = msg.IC_PATH_NOT_FOUND['code']
+                resp.data = msg.IC_PATH_NOT_FOUND['message']
+                return resp
+            
+            # Checkk Roles For Shared IC/FILE
+            for user_with_access in this_ic['access']:
+                if user_with_access['user']['user_id'] == user['id']:   # if this user is found
+                    if user_with_access['role'] <= Role.ADMIN.value:
+                        user_has_access = True
+
+            # Deny Access Update If No Access
+            if not user_has_access:
+                logger.log(LOG_LEVEL, 'Data posting path: {}'.format(msg.USER_NO_RIGHTS))
+                resp = Response()
+                resp.status_code = msg.USER_NO_RIGHTS['code']
+                resp.data = msg.USER_NO_RIGHTS['message']
+                return resp
 
             if request_data['parent_id'] == 'root':
                 # result = db.remove_access(db_adapter, request_data, user)
