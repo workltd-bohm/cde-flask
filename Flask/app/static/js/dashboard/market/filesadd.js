@@ -80,6 +80,22 @@ function SelectBlur(el) {
     });
 }
 
+function InputValue(el) {
+    if ($(el).val() != '') {
+        $(el).css('background-color', '#7cd17e');
+    } else {
+        $(el).css('background-color', '#FA8072');
+    }
+}
+
+function SelectValue(el) {
+    if ($(el).children("option:selected").attr('data-descr') != '') {
+        $(el).css('background-color', '#7cd17e');
+    } else {
+        $(el).css('background-color', '#FA8072');
+    }
+}
+
 function createISORenamingPopup(files, folders) {
     LoadStart();
     position = SESSION['position'];
@@ -112,113 +128,171 @@ function createISORenamingPopup(files, folders) {
                 $('#smart_naming').append(tr);
 
                 let file_name = files[i].file.name;
-                let extension = '';
-                try {
-                    splitted = file_name.split('.');
-                    file_name = splitted[0];
-                    extension = splitted[1];
-                } catch {}
 
-                tags = [];
-                try {
-                    tags = file_name.split('-');
-                } catch {}
+                $.ajax({
+                    url: "/parse_iso_file_name",
+                    type: 'POST',
+                    data: JSON.stringify({
+                        project_path: position.path,
+                        file_name: file_name
+                    }),
+                    success: function(data) {
+                        console.log(JSON.parse(data));
 
-                if (tags.length == 9 || tags.length == 10) {
-                    el = $(tr).find("input[name='project_code']");
-                    el.val(tags[0]);
-                    changeColorCustom(el, '#7cd17e');
-                    el = $(tr).find("input[name='company_code']");
-                    el.val(tags[1]);
-                    changeColorCustom(el, '#7cd17e');
+                        let result = JSON.parse(data);
 
-                    el = $(tr).find("select[name='project_volume_or_system']");
-                    if (tags[2] in input_file.project_volume_or_system) {
-                        el.val(tags[2] + ', ' + input_file.project_volume_or_system[tags[2]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
+                        // Volume/System
+                        let el = $(tr).find("select[name='project_volume_or_system']");
 
-                    el = $(tr).find("select[name='project_level']");
-                    if (tags[3] in input_file.project_level) {
-                        el.val(tags[3] + ', ' + input_file.project_level[tags[3]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
-
-                    el = $(tr).find("select[name='type_of_information']");
-                    if (tags[4] in input_file.type_of_information) {
-                        el.val(tags[4] + ', ' + input_file.type_of_information[tags[4]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
-
-                    el = $(tr).find("select[name='role_code']");
-                    if (tags[5] in input_file.role_code) {
-                        el.val(tags[5] + ', ' + input_file.role_code[tags[5]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
-
-                    el = $(tr).find("input[name='file_number']");
-                    if (tags[6] in input_file.file_number) {
-                        el.val(tags[6] + ', ' + input_file.file_number[tags[6]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
-
-                    el = $(tr).find("select[name='status']");
-                    if (tags[7] in input_file.status) {
-                        el.val(tags[7] + ', ' + input_file.status[tags[7]]);
-                        changeColorCustom(el, '#7cd17e');
-                    } else {
-                        changeColorCustom(el, '#FA8072');
-                    }
-                    if (tags.length == 9) {
-                        el = $(tr).find("select[name='revision']");
-                        if (tags[8].split('_')[0] in input_file.revision) {
-                            el.val(tags[8].split('_')[0] + ', ' + input_file.revision[tags[8].split('_')[0]]);
-                            changeColorCustom(el, '#7cd17e');
+                        if (result.volume_system != null) {
+                            if (result.volume_system.value in input_file.project_volume_or_system) {
+                                changeColorCustom(el, '#7cd17e');
+                            } else {
+                                el.append($('<option>', {
+                                    'data-descr': '',
+                                    value: result.volume_system.value,
+                                    text: result.volume_system.value
+                                }));
+                                changeColorCustom(el, '#FA8072');
+                            }
+                            el.val(result.volume_system.value);
                         } else {
+                            el.val('');
                             changeColorCustom(el, '#FA8072');
                         }
-                        file_name = tags[8].split('_').slice(1).join('_');
-                    }
-                    if (tags.length == 10) {
-                        el = $(tr).find("select[name='revision']");
-                        if (tags[8] in input_file.revision) {
-                            el.val(tags[8] + ', ' + input_file.revision[tags[8]]);
-                            changeColorCustom(el, '#7cd17e');
+                        // Volume/System
+
+                        // Level/Location
+                        el = $(tr).find("select[name='project_level']");
+
+                        if (result.level_location != null) {
+                            if (result.level_location.value in input_file.project_level) {
+                                changeColorCustom(el, '#7cd17e');
+                            } else {
+                                el.append($('<option>', {
+                                    'data-descr': '',
+                                    value: result.level_location.value,
+                                    text: result.level_location.value
+                                }));
+                                changeColorCustom(el, '#FA8072');
+                            }
+                            el.val(result.level_location.value);
                         } else {
                             changeColorCustom(el, '#FA8072');
+                            el.val('');
                         }
+                        // Level/Location
 
-                        el = $(tr).find("select[name='uniclass_2015']");
-                        if (tags[9] in input_file.uniclass_2015) {
-                            el.val(tags[9].split('_')[0] + ', ' + input_file.uniclass_2015[tags[9].split('_')[0]]);
-                            changeColorCustom(el, '#7cd17e');
+                        // Type
+                        el = $(tr).find("select[name='type_of_information']");
+
+                        if (result.type != null) {
+                            if (result.type.value in input_file.type_of_information) {
+                                changeColorCustom(el, '#7cd17e');
+                            } else {
+                                el.append($('<option>', {
+                                    'data-descr': '',
+                                    value: result.type.value,
+                                    text: result.type.value
+                                }));
+                                changeColorCustom(el, '#FA8072');
+                            }
+                            el.val(result.type.value);
                         } else {
                             changeColorCustom(el, '#FA8072');
+                            el.val('');
                         }
-                        file_name = tags[9].split('_').slice(1).join('_');
-                    }
-                }
+                        // Type
 
-                el = $(tr).find("input[name='name']");
-                el.val(file_name);
-                changeColorCustom(el, '#7cd17e');
-                el = $(tr).find("input[name='file_extension']");
-                el.val(extension);
-                changeColorCustom(el, '#7cd17e');
+                        // Role / Discipline
+                        el = $(tr).find("select[name='role_code']");
+
+                        if (result.role_discipline != null) {
+                            if (result.role_discipline.value in input_file.role_code) {
+                                changeColorCustom(el, '#7cd17e');
+                            } else {
+                                el.append($('<option>', {
+                                    'data-descr': '',
+                                    value: result.role_discipline.value,
+                                    text: result.role_discipline.value
+                                }));
+                                changeColorCustom(el, '#FA8072');
+                            }
+                            el.val(result.role_discipline.value);
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                            el.val('');
+                        }
+                        // Role / Discipline
+
+                        // Number
+                        el = $(tr).find("input[name='file_number']");
+                        
+                        if (result.number != null) {
+                            changeColorCustom(el, '#7cd17e');
+                            el.val(result.number.value);
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                            el.val('');
+                        }
+                        // Number
+
+                        // Status
+                        el = $(tr).find("select[name='status']");
+
+                        if (result.suitability_status != null) {
+                            if (result.suitability_status.value in input_file.status) {
+                                changeColorCustom(el, '#7cd17e');
+                            } else {
+                                el.append($('<option>', {
+                                    'data-descr': '',
+                                    value: result.suitability_status.value,
+                                    text: result.suitability_status.value
+                                }));
+                                changeColorCustom(el, '#FA8072');
+                            }
+                            el.val(result.suitability_status.value);
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                            el.val('');
+                        }
+                        // Status
+
+                        // Revision
+                        el = $(tr).find("input[name='revision']");
+                        
+                        if (result.revision != null) {
+                            changeColorCustom(el, '#7cd17e');
+                            el.val(result.revision.value);
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                            el.val('');
+                        }
+                        // Revision
+
+                        // Description
+                        el = $(tr).find("input[name='name']");
+
+                        if (result.description != null) {
+                            changeColorCustom(el, '#7cd17e');
+                            el.val(result.description.value);
+                        } else {
+                            changeColorCustom(el, '#FA8072');
+                            el.val('');
+                        }
+                        // Description
+
+                        // Extension.
+                        el = $(tr).find("input[name='file_extension']");
+                        changeColorCustom(el, '#7cd17e');
+                        el.val(result.extension);
+                        
+                        // Extension.
+
+                    },
+                    async: false
+                });
             }
-
-            // FileDataInit();
-            // console.log(files);
             OnFileUpload(files, folders);
 
             LoadStop();
@@ -247,12 +321,20 @@ function UploadFiles() {
         d1['project_level'] = $('#row_' + i).find("select[name='project_level']").val();
         d1['type_of_information'] = $('#row_' + i).find("select[name='type_of_information']").val();
         d1['role_code'] = $('#row_' + i).find("select[name='role_code']").val();
-        d1['file_number'] = $('#row_' + i).find("input[name='file_number']").data("value").toString();
+        d1['file_number'] = $('#row_' + i).find("input[name='file_number']").val();
         d1['status'] = $('#row_' + i).find("select[name='status']").val();
-        d1['revision'] = $('#row_' + i).find("select[name='revision']").val();
-        d1['uniclass_2015'] = $('#row_' + i).find("select[name='uniclass_2015']").val();
+        d1['revision'] = $('#row_' + i).find("input[name='revision']").val();
+        d1['uniclass_2015'] = '';
         d1['name'] = $('#row_' + i).find("input[name='name']").val();
         d1['file_extension'] = $('#row_' + i).find("input[name='file_extension']").val();
+
+        if (d1['project_code'] == '' || d1['company_code'] == '' || d1['project_volume_or_system'] == '' || 
+            d1['project_level'] == '' || d1['type_of_information'] == '' || d1['role_code'] == '' || 
+            d1['file_number'] == '' || d1['status'] == '' || d1['revision'] == '' || d1['name'] == '' || 
+            d1['file_extension'] == '') {
+            MakeSnackbar('Please fill all the fields');
+            return;
+        }
 
         d['file_' + i] = d1;
 

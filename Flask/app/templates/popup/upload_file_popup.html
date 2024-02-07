@@ -9,70 +9,15 @@
   <input type="hidden" id="is_file" name="is_file" value="{{ is_file }}" required />
 
     <table id="smart_naming" style="width:100%">
-
         <tr>
           <th class="file_naming_titles">Project Code</th>
           <th class="file_naming_titles">Company Code</th>
           {% for key, value in inputs.items() %}
               <th class="file_naming_titles">{{ value.name }}</th>
             {% endfor %}
-          <th class="file_naming_titles">Uniclass 2015</th>
-          <th class="file_naming_titles">Name</th>
-          <th class="file_naming_titles">File Extension</th>
+            <th class="file_naming_titles">Description</th>
+          <th class="file_naming_titles">Extension</th>
         </tr>
-
-
-        <tr>
-          <th class="file_naming_field" style="border:none;">
-            <input type="text" class="form__field_popup ext"  style="border:none;" name="project_code" value="" readonly/>
-          </th>
-
-          <th class="file_naming_field" style="border:none;">
-            <input type="text" class="form__field_popup ext" style="border:none;" name="company_code" value="" readonly/>
-          </th>
-
-          {% for key, value in inputs.items() %}
-            {% if key != 'role_code' %}
-                {% if key == 'file_number' %}
-                <th class="file_naming_field">
-                    <input list="file_numbers" class="form__field_popup" name="file_number" id="file_number" onchange="changeValues(this); setCodeValue(this);"/>
-                    <datalist class="form__field_popup" id="file_numbers" name="file_numbers" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
-                        {% for v in value.elements %}
-                            <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
-                        {% endfor %}
-                    </datalist>
-                </th>
-                {% else %}
-                <th class="file_naming_field">
-                    <select class="form__field_popup" name="{{ key }}" onchange="changeValues(this)" onblur="SelectBlur(this)" onfocus="SelectFocus(this)">
-                        {% for v in value.elements %}
-                            <option value="{{ v }}" data-descr="{{ v.split(',')[1] }}" >{{ v.split(',')[0] }}</option>
-                        {% endfor %}
-                    </select>
-                </th>
-                {% endif %}
-            {% elif key == 'role_code' %}
-              <th class="file_naming_field" style="border:none;">
-                <input type="text" class="form__field_popup" style="border:none;" value="" readonly />
-              </th>
-            {% endif %}
-          {% endfor %}
-
-          <th class="file_naming_field">
-            <select class="form__field_popup" name="uniclass_2015" >
-              <option></option>
-            </select>
-          </th>
-
-          <th class="file_naming_field_name" style="border:none;">
-            <input type="text" style="border:none;" value="" readonly />
-          </th>
-          <th class="file_naming_field" style="border:none;">
-            <input type="text" class="form__field_popup" style="border:none;" name="file_extension" id='file_extension' value="" readonly />
-          <th>
-        </tr>
-
-
     </table>
 
   <br>

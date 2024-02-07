@@ -10,7 +10,17 @@ const colorScale = [
     "#afc556",
     "#448449",
     "#56c5af",
-    "#e8e8e8"
+    "#8c45c9",
+    "#ff88a2",
+    "#9edc99",
+    "#23a1af",
+    "#e63232",
+    "#006699",
+    "#ff5733",
+    "#731981",
+    "#00aaff",
+    "#ffcc00",
+    "#ff3399",
 ];
 
 function ChangeColor(data) {

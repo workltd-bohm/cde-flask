@@ -19,6 +19,7 @@ from app.model.marketplace.bid import Bid
 from app.model.role import Role
 from app.model.access import Access
 from app.model.tag import Tags, SimpleTag, ISO19650
+from app.parser.parser import Parser
 
 from app.logs import logger
 

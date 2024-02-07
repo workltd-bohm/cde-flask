@@ -354,6 +354,73 @@ function AddOverText(data, fix = false) {
         .html("");
 }
 
+function find_parent_ic_from_hierarchy_tree(ic_id, node) {
+    if (node.sub_folders.length == 0) { return null; }
+    else if (node.ic_id == ic_id) { return null; }
+
+    for (let i = 0; i < node.sub_folders.length; i++) {
+        const result = find_parent_ic_from_hierarchy_tree(ic_id, node.sub_folders[i]);
+
+        if (result) {
+            return result;
+        }
+        else if (node.sub_folders[i].ic_id == ic_id) {
+            return node;
+        }
+    }
+}
+
+function CreateUpMenu(data) {
+    let curr_level_ic_id = data.ic_id;
+
+    $.ajax({
+        url: "/get_project",
+        type: 'POST',
+        data: JSON.stringify({
+            project: {}
+        }),
+        timeout: 10000,
+        success: function(data) {
+            data = JSON.parse(data);
+            if (data) {
+                let prj_hierarchy_root = data.json.root_ic;
+                let parent_node = find_parent_ic_from_hierarchy_tree(curr_level_ic_id, prj_hierarchy_root);
+
+                if (parent_node == null) { return; }
+                
+                let up_menu = document.createElement("a");
+                up_menu.className = "hover-menu-item px-3 py-2 mt-3";
+                up_menu.id = "btn-up";
+    
+                let icon = document.createElement("span");
+                icon.className = "material-icons";
+                icon.textContent = "arrow_upward";
+    
+                let text = document.createElement("span");
+                text.className = "me-1"
+                text.textContent = "Up 1 Level";
+    
+                up_menu.appendChild(text);
+                up_menu.appendChild(icon);
+    
+                $(".hover-menu").append(up_menu);
+    
+                up_menu.onclick = function(event) {
+                    console.log("Up 1 Level menu clicked.");
+                    CreateWorkspace(parent_node);
+                }
+            }
+        },
+        error: function($jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown + ": " + $jqXHR.responseText);
+            MakeSnackbar($jqXHR.responseText);
+            if ($jqXHR.status == 401) {
+                location.reload();
+            }
+        }
+    });
+}
+
 function CreateUndoMenu(){
     let undo_menu = document.createElement("a");
     undo_menu.className = "hover-menu-item px-3 py-2 mt-3";

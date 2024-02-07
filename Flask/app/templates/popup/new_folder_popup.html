@@ -10,11 +10,14 @@
         <input type="hidden" name="project_name" value="{{ project_name }}" required />
         <input type="hidden" name="parent_path" value="{{ parent_path }}" required />
         <input type="hidden" name="color" value="" id="color"/>
-        <br>
+        <input type="hidden" name="border_color" value="" id="border_color"/>
+        <br/>
         <div class="form__group field">
           <input type="text" class="form__field" id="new_name" name="new_name" required />
           <label for="new_name" class="form__label">Folder name</label>
         </div>
+        <br/>
+        <span>Folder Colour:</span>
 
         <div id="my_colors" class="mt-3"></div>
         <script>
@@ -32,10 +35,26 @@
                 document.getElementById("my_colors").appendChild(clickable);
             });
         </script>
+        <br/>
+        <span>Border Colour:</span>
+        <div id="my_border_colors" class="mt-3"></div>
+        <script>
+          colorScale.forEach(color => {
+              let clickable = document.createElement("I");
+              clickable.className = "card-border-color";
+              clickable.style.backgroundColor = color;
 
-        <br>
+              clickable.onclick = function() {
+                  $(".card-border-color").removeClass("selected");
+                  clickable.classList.add("selected");
+                  document.getElementById("border_color").value = color;
+              }
+
+              document.getElementById("my_border_colors").appendChild(clickable);
+          });
+        </script>
+        <br/>
         <input type="button" class="keypress" value="Create" onclick="FormSubmit('create_dir', null, true, GetProject)" />
-
       </div>
     </div>
   </div>

@@ -82,6 +82,22 @@ const $DASHBOARD = $("#index-dashboard");
 // define jQuery workspace
 const $WS = $(".workspace");
 
+let touchStartX = 0, touchStartY = 0;
+let threshold = 1; // Threshold for movement
+
+$WS.on('touchstart', function(event) {
+    let touch = event.touches[0] || event.changedTouches[0];
+    touchStartX = touch.pageX;
+    touchStartY = touch.pageY;
+});
+
+$WS.on('touchmove', function(event) {
+    let touch = event.touches[0] || event.changedTouches[0];
+    if (Math.abs(touch.pageX - touchStartX) > threshold || Math.abs(touch.pageY - touchStartY) > threshold) {
+        event.preventDefault();
+    }
+});
+
 const $SVG = $("#PROJECT");
 const $GRID = $("#PROJECT-GRID");
 const SVG = d3.select("#PROJECT");

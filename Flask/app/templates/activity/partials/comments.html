@@ -17,7 +17,7 @@
         <!-- Filter collab box -->
         <div class="input-group mb-3" id="searchFoldercommentsDiv">
             <input type="text" class="form-control" id="searchcomments" name="searchcomments" 
-                onkeypress="serviceCommentSearchQuery(event)" onkeydown="serviceCommentSearchQuery(event)" 
+            onkeyup="serviceCommentSearchQuery(event)" 
                 placeholder="Filter collab by @Users or #hashtag..." autocomplete="off">
             <button type="button" class="btn" id="resetCommentSearchButton" 
                 onclick="resetCommentSearch(event)">Reset</button>

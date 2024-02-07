@@ -382,18 +382,18 @@ g.path.draw > g.text > text {
     cursor: pointer;
 }
 
-i.card-color
+i.card-color, i.card-border-color
 {
     display: inline-block;
     width: 20px;
     height: 20px;
 }
 
-i.card-color:hover {
+i.card-color:hover, i.card-border-color:hover {
     border: 2px solid var(--neon-blue);
 }
 
-i.card-color.selected {
+i.card-color.selected, i.card-border-color.selected {
     border: 3px solid var(--neon-blue);
 }
 

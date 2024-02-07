@@ -265,6 +265,7 @@ def upload_file_process(request_json, file=None):
                     "." + request_json['new_name'].split('.')[-1],
                     request_json['ic_id'],
                     '',
+                    '',
                     [],
                     [],
                     [],
@@ -500,6 +501,11 @@ def create_dir_process(request_data):
         color = request_data['color']
     else:
         color = ''
+
+    if 'border_color' in request_data:
+        border_color = request_data['border_color']
+    else:
+        border_color = ''
     
     folder = Directory(ic_id,
                         request_data['new_name'],
@@ -508,6 +514,7 @@ def create_dir_process(request_data):
                         request_data['parent_path'] + '/' + request_data['new_name'],
                         request_data['ic_id'],
                         color,
+                        border_color,
                         [],
                         [],
                         [],
@@ -796,6 +803,7 @@ def path_to_obj(path, parent=False, parent_id=""):
                          path,
                          parent_id,
                          '',
+                         '',
                          [],
                          [],
                          [],
@@ -803,7 +811,7 @@ def path_to_obj(path, parent=False, parent_id=""):
                          [path_to_obj(path + '/' + x, path, new_id) for x in os.listdir(path)
                           if not x.endswith(".pyc") and "__pycache__" not in x])
     else:
-        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', [], [], [], [], '', '')
+        root = File(new_id, name, name, parent, [details], path, p.suffix, new_id, '', '', [], [], [], [], '', '')
     return root
 
 
@@ -883,3 +891,20 @@ def remove_folder(path):
     time.sleep(30)
     # Delete the zip file if not needed
     shutil.rmtree(path)
+
+
+@app.route('/parse_iso_file_name', methods=['POST'])
+def parse_iso_file_name():
+    request_data = json.loads(request.get_data())
+    print(f"request_data = {request_data}");
+    project_code = request_data['project_path'].split('/')[0];
+    company_code = session['user']['company_code'];
+    file_name = request_data['file_name'];
+    print(f"project_code = {project_code}, company_code = {company_code}, file_name = {file_name}");
+    parser = Parser()
+    result = parser.parse(project_code, company_code, file_name)
+    
+    resp = Response()
+    resp.status_code = msg.DEFAULT_OK['code']
+    resp.data = json.dumps(result)
+    return resp

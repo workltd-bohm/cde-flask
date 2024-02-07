@@ -23,7 +23,8 @@ from bson.objectid import ObjectId
 class DBMongoAdapter:
 
     def __init__(self):
-        self._client = MongoClient('localhost:27017')
+        self._client = MongoClient('mongodb://admin:admin@10.0.1.199:27017/slDB?authSource=admin')
+        
         self._db = None
 
     def connect(self):
@@ -246,6 +247,7 @@ class DBMongoAdapter:
             'Shared',
             'root',
             '',
+            '',
             [],
             [],
             [],
@@ -452,6 +454,20 @@ class DBMongoAdapter:
             return thumb_id
         self._close_connection()
         return thumb_id
+
+    def fetch_ic(self, request_data):
+        col = self._db.Projects
+        project_query = {'project_name': request_data['project_name']}
+        project_json = col.find_one(project_query, {'_id': 0})
+
+        if project_json:
+            project = Project.json_to_obj(project_json)
+            ic = project.find_ic_by_id(request_data, request_data['ic_id'], project.root_ic)
+            if ic:
+                return ic
+            else:
+                print("fetch_ic", msg.IC_NOT_FOUND)
+                return msg.IC_NOT_FOUND
 
     def upload_file(self, project_name, file_obj, file=None):
         col = self._db.Projects

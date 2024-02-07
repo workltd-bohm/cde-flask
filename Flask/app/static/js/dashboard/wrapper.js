@@ -329,6 +329,7 @@ function AddTreeSubfolders(node, sub_folder, project) {
     }
 
     let color = sub_folder.color;
+    let border_color = sub_folder.border_color;
 
     // default color
     if (color === '') {
@@ -349,6 +350,7 @@ function AddTreeSubfolders(node, sub_folder, project) {
 
     sub_folder.icon = icon_name.outerHTML;
     sub_folder.color = color;
+    sub_folder.border_color = border_color;
 
     var child = new TreeNode('', sub_folder);
 

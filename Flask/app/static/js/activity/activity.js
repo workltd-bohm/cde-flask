@@ -118,21 +118,13 @@ function getComments() {
         success: function(data) {
             data = JSON.parse(data);
 
-            let comments = $(".activity-comments-container").children();
-
-            // add only new comments
-            for (let i = 0; i < data.length; i++) {
-                let id = $.parseHTML(data[i])[0].dataset.id;
-                for (let j = 0; j < comments.length; j++) {
-                    if (comments[j].dataset.id === id) {
-                        delete data[i];
-                    }
-                }
-            }
+            $(".activity-comments-container").empty();
 
             for (let i = 0; i < data.length; i++) {
                 $(".activity-comments-container").prepend(data[i]);
             }
+
+            allProjectComments = document.getElementById("activity-comments-container").innerHTML;
         }
     });
 }
@@ -146,7 +138,6 @@ function sendCommentPress() {
     let ic_id = $('#ic_id').val();
     let div = $('#activity-comments-container');
     let post_id = $('#post_id').val();
-    console.log(comment);
 
     $.ajax({
         url: "/send_comment",
@@ -162,9 +153,9 @@ function sendCommentPress() {
         }),
         timeout: 10000,
         success: function(data) {
-            //            input_json = JSON.parse(data);
-            //console.log(data);
-            div.prepend(data);
+            div.empty();
+            resetCommentSearch();
+            getComments();
             $('#comment').val('');
             div.animate({ scrollTop: "0" });
         },
@@ -211,12 +202,11 @@ function sendComment(el) {
         }),
         timeout: 10000,
         success: function(data) {
-            //            input_json = JSON.parse(data);
-            //console.log(data);
-            div.prepend(data);
+            div.empty();
+            resetCommentSearch();
+            getComments();
             $('#comment').val('');
             div.animate({ scrollTop: "0" });
-            updateCommentSearchBuffer();
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -319,7 +309,10 @@ function updateComment(el, elem) {
         timeout: 10000,
         success: function(data) {
             MakeSnackbar(data);
-            updateCommentSearchBuffer();
+            div.empty();
+            resetCommentSearch();
+            getComments();
+            $('#comment').val('');
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -369,7 +362,10 @@ function deleteComment(elem) {
         success: function(data) {
             elem.remove();
             MakeSnackbar(data);
-            updateCommentSearchBuffer();
+            div.empty();
+            resetCommentSearch();
+            getComments();
+            $('#comment').val('');
         },
         error: function($jqXHR, textStatus, errorThrown) {
             console.log(errorThrown + ": " + $jqXHR.responseText);
@@ -661,21 +657,12 @@ function openToggle(elem) {
     elem.toggleClass("selected");
 }
 
-function updateCommentSearchBuffer() {
-    allProjectComments = divWithAllComments.innerHTML;
-}
-
 var allProjectComments = null;
 
 function filterDirectoryComments(searchCommentboxText) {
     isClearSearchButtonVisible(true);
     divWithAllComments = document.getElementById("activity-comments-container");
-
-    if (allProjectComments == null)
-        updateCommentSearchBuffer();
-    else
-        divWithAllComments.innerHTML = allProjectComments;
-
+    divWithAllComments.innerHTML = allProjectComments;
 
     comments = divWithAllComments.children;
     numOfAtSymbols = searchCommentboxText.split("@").length - 1;
@@ -797,7 +784,6 @@ function serviceCommentSearchQuery(event) {
             controlCharacterUpper = 31;
             deleteAscii = 127;
             if ((keyPressedByUser > controlCharacterUpper) && (keyPressedByUser != deleteAscii)) {
-                searchCommentboxText += String.fromCharCode(keyPressedByUser);
                 autocompleteUsername(searchCommentboxText, searchCommentBoxId);
             } else
                 autocompleteUsername(searchCommentboxText, searchCommentBoxId);

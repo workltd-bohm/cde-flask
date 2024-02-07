@@ -1,15 +1,18 @@
 {
     "project_volume_or_system": {
         "ZZ": "Multiple volumes/systems",
-        "XX": "No volume/system",
-        "B1": "Building",
-        "S1": "Anthea Hamilton Garden"
+        "XX": "No volume/system"
     },
     "project_level": {
         "ZZ": "Multiple levels",
         "XX": "No level",
-        "0.0": "Ground floor",
-        "M0": "Mezzanine"
+        "00": "Ground floor",
+        "01": "First Floor",
+        "02": "Second Floor",
+        "M1": "Mezzanine 1",
+        "M2": "Mezzanine 2",
+        "B1": "Basement 1",
+        "B2": "Basement 2"
     },
     "type_of_information": {
         "AF": "Animation file (of model)",
@@ -109,15 +112,23 @@
         "S2": "For information",
         "S3": "For review & comment",
         "S4": "For stage approval",
-        "S5": "Withdrawn",
         "S6": "For PIM authorisation",
         "S7": "For AIM authorisation",
-        "D1": "Issued for costing",
-        "D2": "Issued for tender",
-        "D3": "Issued for contractor design",
         "A1": "Approved & accepted",
+        "A2": "Approved & accepted",
+        "A3": "Approved & accepted",
+        "A4": "Approved & accepted",
+        "A5": "Approved & accepted",
+        "A6": "Approved & accepted",
+        "A7": "Approved & accepted",
         "B1": "Partially signed-off with comments",
-        "CR": "As built record document"
+        "B2": "Partially signed-off with comments",
+        "B3": "Partially signed-off with comments",
+        "B4": "Partially signed-off with comments",
+        "B5": "Partially signed-off with comments",
+        "B6": "Partially signed-off with comments",
+        "B7": "Partially signed-off with comments",
+        "CR": "As constructed record document"
     },
     "revision": {
         "P01.01": "Work in progress version",

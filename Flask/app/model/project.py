@@ -687,6 +687,10 @@ class Project:
                 tags.append(ISO19650.json_to_obj(tag))
             else:
                 tags.append(Tags.json_to_obj(tag))
+
+        if 'border_color' not in json_file:
+            json_file['border_color'] = ''
+            
         if json_file['is_directory']:
             root = Directory(json_file['ic_id'],
                              json_file['name'],
@@ -695,6 +699,7 @@ class Project:
                              json_file['path'],
                              json_file['parent_id'],
                              json_file['color'],
+                             json_file['border_color'],
                              [Comments.json_to_obj(x) for x in json_file['comments']],
                              tags,
                              [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],
@@ -709,6 +714,7 @@ class Project:
                         json_file['type'],
                         json_file['parent_id'],
                         json_file['color'],
+                        json_file['border_color'],
                         [Comments.json_to_obj(x) for x in json_file['comments']],
                         tags,
                         [Project.json_folders_to_obj(x) for x in json_file['sub_folders']],

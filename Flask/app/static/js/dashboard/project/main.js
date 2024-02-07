@@ -431,6 +431,12 @@ function AddChildren(obj, data, parent, position = 0) {
             CreateContextMenu(d3.event, d);
         });
 
+        // Border Color
+        if (data.is_directory && data.border_color) {
+            data.values.select.style("stroke", data.border_color);
+            data.values.select.style("stroke-width", "10");
+        }
+
     data.values.data = data;    // Reference Hack - Be Careful
 
     // Don't Create Checkboxes For Project Or User
@@ -647,9 +653,11 @@ function CreateDashboard(data, project_position = null) {
     });
 }
 
-function CreateHoverMenu()
+function CreateHoverMenu(data)
 {
     $(".hover-menu").empty();
+
+    CreateUpMenu(data);
 
     // Appended - Each Comes After
     // Undo menu
@@ -719,7 +727,7 @@ function CreateWorkspace(data) {
     }
 
     // Creates Action ("Hover") Menu
-    CreateHoverMenu();
+    CreateHoverMenu(data);
 
     // hide activity when on root path
     HideActivity();

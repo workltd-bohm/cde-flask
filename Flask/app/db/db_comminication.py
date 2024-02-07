@@ -68,6 +68,9 @@ def get_my_shares(db_adapter, user):
 def get_project(db_adapter, project_name, user):
     return db_adapter.get_project(project_name, user)
 
+def fetch_ic(db_adapter, request_data):
+    return db_adapter.fetch_ic(request_data)
+
 
 def upload_file(db_adapter, project, file_obj, file=None):
     return db_adapter.upload_file(project, file_obj, file)
